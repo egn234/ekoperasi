@@ -7,6 +7,9 @@ class login extends Controller
 {
 	public function index()
 	{
-		echo "le me gusta";		
+		$data = [
+			'title_meta' => view('partials/title-meta', ['title' => 'Login'])
+		];
+		return view('auth-login', $data);
 	}
 }
