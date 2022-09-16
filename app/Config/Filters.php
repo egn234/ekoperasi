@@ -24,7 +24,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'admin_auth' => \App\Filters\AdminFilter::class,
-        'login_auth' => \App\Filters\LoginFilter::class
+        'login_auth' => \App\Filters\LoginFilter::class,
     ];
 
     /**
@@ -75,7 +75,7 @@ class Filters extends BaseConfig
             'before' => ['Admin/*']
         ],
         'login_auth' => [
-            'before' => ['Login']
+            'before' => ['/']
         ],
     ];
 }

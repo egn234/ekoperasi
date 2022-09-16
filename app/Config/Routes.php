@@ -43,6 +43,8 @@ $routes->get('test', 'Login::test');
 //GROUP ADMIN
 $routes->group('admin', static function ($routes){
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
+    $routes->get('profile', 'Admin\Profile::index');
+    $routes->get('user', 'Admin\User::list');
 
 });
 
