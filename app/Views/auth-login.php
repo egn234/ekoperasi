@@ -3,12 +3,12 @@
     <head>
 
         <meta charset="utf-8" />
-        <title>Login | Minia - Minimal Admin & Dashboard Template</title>
+        <title>Login | EKoperasi</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
+        <link rel="shortcut icon" href="<?=base_url()?>/assets/images/favicon.ico">
 
             <?= $this->include('partials/head-css') ?>
 
@@ -26,18 +26,18 @@
                                 <div class="d-flex flex-column h-100">
                                     <div class="mb-4 mb-md-5 text-center">
                                         <a href="/" class="d-block auth-logo">
-                                            <img src="assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Minia</span>
+                                            <img src="<?=base_url()?>/assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Ekoperasi</span>
                                         </a>
                                     </div>
                                     <div class="auth-content my-auto">
                                         <div class="text-center">
                                             <h5 class="mb-0">Welcome Back !</h5>
-                                            <p class="text-muted mt-2">Sign in to continue to Minia.</p>
+                                            <p class="text-muted mt-2">Mulai login untuk masuk Ekoperasi</p>
                                         </div>
-                                        <form class="custom-form mt-4 pt-2" action="/">
+                                        <form class="custom-form mt-4 pt-2" action="<?= url_to('auth_login_proc'); ?>" method="post">
                                             <div class="mb-3">
                                                 <label class="form-label">Username</label>
-                                                <input type="text" class="form-control" id="username" placeholder="Enter username">
+                                                <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username">
                                             </div>
                                             <div class="mb-3">
                                                 <div class="d-flex align-items-start">
@@ -52,7 +52,7 @@
                                                 </div>
                                                 
                                                 <div class="input-group auth-pass-inputgroup">
-                                                    <input type="password" class="form-control" placeholder="Enter password" aria-label="Password" aria-describedby="password-addon">
+                                                    <input type="password" class="form-control" placeholder="Masukkan password" aria-label="Password" name="password" aria-describedby="password-addon">
                                                     <button class="btn btn-light ms-0" type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button>
                                                 </div>
                                             </div>
@@ -154,7 +154,7 @@
                                                         <div class="mt-4 pt-3 pb-5">
                                                             <div class="d-flex align-items-start">
                                                                 <div class="flex-shrink-0">
-                                                                    <img src="assets/images/users/avatar-1.jpg" class="avatar-md img-fluid rounded-circle" alt="...">
+                                                                    <img src="<?=base_url()?>/assets/images/users/avatar-1.jpg" class="avatar-md img-fluid rounded-circle" alt="...">
                                                                 </div>
                                                                 <div class="flex-grow-1 ms-3 mb-4">
                                                                     <h5 class="font-size-18 text-white">Richard Drews
@@ -179,7 +179,7 @@
                                                         <div class="mt-4 pt-3 pb-5">
                                                             <div class="d-flex align-items-start">
                                                                 <div class="flex-shrink-0">
-                                                                    <img src="assets/images/users/avatar-2.jpg" class="avatar-md img-fluid rounded-circle" alt="...">
+                                                                    <img src="<?=base_url()?>/assets/images/users/avatar-2.jpg" class="avatar-md img-fluid rounded-circle" alt="...">
                                                                 </div>
                                                                 <div class="flex-grow-1 ms-3 mb-4">
                                                                     <h5 class="font-size-18 text-white">Rosanna French
@@ -203,7 +203,7 @@
                                                             feel.”</h4>
                                                         <div class="mt-4 pt-3 pb-5">
                                                             <div class="d-flex align-items-start">
-                                                                <img src="assets/images/users/avatar-3.jpg"
+                                                                <img src="<?=base_url()?>/assets/images/users/avatar-3.jpg"
                                                                     class="avatar-md img-fluid rounded-circle" alt="...">
                                                                 <div class="flex-1 ms-3 mb-4">
                                                                     <h5 class="font-size-18 text-white">Ilse R. Eaton</h5>
@@ -234,7 +234,7 @@
         <!-- JAVASCRIPT -->
        <?= $this->include('partials/vendor-scripts') ?>
         <!-- password addon init -->
-        <script src="assets/js/pages/pass-addon.init.js"></script>
+        <script src="<?=base_url()?>/assets/js/pages/pass-addon.init.js"></script>
 
     </body>
 

@@ -35,7 +35,34 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
+
 $routes->get('/', 'Login::index');
+$routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
+$routes->get('test', 'Login::test');
+
+//GROUP ADMIN
+$routes->group('admin', static function ($routes){
+    $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
+
+});
+
+//GROUP BENDAHARA
+$routes->group('bendahara', static function ($routes){
+    $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
+
+});
+
+//GROUP KETUA
+$routes->group('ketua', static function ($routes){
+    $routes->get('dashboard', 'Ketua\Dashboard::index', ['as' => 'dashboard_ketua']);
+
+});
+
+//GROUP ANGGOTA
+$routes->group('anggota', static function ($routes){
+    $routes->get('dashboard', 'Anggota\Dashboard::index', ['as' => 'dashboard_anggota']);
+
+});
 
 /*
  * --------------------------------------------------------------------
