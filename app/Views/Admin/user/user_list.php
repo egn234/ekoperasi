@@ -46,10 +46,10 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-bordered dt-responsive dtable nowrap w-100">
+                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
+                                            <th width="5%">No</th>
                                             <th>Nama</th>
                                             <th>Instansi</th>
                                             <th>Alamat Email</th>
@@ -59,8 +59,7 @@
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
-
-
+                                    
                                     <tbody>
                                         <?php $c = 1?>
                                         <?php foreach ($usr_list as $a) {?>
@@ -73,9 +72,15 @@
                                                 <td><?=($a->user_flag == 1)?'Aktif':'Tidak Aktif'?></td>
                                                 <td><?= $a->group_type ?></td>
                                                 <td align="center">
-                                                    <a href="" class="btn btn-primary"><i class="fa fa-search"></i> Detail</a>
+                                                    <div class="row">
+                                                        <div class="btn-group d-flex justify-content-center">
+                                                            <a href="" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
+                                                            <a href="" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
+                                        <?php $c++; ?>
                                         <?php }?>
                                     </tbody>
                                 </table>
