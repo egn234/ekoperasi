@@ -37,14 +37,16 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 
 $routes->get('/', 'Login::index');
+$routes->add('logout', 'Login::logout');
 $routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
-$routes->get('test', 'Login::test');
 
 //GROUP ADMIN
 $routes->group('admin', static function ($routes){
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('profile', 'Admin\Profile::index');
     $routes->get('user', 'Admin\User::list');
+    $routes->get('user/add', 'Admin\User::add_user');
+    $routes->post('user/add_user_proccess', 'Admin\User::add_user_proc');
 
 });
 

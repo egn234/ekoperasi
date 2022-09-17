@@ -47,7 +47,7 @@
                     <!-- item-->
                     <a class="dropdown-item" href="<?= url_to('admin/profile')?>"><i class="mdi mdi-face-profile font-size-16 align-middle me-1"></i> Profil</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="auth-login"><i class="mdi mdi-logout font-size-16 align-middle me-1"></i>Logout</a>
+                    <a class="dropdown-item" href="<?= url_to('logout')?>"><i class="mdi mdi-logout font-size-16 align-middle me-1"></i>Logout</a>
                 </div>
             </div>
 

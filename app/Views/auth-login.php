@@ -35,6 +35,7 @@
                                             <p class="text-muted mt-2">Mulai login untuk masuk Ekoperasi</p>
                                         </div>
                                         <form class="custom-form mt-4 pt-2" action="<?= url_to('auth_login_proc'); ?>" method="post">
+                                            <?=session()->getFlashdata('notif_login')?>
                                             <div class="mb-3">
                                                 <label class="form-label">Username</label>
                                                 <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username">
@@ -234,8 +235,6 @@
         <!-- JAVASCRIPT -->
        <?= $this->include('partials/vendor-scripts') ?>
         <!-- password addon init -->
-        <script src="<?=base_url()?>/assets/js/pages/pass-addon.init.js"></script>
-
     </body>
 
 </html>

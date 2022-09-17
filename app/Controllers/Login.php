@@ -56,13 +56,11 @@ class login extends Controller
 					}
 				}
 				else {
-					$alert = view(
-						'partials/notification-alert', 
-						[
-							'notif_text' => 'Akun ini sudah tidak aktif',
-							'status' => 'danger'
-						]
-					);
+					$alert = '
+						<div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
+							Akun ini sudah tidak aktif
+						</div>
+					';
 
 					session()->setFlashdata('notif_login', $alert);
 					session()->setFlashdata('s_username', $username);
@@ -70,13 +68,11 @@ class login extends Controller
 				}
 			}
 			else {
-				$alert = view(
-					'partials/notification-alert', 
-					[
-						'notif_text' => 'Password tidak sesuai',
-						'status' => 'danger'
-					]
-				);
+				$alert = '
+					<div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
+						Password tidak sesuai
+					</div>
+				';
 
 				session()->setFlashdata('notif_login', $alert);
 				session()->setFlashdata('s_username', $username);
@@ -84,13 +80,11 @@ class login extends Controller
 			}
 		}	
 		else {
-			$alert = view(
-				'partials/notification-alert', 
-				[
-					'notif_text' => 'Akun Tidak Terdaftar',
-					'status' => 'danger'
-				]
-			);
+			$alert = '
+				<div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
+					Akun tidak terdaftar
+				</div>
+			';
 
 			session()->setFlashdata('notif_login', $alert);
 			session()->setFlashdata('s_username', $username);
@@ -100,8 +94,8 @@ class login extends Controller
 
 	public function logout()
 	{
-		session_destroy();
-		redirect()->to('/');
+		session()->destroy();
+		return redirect()->to('/');
 	}
 
 }
