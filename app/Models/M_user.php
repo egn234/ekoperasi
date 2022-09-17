@@ -33,6 +33,18 @@ class M_user extends Model
     	return $this->db->query($sql)->getResult();
     }
     
+    function countUser($username)
+    {
+        $sql = "SELECT count(username) AS hitung FROM tb_user WHERE username = '$username'";
+        return $this->db->query($sql)->getResult();
+    }
+    
+    function countNIK($nik)
+    {
+        $sql = "SELECT count(nik) AS hitung FROM tb_user WHERE nik = '$nik'";
+        return $this->db->query($sql)->getResult();
+    }
+    
     function getAllUser()
     {  
         $sql = "
@@ -108,6 +120,31 @@ class M_user extends Model
     {
       $builder = $this->db->table('tb_user');
       $builder->insert($data);
+    }
+
+    function aktifkanUser($iduser)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->set('flag', 1);
+        $builder->set('updated', date('Y-m-d H:i:s'));
+        $builder->where('iduser', $iduser);
+        $builder->update();
+    }
+
+    function nonaktifkanUser($iduser)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->set('flag', 0);
+        $builder->where('iduser', $iduser);
+        $builder->update();
+    }
+
+    function closebookCount($iduser, $status)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->set('closebook_param_count', $status);
+        $builder->where('iduser', $iduser);
+        $builder->update();
     }
     
 }

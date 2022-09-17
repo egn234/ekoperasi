@@ -72,7 +72,7 @@ class Filters extends BaseConfig
      */
     public $filters = [
         'admin_auth' => [
-            'before' => ['Admin/*']
+            'before' => ['admin/*']
         ],
         'login_auth' => [
             'before' => ['/']

@@ -10,7 +10,7 @@
                 <li class="menu-title" data-key="t-menu">Menu</li>
 
                 <li>
-                    <a href="/">
+                    <a href="<?= url_to('dashboard_admin') ?>">
                         <i data-feather="home"></i>
                         <span data-key="t-dashboard">Dashboard</span>
                     </a>
@@ -22,7 +22,7 @@
                         <span data-key="t-authentication">User</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="<?= url_to('admin/user') ?>" data-key="t-user-list">Daftar User</a></li>
+                        <li><a href="<?= url_to('admin/user/list') ?>" data-key="t-user-list">Daftar User</a></li>
                     </ul>
                 </li>
 <!--

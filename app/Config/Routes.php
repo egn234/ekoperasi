@@ -42,11 +42,18 @@ $routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
 
 //GROUP ADMIN
 $routes->group('admin', static function ($routes){
+    
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('profile', 'Admin\Profile::index');
-    $routes->get('user', 'Admin\User::list');
-    $routes->get('user/add', 'Admin\User::add_user');
-    $routes->post('user/add_user_proccess', 'Admin\User::add_user_proc');
+
+    //GROUP KELOLA USER DI ADMIN
+    $routes->group('user', static function ($routes){
+        $routes->get('list', 'Admin\User::list');
+        $routes->get('add', 'Admin\User::add_user');
+        $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
+        $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
+        $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
+    });
 
 });
 

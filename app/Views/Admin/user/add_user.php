@@ -50,19 +50,19 @@
 
                                 <form action="<?= url_to('admin/user/add_user_proccess') ?>" method="post" class="needs-validation" enctype="multipart/form-data">
                                     <div class="row">
-                                        <div class="col-lg-3"></div>
-                                        <div class="col-lg-6 col-md-12">
+                                        <div class="col-lg-2"></div>
+                                        <div class="col-lg-8 col-md-12">
                                             <?=session()->getFlashdata('notif');?>
                                             <div class="mb-3">
                                                 <label class="form-label" for="full_name">Nama Lengkap <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="full_name" name="nama_lengkap" required>
+                                                <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?=session()->getFlashdata('nama_lengkap')?>" required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="nik_number">NIK <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" name="nik" required>
+                                                <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
                                                 <div class="invalid-feedback">
                                                     NIK harus 16 digit
                                                 </div>
@@ -71,7 +71,7 @@
                                                 <div class="col-sm-6">
                                                     <div class="mb-3">
                                                         <label class="form-label" for="birthplace">Tempat <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="birthplace" name="tempat_lahir" required>
+                                                        <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?=session()->getFlashdata('tempat_lahir')?>" required>
                                                         <div class="invalid-feedback">
                                                             Harus Diisi
                                                         </div>
@@ -80,7 +80,7 @@
                                                 <div class="col-sm-6">
                                                     <div class="mb-3">
                                                         <label class="form-label" for="birthday">Tanggal Lahir<span class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control" id="birthday" name="tanggal_lahir" required>
+                                                        <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?=session()->getFlashdata('tanggal_lahir')?>" required>
                                                         <div class="invalid-feedback">
                                                             Harus Diisi
                                                         </div>
@@ -90,13 +90,13 @@
                                             <div class="mb-3">
                                                 <label class="form-label" for="institution">Institusi <span class="text-danger">*</span></label>
                                                 <select class="form-select" id="institution" name="instansi" required>
-                                                    <option value="0" selected disabled>Pilih Institusi...</option>
-                                                    <option value="YPT">YPT</option>
-                                                    <option value="Telkom University">Telkom University</option>
-                                                    <option value="Trengginas Jaya">Trengginas Jaya</option>
-                                                    <option value="BUT">BUT</option>
-                                                    <option value="Telkom">Telkom</option>
-                                                    <option value="GIAT">GIAT</option>
+                                                    <option value="" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Institusi...</option>
+                                                    <option value="YPT" <?=(session()->getFlashdata('instansi') == 'YPT')?'selected':''?> >YPT</option>
+                                                    <option value="Telkom University" <?=(session()->getFlashdata('instansi') == 'Telkom University')?'selected':''?> >Telkom University</option>
+                                                    <option value="Trengginas Jaya" <?=(session()->getFlashdata('instansi') == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
+                                                    <option value="BUT" <?=(session()->getFlashdata('instansi') == 'BUT')?'selected':''?> >BUT</option>
+                                                    <option value="Telkom" <?=(session()->getFlashdata('instansi') == 'Telkom')?'selected':''?> >Telkom</option>
+                                                    <option value="GIAT" <?=(session()->getFlashdata('instansi') == 'GIAT')?'selected':''?> >GIAT</option>
                                                 </select>
                                                 <div class="invalid-feedback">
                                                     Pilih Terlebih dahulu
@@ -104,35 +104,35 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="address" name="alamat" required>
+                                                <input type="text" class="form-control" id="address" name="alamat" value="<?=session()->getFlashdata('alamat')?>" required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="phone_number">No. Telepon / WA <span class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="phone_number" name="nomor_telepon" required>
+                                                <input type="number" class="form-control" id="phone_number" name="nomor_telepon" value="<?=session()->getFlashdata('nomor_telepon')?>" required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="email_addr">Email <span class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" id="email_addr" name="email" required>
+                                                <input type="email" class="form-control" id="email_addr" name="email" value="<?=session()->getFlashdata('email')?>" required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="job_unit" name="unit_kerja" required>
+                                                <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?=session()->getFlashdata('unit_kerja')?>" required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="username" name="username" required>
+                                                <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>
@@ -158,9 +158,9 @@
                                             <div class="mb-3">
                                                 <label class="form-label" for="group">User Grup <span class="text-danger">*</span></label>
                                                 <select class="form-select" id="group" name="idgroup" required>
-                                                    <option value="" selected disabled>Pilih Grup...</option>
+                                                    <option value="" <?=(session()->getFlashdata('idgroup'))?'':'selected'?> disabled>Pilih Grup...</option>
                                                     <?php foreach ($grp_list as $a): ?>
-                                                        <option value="<?= $a->idgroup ?>"><?= $a->keterangan ?></option>
+                                                        <option value="<?= $a->idgroup ?>" <?=(session()->getFlashdata('idgroup') == $a->idgroup)?'':'selected'?> ><?= $a->keterangan ?></option>
                                                     <?php endforeach ?>
                                                 </select>
                                                 <div class="invalid-feedback">

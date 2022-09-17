@@ -63,44 +63,76 @@ class User extends Controller
 		$pass2 = md5($this->request->getPost('pass2'));
 
 		if ($dataset['instansi'] == "") {
-			$alert = view('partials/notification-alert', 
-				['notif_text' => 'Pilih Institusi terlebih dahulu',
-				 'status' => 'warning']
-				);
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Pilih Institusi terlebih dahulu',
+				 	'status' => 'warning'
+				]
+			);
 			
-			$data_session = [
-				'notif' => $alert,
-				'temp_dat' => $dataset
-			];
-			session()->setFlashdata($data_session);
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('admin/user/add');
+		}
+
+		$cek_username = $this->m_user->countUser($dataset['username'])[0]->hitung;
+
+		if ($cek_username != 0) {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Username Telah Terpakai',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('admin/user/add');
+		}
+
+		$cek_nik = $this->m_user->countNIK($dataset['nik'])[0]->hitung;
+
+		if ($cek_nik != 0) {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'NIK Telah Terdaftar',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
 			return redirect()->to('admin/user/add');
 		}
 
 		if ($dataset['pass'] != $pass2) {
-			$alert = view('partials/notification-alert', 
-				['notif_text' => 'Password tidak cocok',
-				 'status' => 'warning']
-				);
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Password tidak cocok',
+				 	'status' => 'warning'
+				]
+			);
 			
-			$data_session = [
-				'notif' => $alert,
-				'temp_dat' => $dataset
-			];
-			session()->setFlashdata($data_session);
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
 			return redirect()->to('admin/user/add');			
 		}
 
 		if ($dataset['idgroup'] == "") {
-			$alert = view('partials/notification-alert', 
-				['notif_text' => 'Pilih Grup terlebih dahulu',
-				 'status' => 'warning']
-				);
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Pilih Grup terlebih dahulu',
+				 	'status' => 'warning'
+				]
+			);
 			
-			$data_session = [
-				'notif' => $alert,
-				'temp_dat' => $dataset
-			];
-			session()->setFlashdata($data_session);
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
 			return redirect()->to('admin/user/add');
 		}
 
@@ -121,16 +153,86 @@ class User extends Controller
 		
 		$this->m_user->insertUser($dataset);
 		
-		$alert = view('partials/notification-alert', 
-			['notif_text' => 'User berhasil dibuat',
-			 'status' => 'success']
-			);
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'User berhasil dibuat',
+			 	'status' => 'success'
+			]
+		);
 		
 		$data_session = [
 			'notif' => $alert
 		];
 
 		session()->setFlashdata($data_session);
-		return redirect()->to('admin/user');
+		return redirect()->to('admin/user_list');
+	}
+
+	public function flag_switch($iduser = false)
+	{
+		$user = $this->m_user->getUserById($iduser)[0];
+
+		if ($user->user_flag == 0) {
+			
+			if ($user->closebook_param_count == 1) {
+				
+				$this->m_user->aktifkanUser($iduser);
+
+				$alert = view('partials/notification-alert', 
+					[
+						'notif_text' => 'User Diaktifkan',
+					 	'status' => 'success'
+					]
+				);
+				
+				session()->setFlashdata('notif', $alert);
+
+			}elseif ($user->closebook_param_count == 2) {
+
+				$alert = view('partials/notification-alert', 
+					[
+						'notif_text' => 'User Sudah melebihi batas aktivasi',
+						'status' => 'danger'
+					]
+				);
+				
+				session()->setFlashdata('notif', $alert);
+			}
+
+		}elseif ($user->user_flag == 1) {
+
+			$this->m_user->nonaktifkanUser($iduser);
+
+			if ($user->closebook_param_count == 0) {
+				$this->m_user->closebookCount($iduser, 1);
+				
+			}elseif ($user->closebook_param_count == 1) {
+				$this->m_user->closebookCount($iduser, 2);
+			}
+
+
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'User Dinonaktifkan',
+					'status' => 'success'
+				]
+			);
+
+			session()->setFlashdata('notif', $alert);
+		}
+
+		return redirect()->to(base_url('admin/user/list'));
+	}
+
+	public function konfirSwitch()
+	{
+		if ($_POST['rowid']) {
+			$id = $_POST['rowid'];
+			$user = $this->m_user->getUserById($id)[0];
+			$data = ['a' => $user];
+			echo view('admin/user/part-user-mod-switch', $data);
+		}
 	}
 }

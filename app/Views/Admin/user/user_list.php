@@ -59,7 +59,6 @@
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
-                                    
                                     <tbody>
                                         <?php $c = 1?>
                                         <?php foreach ($usr_list as $a) {?>
@@ -72,12 +71,28 @@
                                                 <td><?=($a->user_flag == 1)?'Aktif':'Tidak Aktif'?></td>
                                                 <td><?= $a->group_type ?></td>
                                                 <td align="center">
-                                                    <div class="row">
-                                                        <div class="btn-group d-flex justify-content-center">
-                                                            <a href="" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
-                                                            <a href="" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                                    <?php if ($a->iduser == $duser->iduser) { ?>
+                                                        <div class="row">
+                                                            <div class="btn-group d-flex justify-content-center">
+                                                                <a href="" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
+                                                            </div>
+                                                        </div>                                                        
+                                                    <?php }else{?>
+                                                        <div class="row">
+                                                            <div class="btn-group d-flex justify-content-center">
+                                                                <a href="" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
+                                                                <?php if($a->user_flag == 1){?>
+                                                                    <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
+                                                                        Nonaktifkan
+                                                                    </a>
+                                                                <?php }else{?>
+                                                                    <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
+                                                                        Aktifkan
+                                                                    </a>
+                                                                <?php }?>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    <?php }?>
                                                 </td>
                                             </tr>
                                         <?php $c++; ?>
@@ -103,6 +118,14 @@
 </div>
 <!-- END layout-wrapper -->
 
+<div id="switchUser" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
 
 <?= $this->include('admin/partials/right-sidebar') ?>
 
@@ -116,6 +139,19 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 <script type="text/javascript">
     $('.dtable').DataTable();
+    $(document).ready(function() {
+        $('#switchUser').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/admin/user/switch_user_confirm',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+    });
 </script>
 </body>
 
