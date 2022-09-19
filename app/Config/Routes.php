@@ -37,17 +37,22 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 
 $routes->get('/', 'Login::index');
+$routes->get('registrasi', 'Register::index');
+$routes->post('reg_proc', 'Register::register_proc');
+
 $routes->add('logout', 'Login::logout');
 $routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
 
 //GROUP ADMIN
-$routes->group('admin', static function ($routes){
+$routes->group('admin', static function ($routes)
+{
     
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('profile', 'Admin\Profile::index');
 
     //GROUP KELOLA USER DI ADMIN
-    $routes->group('user', static function ($routes){
+    $routes->group('user', static function ($routes)
+    {
         $routes->get('list', 'Admin\User::list');
         $routes->get('add', 'Admin\User::add_user');
         $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
@@ -60,6 +65,9 @@ $routes->group('admin', static function ($routes){
 //GROUP BENDAHARA
 $routes->group('bendahara', static function ($routes){
     $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
+    $routes->get('profile', 'Bendahara\Profile::index');
+
+    $routes->get('parameter', 'Bendahara\Kelola_param::index');
 
 });
 

@@ -24,6 +24,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'admin_auth' => \App\Filters\AdminFilter::class,
+        'bendahara_auth' => \App\Filters\BendaharaFilter::class,
         'login_auth' => \App\Filters\LoginFilter::class,
     ];
 
@@ -71,11 +72,20 @@ class Filters extends BaseConfig
      * @var array
      */
     public $filters = [
+        'login_auth' => [
+            'before' => [
+                '/',
+                'registrasi',
+                'reg_proc',
+                'logout',
+                'auth'
+            ]
+        ],
         'admin_auth' => [
             'before' => ['admin/*']
         ],
-        'login_auth' => [
-            'before' => ['/']
-        ],
+        'bendahara_auth' => [
+            'before' => ['bendahara/*']
+        ]
     ];
 }

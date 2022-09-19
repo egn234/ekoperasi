@@ -24,6 +24,6 @@ class Profile extends Controller
 			'duser' => $this->account
 		];
 		
-		return view('admin/dashboard', $data);
+		return view('admin/prof/detail', $data);
 	}
 }

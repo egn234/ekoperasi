@@ -5,7 +5,7 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
 
-class AdminFilter implements FilterInterface
+class BendaharaFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
@@ -34,16 +34,16 @@ class AdminFilter implements FilterInterface
 				return redirect()->to('/');
 	    	}
 
-	    	if ($idgroup == 2) {
-	    		return redirect()->to('bendahara/dashboard');
+	    	if ($idgroup == 1) {
+	    		return redirect()->to('admin/dashboard');
 	    	}
 
 	    	if ($idgroup == 3) {
-	    		return redirect()->to('dashboard_ketua');
+	    		return redirect()->to('ketua/dashboard');
 	    	}
 
 	    	if ($idgroup == 4) {
-	    		return redirect()->to('dashboard_anggota');
+	    		return redirect()->to('anggota/dashboard');
 	    	}
 	    }        
     }
