@@ -182,8 +182,8 @@
                                 BERSEDIA MENJADI ANGGOTA KOPERASI KARYAWAN STMB “ GIAT “ DAN SANGGUP MEMATUHI SEGALA PERATURAN YANG BERLAKU DI KOPERASI.
                                 BERSAMA INI SAYA BERSEDIA MEMBAYAR :
                                 <ul>
-                                    <li>1.  IURAN POKOK SEBESAR Rp. 200.000</li>
-                                    <li>2.  IURAN WAJIB SEBESAR Rp. 100.000</li>
+                                    <li>1.  IURAN POKOK SEBESAR Rp. <?= number_format($simp_pokok->nilai, 0, ',', '.')?></li>
+                                    <li>2.  IURAN WAJIB SEBESAR Rp. <?= number_format($simp_wajib->nilai, 0, ',', '.')?></li>
                                 </ul>
                                 DEMIKIAN PERMOHONAN INI SAYA BUAT DENGAN SEBENARNYA TANPA PAKSAAN DARI SIAPAPUN.
                             </p>

@@ -74,13 +74,13 @@
                                                     <?php if ($a->iduser == $duser->iduser) { ?>
                                                         <div class="row">
                                                             <div class="btn-group d-flex justify-content-center">
-                                                                <a href="" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
+                                                                <a href="<?= url_to('admin/profile') ?>" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
                                                             </div>
                                                         </div>                                                        
                                                     <?php }else{?>
                                                         <div class="row">
                                                             <div class="btn-group d-flex justify-content-center">
-                                                                <a href="" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
+                                                                <a href="<?= url_to('user_detail', $a->iduser) ?>" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
                                                                 <?php if($a->user_flag == 1){?>
                                                                     <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
                                                                         Nonaktifkan

@@ -4,19 +4,25 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use App\Models\M_user;
-
+use App\Models\M_param;
 class register extends Controller
 {
 
 	function __construct()
 	{
 		$this->m_user = new M_User();	
+		$this->m_param = new M_param();	
 	}
 
 	public function index()
 	{
+		$simpanan_pokok = $this->m_param->getParamById(1)[0];
+		$simpanan_wajib = $this->m_param->getParamById(2)[0];
+		
 		$data = [
-			'title_meta' => view('partials/title-meta', ['title' => 'Register'])
+			'title_meta' => view('partials/title-meta', ['title' => 'Register']),
+			'simp_pokok' => $simpanan_pokok,
+			'simp_wajib' => $simpanan_wajib
 		];
 		return view('auth-register', $data);		
 	}

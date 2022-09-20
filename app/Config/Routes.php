@@ -51,7 +51,9 @@ $routes->group('admin', static function ($routes)
     $routes->get('profile', 'Admin\Profile::index');
     $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Admin\Profile::update_pass');
-
+    $routes->add('user/(:num)', 'Admin\User::detail_user/$1', ['as' => 'user_detail']);
+    $routes->add('user/update/(:num)', 'Admin\User::update_proc/$1', ['as' => 'update_user']);
+    
     //GROUP KELOLA USER DI ADMIN
     $routes->group('user', static function ($routes)
     {

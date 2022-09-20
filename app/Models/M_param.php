@@ -33,4 +33,10 @@ class M_param extends Model
         $sql = "SELECT * FROM tb_parameter";
         return $this->db->query($sql)->getResult();
     }
+
+    function getParamById($idparam)
+    {
+        $sql = "SELECT * FROM tb_parameter WHERE idparameter = $idparam";
+        return $this->db->query($sql)->getResult();
+    }
 }

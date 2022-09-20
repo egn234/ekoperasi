@@ -77,7 +77,6 @@ class Filters extends BaseConfig
                 '/',
                 'registrasi',
                 'reg_proc',
-                'logout',
                 'auth'
             ]
         ],

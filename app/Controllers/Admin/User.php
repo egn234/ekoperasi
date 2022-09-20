@@ -26,7 +26,7 @@ class User extends Controller
 			'usr_list' => $user_list
 		];
 		
-		echo view('admin/user/user_list', $data);
+		echo view('admin/user/user-list', $data);
 	}
 
 	public function add_user()
@@ -40,7 +40,7 @@ class User extends Controller
 			'grp_list' => $group_list
 		];
 		
-		echo view('admin/user/add_user', $data);
+		echo view('admin/user/add-user', $data);
 	}
 
 	public function add_user_proc()
@@ -167,6 +167,96 @@ class User extends Controller
 
 		session()->setFlashdata($data_session);
 		return redirect()->to('admin/user/list');
+	}
+
+	public function detail_user($iduser = false)
+	{
+		$detail_user = $this->m_user->getUserById($iduser)[0];
+		$group_list = $this->m_group->getAllGroup();
+
+		$data = [
+			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail User']),
+			'page_title' => view('admin/partials/page-title', ['title' => 'Detail User', 'li_1' => 'EKoperasi', 'li_2' => 'User Detail']),
+			'duser' => $this->account,
+			'det_user' => $detail_user,
+			'grp_list' => $group_list
+		];
+		
+		echo view('admin/user/user-detail', $data);
+	}
+
+	public function update_proc($iduser = false)
+	{
+		$old_user = $this->m_user->getUserById($iduser)[0];
+
+		$dataset = [
+			'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
+			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
+			'instansi' => $this->request->getPost('instansi'),
+			'alamat' => $this->request->getPost('alamat'),
+			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
+			'email' => $this->request->getPost('email'),
+			'unit_kerja' => $this->request->getPost('unit_kerja')
+		];
+
+		$new_pass = $this->request->getPost('pass');
+		$cek_pass = $this->request->getPost('pass2');
+
+		if ($new_pass != "" || !is_null($new_pass) )
+		{
+			if (md5($new_pass) == md5($cek_pass)) 
+			{
+				$dataset += ['pass' => md5($new_pass)];
+			}
+			else
+			{
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'konfirmasi password tidak sesuai',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->to('admin/user/'.$iduser);
+			}
+		}
+
+		$img = $this->request->getFile('profil_pic');
+
+		if ($img->isValid())
+		{
+			unlink(ROOTPATH . "public/uploads/user/" . $old_user->username . "/profil_pic/" . $old_user->profil_pic );
+			$newName = $img->getRandomName();
+			$img->move(ROOTPATH . 'public/uploads/user/' . $old_user->username . '/profil_pic/', $newName);
+			$profile_pic = $img->getName();
+			$dataset += ['profil_pic' => $profile_pic];
+		}
+
+		$dataset += ['updated' => date('Y-m-d H:i:s')];
+		
+		$this->m_user->updateUser($iduser, $dataset);
+		
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'data pengguna berhasil diubah',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = [
+			'notif' => $alert
+		];
+
+		session()->setFlashdata($data_session);
+		return redirect()->to('admin/user/'.$iduser);
 	}
 
 	public function flag_switch($iduser = false)

@@ -160,7 +160,7 @@
                                                 <select class="form-select" id="group" name="idgroup" required>
                                                     <option value="" <?=(session()->getFlashdata('idgroup'))?'':'selected'?> disabled>Pilih Grup...</option>
                                                     <?php foreach ($grp_list as $a): ?>
-                                                        <option value="<?= $a->idgroup ?>" <?=(session()->getFlashdata('idgroup') == $a->idgroup)?'':'selected'?> ><?= $a->keterangan ?></option>
+                                                        <option value="<?= $a->idgroup ?>" <?=(session()->getFlashdata('idgroup') == $a->idgroup)?'selected':''?> ><?= $a->keterangan ?></option>
                                                     <?php endforeach ?>
                                                 </select>
                                                 <div class="invalid-feedback">

@@ -10,9 +10,9 @@ class Kelola_param extends Controller
 
 	function __construct()
 	{
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_user = new M_user();
 		$this->m_param = new M_param();
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 
 	public function index()
