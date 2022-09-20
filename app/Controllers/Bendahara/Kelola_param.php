@@ -3,14 +3,16 @@ namespace App\Controllers\Bendahara;
 
 use CodeIgniter\Controller;
 use App\Models\M_user;
+use App\MOdels\M_param;
 
 class Kelola_param extends Controller
 {
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->m_user = new M_user();
+		$this->m_param = new M_param();
 	}
 
 	public function index()

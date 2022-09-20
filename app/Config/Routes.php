@@ -49,6 +49,8 @@ $routes->group('admin', static function ($routes)
     
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('profile', 'Admin\Profile::index');
+    $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
+    $routes->post('profile/edit_pass', 'Admin\Profile::update_pass');
 
     //GROUP KELOLA USER DI ADMIN
     $routes->group('user', static function ($routes)
@@ -63,7 +65,8 @@ $routes->group('admin', static function ($routes)
 });
 
 //GROUP BENDAHARA
-$routes->group('bendahara', static function ($routes){
+$routes->group('bendahara', static function ($routes)
+{
     $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
     $routes->get('profile', 'Bendahara\Profile::index');
 
@@ -72,13 +75,15 @@ $routes->group('bendahara', static function ($routes){
 });
 
 //GROUP KETUA
-$routes->group('ketua', static function ($routes){
+$routes->group('ketua', static function ($routes)
+{
     $routes->get('dashboard', 'Ketua\Dashboard::index', ['as' => 'dashboard_ketua']);
 
 });
 
 //GROUP ANGGOTA
-$routes->group('anggota', static function ($routes){
+$routes->group('anggota', static function ($routes)
+{
     $routes->get('dashboard', 'Anggota\Dashboard::index', ['as' => 'dashboard_anggota']);
 
 });

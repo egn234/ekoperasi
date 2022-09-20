@@ -212,18 +212,17 @@
                                     <div class="card-body">
                                         <div class="mt-4 mt-lg-0">
                                             <h5 class="font-size-14 mb-4">Edit Profil</h5>
-                                            <form action="<? url_to('admin/profile/edit_proc')?>" method="post">
-                                                <?=session()->getFlashdata('notif');?>
+                                            <form action="<?= url_to('admin/profile/edit_proc')?>" method="post" enctype="multipart/form-data">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="full_name">Nama Lengkap <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?=session()->getFlashdata('nama_lengkap')?>" required>
+                                                    <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?= $duser->nama_lengkap ?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="nik_number">NIK <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
+                                                    <label class="form-label" for="nik_number">NIK</label>
+                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $duser->nik?>" name="nik" disabled>
                                                     <div class="invalid-feedback">
                                                         NIK harus 16 digit
                                                     </div>
@@ -232,7 +231,7 @@
                                                     <div class="col-sm-6">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="birthplace">Tempat <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?=session()->getFlashdata('tempat_lahir')?>" required>
+                                                            <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?= $duser->tempat_lahir ?>" required>
                                                             <div class="invalid-feedback">
                                                                 Harus Diisi
                                                             </div>
@@ -241,7 +240,7 @@
                                                     <div class="col-sm-6">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="birthday">Tanggal Lahir<span class="text-danger">*</span></label>
-                                                            <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?=session()->getFlashdata('tanggal_lahir')?>" required>
+                                                            <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?= date('Y-m-d', strtotime($duser->tanggal_lahir)) ?>" required>
                                                             <div class="invalid-feedback">
                                                                 Harus Diisi
                                                             </div>
@@ -251,13 +250,13 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="institution">Institusi <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="institution" name="instansi" required>
-                                                        <option value="" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Institusi...</option>
-                                                        <option value="YPT" <?=(session()->getFlashdata('instansi') == 'YPT')?'selected':''?> >YPT</option>
-                                                        <option value="Telkom University" <?=(session()->getFlashdata('instansi') == 'Telkom University')?'selected':''?> >Telkom University</option>
-                                                        <option value="Trengginas Jaya" <?=(session()->getFlashdata('instansi') == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
-                                                        <option value="BUT" <?=(session()->getFlashdata('instansi') == 'BUT')?'selected':''?> >BUT</option>
-                                                        <option value="Telkom" <?=(session()->getFlashdata('instansi') == 'Telkom')?'selected':''?> >Telkom</option>
-                                                        <option value="GIAT" <?=(session()->getFlashdata('instansi') == 'GIAT')?'selected':''?> >GIAT</option>
+                                                        <option value="" <?=($duser->instansi)?'':'selected'?> disabled>Pilih Institusi...</option>
+                                                        <option value="YPT" <?=($duser->instansi == 'YPT')?'selected':''?> >YPT</option>
+                                                        <option value="Telkom University" <?=($duser->instansi == 'Telkom University')?'selected':''?> >Telkom University</option>
+                                                        <option value="Trengginas Jaya" <?=($duser->instansi == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
+                                                        <option value="BUT" <?=($duser->instansi == 'BUT')?'selected':''?> >BUT</option>
+                                                        <option value="Telkom" <?=($duser->instansi == 'Telkom')?'selected':''?> >Telkom</option>
+                                                        <option value="GIAT" <?=($duser->instansi == 'GIAT')?'selected':''?> >GIAT</option>
                                                     </select>
                                                     <div class="invalid-feedback">
                                                         Pilih Terlebih dahulu
@@ -265,56 +264,42 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="address" name="alamat" value="<?=session()->getFlashdata('alamat')?>" required>
+                                                    <input type="text" class="form-control" id="address" name="alamat" value="<?= $duser->alamat ?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="phone_number">No. Telepon / WA <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="phone_number" name="nomor_telepon" value="<?=session()->getFlashdata('nomor_telepon')?>" required>
+                                                    <input type="number" class="form-control" id="phone_number" name="nomor_telepon" value="<?= $duser->nomor_telepon ?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="email_addr">Email <span class="text-danger">*</span></label>
-                                                    <input type="email" class="form-control" id="email_addr" name="email" value="<?=session()->getFlashdata('email')?>" required>
+                                                    <input type="email" class="form-control" id="email_addr" name="email" value="<?= $duser->email ?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?=session()->getFlashdata('unit_kerja')?>" required>
+                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?= $duser->unit_kerja?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" required>
+                                                    <input type="text" class="form-control" id="username" name="username" value="<?= $duser->username?>" disabled>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
-                                                    <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
-                                                    <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
                                                     <label class="form-label" for="profile_pic">Foto Profil</label>
-                                                    <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
+                                                    <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg">
                                                 </div>
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
@@ -334,7 +319,7 @@
                                     <div class="card-body">
                                         <div class="mt-4 mt-lg-0">
                                             <h5 class="font-size-14 mb-4">Ubah Password</h5>
-                                            <form action="<?=base_url()?>/pengelola/profile/update_pass/<?=$duser->iduser?>" method="post">
+                                            <form action="<?=url_to('admin/profile/edit_pass') ?>" method="post">
 
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Lama</label>
@@ -346,14 +331,14 @@
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Baru</label>
                                                     <div class="col-sm-9">
-                                                        <input type="password" name="new_pass" class="form-control" id="horizontal-password-input" required>
+                                                        <input type="password" name="pass" class="form-control" id="horizontal-password-input" required>
                                                     </div>
                                                 </div>
 
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Ulang Password Baru</label>
                                                     <div class="col-sm-9">
-                                                        <input type="password" name="auth_pass" class="form-control" id="horizontal-password-input" required>
+                                                        <input type="password" name="pass2" class="form-control" id="horizontal-password-input" required>
                                                     </div>
                                                 </div>
 
@@ -396,7 +381,7 @@
 <!-- JAVASCRIPT -->
 <?= $this->include('admin/partials/vendor-scripts') ?>
 
-<script src="<?=base_url()?>/assets/minia/assets/js/app.js"></script>
+<script src="<?=base_url()?>/assets/js/app.js"></script>
 
 </body>
 

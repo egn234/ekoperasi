@@ -64,7 +64,8 @@ class M_user extends Model
                 tb_user.created AS user_created, 
                 tb_user.updated AS user_updated, 
                 closebook_request, 
-                closebook_request_date, 
+                closebook_request_date,
+                closebook_last_updated, 
                 closebook_param_count, 
                 tb_user.flag AS user_flag, 
                 idgroup,
@@ -97,6 +98,7 @@ class M_user extends Model
                 tb_user.updated AS user_updated, 
                 closebook_request, 
                 closebook_request_date, 
+                closebook_last_updated, 
                 closebook_param_count, 
                 tb_user.flag AS user_flag, 
                 idgroup,
@@ -110,6 +112,12 @@ class M_user extends Model
         return $this->db->query($sql)->getResult();
     }
 
+    function getPassword($iduser)
+    {
+        $sql = "SELECT pass FROM tb_user WHERE iduser = $iduser";
+        return $this->db->query($sql)->getResult();
+    }
+
     function countUsername($username)
     {
         $sql = "SELECT count(iduser) as hitung FROM tb_user WHERE username = '$username'";
@@ -120,6 +128,13 @@ class M_user extends Model
     {
       $builder = $this->db->table('tb_user');
       $builder->insert($data);
+    }
+
+    function updateUser($iduser, $dataset)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->where('iduser', $iduser);
+        $builder->update($dataset);
     }
 
     function aktifkanUser($iduser)
