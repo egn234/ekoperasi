@@ -38,9 +38,17 @@
                                         <h4 class="card-title">Daftar user yang terdaftar</h4>
                                     </div>
                                     <div class="col-sm-6">
-                                        <a href="<?= url_to('admin/user/add') ?>" class="btn btn-primary float-end">
-                                            Tambah user baru
-                                        </a>
+                                        <div class="btn-group float-end">
+                                            <a href="<?= url_to('admin/user/add') ?>" class="btn btn-primary">
+                                                Tambah User Baru
+                                            </a>
+                                            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#upload_sheet">
+                                                Impor User
+                                            </a>
+                                            <a class="btn btn-success" href="<?= url_to('admin/user/export_table') ?>" target="_blank">
+                                                Ekspor user
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -126,6 +134,28 @@
     </div>
 </div><!-- /.modal -->
 
+<div id="upload_sheet" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Import User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<?=url_to('admin/user/tab_upload')?>" id="formSheet" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="sheet_upload">File Spreadsheet (.xls .xlsx .csv) <i>*<a href="<?=base_url()?>/assets/import_format.xlsx" target="_blank">Klik disini untuk mengunduh format template</a></i></label>
+                        <input type="file" class="form-control" name="file_import" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" form="formSheet" class="btn btn-success">Import</button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 <?= $this->include('admin/partials/right-sidebar') ?>
 

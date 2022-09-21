@@ -62,6 +62,8 @@ $routes->group('admin', static function ($routes)
         $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
         $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
         $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
+        $routes->post('tab_upload', 'Admin\User::get_table_upload');
+        $routes->get('export_table', 'Admin\User::export_table');
     });
 
 });
@@ -73,6 +75,8 @@ $routes->group('bendahara', static function ($routes)
     $routes->get('profile', 'Bendahara\Profile::index');
 
     $routes->get('parameter', 'Bendahara\Kelola_param::index');
+    $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');
+    $routes->post('parameter/set_param_oth', 'Bendahara\Kelola_param::set_param_other');
 
 });
 

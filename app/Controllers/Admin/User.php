@@ -1,6 +1,8 @@
 <?php 
 namespace App\Controllers\Admin;
 
+require_once ROOTPATH.'vendor/autoload.php';
+
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_group;
@@ -11,7 +13,6 @@ class User extends Controller
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->m_group = new M_group();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 
@@ -41,6 +42,151 @@ class User extends Controller
 		];
 		
 		echo view('admin/user/add-user', $data);
+	}
+
+	public function get_table_upload()
+	{
+		$table_file = $this->request->getFile('file_import');
+		
+		if ($table_file->isValid()) 
+		{
+			$ext = $table_file->guessExtension();
+			$filepath = WRITEPATH.'uploads/'.$table_file->store();
+			
+			if ($ext == 'csv') {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+			}
+			elseif($ext == 'xlsx' || $ext == 'xls'){
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			}
+
+			$reader->setReadDataOnly(true);
+			$reader->setReadEmptyCells(false);
+			$spreadsheet = $reader->load($filepath);
+			$err_count = 0;
+			$baris_proc = 0;
+
+			foreach ($spreadsheet->getWorksheetIterator() as $cell)
+			{
+				$baris = $cell->getHighestRow();
+				$kolom = $cell->getHighestColumn();
+
+				for ($i=2; $i <= $baris; $i++)
+				{ 
+					$dataset = [
+						'username' => $cell->getCellByColumnAndRow(1, $i)->getValue(),
+						'pass' => md5($cell->getCellByColumnAndRow(2, $i)->getValue()),
+						'nik' => $cell->getCellByColumnAndRow(3, $i)->getValue(),
+						'nama_lengkap' => $cell->getCellByColumnAndRow(4, $i)->getValue(),
+						'tempat_lahir' => $cell->getCellByColumnAndRow(5, $i)->getValue(),
+						'tanggal_lahir' => $cell->getCellByColumnAndRow(6, $i)->getValue(),
+						'alamat' => $cell->getCellByColumnAndRow(7, $i)->getValue(),
+						'instansi' => $cell->getCellByColumnAndRow(8, $i)->getValue(),
+						'unit_kerja' => $cell->getCellByColumnAndRow(9, $i)->getValue(),
+						'nomor_telepon' => $cell->getCellByColumnAndRow(10, $i)->getValue(),
+						'email' => $cell->getCellByColumnAndRow(11, $i)->getValue()
+					];
+
+					$cek_username = $this->m_user->countUsername($dataset['username'])[0]->hitung;
+					if ($cek_username == 0)
+					{
+						$cek_nik = $this->m_user->countNIK($dataset['nik'])[0]->hitung;
+						if ($cek_nik == 0)
+						{
+							$dataset += [
+								'profil_pic' => 'image.jpg',
+								'created' => date('Y-m-d H:i:s'),
+								'closebook_param_count' => 0,
+								'flag' => 1,
+								'idgroup' => 4
+							];
+
+							$this->m_user->insertUser($dataset);
+						}
+						else
+						{
+							$err_count++;
+						}
+					}
+					else
+					{
+						$err_count++;
+					}
+					$baris_proc++;
+				}
+			}
+
+			$total_count = $baris_proc - $err_count;
+
+			if ($err_count > 0 && $total_count != 0) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Berhasil mengimpor beberapa data user ('.$total_count.' berhasil, '.$err_count.' gagal)',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+			}
+			elseif ($err_count == $baris_proc) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal mengimpor data user ('.($total_count).' berhasil, '.$err_count.' gagal)',
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];	
+			}
+			elseif ($err_count == 0) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Berhasil mengimpor data user ('.$total_count.' berhasil, '.$err_count.' gagal)',
+					 	'status' => 'success'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+			}
+				
+			unlink($filepath);
+			session()->setFlashdata($data_session);
+			return redirect()->to('admin/user/list');
+		}
+		else
+		{
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Upload gagal',
+				 	'status' => 'danger'
+				]
+			);
+			
+			$dataset = ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('admin/user/list');
+		}
+	}
+
+	public function export_table()
+	{
+		$user_list = $this->m_user->getAllUser();
+		$data = [
+			'page_title' => 'Ekspor',
+			'usr_list' => $user_list
+		];
+
+		echo view('admin/user/export-user', $data);
 	}
 
 	public function add_user_proc()
