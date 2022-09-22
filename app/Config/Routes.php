@@ -48,9 +48,11 @@ $routes->group('admin', static function ($routes)
 {
     
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
+    
     $routes->get('profile', 'Admin\Profile::index');
     $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Admin\Profile::update_pass');
+    
     $routes->add('user/(:num)', 'Admin\User::detail_user/$1', ['as' => 'user_detail']);
     $routes->add('user/update/(:num)', 'Admin\User::update_proc/$1', ['as' => 'update_user']);
     
@@ -59,11 +61,13 @@ $routes->group('admin', static function ($routes)
     {
         $routes->get('list', 'Admin\User::list');
         $routes->get('add', 'Admin\User::add_user');
+        $routes->get('export_table', 'Admin\User::export_table');
+       
         $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
-        $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
         $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
         $routes->post('tab_upload', 'Admin\User::get_table_upload');
-        $routes->get('export_table', 'Admin\User::export_table');
+        
+        $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
     });
 
 });
@@ -72,7 +76,10 @@ $routes->group('admin', static function ($routes)
 $routes->group('bendahara', static function ($routes)
 {
     $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
+    
     $routes->get('profile', 'Bendahara\Profile::index');
+    $routes->post('profile/edit_proc', 'Bendahara\Profile::update_proc');
+    $routes->post('profile/edit_pass', 'Bendahara\Profile::update_pass');
 
     $routes->get('parameter', 'Bendahara\Kelola_param::index');
     $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');

@@ -13,6 +13,7 @@ class User extends Controller
 	function __construct()
 	{
 		$this->m_user = new M_user();
+		$this->m_group = new M_group();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 

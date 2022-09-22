@@ -3,7 +3,7 @@
         <div class="d-flex">
             <!-- LOGO -->
             <div class="navbar-brand-box">
-                <a href="<?= url_to('dashboard_bendahara')?>" class="logo logo-dark">
+                <a href="<?= url_to('dashboard_admin')?>" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="<?=base_url()?>/assets/images/logo-sm.svg" alt="" height="24">
                     </span>
@@ -12,7 +12,7 @@
                     </span>
                 </a>
 
-                <a href="<?= url_to('dashboard_bendahara')?>" class="logo logo-light">
+                <a href="<?= url_to('dashboard_admin')?>" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="<?=base_url()?>/assets/images/logo-sm.svg" alt="" height="24">
                     </span>
@@ -39,13 +39,13 @@
 
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item bg-soft-light border-start border-end" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="<?=base_url()?>/uploads/user/<?=$duser->username?>/profil_pic/<?=$duser->profil_pic?>" alt="Header Avatar">
+                    <img class="rounded-circle header-profile-user" src="<?=base_url()?>/uploads/user/<?= $duser->username ?>/profil_pic/<?= $duser->profil_pic ?>" alt="Header Avatar">
                     <span class="d-none d-xl-inline-block ms-1 fw-medium"><?=$duser->nama_lengkap?></span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item" href="<?= url_to('bendahara/profile')?>"><i class="mdi mdi-face-profile font-size-16 align-middle me-1"></i> Profil</a>
+                    <a class="dropdown-item" href="<?= url_to('admin/profile')?>"><i class="mdi mdi-face-profile font-size-16 align-middle me-1"></i> Profil</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?= url_to('logout')?>"><i class="mdi mdi-logout font-size-16 align-middle me-1"></i>Logout</a>
                 </div>

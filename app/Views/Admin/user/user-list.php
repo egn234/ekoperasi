@@ -145,7 +145,7 @@
                 <form action="<?=url_to('admin/user/tab_upload')?>" id="formSheet" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="sheet_upload">File Spreadsheet (.xls .xlsx .csv) <i>*<a href="<?=base_url()?>/assets/import_format.xlsx" target="_blank">Klik disini untuk mengunduh format template</a></i></label>
-                        <input type="file" class="form-control" name="file_import" required>
+                        <input type="file" class="form-control" name="file_import" accept=".csv, .xls, .xlsx" required>
                     </div>
                 </form>
             </div>
