@@ -3,7 +3,8 @@ namespace App\Controllers\Bendahara;
 
 use CodeIgniter\Controller;
 use App\Models\M_user;
-use App\MOdels\M_param;
+use App\Models\M_param;
+use App\Models\M_param_hist;
 
 class Kelola_param extends Controller
 {
@@ -12,6 +13,7 @@ class Kelola_param extends Controller
 	{
 		$this->m_user = new M_user();
 		$this->m_param = new M_param();
+		$this->m_param_hist = new M_param_hist();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 
@@ -38,7 +40,21 @@ class Kelola_param extends Controller
 		$nilai =  $_POST['param_nilai_simp'];
 
 		for ($i = 0; $i < $count_param; $i++){
-			$this->m_param->updateParamSimp($idparameter[$i], $nilai[$i], date('Y-m-d H:i:s'));
+			
+			$temp = $this->m_param->getParamById($idparameter[$i])[0];
+
+			if ($temp->nilai != $nilai[$i]) {
+				$history = [
+					'parameter' => $temp->parameter,
+					'nilai' => $temp->nilai,
+					'deskripsi' => $temp->deskripsi,
+					'update_date' => date('Y-m-d H:i:s'),
+					'idparameter' => $temp->idparameter
+				];
+				
+				$this->m_param_hist->insertParamHist($history);
+				$this->m_param->updateParamSimp($idparameter[$i], $nilai[$i], date('Y-m-d H:i:s'));
+			}
 		}
 
 		$alert = view(
@@ -61,7 +77,21 @@ class Kelola_param extends Controller
 		$nilai =  $_POST['param_nilai_oth'];
 
 		for ($i = 0; $i < $count_param; $i++){
-			$this->m_param->updateParamSimp($idparameter[$i], $nilai[$i], date('Y-m-d H:i:s'));
+
+			$temp = $this->m_param->getParamById($idparameter[$i])[0];
+
+			if ($temp->nilai != $nilai[$i]) {
+				$history = [
+					'parameter' => $temp->parameter,
+					'nilai' => $temp->nilai,
+					'deskripsi' => $temp->deskripsi,
+					'update_date' => date('Y-m-d H:i:s'),
+					'idparameter' => $temp->idparameter
+				];
+				
+				$this->m_param_hist->insertParamHist($history);
+				$this->m_param->updateParamSimp($idparameter[$i], $nilai[$i], date('Y-m-d H:i:s'));
+			}
 		}
 
 		$alert = view(
