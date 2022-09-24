@@ -1,6 +1,6 @@
 <?php 
 
-namespace App\Controllers\Bendahara;
+namespace App\Controllers\Anggota;
 
 use CodeIgniter\Controller;
 use App\Models\M_user;
@@ -19,12 +19,12 @@ class Profile extends Controller
 	public function index()
 	{
 		$data = [
-			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Profile']),
-			'page_title' => view('bendahara/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Profile']),
+			'page_title' => view('anggota/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
 			'duser' => $this->account
 		];
 		
-		return view('bendahara/prof/prof-detail', $data);
+		return view('anggota/prof/prof-detail', $data);
 	}
 
 	public function update_proc()
@@ -69,7 +69,7 @@ class Profile extends Controller
 		];
 
 		session()->setFlashdata($data_session);
-		return redirect()->to('bendahara/profile');
+		return redirect()->to('anggota/profile');
 	}
 
 	public function update_pass()
@@ -93,7 +93,7 @@ class Profile extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('bendahara/profile');
+			return redirect()->to('anggota/profile');
 		}
 
 		if ($pass != $pass2)
@@ -108,7 +108,7 @@ class Profile extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('bendahara/profile');
+			return redirect()->to('anggota/profile');
 		}
 
 		$dataset = ['pass' => $pass];
@@ -125,6 +125,6 @@ class Profile extends Controller
 		
 		$dataset += ['notif' => $alert];
 		session()->setFlashdata($dataset);
-		return redirect()->to('bendahara/profile');
+		return redirect()->to('anggota/profile');
 	}
 }

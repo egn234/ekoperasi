@@ -1,21 +1,21 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->include('anggota/partials/head-main') ?>
 
 <head>
 
     <?= $title_meta ?>
 
-    <?= $this->include('admin/partials/head-css') ?>
+    <?= $this->include('anggota/partials/head-css') ?>
 
 </head>
 
-<?= $this->include('admin/partials/body') ?>
+<?= $this->include('anggota/partials/body') ?>
 
 <!-- <body data-layout="horizontal"> -->
 
 <!-- Begin page -->
 <div id="layout-wrapper">
 
-    <?= $this->include('admin/partials/menu') ?>
+    <?= $this->include('anggota/partials/menu') ?>
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -368,7 +368,7 @@
         <!-- End Page-content -->
 
 
-        <?= $this->include('admin/partials/footer') ?>
+        <?= $this->include('anggota/partials/footer') ?>
     </div>
     <!-- end main content-->
 
@@ -376,10 +376,10 @@
 <!-- END layout-wrapper -->
 
 
-<?= $this->include('admin/partials/right-sidebar') ?>
+<?= $this->include('anggota/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->
-<?= $this->include('admin/partials/vendor-scripts') ?>
+<?= $this->include('anggota/partials/vendor-scripts') ?>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 

@@ -10,9 +10,16 @@
                 <li class="menu-title" data-key="t-menu">Menu</li>
 
                 <li>
-                    <a href="<?= url_to('dashboard_admin') ?>">
+                    <a href="<?= url_to('anggota/dashboard') ?>">
                         <i data-feather="home"></i>
                         <span data-key="t-dashboard">Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?= url_to('anggota/deposit/list') ?>">
+                        <i data-feather="dollar-sign"></i>
+                        <span data-key="t-mutasi">Mutasi</span>
                     </a>
                 </li>
 <!--

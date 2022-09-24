@@ -25,7 +25,9 @@ class Filters extends BaseConfig
         'secureheaders' => SecureHeaders::class,
         'admin_auth' => \App\Filters\AdminFilter::class,
         'bendahara_auth' => \App\Filters\BendaharaFilter::class,
-        'login_auth' => \App\Filters\LoginFilter::class,
+        'ketua_auth' => \App\Filters\KetuaFilter::class,
+        'anggota_auth' => \App\Filters\AnggotaFilter::class,
+        'login_auth' => \App\Filters\LoginFilter::class
     ];
 
     /**
@@ -85,6 +87,12 @@ class Filters extends BaseConfig
         ],
         'bendahara_auth' => [
             'before' => ['bendahara/*']
+        ],
+        'ketua_auth' => [
+            'before' => ['ketua/*']
+        ],
+        'anggota_auth' => [
+            'before' => ['anggota/*']
         ]
     ];
 }

@@ -48,8 +48,8 @@ $routes->group('admin', static function ($routes)
 {
     
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
-    
     $routes->get('profile', 'Admin\Profile::index');
+    
     $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Admin\Profile::update_pass');
     
@@ -97,8 +97,22 @@ $routes->group('ketua', static function ($routes)
 //GROUP ANGGOTA
 $routes->group('anggota', static function ($routes)
 {
-    $routes->get('dashboard', 'Anggota\Dashboard::index', ['as' => 'dashboard_anggota']);
+    $routes->get('dashboard', 'Anggota\Dashboard::index');
+    
+    $routes->get('profile', 'Anggota\Profile::index');
+    $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
+    $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
 
+    $routes->group('deposit', static function ($routes)
+    {
+        $routes->get('list', 'Anggota\Deposits::index');
+       
+        $routes->post('add_req', 'Anggota\Deposits::add_proc');
+        $routes->post('detail_mutasi', 'Anggota\Deposits::detail_mutasi');
+        $routes->post('up_mutasi', 'Anggota\Deposits::up_mutasi');
+
+        $routes->add('upload_bukti_transfer/(:num)', 'Anggota\Deposits::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
+    });
 });
 
 /*

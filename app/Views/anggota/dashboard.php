@@ -1,4 +1,4 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->include('anggota/partials/head-main') ?>
 
 <head>
 
@@ -6,16 +6,16 @@
 
     <link href="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
 
-    <?= $this->include('admin/partials/head-css') ?>
+    <?= $this->include('anggota/partials/head-css') ?>
 
 </head>
 
-<?= $this->include('admin/partials/body') ?>
+<?= $this->include('anggota/partials/body') ?>
 
 <!-- Begin page -->
 <div id="layout-wrapper">
 
-    <?= $this->include('admin/partials/menu') ?>
+    <?= $this->include('anggota/partials/menu') ?>
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -1544,16 +1544,16 @@
         </div>
         <!-- End Page-content -->
 
-        <?= $this->include('admin/partials/footer') ?>
+        <?= $this->include('anggota/partials/footer') ?>
     </div>
     <!-- end main content-->
 
 </div>
 <!-- END layout-wrapper -->
 
-<?= $this->include('admin/partials/right-sidebar') ?>
+<?= $this->include('anggota/partials/right-sidebar') ?>
 
-<?= $this->include('admin/partials/vendor-scripts') ?>
+<?= $this->include('anggota/partials/vendor-scripts') ?>
 
 <!-- apexcharts -->
 <script src="<?=base_url()?>/assets/libs/apexcharts/apexcharts.min.js"></script>

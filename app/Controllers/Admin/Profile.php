@@ -24,7 +24,7 @@ class Profile extends Controller
 			'duser' => $this->account
 		];
 		
-		return view('admin/prof/detail', $data);
+		return view('admin/prof/prof-detail', $data);
 	}
 
 	public function update_proc()

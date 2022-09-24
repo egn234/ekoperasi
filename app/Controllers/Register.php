@@ -124,7 +124,7 @@ class register extends Controller
 		
 		if ($img->isValid()) {
 			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/ ' . $dataset['username'] . '/profil_pic/', $newName);
+			$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
 			$profile_pic = $img->getName();
 			$dataset += ['profil_pic' => $profile_pic];
 		}
