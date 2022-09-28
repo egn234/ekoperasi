@@ -43,7 +43,7 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <h4 class="card-title">Daftar user yang terdaftar</h4>
+                                        <h4 class="card-title">Daftar Pengajuan Simpanan</h4>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="btn-group float-end">
@@ -60,7 +60,7 @@
                                     <thead>
                                         <th width="5%">No</th>
                                         <th>Jenis Pengajuan</th>
-                                        <th>Jenis Mutasi</th>
+                                        <th>Jenis Simpanan</th>
                                         <th>Nilai</th>
                                         <th>Status</th>
                                         <th>Tanggal Pengajuan</th>

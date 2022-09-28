@@ -21,8 +21,8 @@ class Deposits extends Controller
 		$total_saldo = $this->m_deposit->getSaldoByUserId($this->account->iduser)[0]->saldo;
 
 		$data = [
-			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Dashboard']),
-			'page_title' => view('anggota/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
+			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Simpanan']),
+			'page_title' => view('anggota/partials/page-title', ['title' => 'Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Simpanan']),
 			'duser' => $this->account,
 			'deposit_list' => $depo_list,
 			'total_saldo' => $total_saldo

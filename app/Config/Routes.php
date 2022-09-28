@@ -70,6 +70,22 @@ $routes->group('admin', static function ($routes)
         $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
     });
 
+    //GRUP DAFTAR SIMPANAN
+    $routes->group('deposit', static function ($routes)
+    {
+        $routes->get('list', 'Admin\Deposits::index');
+        $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
+
+        $routes->add('user/(:num)', 'Admin\Deposits::detail_anggota/$1', ['as' => 'anggota_detail']);
+        $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
+        $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
+        $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'admin_set_parameter_manasuka']);
+        
+        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
+        $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
+        
+    });
+
 });
 
 //GROUP BENDAHARA
@@ -103,6 +119,7 @@ $routes->group('anggota', static function ($routes)
     $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
 
+    //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)
     {
         $routes->get('list', 'Anggota\Deposits::index');
