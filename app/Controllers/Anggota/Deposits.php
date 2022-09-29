@@ -4,6 +4,7 @@ namespace App\Controllers\Anggota;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_deposit;
+use App\Models\M_param_manasuka;
 
 class Deposits extends Controller
 {
@@ -13,19 +14,28 @@ class Deposits extends Controller
 		$this->m_user = new M_user();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
+		$this->m_param_manasuka = new M_param_manasuka();
 	}
 
 	public function index()
 	{
 		$depo_list = $this->m_deposit->getDepositByUserId($this->account->iduser);
-		$total_saldo = $this->m_deposit->getSaldoByUserId($this->account->iduser)[0]->saldo;
+
+		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
+	
+		$param_manasuka = $this->m_param_manasuka->getParamByUserId($this->account->iduser);
 
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Simpanan']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Simpanan']),
 			'duser' => $this->account,
 			'deposit_list' => $depo_list,
-			'total_saldo' => $total_saldo
+			'total_saldo_wajib' => $total_saldo_wajib,
+			'total_saldo_pokok' => $total_saldo_pokok,
+			'total_saldo_manasuka' => $total_saldo_manasuka,
+			'param_manasuka' => $param_manasuka
 		];
 		
 		return view('anggota/deposit/deposit-list', $data);

@@ -108,14 +108,43 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <h4 class="card-title">Saldo Simpanan</h4>
+                                        <h4 class="card-title">Detail Simpanan</h4>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <p>
-                                    <?= $total_saldo ?>
-                                </p>
+                                <div class="mb-3">
+                                    <h5 class="font-size-15">Saldo Simpanan Wajib:</h5>
+                                    <div class="text-muted h3">
+                                        Rp <?=number_format($total_saldo_wajib, 2, ',','.')?>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <h5 class="font-size-15">Saldo Simpanan Pokok:</h5>
+                                    <div class="text-muted h3">
+                                        Rp <?=number_format($total_saldo_pokok, 2, ',','.')?>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <h5 class="font-size-15">Saldo Simpanan Manasuka:</h5>
+                                    <div class="text-muted h3">
+                                        Rp <?=number_format($total_saldo_manasuka, 2, ',','.')?>
+                                    </div>
+                                </div>
+                                <hr>
+                                <hr>
+                                <div class="mb-3">
+                                    <h5 class="font-size-15">Pascabayar Manasuka:</h5>
+                                    <div class="text-muted h3">
+                                        <?php if (!$param_manasuka) {
+                                            echo 'Parameter belum di set';
+                                        }else{?>
+                                            Rp <?=number_format($param_manasuka[0]->nilai, 2, ',','.')?>
+                                        <?php }?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- end col -->
