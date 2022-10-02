@@ -119,7 +119,14 @@ class Deposits extends Controller
 
 	public function konfirmasi_mutasi($iddeposit = false)
 	{
-		$this->m_deposit->setStatus($iddeposit, 'diterima');
+
+		$dataset = [
+			'idadmin' => $this->account,
+			'status' => 'diterima',
+			'date_updated' => date('Y-m-d H:i:s')
+		];
+
+		$this->m_deposit->setStatus($iddeposit, $dataset);
 		
 		$alert = view(
 			'partials/notification-alert', 
@@ -129,8 +136,8 @@ class Deposits extends Controller
 			]
 		);
 		
-		$dataset = ['notif' => $alert];
-		session()->setFlashdata($dataset);
+		$data_session = ['notif' => $alert];
+		session()->setFlashdata($data_session);
 		return redirect()->back();
 	}
 

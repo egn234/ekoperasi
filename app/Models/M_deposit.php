@@ -134,12 +134,10 @@ class m_deposit extends Model
         $builder->update();
     }
     
-    function setStatus($iddeposit, $status)
+    function setStatus($iddeposit, $dataset)
     {
         $builder = $this->db->table('tb_deposit');
-        $builder->set('status', $status);
-        $builder->set('date_updated', date('Y-m-d H:i:s'));
         $builder->where('iddeposit', $iddeposit);
-        $builder->update();
+        $builder->update($dataset);
     }
 }
