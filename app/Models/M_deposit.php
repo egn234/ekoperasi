@@ -60,6 +60,12 @@ class m_deposit extends Model
         return $this->db->query($sql)->getResult();    
     }
 
+    function getInitialDeposit($iduser)
+    {
+        $sql = "SELECT * FROM tb_deposit WHERE idanggota = $iduser AND deskripsi = 'biaya awal registrasi'";
+        return $this->db->query($sql)->getResult();
+    }
+
     function getDepositById($iddeposit)
     {
         $sql = "
@@ -137,7 +143,8 @@ class m_deposit extends Model
     function setStatus($iddeposit, $dataset)
     {
         $builder = $this->db->table('tb_deposit');
+        $builder->set($dataset);
         $builder->where('iddeposit', $iddeposit);
-        $builder->update($dataset);
+        $builder->update();
     }
 }

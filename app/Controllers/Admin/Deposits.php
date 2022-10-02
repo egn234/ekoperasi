@@ -121,7 +121,7 @@ class Deposits extends Controller
 	{
 
 		$dataset = [
-			'idadmin' => $this->account,
+			'idadmin' => $this->account->iduser,
 			'status' => 'diterima',
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -143,7 +143,14 @@ class Deposits extends Controller
 
 	public function batalkan_mutasi($iddeposit = false)
 	{
-		$this->m_deposit->setStatus($iddeposit, 'ditolak');
+
+		$dataset = [
+			'idadmin' => $this->account->iduser,
+			'status' => 'ditolak',
+			'date_updated' => date('Y-m-d H:i:s')
+		];
+
+		$this->m_deposit->setStatus($iddeposit, $dataset);;
 		
 		$alert = view(
 			'partials/notification-alert', 

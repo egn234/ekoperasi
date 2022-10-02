@@ -27,11 +27,23 @@
                 </td>
             </tr>
             <tr>
+                <td>Deskripsi Pengajuan</td>
+                <td>:</td>
+                <td><?=$a->deskripsi?></td>
+            </tr>
+            <tr>
                 <td>Status</td>
                 <td>:</td>
                 <td><?=$a->status?></td>
             </tr>
+            <?php if($a->status != 'diproses'){?>
             <tr>
+                <td>Telah diproses oleh</td>
+                <td>:</td>
+                <td><?=$a->nama_admin?></td>
+            </tr>
+            <?php }?>
+            <tr style=" vertical-align: top;">
                 <td>Bukti transfer</td>
                 <td>:</td>
                 <td>
@@ -42,13 +54,6 @@
                     <?php }?>
                 </td>
             </tr>
-            <?php if($a->status != 'diproses'){?>
-            <tr>
-                <td>Telah diproses oleh</td>
-                <td>:</td>
-                <td><?=$a->nama_admin?></td>
-            </tr>
-            <?php }?>
         </table>
     </div>
 </div>

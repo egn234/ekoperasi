@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_param;
+use App\Models\M_deposit;
 class register extends Controller
 {
 
@@ -12,6 +13,7 @@ class register extends Controller
 	{
 		$this->m_user = new M_User();	
 		$this->m_param = new M_param();	
+		$this->m_deposit = new M_deposit();	
 	}
 
 	public function index()
@@ -136,6 +138,36 @@ class register extends Controller
 		];
 		
 		$this->m_user->insertUser($dataset);
+
+		$iduser_new = $this->m_user->getUser($dataset['username'])[0]->iduser;
+		$simp_pokok = $this->m_param->getParamById(1)[0]->nilai;
+		$simp_wajib = $this->m_param->getParamById(2)[0]->nilai;
+
+		$data_pokok = [
+			'jenis_pengajuan' => 'penyimpanan',
+			'jenis_deposit' => 'pokok',
+			'cash_in' => $simp_pokok,
+			'cash_out' => 0,
+			'deskripsi' => 'biaya awal registrasi',
+			'status' => 'diproses',
+			'date_created' => date('Y-m-d H:i:s'),
+			'idanggota' => $iduser_new
+		];
+
+		$this->m_deposit->insertDeposit($data_pokok);
+
+		$data_wajib = [
+			'jenis_pengajuan' => 'penyimpanan',
+			'jenis_deposit' => 'wajib',
+			'cash_in' => $simp_wajib,
+			'cash_out' => 0,
+			'deskripsi' => 'biaya awal registrasi',
+			'status' => 'diproses',
+			'date_created' => date('Y-m-d H:i:s'),
+			'idanggota' => $iduser_new
+		];
+
+		$this->m_deposit->insertDeposit($data_wajib);
 		
 		$alert = view(
 			'partials/notification-alert', 
