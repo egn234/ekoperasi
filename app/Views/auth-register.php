@@ -174,7 +174,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="myModalLabel">PAKTA</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
@@ -198,8 +198,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" id="confirm_button" form="register_form" class="btn btn-primary" disabled>Registrasi</a>
+                        <a class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</a>
+                        <button type="submit" id="confirm_button" form="register_form" class="btn btn-primary" disabled>Registrasi</button>
                     </div>
 
                 </div>
