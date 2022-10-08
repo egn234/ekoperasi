@@ -42,13 +42,16 @@ class m_pinjaman extends Model
                 b.*,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
-                d.nama_lengkap AS nama_bendahara,
-                d.nik AS nik_bendahara
+                d.nama_lengkap AS nama_admin,
+                d.nik AS nik_admin,
+                e.nama_lengkap AS nama_bendahara,
+                e.nik AS nik_bendahara
             FROM tb_user a 
             JOIN tb_pinjaman b ON a.iduser = b.idanggota
-            JOIN tb_user c ON c.iduser = b.idadmin
-            JOIN tb_user d ON d.iduser = b.idbendahara
-            WHERE b.idpinjaman = $idpinjaman
+            LEFT JOIN tb_user c ON c.iduser = b.idadmin
+            LEFT JOIN tb_user d ON d.iduser = b.idketua
+            LEFT JOIN tb_user e ON e.iduser = b.idbendahara
+            WHERE b.idanggota = $iduser
         ";
 
         return $this->db->query($sql)->getResult();
@@ -63,15 +66,24 @@ class m_pinjaman extends Model
                 b.*,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
-                d.nama_lengkap AS nama_bendahara,
-                d.nik AS nik_bendahara
+                d.nama_lengkap AS nama_admin,
+                d.nik AS nik_admin,
+                e.nama_lengkap AS nama_bendahara,
+                e.nik AS nik_bendahara
             FROM tb_user a 
             JOIN tb_pinjaman b ON a.iduser = b.idanggota
-            JOIN tb_user c ON c.iduser = b.idadmin
-            JOIN tb_user d ON d.iduser = b.idbendahara
+            LEFT JOIN tb_user c ON c.iduser = b.idadmin
+            LEFT JOIN tb_user d ON d.iduser = b.idketua
+            LEFT JOIN tb_user e ON e.iduser = b.idbendahara
             WHERE b.idanggota = $iduser
         ";
 
         return $this->db->query($sql)->getResult();
+    }
+
+    function insertPinjaman($data)
+    {
+        $builder = $this->db->table('tb_pinjaman');
+        $builder->insert($data);
     }
 }

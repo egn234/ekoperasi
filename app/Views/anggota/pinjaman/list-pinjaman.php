@@ -38,14 +38,14 @@
                 <!-- end page title -->
 
                 <div class="row">
-                    <div class="col-9">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <h4 class="card-title">Daftar Pengajuan Pinjaman</h4>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-6">
                                         <div class="btn-group float-end">
                                             <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
                                                 Tambah Pengajuan
@@ -59,10 +59,12 @@
                                 <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <th width="5%">No</th>
+                                        <th>Tipe</th>
                                         <th>Nominal</th>
-                                        <th>Status Pinjaman</th>
-                                        <th>Metode Pembayaran</th>
                                         <th>Tanggal Pengajuan</th>
+                                        <th>Status Pinjaman</th>
+                                        <th>Lama Angsuran (bulan)</th>
+                                        <th>Bayar Per Tanggal</th>
                                         <th>Aksi</th>
                                     </thead>
                                     <tbody>
@@ -70,13 +72,30 @@
                                         <?php foreach ($list_pinjaman as $a) {?>
                                             <tr>
                                                 <td><?= $c ?></td>
-                                                <td><?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td><?= $a->status_pinjaman ?></td>
-                                                <td><?= $a->metode_pembayaran ?></td>
-                                                <td><?= $a->created ?></td>
+                                                <td><?= $a->tipe_permohonan ?></td>
+                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
+                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
+                                                <td>
+                                                    <?php if($a->status == 0){?>
+                                                        Ditolak
+                                                    <?php }elseif($a->status == 1){?>
+                                                        Diproses Admin
+                                                    <?php }elseif($a->status == 2){?>
+                                                        Diproses Ketua
+                                                    <?php }elseif($a->status == 3){?>
+                                                        Diproses Bendahara
+                                                    <?php }elseif($a->status == 4){?>
+                                                        Diterima
+                                                    <?php }?>
+                                                </td>
+                                                <td><?= $a->angsuran_bulanan ?></td>
+                                                <td><?= ($a->tanggal_bayar == 0)?'belum ditentukan':$a->tanggal_bayar ?></td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
                                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="<?=$a->idpinjaman?>">
+                                                            <i class="fa fa-file-alt"></i> test
+                                                        </a>
+                                                        <a href="<?= url_to('an_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
                                                             <i class="fa fa-file-alt"></i> detail
                                                         </a>
                                                     </div>
@@ -121,23 +140,46 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="<?= url_to('anggota/pinjaman/add_req') ?>" id="formSheet" method="post">
+                <form action="<?= url_to('anggota/pinjaman/add-req') ?>" id="formSheet" method="post">
                     <div class="mb-3">
-                        <label class="form-label" for="m_pembayaran">Metode Pembayaran</label>
-                        <select class="form-select" id="m_pembayaran" name="metode_pembayaran" required>
-                            <option value="" <?=(session()->getFlashdata('metode_pembayaran'))?'':'selected'?> disabled>Pilih Opsi...</option>
-                            <option value="Cash" <?=(session()->getFlashdata('metode_pembayaran') == 'Cash')?'selected':''?> >Cash</option>
-                            <option value="Online Transfer" <?=(session()->getFlashdata('metode_pembayaran') == 'Online Tranfer')?'selected':''?> >Online Transfer</option>
+                        <label class="form-label" for="m_pembayaran">Tipe Pengajuan</label>
+                        <select class="form-select" id="m_pembayaran" name="tipe_permohonan" required>
+                            <option value="" <?=(session()->getFlashdata('tipe_permohonan'))?'':'selected'?> disabled>Pilih Opsi...</option>
+                            <option value="pinjaman" <?=(session()->getFlashdata('tipe_permohonan') == 'pinjaman')?'selected':''?> >Pinjaman</option>
+                            <option value="pengadaan barang" <?=(session()->getFlashdata('tipe_permohonan') == 'pengadaan barang')?'selected':''?> >Pengadaan Barang</option>
+                            <option value="lain-lain" <?=(session()->getFlashdata('tipe_permohonan') == 'lain-lain')?'selected':''?> >Lainnya</option>
                         </select>
                         <div class="invalid-feedback">
                             Pilih Terlebih dahulu
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label" for="deskripsi">Keterangan</label>
+                        <input type="text" class="form-control" id="deskripsi" name="deskripsi" value="<?=session()->getFlashdata('deskripsi')?>">
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label" for="nominal">Nominal (Rp.)</label>
                         <input type="number" class="form-control" id="nominal" name="nominal" value="<?=session()->getFlashdata('nominal')?>" min="1" required>
                         <div class="invalid-feedback">
                             Harus Diisi
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="form-label" for="angsuran_bulanan">Lama Cicilan Pelunasan</label>
+                        <div class="col-6">
+                            <input type="number" class="form-control" id="angsuran_bulanan" name="angsuran_bulanan" value="<?=session()->getFlashdata('angsuran_bulanan')?>" min="1" max="12" required>
+                            <div class="invalid-feedback">
+                                Harus Diisi
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <select class="form-select" id="bulanan_tahunan" name="satuan_waktu" required>
+                                <option value="1" <?=(session()->getFlashdata('satuan_waktu') == '1')?'selected':''?> >Bulan</option>
+                                <option value="2" <?=(session()->getFlashdata('satuan_waktu') == '2')?'selected':''?> >Tahun</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih Terlebih dahulu
+                            </div>
                         </div>
                     </div>
                 </form>

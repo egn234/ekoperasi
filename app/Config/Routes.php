@@ -142,6 +142,9 @@ $routes->group('anggota', static function ($routes)
     {
         $routes->get('list', 'Anggota\Pinjaman::index');
 
+        $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
+
+        $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
     });    
 
 });

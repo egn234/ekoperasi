@@ -22,6 +22,12 @@
                             <span data-key="t-mutasi">Mutasi</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?= url_to('anggota/pinjaman/list') ?>">
+                            <i data-feather="dollar-sign"></i>
+                            <span data-key="t-pinjaman">Pinjaman</span>
+                        </a>
+                    </li>
                 <?php }?>
 
                 <li>
