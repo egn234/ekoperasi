@@ -37,19 +37,6 @@
                                     <div class="col-sm-6">
                                         <h4 class="card-title">Daftar user yang terdaftar</h4>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <div class="btn-group float-end">
-                                            <a href="<?= url_to('admin/user/add') ?>" class="btn btn-primary">
-                                                Tambah User Baru
-                                            </a>
-                                            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#upload_sheet">
-                                                Impor User
-                                            </a>
-                                            <a class="btn btn-success" href="<?= url_to('admin/user/export_table') ?>" target="_blank">
-                                                Ekspor user
-                                            </a>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -89,7 +76,11 @@
                                                         <div class="row">
                                                             <div class="btn-group d-flex justify-content-center">
                                                                 <a href="<?= url_to('user_detail', $a->iduser) ?>" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
-                                                                <?php if($a->user_flag != 1){?>
+                                                                <?php if($a->user_flag == 1){?>
+                                                                    <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
+                                                                        Nonaktifkan
+                                                                    </a>
+                                                                <?php }else{?>
                                                                     <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
                                                                         Aktifkan
                                                                     </a>

@@ -5,7 +5,9 @@ namespace App\Controllers;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_param;
+use App\Models\M_param_manasuka;
 use App\Models\M_deposit;
+
 class register extends Controller
 {
 
@@ -14,6 +16,7 @@ class register extends Controller
 		$this->m_user = new M_User();	
 		$this->m_param = new M_param();	
 		$this->m_deposit = new M_deposit();	
+		$this->m_param_manasuka = new M_param_manasuka();	
 	}
 
 	public function index()
@@ -140,34 +143,36 @@ class register extends Controller
 		$this->m_user->insertUser($dataset);
 
 		$iduser_new = $this->m_user->getUser($dataset['username'])[0]->iduser;
-		$simp_pokok = $this->m_param->getParamById(1)[0]->nilai;
-		$simp_wajib = $this->m_param->getParamById(2)[0]->nilai;
-
-		$data_pokok = [
-			'jenis_pengajuan' => 'penyimpanan',
-			'jenis_deposit' => 'pokok',
-			'cash_in' => $simp_pokok,
-			'cash_out' => 0,
-			'deskripsi' => 'biaya awal registrasi',
-			'status' => 'diproses',
-			'date_created' => date('Y-m-d H:i:s'),
-			'idanggota' => $iduser_new
+		
+		$init_aktivasi = [
+			$this->m_param->getParamById(1)[0]->nilai,
+			$this->m_param->getParamById(2)[0]->nilai
 		];
 
-		$this->m_deposit->insertDeposit($data_pokok);
+		$j_deposit_r = ['pokok', 'wajib'];
 
-		$data_wajib = [
-			'jenis_pengajuan' => 'penyimpanan',
-			'jenis_deposit' => 'wajib',
-			'cash_in' => $simp_wajib,
-			'cash_out' => 0,
-			'deskripsi' => 'biaya awal registrasi',
-			'status' => 'diproses',
-			'date_created' => date('Y-m-d H:i:s'),
-			'idanggota' => $iduser_new
+		for ($i = 0; $i < count($init_aktivasi); $i++) {
+			$dataset = [
+				'jenis_pengajuan' => 'penyimpanan',
+				'jenis_deposit' => $j_deposit_r[$i],
+				'cash_in' => $init_aktivasi[$i],
+				'cash_out' => 0,
+				'deskripsi' => 'biaya awal registrasi',
+				'status' => 'diproses',
+				'date_created' => date('Y-m-d H:i:s'),
+				'idanggota' => $iduser_new
+			];
+
+			$this->m_deposit->insertDeposit($dataset);
+		}
+
+		$param_r = [
+			'idanggota' => $iduser_new,
+			'nilai' => $this->m_param->getParamById(3)[0]->nilai,
+			'created' => date('Y-m-d H:i:s')
 		];
 
-		$this->m_deposit->insertDeposit($data_wajib);
+		$this->m_param_manasuka->insertParamManasuka($param_r);
 		
 		$alert = view(
 			'partials/notification-alert', 

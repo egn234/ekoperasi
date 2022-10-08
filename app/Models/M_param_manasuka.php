@@ -52,4 +52,11 @@ class M_param_manasuka extends Model
         $builder->where('idmnskparam',$idmnskparam);
         $builder->update($dataset);
     }
+
+    function setParamManasukaByUser($iduser, $data)
+    {
+        $builder = $this->db->table('tb_param_manasuka');
+        $builder->where('idanggota',$iduser);
+        $builder->update($data);        
+    }
 }

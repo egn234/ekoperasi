@@ -60,8 +60,10 @@ $routes->group('admin', static function ($routes)
     $routes->group('user', static function ($routes)
     {
         $routes->get('list', 'Admin\User::list');
+        $routes->get('closebook-list', 'Admin\User::list_closebook');
         $routes->get('add', 'Admin\User::add_user');
         $routes->get('export_table', 'Admin\User::export_table');
+
        
         $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
         $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
@@ -113,9 +115,13 @@ $routes->group('ketua', static function ($routes)
 //GROUP ANGGOTA
 $routes->group('anggota', static function ($routes)
 {
+
     $routes->get('dashboard', 'Anggota\Dashboard::index');
-    
     $routes->get('profile', 'Anggota\Profile::index');
+    $routes->get('closebook', 'Anggota\Closebook::index');
+    $routes->get('closebook-request', 'Anggota\Closebook::closebook_proc');
+    $routes->get('closebook-cancel', 'Anggota\Closebook::closebook_cancel');
+
     $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
 
@@ -130,6 +136,14 @@ $routes->group('anggota', static function ($routes)
 
         $routes->add('upload_bukti_transfer/(:num)', 'Anggota\Deposits::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
     });
+
+    //GROUP DAFTAR PINJAMAN
+    $routes->group('pinjaman', static function ($routes)
+    {
+        $routes->get('list', 'Anggota\Pinjaman::index');
+
+    });    
+
 });
 
 /*

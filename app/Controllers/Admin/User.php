@@ -6,6 +6,8 @@ require_once ROOTPATH.'vendor/autoload.php';
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_group;
+use App\Models\M_deposit;
+use App\Models\M_param;
 
 class User extends Controller
 {
@@ -13,8 +15,10 @@ class User extends Controller
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->m_group = new M_group();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->m_group = new M_group();
+		$this->m_deposit = new M_deposit();
+		$this->m_param = new M_param();
 	}
 
 	public function list()
@@ -29,6 +33,20 @@ class User extends Controller
 		];
 		
 		echo view('admin/user/user-list', $data);
+	}
+
+	public function list_closebook()
+	{	
+		$user_list = $this->m_user->getAllClosebookUser();
+
+		$data = [
+			'title_meta' => view('admin/partials/title-meta', ['title' => 'Closebook User']),
+			'page_title' => view('admin/partials/page-title', ['title' => 'CLosebook User List', 'li_1' => 'EKoperasi', 'li_2' => 'Closebook User List']),
+			'duser' => $this->account,
+			'usr_list' => $user_list
+		];
+		
+		echo view('admin/user/user-closebook-list', $data);
 	}
 
 	public function add_user()
@@ -413,6 +431,35 @@ class User extends Controller
 		if ($user->user_flag == 0) {
 			
 			if ($user->closebook_param_count == 1) {
+
+				$init_aktivasi = [
+					$this->m_param->getParamById(1)[0]->nilai,
+					$this->m_param->getParamById(2)[0]->nilai
+				];
+
+				$j_deposit_r = ['pokok', 'wajib'];
+
+				for ($i = 0; $i < count($init_aktivasi); $i++) {
+					$dataset = [
+						'jenis_pengajuan' => 'penyimpanan',
+						'jenis_deposit' => $j_deposit_r[$i],
+						'cash_in' => $init_aktivasi[$i],
+						'cash_out' => 0,
+						'deskripsi' => 'biaya registrasi',
+						'status' => 'diproses',
+						'date_created' => date('Y-m-d H:i:s'),
+						'idanggota' => $iduser
+					];
+
+					$this->m_deposit->insertDeposit($dataset);
+				}
+
+				$param_r = [
+					'nilai' => $this->m_param->getParamById(3)[0]->nilai,
+					'updated' => date('Y-m-d H:i:s')
+				];
+
+				$this->m_param_manasuka->setParamManasukaByUser($iduser, $param_r);
 				
 				$this->m_user->aktifkanUser($iduser);
 
@@ -439,6 +486,37 @@ class User extends Controller
 
 		}elseif ($user->user_flag == 1) {
 
+			$saldo_r = [
+				$this->m_deposit->getSaldoWajibByUserId($iduser)[0]->saldo,
+				$this->m_deposit->getSaldoPokokByUserId($iduser)[0]->saldo,
+				$this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo
+			];
+
+			$j_deposit_r = ['wajib', 'pokok', 'manasuka'];
+
+			for ($i = 0; $i < count($saldo_r); $i++) {
+				$dataset = [
+					'jenis_pengajuan' => 'penarikan',
+					'jenis_deposit' => $j_deposit_r[$i],
+					'cash_in' => 0,
+					'cash_out' => ($saldo_r[$i] == null)?0:$saldo_r[$i],
+					'deskripsi' => 'tutup buku',
+					'status' => 'diterima',
+					'date_created' => date('Y-m-d H:i:s'),
+					'idanggota' => $iduser,
+					'idadmin' => $this->account->iduser
+				];
+
+				$this->m_deposit->insertDeposit($dataset);
+			}
+			
+			$param_r = [
+				'nilai' => 0,
+				'updated' => date('Y-m-d H:i:s')
+			];
+
+			$this->m_param_manasuka->setParamManasukaByUser($iduser, $param_r);
+			$this->m_deposit->setStatusProses($iduser);
 			$this->m_user->nonaktifkanUser($iduser);
 
 			if ($user->closebook_param_count == 0) {
@@ -460,7 +538,7 @@ class User extends Controller
 			session()->setFlashdata('notif', $alert);
 		}
 
-		return redirect()->to(base_url('admin/user/list'));
+		return redirect()->back();
 	}
 
 	public function konfirSwitch()

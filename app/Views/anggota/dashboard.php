@@ -33,6 +33,7 @@
                     </div>
                     <?=session()->getFlashdata('notif_pokok');?>
                     <?=session()->getFlashdata('notif_wajib');?>
+                    <?=session()->getFlashdata('notif_cb');?>
                 </div><!-- end row-->
 
             </div>

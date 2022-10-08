@@ -23,6 +23,7 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="<?= url_to('admin/user/list') ?>" data-key="t-user-list">Daftar User</a></li>
+                        <li><a href="<?= url_to('admin/user/closebook-list') ?>" data-key="t-user-list">Daftar Pengajuan Closebook</a></li>
                     </ul>
                 </li>
 

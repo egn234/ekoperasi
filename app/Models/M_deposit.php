@@ -60,6 +60,12 @@ class m_deposit extends Model
         return $this->db->query($sql)->getResult();    
     }
 
+    function countInitialDeposit($iduser)
+    {
+        $sql = "SELECT count(iddeposit) AS hitung FROM tb_deposit WHERE idanggota = $iduser AND deskripsi = 'biaya awal registrasi'";
+        return $this->db->query($sql)->getResult();
+    }
+
     function getInitialDeposit($iduser)
     {
         $sql = "SELECT * FROM tb_deposit WHERE idanggota = $iduser AND deskripsi = 'biaya awal registrasi'";
@@ -124,6 +130,15 @@ class m_deposit extends Model
         ";
         
         return $this->db->query($sql)->getResult();  
+    }
+
+    function setStatusProses($iduser)
+    {
+        $builder = $this->db->table('tb_deposit');
+        $builder->set('status', 'ditolak');
+        $builder->where('idanggota', $iduser);
+        $builder->where('status', 'diproses');
+        $builder->update();
     }
 
     function insertDeposit($dataset)

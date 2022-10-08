@@ -78,6 +78,40 @@ class M_user extends Model
         return $this->db->query($sql)->getResult();
     }
     
+    function getAllClosebookUser()
+    {  
+        $sql = "
+            SELECT 
+                iduser,
+                username, 
+                nik, 
+                nama_lengkap, 
+                tempat_lahir, 
+                tanggal_lahir, 
+                alamat, 
+                instansi, 
+                unit_kerja, 
+                nomor_telepon, 
+                email, 
+                profil_pic, 
+                tb_user.created AS user_created, 
+                tb_user.updated AS user_updated, 
+                closebook_request, 
+                closebook_request_date,
+                closebook_last_updated, 
+                closebook_param_count, 
+                tb_user.flag AS user_flag, 
+                idgroup,
+                tb_group.keterangan AS group_type,
+                tb_group.created AS group_assigned,
+                tb_group.flag AS group_flag
+            FROM tb_user 
+            JOIN tb_group USING (idgroup)
+            WHERE tb_user.closebook_request = 'closebook'
+        ";
+        return $this->db->query($sql)->getResult();
+    }
+    
     function getUserById($iduser)
     {  
         $sql = "
@@ -181,6 +215,7 @@ class M_user extends Model
     function aktifkanUser($iduser)
     {
         $builder = $this->db->table('tb_user');
+        $builder->set('closebook_request', null);
         $builder->set('flag', 1);
         $builder->set('updated', date('Y-m-d H:i:s'));
         $builder->where('iduser', $iduser);
