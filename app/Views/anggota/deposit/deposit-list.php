@@ -145,6 +145,9 @@
                                         <?php }?>
                                     </div>
                                 </div>
+                                <span class="mt-5 d-flex justify-content-center">
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Set Parameter Manasuka</button>
+                                </span>
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -222,6 +225,30 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
                 <button type="submit" form="formSheet" class="btn btn-success">Buat Pengajuan</button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="set_param_manasuka" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Set Nominal Pembayaran Manasuka</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<?=($param_manasuka)?url_to('anggota_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('admin/deposit/create_param_manasuka')?>" id="formParam" method="post">
+                    <div class="mb-3">
+                        <label for="nominal_param">Besarnya Nominal (Rp)</label>
+                        <input type="number" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
+                        <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" form="formParam" class="btn btn-success">Set</button>
             </div>
         </div>
     </div>

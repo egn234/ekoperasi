@@ -133,7 +133,9 @@ $routes->group('anggota', static function ($routes)
         $routes->post('add_req', 'Anggota\Deposits::add_proc');
         $routes->post('detail_mutasi', 'Anggota\Deposits::detail_mutasi');
         $routes->post('up_mutasi', 'Anggota\Deposits::up_mutasi');
-
+        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
+        
+        $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'anggota_set_parameter_manasuka']);
         $routes->add('upload_bukti_transfer/(:num)', 'Anggota\Deposits::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
     });
 

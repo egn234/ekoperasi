@@ -159,6 +159,53 @@ class Deposits extends Controller
 		return redirect()->to('anggota/deposit/list');
 	}
 
+	public function create_param_manasuka()
+	{
+		$dataset = [
+			'idanggota' => $this->account->iduser,
+			'nilai' => $this->request->getPost('nilai'),
+			'created' => date('Y-m-d H:i:s')
+		];
+
+		$this->m_param_manasuka->insertParamManasuka($dataset);
+		
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Parameter Manasuka berhasil di set',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = ['notif' => $alert];
+		session()->setFlashdata($data_session);
+
+		return redirect()->back();
+	}
+
+	public function set_param_manasuka($idmnskparam = false)
+	{
+		$dataset = [
+			'nilai' => $this->request->getPost('nilai'),
+			'updated' => date('Y-m-d H:i:s')
+		];
+
+		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+		
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Parameter Manasuka berhasil di set',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = ['notif' => $alert];
+		session()->setFlashdata($data_session);
+
+		return redirect()->back();
+	}
+
 	public function detail_mutasi()
 	{
 		if ($_POST['rowid']) {
