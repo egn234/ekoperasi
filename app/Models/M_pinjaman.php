@@ -51,7 +51,31 @@ class m_pinjaman extends Model
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
             LEFT JOIN tb_user d ON d.iduser = b.idketua
             LEFT JOIN tb_user e ON e.iduser = b.idbendahara
-            WHERE b.idanggota = $iduser
+            WHERE b.idpinjaman = $idpinjaman
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
+    function getAllPinjamanAdmin()
+    {
+        $sql = "
+            SELECT
+                a.nama_lengkap AS nama_peminjam,
+                a.nik AS nik_peminjam,
+                b.*,
+                c.nama_lengkap AS nama_admin,
+                c.nik AS nik_admin,
+                d.nama_lengkap AS nama_admin,
+                d.nik AS nik_admin,
+                e.nama_lengkap AS nama_bendahara,
+                e.nik AS nik_bendahara
+            FROM tb_user a 
+            JOIN tb_pinjaman b ON a.iduser = b.idanggota
+            LEFT JOIN tb_user c ON c.iduser = b.idadmin
+            LEFT JOIN tb_user d ON d.iduser = b.idketua
+            LEFT JOIN tb_user e ON e.iduser = b.idbendahara
+            WHERE b.status = 1
         ";
 
         return $this->db->query($sql)->getResult();
@@ -85,5 +109,12 @@ class m_pinjaman extends Model
     {
         $builder = $this->db->table('tb_pinjaman');
         $builder->insert($data);
+    }
+
+    function updatePinjaman($idpinjaman, $data)
+    {
+        $builder = $this->db->table('tb_pinjaman');
+        $builder->where('idpinjaman', $idpinjaman);
+        $builder->update($data);
     }
 }

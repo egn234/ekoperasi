@@ -38,10 +38,11 @@ $routes->set404Override();
 
 $routes->get('/', 'Login::index');
 $routes->get('registrasi', 'Register::index');
+
+$routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
 $routes->post('reg_proc', 'Register::register_proc');
 
 $routes->add('logout', 'Login::logout');
-$routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
 
 //GROUP ADMIN
 $routes->group('admin', static function ($routes)
@@ -78,15 +79,28 @@ $routes->group('admin', static function ($routes)
         $routes->get('list', 'Admin\Deposits::index');
         $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
 
+        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
+        $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
+        
         $routes->add('user/(:num)', 'Admin\Deposits::detail_anggota/$1', ['as' => 'anggota_detail']);
         $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
         $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'admin_set_parameter_manasuka']);
         
-        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
-        $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
-        
     });
+
+    //GROUP DAFTAR PINJAMAN
+    $routes->group('pinjaman', static function ($routes)
+    {
+        $routes->get('list', 'Admin\Pinjaman::index');
+
+        $routes->post('cancel-pinjaman', 'Admin\Pinjaman::cancel_loan');
+        $routes->post('approve-pinjaman', 'Admin\Pinjaman::approve_loan');
+
+        $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
+        $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
+        $routes->add('detail/(:num)', 'Admin\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
+    });  
 
 });
 
@@ -94,12 +108,11 @@ $routes->group('admin', static function ($routes)
 $routes->group('bendahara', static function ($routes)
 {
     $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
-    
     $routes->get('profile', 'Bendahara\Profile::index');
+    $routes->get('parameter', 'Bendahara\Kelola_param::index');
+
     $routes->post('profile/edit_proc', 'Bendahara\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Bendahara\Profile::update_pass');
-
-    $routes->get('parameter', 'Bendahara\Kelola_param::index');
     $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');
     $routes->post('parameter/set_param_oth', 'Bendahara\Kelola_param::set_param_other');
 

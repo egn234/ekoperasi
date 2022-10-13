@@ -37,6 +37,12 @@
                         <li><a href="<?= url_to('admin/deposit/list_transaksi') ?>" data-key="t-deposit">Daftar Pengajuan</a></li>
                     </ul>
                 </li>
+                <li>
+                    <a href="<?= url_to('admin/pinjaman/list') ?>">
+                        <i data-feather="dollar-sign"></i>
+                        <span data-key="t-pinjaman">Pinjaman</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- Sidebar -->
