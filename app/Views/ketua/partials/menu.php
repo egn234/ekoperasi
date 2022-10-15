@@ -1,3 +1,3 @@
-<?= $this->include('admin/partials/topbar') ?>
+<?= $this->include('ketua/partials/topbar') ?>
 
-<?= $this->include('admin/partials/sidebar') ?>
+<?= $this->include('ketua/partials/sidebar') ?>

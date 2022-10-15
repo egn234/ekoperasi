@@ -1,21 +1,21 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->include('ketua/partials/head-main') ?>
 
 <head>
 
     <?= $title_meta ?>
 
-    <?= $this->include('admin/partials/head-css') ?>
+    <?= $this->include('ketua/partials/head-css') ?>
 
 </head>
 
-<?= $this->include('admin/partials/body') ?>
+<?= $this->include('ketua/partials/body') ?>
 
 <!-- <body data-layout="horizontal"> -->
 
 <!-- Begin page -->
 <div id="layout-wrapper">
 
-    <?= $this->include('admin/partials/menu') ?>
+    <?= $this->include('ketua/partials/menu') ?>
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -212,7 +212,7 @@
                                     <div class="card-body">
                                         <div class="mt-4 mt-lg-0">
                                             <h5 class="font-size-14 mb-4">Edit Profil</h5>
-                                            <form action="<?= url_to('admin/profile/edit_proc')?>" method="post" enctype="multipart/form-data">
+                                            <form action="<?= url_to('ketua/profile/edit_proc')?>" method="post" enctype="multipart/form-data">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="full_name">Nama Lengkap <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?= $duser->nama_lengkap ?>" required>
@@ -319,7 +319,7 @@
                                     <div class="card-body">
                                         <div class="mt-4 mt-lg-0">
                                             <h5 class="font-size-14 mb-4">Ubah Password</h5>
-                                            <form action="<?=url_to('admin/profile/edit_pass') ?>" method="post">
+                                            <form action="<?=url_to('ketua/profile/edit_pass') ?>" method="post">
 
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Lama</label>
@@ -368,7 +368,7 @@
         <!-- End Page-content -->
 
 
-        <?= $this->include('admin/partials/footer') ?>
+        <?= $this->include('ketua/partials/footer') ?>
     </div>
     <!-- end main content-->
 
@@ -376,10 +376,10 @@
 <!-- END layout-wrapper -->
 
 
-<?= $this->include('admin/partials/right-sidebar') ?>
+<?= $this->include('ketua/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->
-<?= $this->include('admin/partials/vendor-scripts') ?>
+<?= $this->include('ketua/partials/vendor-scripts') ?>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
