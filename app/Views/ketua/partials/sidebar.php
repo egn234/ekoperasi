@@ -28,8 +28,3 @@
     </div>
 </div>
 <!-- Left Sidebar End -->
-        </div>
-        <!-- Sidebar -->
-    </div>
-</div>
-<!-- Left Sidebar End -->

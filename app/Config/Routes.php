@@ -116,6 +116,18 @@ $routes->group('bendahara', static function ($routes)
     $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');
     $routes->post('parameter/set_param_oth', 'Bendahara\Kelola_param::set_param_other');
 
+    //GROUP DAFTAR PINJAMAN
+    $routes->group('pinjaman', static function ($routes)
+    {
+        $routes->get('list', 'Bendahara\Pinjaman::index');
+
+        $routes->post('cancel-pinjaman', 'Bendahara\Pinjaman::cancel_loan');
+        $routes->post('approve-pinjaman', 'Bendahara\Pinjaman::approve_loan');
+
+        $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
+        $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
+        $routes->add('detail/(:num)', 'Bendahara\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
+    });
 });
 
 //GROUP KETUA
