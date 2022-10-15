@@ -57,7 +57,7 @@ class m_pinjaman extends Model
         return $this->db->query($sql)->getResult();
     }
 
-    function getAllPinjamanAdmin()
+    function getPinjamanByStatus($status)
     {
         $sql = "
             SELECT
@@ -75,7 +75,7 @@ class m_pinjaman extends Model
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
             LEFT JOIN tb_user d ON d.iduser = b.idketua
             LEFT JOIN tb_user e ON e.iduser = b.idbendahara
-            WHERE b.status = 1
+            WHERE b.status = $status
         ";
 
         return $this->db->query($sql)->getResult();

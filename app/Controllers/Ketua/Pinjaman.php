@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Admin;
+namespace App\Controllers\Ketua;
 
 use CodeIgniter\Controller;
 use App\Models\M_user;
@@ -17,22 +17,22 @@ class Pinjaman extends Controller
 
 	public function index()
 	{
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(1);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
 
 		$data = [
-			'title_meta' => view('admin/partials/title-meta', ['title' => 'Pinjaman']),
-			'page_title' => view('admin/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
+			'title_meta' => view('ketua/partials/title-meta', ['title' => 'Pinjaman']),
+			'page_title' => view('ketua/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
 			'duser' => $this->account,
 			'list_pinjaman' => $list_pinjaman
 		];
 		
-		return view('admin/pinjaman/list-pinjaman', $data);
+		return view('ketua/pinjaman/list-pinjaman', $data);
 	}
 
 	public function cancel_proc($idpinjaman = false)
 	{
 		$dataset = [
-			'idadmin' => $this->account->iduser,
+			'idketua' => $this->account->iduser,
 			'status' => 0,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -55,8 +55,8 @@ class Pinjaman extends Controller
 	public function approve_proc($idpinjaman = false)
 	{
 		$dataset = [
-			'idadmin' => $this->account->iduser,
-			'status' => 2,
+			'idketua' => $this->account->iduser,
+			'status' => 3,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
 
@@ -84,7 +84,7 @@ class Pinjaman extends Controller
 				'a' => $pinjaman,
 				'flag' => 0
 			];
-			echo view('admin/pinjaman/part-pinjaman-mod-approval', $data);
+			echo view('ketua/pinjaman/part-pinjaman-mod-approval', $data);
 		}
 	}
 
@@ -97,7 +97,7 @@ class Pinjaman extends Controller
 				'a' => $pinjaman,
 				'flag' => 1
 			];
-			echo view('admin/pinjaman/part-pinjaman-mod-approval', $data);
+			echo view('ketua/pinjaman/part-pinjaman-mod-approval', $data);
 		}
 	}
 }

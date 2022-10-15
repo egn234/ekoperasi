@@ -39,11 +39,11 @@ class AdminFilter implements FilterInterface
 	    	}
 
 	    	if ($idgroup == 3) {
-	    		return redirect()->to('dashboard_ketua');
+	    		return redirect()->to('ketua/dashboard');
 	    	}
 
 	    	if ($idgroup == 4) {
-	    		return redirect()->to('dashboard_anggota');
+	    		return redirect()->to('anggota/dashboard');
 	    	}
 	    }        
     }
