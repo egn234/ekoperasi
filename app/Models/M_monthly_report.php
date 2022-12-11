@@ -94,6 +94,66 @@ class m_monthly_report extends Model
         $builder->update($data);
     }
 
+    function sumMonthlyIncome()
+    {
+        $year = date('Y');
+        $month = date('m');
+        $sql = "
+            SELECT SUM(cash_in) 
+                + IFNULL(
+                    (SELECT 
+                        SUM(nominal) AS total_cicilan 
+                        FROM tb_cicilan 
+                        WHERE YEAR(date_created) = $year 
+                        AND MONTH(date_created) = $month 
+                    ), 0
+                ) 
+            AS hitung FROM tb_deposit
+            WHERE status = 'diterima'
+            AND YEAR(date_created) = $year 
+            AND MONTH(date_created) = $month
+        ";
+        
+        return $this->db->query($sql)->getResult();
+    }
+
+    function sumMonthlyOutcome()
+    {
+        $year = date('Y');
+        $month = date('m');
+
+        $sql = "
+            SELECT SUM(cash_out) 
+                + IFNULL(
+                    (SELECT 
+                        SUM(nominal) AS total_pinjaman 
+                        FROM tb_pinjaman 
+                        WHERE status > 2 
+                        AND YEAR(date_created) = $year 
+                        AND MONTH(date_created) = $month 
+                    ), 0
+                )
+            AS hitung FROM tb_deposit 
+            WHERE status = 'diterima'
+            AND YEAR(date_created) = $year 
+            AND MONTH(date_created) = $month
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
+    function countMonthlyAnggotaPinjaman()
+    {
+        $sql = "
+            SELECT count(iduser) AS hitung 
+            FROM tb_user 
+            JOIN tb_pinjaman ON tb_user.iduser = tb_pinjaman.idanggota 
+            WHERE status = 3
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
     //FUNCTION UNTUK DOWNLOAD EXCEL
     function getSumSimpanan1($iduser, $datetime)
     {

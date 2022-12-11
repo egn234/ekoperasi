@@ -198,6 +198,20 @@ class M_user extends Model
         $sql = "SELECT count(iduser) as hitung FROM tb_user WHERE username = '$username'";
         return $this->db->query($sql)->getResult();
     }
+
+    function countAnggotaAKtif()
+    {
+        $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1";
+        return $this->db->query($sql)->getResult();
+    }
+
+    function countMonthlyUser()
+    {
+        $month = date('m');
+        $year = date('Y');
+        $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1 AND MONTH(created) = $month AND YEAR(created) = $year";
+        return $this->db->query($sql)->getResult();
+    }
     
     function insertUser($data)
     {

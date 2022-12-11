@@ -162,4 +162,17 @@ class m_deposit extends Model
         $builder->where('iddeposit', $iddeposit);
         $builder->update();
     }
+
+    function sumDeposit()
+    {
+        $sql = "
+            SELECT (SUM(cash_in) - SUM(cash_out)) 
+                + IFNULL((SELECT SUM(nominal) AS total_cicilan FROM tb_cicilan), 0) 
+                - IFNULL((SELECT SUM(nominal) AS total_pinjaman FROM tb_pinjaman WHERE status > 2), 0) 
+            AS hitung FROM tb_deposit 
+            WHERE status = 'diterima'
+        ";
+        
+        return $this->db->query($sql)->getResult();
+    }
 }
