@@ -32,7 +32,7 @@ class Pinjaman extends Controller
 	public function cancel_proc($idpinjaman = false)
 	{
 		$dataset = [
-			'idketua' => $this->account->iduser,
+			'idbendahara' => $this->account->iduser,
 			'status' => 0,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -55,9 +55,11 @@ class Pinjaman extends Controller
 	public function approve_proc($idpinjaman = false)
 	{
 		$dataset = [
-			'idketua' => $this->account->iduser,
+			'idbendahara' => $this->account->iduser,
 			'status' => 3,
-			'date_updated' => date('Y-m-d H:i:s')
+			'date_updated' => date('Y-m-d H:i:s'),
+			'bln_perdana' => date('m', strtotime("+ 1 month")),
+			'tanggal_bayar' => date('d')
 		];
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);

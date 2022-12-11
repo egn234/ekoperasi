@@ -43,6 +43,12 @@
                         <span data-key="t-pinjaman">Pinjaman</span>
                     </a>
                 </li>
+                <li>
+                    <a href="<?= url_to('admin/report/list') ?>">
+                        <i data-feather="trending-up"></i>
+                        <span data-key="t-reporting">Reporting</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- Sidebar -->

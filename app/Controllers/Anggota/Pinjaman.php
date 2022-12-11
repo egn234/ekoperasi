@@ -4,6 +4,7 @@ namespace App\Controllers\Anggota;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_pinjaman;
+use App\Models\M_cicilan;
 
 class Pinjaman extends Controller
 {
@@ -13,6 +14,7 @@ class Pinjaman extends Controller
 		$this->m_user = new M_user();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_pinjaman = new M_pinjaman();
+		$this->m_cicilan = new M_cicilan();
 	}
 
 	public function index()
@@ -29,8 +31,41 @@ class Pinjaman extends Controller
 		return view('anggota/pinjaman/list-pinjaman', $data);
 	}
 
+	function detail($idpinjaman = false)
+	{
+		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
+		$list_cicilan = $this->m_cicilan->getCicilanByIdPinjaman($idpinjaman);
+		$tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
+
+		$data = [
+			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Pinjaman']),
+			'page_title' => view('anggota/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
+			'duser' => $this->account,
+			'detail_pinjaman' => $detail_pinjaman,
+			'list_cicilan' => $list_cicilan
+		];
+		
+		return view('anggota/pinjaman/list-cicilan', $data);	
+	}
+
 	public function add_proc()
 	{
+		$cek_cicilan_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser)[0]->hitung;
+
+		if ($cek_cicilan_aktif != 0) {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Tidak dapat mengajukan pinjaman: masih ada pinjaman yang sedang berlangsung',
+				 	'status' => 'danger'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->back();
+		}
+
 		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
 		$satuan_waktu = $this->request->getPost('satuan_waktu');
 
@@ -80,6 +115,5 @@ class Pinjaman extends Controller
 		$dataset += ['notif' => $alert];
 		session()->setFlashdata($dataset);
 		return redirect()->back();
-
 	}
 }

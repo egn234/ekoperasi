@@ -39,7 +39,7 @@
 
                 <div class="row">
                     
-                    <div class="col-3">
+                    <div class="col-md-3 col-sm-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
@@ -95,7 +95,7 @@
                         </div>
                     </div> <!-- end col -->
                     
-                    <div class="col-9">
+                    <div class="col-md-9 col-sm-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
@@ -109,8 +109,7 @@
                                 <table class="table table-sm dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <th width="5%">No</th>
-                                        <th>Jenis Pengajuan</th>
-                                        <th>Jenis Simpanan</th>
+                                        <th>Jenis Mutasi</th>
                                         <th>Nilai</th>
                                         <th>Status</th>
                                         <th>Tanggal Pengajuan</th>
@@ -120,8 +119,7 @@
                                         <?php foreach ($deposit_list as $a) {?>
                                             <tr>
                                                 <td><?= $c ?></td>
-                                                <td><?= $a->jenis_pengajuan ?></td>
-                                                <td><?= $a->jenis_deposit ?></td>
+                                                <td><?= $a->jenis_pengajuan . ' ' . $a->jenis_deposit ?></td>
                                                 <td>
                                                     <?php if ($a->cash_in == 0) {?>
                                                         <span class="badge badge-soft-danger">- <?= number_format($a->cash_out, 2, ',', '.')?>

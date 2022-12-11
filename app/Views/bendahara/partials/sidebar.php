@@ -23,7 +23,7 @@
                 </li>
                 
                 <li>
-                    <a href="<?= url_to('ketua/pinjaman/list') ?>">
+                    <a href="<?= url_to('bendahara/pinjaman/list') ?>">
                         <i data-feather="dollar-sign"></i>
                         <span data-key="t-pinjaman">Pinjaman</span>
                     </a>

@@ -59,20 +59,7 @@ class Deposits extends Controller
 			return redirect()->to('anggota/deposit/list');
 		}
 
-		$jenis_deposit = $this->request->getPost('jenis_deposit');
-		if ($jenis_deposit == "") {
-			$alert = view(
-				'partials/notification-alert', 
-				[
-					'notif_text' => 'Gagal membuat pengajuan: Pilih jenis simpanan terlebih dahulu',
-				 	'status' => 'warning'
-				]
-			);
-			
-			$dataset = ['notif' => $alert];
-			session()->setFlashdata($dataset);
-			return redirect()->to('anggota/deposit/list');
-		}
+		$jenis_deposit = 'manasuka';
 
 		$nominal = $this->request->getPost('nominal');
 		$deskripsi = $this->request->getPost('deskripsi');

@@ -42,15 +42,12 @@ class m_pinjaman extends Model
                 b.*,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
-                d.nama_lengkap AS nama_admin,
-                d.nik AS nik_admin,
-                e.nama_lengkap AS nama_bendahara,
-                e.nik AS nik_bendahara
+                d.nama_lengkap AS nama_bendahara,
+                d.nik AS nik_bendahara
             FROM tb_user a 
             JOIN tb_pinjaman b ON a.iduser = b.idanggota
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
-            LEFT JOIN tb_user d ON d.iduser = b.idketua
-            LEFT JOIN tb_user e ON e.iduser = b.idbendahara
+            LEFT JOIN tb_user d ON d.iduser = b.idbendahara
             WHERE b.idpinjaman = $idpinjaman
         ";
 
@@ -66,15 +63,12 @@ class m_pinjaman extends Model
                 b.*,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
-                d.nama_lengkap AS nama_admin,
-                d.nik AS nik_admin,
-                e.nama_lengkap AS nama_bendahara,
-                e.nik AS nik_bendahara
+                d.nama_lengkap AS nama_bendahara,
+                d.nik AS nik_bendahara
             FROM tb_user a 
             JOIN tb_pinjaman b ON a.iduser = b.idanggota
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
-            LEFT JOIN tb_user d ON d.iduser = b.idketua
-            LEFT JOIN tb_user e ON e.iduser = b.idbendahara
+            LEFT JOIN tb_user d ON d.iduser = b.idbendahara
             WHERE b.status = $status
         ";
 
@@ -90,18 +84,21 @@ class m_pinjaman extends Model
                 b.*,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
-                d.nama_lengkap AS nama_admin,
-                d.nik AS nik_admin,
-                e.nama_lengkap AS nama_bendahara,
-                e.nik AS nik_bendahara
+                d.nama_lengkap AS nama_bendahara,
+                d.nik AS nik_bendahara
             FROM tb_user a 
             JOIN tb_pinjaman b ON a.iduser = b.idanggota
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
-            LEFT JOIN tb_user d ON d.iduser = b.idketua
-            LEFT JOIN tb_user e ON e.iduser = b.idbendahara
+            LEFT JOIN tb_user d ON d.iduser = b.idbendahara
             WHERE b.idanggota = $iduser
         ";
 
+        return $this->db->query($sql)->getResult();
+    }
+
+    function countPinjamanAktifByAnggota($iduser)
+    {
+        $sql = "SELECT count(idpinjaman) AS hitung FROM tb_pinjaman WHERE idanggota = $iduser AND status = 3";
         return $this->db->query($sql)->getResult();
     }
 

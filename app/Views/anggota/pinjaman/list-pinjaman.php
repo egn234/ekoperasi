@@ -64,7 +64,6 @@
                                         <th>Tanggal Pengajuan</th>
                                         <th>Status Pinjaman</th>
                                         <th>Lama Angsuran (bulan)</th>
-                                        <th>Bayar Per Tanggal</th>
                                         <th>Aksi</th>
                                     </thead>
                                     <tbody>
@@ -81,23 +80,21 @@
                                                     <?php }elseif($a->status == 1){?>
                                                         Diproses Admin
                                                     <?php }elseif($a->status == 2){?>
-                                                        Diproses Ketua
-                                                    <?php }elseif($a->status == 3){?>
                                                         Diproses Bendahara
+                                                    <?php }elseif($a->status == 3){?>
+                                                        Sedang Berlangsung
                                                     <?php }elseif($a->status == 4){?>
-                                                        Diterima
+                                                        Lunas
                                                     <?php }?>
                                                 </td>
                                                 <td><?= $a->angsuran_bulanan ?></td>
-                                                <td><?= ($a->tanggal_bayar == 0)?'belum ditentukan':$a->tanggal_bayar ?></td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> test
-                                                        </a>
-                                                        <a href="<?= url_to('an_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
-                                                            <i class="fa fa-file-alt"></i> detail
-                                                        </a>
+                                                        <?php if ($a->status == 4 || $a->status == 3) {?>
+                                                            <a href="<?= url_to('anggota_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
+                                                                <i class="fa fa-file-alt"></i> Detail
+                                                            </a>
+                                                        <?php } ?>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -123,14 +120,6 @@
 
 </div>
 <!-- END layout-wrapper -->
-
-<div id="uploadBT" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <span class="fetched-data"></span>
-        </div>
-    </div>
-</div><!-- /.modal -->
 
 <div id="addPengajuan" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -192,13 +181,6 @@
     </div>
 </div><!-- /.modal -->
 
-<div id="detailPinjaman" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <span class="fetched-data"></span>
-        </div>
-    </div>
-</div><!-- /.modal -->
 
 
 <?= $this->include('anggota/partials/right-sidebar') ?>
@@ -214,30 +196,6 @@
 
 <script type="text/javascript">
     $('.dtable').DataTable();
-    $(document).ready(function() {
-        $('#detailPinjaman').on('show.bs.modal', function(e) {
-            var rowid = $(e.relatedTarget).data('id');
-            $.ajax({
-                type: 'POST',
-                url: '<?= base_url() ?>/anggota/deposit/detail_mutasi',
-                data: 'rowid=' + rowid,
-                success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
-                }
-            });
-        });
-        $('#uploadBT').on('show.bs.modal', function(e) {
-            var rowid = $(e.relatedTarget).data('id');
-            $.ajax({
-                type: 'POST',
-                url: '<?= base_url() ?>/anggota/deposit/up_mutasi',
-                data: 'rowid=' + rowid,
-                success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
-                }
-            });
-        });
-    });
 </script>
 
 </body>

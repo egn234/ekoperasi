@@ -6,14 +6,9 @@
     <div class="mb-3">
         <table width="100%">
             <tr>
-                <td>Jenis Pengajuan</td>
+                <td>Jenis Mutasi</td>
                 <td>:</td>
-                <td><?=$a->jenis_pengajuan?></td>
-            </tr>
-            <tr>
-                <td>Jenis Simpanan</td>
-                <td>:</td>
-                <td><?=$a->jenis_deposit?></td>
+                <td><?=$a->jenis_pengajuan . ' ' . $a->jenis_deposit?></td>
             </tr>
             <tr>
                 <td>Nominal</td>
@@ -27,33 +22,35 @@
                 </td>
             </tr>
             <tr>
-                <td>Deskripsi Pengajuan</td>
+                <td>Deskripsi</td>
                 <td>:</td>
                 <td><?=$a->deskripsi?></td>
             </tr>
-            <tr>
-                <td>Status</td>
-                <td>:</td>
-                <td><?=$a->status?></td>
-            </tr>
-            <?php if($a->status != 'diproses'){?>
-            <tr>
-                <td>Telah diproses oleh</td>
-                <td>:</td>
-                <td><?=$a->nama_admin?></td>
-            </tr>
+            <?php if ($a->jenis_deposit == "manasuka") {?>
+                <tr>
+                    <td>Status</td>
+                    <td>:</td>
+                    <td><?=$a->status?></td>
+                </tr>
+                <?php if($a->status != 'diproses'){?>
+                <tr>
+                    <td>Telah diproses oleh</td>
+                    <td>:</td>
+                    <td><?=$a->nama_admin?></td>
+                </tr>
+                <?php }?>
+                <tr style=" vertical-align: top;">
+                    <td>Bukti transfer</td>
+                    <td>:</td>
+                    <td>
+                        <?php if(!$a->bukti_transfer){?>
+                            Belum mengunggah bukti bayar
+                        <?php }else{?>
+                            <img src="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" style="max-width: 450px">
+                        <?php }?>
+                    </td>
+                </tr>
             <?php }?>
-            <tr style=" vertical-align: top;">
-                <td>Bukti transfer</td>
-                <td>:</td>
-                <td>
-                    <?php if(!$a->bukti_transfer){?>
-                        Belum mengunggah bukti bayar
-                    <?php }else{?>
-                        <img src="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" style="max-width: 450px">
-                    <?php }?>
-                </td>
-            </tr>
         </table>
     </div>
 </div>

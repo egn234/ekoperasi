@@ -15,13 +15,6 @@
                         <span data-key="t-dashboard">Dashboard</span>
                     </a>
                 </li>
-
-                <li>
-                    <a href="<?= url_to('ketua/pinjaman/list') ?>">
-                        <i data-feather="dollar-sign"></i>
-                        <span data-key="t-pinjaman">Pinjaman</span>
-                    </a>
-                </li>
             </ul>
         </div>
         <!-- Sidebar -->

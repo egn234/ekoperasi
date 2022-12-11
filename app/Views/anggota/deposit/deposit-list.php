@@ -38,17 +38,17 @@
                 <!-- end page title -->
 
                 <div class="row">
-                    <div class="col-9">
+                    <div class="col-md-9 col-sm-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
-                                    <div class="col-sm-6">
+                                    <div class="col-md-6 col-sm-12">
                                         <h4 class="card-title">Daftar Pengajuan Simpanan</h4>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <div class="btn-group float-end">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="btn-group float-md-end">
                                             <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
-                                                Tambah Pengajuan
+                                                Tambah Pengajuan Manasuka
                                             </a>
                                         </div>
                                     </div>
@@ -59,8 +59,7 @@
                                 <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <th width="5%">No</th>
-                                        <th>Jenis Pengajuan</th>
-                                        <th>Jenis Simpanan</th>
+                                        <th>Jenis Mutasi</th>
                                         <th>Nilai</th>
                                         <th>Status</th>
                                         <th>Tanggal Pengajuan</th>
@@ -71,8 +70,7 @@
                                         <?php foreach ($deposit_list as $a) {?>
                                             <tr>
                                                 <td><?= $c ?></td>
-                                                <td><?= $a->jenis_pengajuan ?></td>
-                                                <td><?= $a->jenis_deposit ?></td>
+                                                <td><?= $a->jenis_pengajuan . ' ' . $a->jenis_deposit ?></td>
                                                 <td>
                                                     <?php if ($a->cash_in == 0) {?>
                                                         <span class="badge badge-soft-danger">- <?= number_format($a->cash_out, 2, ',', '.')?>
@@ -85,9 +83,9 @@
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
                                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> detail
+                                                            <i class="fa fa-file-alt"></i> Detail
                                                         </a>
-                                                        <?php if (!$a->bukti_transfer) {?>
+                                                        <?php if (!$a->bukti_transfer && $a->jenis_deposit == 'manasuka' && $a->status != "diterima") {?>
                                                             <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$a->iddeposit?>">
                                                                 <i class="fa fa-upload"></i> upload bukti
                                                             </a>
@@ -103,11 +101,11 @@
                             </div>
                         </div>
                     </div> <!-- end col -->
-                    <div class="col-3">
+                    <div class="col-md-3 col-sm-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
-                                    <div class="col-sm-6">
+                                    <div class="col-12">
                                         <h4 class="card-title">Detail Simpanan</h4>
                                     </div>
                                 </div>
@@ -178,7 +176,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addPengajuanLabel">Permintaan Pengajuan Mutasi</h5>
+                <h5 class="modal-title" id="addPengajuanLabel">Permintaan Pengajuan Saldo Manasuka</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -189,18 +187,6 @@
                             <option value="" <?=(session()->getFlashdata('jenis_pengajuan'))?'':'selected'?> disabled>Pilih Opsi...</option>
                             <option value="penarikan" <?=(session()->getFlashdata('jenis_pengajuan') == 'penarikan')?'selected':''?> >Penarikan</option>
                             <option value="penyimpanan" <?=(session()->getFlashdata('jenis_pengajuan') == 'penyimpanan')?'selected':''?> >Penyimpanan</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Pilih Terlebih dahulu
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="j_simpanan">Jenis Simpanan</label>
-                        <select class="form-select" id="j_simpanan" name="jenis_deposit" required>
-                            <option value="" <?=(session()->getFlashdata('jenis_deposit'))?'':'selected'?> disabled>Pilih Opsi...</option>
-                            <option value="pokok" <?=(session()->getFlashdata('jenis_deposit') == 'pokok')?'selected':''?> >Simpanan Pokok</option>
-                            <option value="wajib" <?=(session()->getFlashdata('jenis_deposit') == 'wajib')?'selected':''?> >Simpanan Wajib</option>
-                            <option value="manasuka" <?=(session()->getFlashdata('jenis_deposit') == 'manasuka')?'selected':''?> >Simpanan Manasuka</option>
                         </select>
                         <div class="invalid-feedback">
                             Pilih Terlebih dahulu
