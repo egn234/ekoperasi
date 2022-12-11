@@ -8,6 +8,7 @@ use App\Models\M_user;
 use App\Models\M_group;
 use App\Models\M_deposit;
 use App\Models\M_param;
+use App\Models\M_param_manasuka;
 
 class User extends Controller
 {
@@ -19,6 +20,7 @@ class User extends Controller
 		$this->m_group = new M_group();
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
+		$this->m_param_manasuka = new M_param_manasuka();
 	}
 
 	public function list()
@@ -103,7 +105,10 @@ class User extends Controller
 						'instansi' => $cell->getCellByColumnAndRow(8, $i)->getValue(),
 						'unit_kerja' => $cell->getCellByColumnAndRow(9, $i)->getValue(),
 						'nomor_telepon' => $cell->getCellByColumnAndRow(10, $i)->getValue(),
-						'email' => $cell->getCellByColumnAndRow(11, $i)->getValue()
+						'email' => $cell->getCellByColumnAndRow(11, $i)->getValue(),
+						'saldo_pokok' => $cell->getCellByColumnAndRow(12, $i)->getValue(),
+						'saldo_wajib' => $cell->getCellByColumnAndRow(13, $i)->getValue(),
+						'saldo_manasuka' => $cell->getCellByColumnAndRow(14, $i)->getValue()
 					];
 
 					$cek_username = $this->m_user->countUsername($dataset['username'])[0]->hitung;
@@ -121,6 +126,94 @@ class User extends Controller
 							];
 
 							$this->m_user->insertUser($dataset);
+
+							$iduser_new = $this->m_user->getUser($dataset['username'])[0]->iduser;
+							
+							if ($dataset['saldo_pokok'] != null || $dataset['saldo_pokok'] != 0) {
+								
+								$saldo_pokok = [
+									'jenis_pengajuan' => 'penyimpanan',
+									'jenis_deposit' => 'pokok',
+									'cash_in' => $dataset['saldo_pokok'],
+									'cash_out' => 0,
+									'deskripsi' => 'saldo pokok',
+									'status' => 'diterima',
+									'date_created' => date('Y-m-d H:i:s'),
+									'idanggota' => $iduser_new
+								];
+
+								$this->m_deposit->insertDeposit($saldo_pokok);
+							}else{
+
+								$init_aktivasi = $this->m_param->getParamById(1)[0]->nilai;
+								$dataset = [
+									'jenis_pengajuan' => 'penyimpanan',
+									'jenis_deposit' => 'pokok',
+									'cash_in' => $init_aktivasi,
+									'cash_out' => 0,
+									'deskripsi' => 'biaya awal registrasi',
+									'status' => 'diproses',
+									'date_created' => date('Y-m-d H:i:s'),
+									'idanggota' => $iduser_new
+								];
+
+								$this->m_deposit->insertDeposit($dataset);
+							}
+
+							if ($dataset['saldo_wajib'] != null || $dataset['saldo_wajib'] != 0) {
+
+								$saldo_wajib = [
+									'jenis_pengajuan' => 'penyimpanan',
+									'jenis_deposit' => 'wajib',
+									'cash_in' => $dataset['saldo_wajib'],
+									'cash_out' => 0,
+									'deskripsi' => 'saldo wajib',
+									'status' => 'diterima',
+									'date_created' => date('Y-m-d H:i:s'),
+									'idanggota' => $iduser_new
+								];
+
+								$this->m_deposit->insertDeposit($saldo_wajib);
+							}else{
+								
+								$init_aktivasi = $this->m_param->getParamById(2)[0]->nilai;
+								$dataset = [
+									'jenis_pengajuan' => 'penyimpanan',
+									'jenis_deposit' => 'pokok',
+									'cash_in' => $init_aktivasi,
+									'cash_out' => 0,
+									'deskripsi' => 'biaya awal registrasi',
+									'status' => 'diproses',
+									'date_created' => date('Y-m-d H:i:s'),
+									'idanggota' => $iduser_new
+								];
+
+								$this->m_deposit->insertDeposit($dataset);
+							}
+
+							if ($dataset['saldo_manasuka'] != null || $dataset['saldo_manasuka'] != 0) {
+
+								$saldo_manasuka = [
+									'jenis_pengajuan' => 'penyimpanan',
+									'jenis_deposit' => 'manasuka',
+									'cash_in' => $dataset['saldo_manasuka'],
+									'cash_out' => 0,
+									'deskripsi' => 'saldo manasuka',
+									'status' => 'diterima',
+									'date_created' => date('Y-m-d H:i:s'),
+									'idanggota' => $iduser_new
+								];
+
+								$this->m_deposit->insertDeposit($saldo_manasuka);
+							}
+
+							$param_r = [
+								'idanggota' => $iduser_new,
+								'nilai' => $this->m_param->getParamById(3)[0]->nilai,
+								'created' => date('Y-m-d H:i:s')
+							];
+
+							$this->m_param_manasuka->insertParamManasuka($param_r);
 						}
 						else
 						{
@@ -317,7 +410,42 @@ class User extends Controller
 		];
 		
 		$this->m_user->insertUser($dataset);
-		
+
+		if ($dataset['idgroup'] == 4)
+		{
+			$iduser_new = $this->m_user->getUser($dataset['username'])[0]->iduser;
+			
+			$init_aktivasi = [
+				$this->m_param->getParamById(1)[0]->nilai,
+				$this->m_param->getParamById(2)[0]->nilai
+			];
+
+			$j_deposit_r = ['pokok', 'wajib'];
+
+			for ($i = 0; $i < count($init_aktivasi); $i++) {
+				$dataset = [
+					'jenis_pengajuan' => 'penyimpanan',
+					'jenis_deposit' => $j_deposit_r[$i],
+					'cash_in' => $init_aktivasi[$i],
+					'cash_out' => 0,
+					'deskripsi' => 'biaya awal registrasi',
+					'status' => 'diproses',
+					'date_created' => date('Y-m-d H:i:s'),
+					'idanggota' => $iduser_new
+				];
+
+				$this->m_deposit->insertDeposit($dataset);
+			}
+
+			$param_r = [
+				'idanggota' => $iduser_new,
+				'nilai' => $this->m_param->getParamById(3)[0]->nilai,
+				'created' => date('Y-m-d H:i:s')
+			];
+
+			$this->m_param_manasuka->insertParamManasuka($param_r);
+		}
+				
 		$alert = view(
 			'partials/notification-alert', 
 			[
