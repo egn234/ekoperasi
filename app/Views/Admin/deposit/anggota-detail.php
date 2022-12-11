@@ -52,7 +52,7 @@
                                 <div class="mb-3">
                                     <h5 class="font-size-15">Nama:</h5>
                                     <div class="text-muted h3">
-                                        <?=$duser->nama_lengkap?>
+                                        <?=$detail_user->nama_lengkap?>
                                     </div>
                                 </div>
                                 <hr>
@@ -77,9 +77,16 @@
                                     </div>
                                 </div>
                                 <hr>
+                                <div class="mb-3">
+                                    <h5 class="font-size-15">Total Saldo Simpanan:</h5>
+                                    <div class="text-muted h3">
+                                        Rp <?=number_format(($total_saldo_manasuka + $total_saldo_wajib + $total_saldo_pokok), 2, ',','.')?>
+                                    </div>
+                                </div>
+                                <hr>
                                 <hr>
                                 <div class="mb-3">
-                                    <h5 class="font-size-15">Pascabayar Manasuka:</h5>
+                                    <h5 class="font-size-15">Nominal Setoran Manasuka:</h5>
                                     <div class="text-muted h3">
                                         <?php if (!$param_manasuka) {
                                             echo 'Parameter belum di set';
@@ -102,6 +109,13 @@
                                     <div class="col-sm-6">
                                         <h4 class="card-title">Daftar Pengajuan Simpanan</h4>
                                     </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="btn-group float-md-end">
+                                            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
+                                                Tambah Pengajuan Manasuka
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -113,6 +127,7 @@
                                         <th>Nilai</th>
                                         <th>Status</th>
                                         <th>Tanggal Pengajuan</th>
+                                        <th></th>
                                     </thead>
                                     <tbody>
                                         <?php $c = 1?>
@@ -129,6 +144,13 @@
                                                 </td>
                                                 <td><?= $a->status ?></td>
                                                 <td><?= $a->date_created ?></td>
+                                                <td>
+                                                    <div class="btn-group d-flex justify-content-center">
+                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
+                                                            <i class="fa fa-file-alt"></i> detail
+                                                        </a>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         <?php $c++; ?>
                                         <?php }?>
@@ -164,13 +186,58 @@
                     <div class="mb-3">
                         <label for="nominal_param">Besarnya Nominal (Rp)</label>
                         <input type="number" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
-                        <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
+                        <input type="text" id="iduser" name="iduser" value="<?=$detail_user->iduser?>" hidden>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
                 <button type="submit" form="formSheet" class="btn btn-success">Set</button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="addPengajuan" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPengajuanLabel">Penambahan Pengajuan Saldo Manasuka</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<?= url_to('admin/deposit/add_req') ?>" id="formSheet" method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="j_pengajuan">Jenis Pengajuan</label>
+                        <select class="form-select" id="j_pengajuan" name="jenis_pengajuan" required>
+                            <option value="" <?=(session()->getFlashdata('jenis_pengajuan'))?'':'selected'?> disabled>Pilih Opsi...</option>
+                            <option value="penarikan" <?=(session()->getFlashdata('jenis_pengajuan') == 'penarikan')?'selected':''?> >Penarikan</option>
+                            <option value="penyimpanan" <?=(session()->getFlashdata('jenis_pengajuan') == 'penyimpanan')?'selected':''?> >Penyimpanan</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Pilih Terlebih dahulu
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="nominal">Nominal (Rp.)</label>
+                        <input type="number" class="form-control" id="nominal" name="nominal" value="<?=session()->getFlashdata('nominal')?>" min="1" required>
+                        <input type="number" class="form-control" id="iduser" name="iduser" value="<?=$detail_user->iduser?>" hidden>
+                        <div class="invalid-feedback">
+                            Harus Diisi
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="description">Deskripsi</label>
+                        <input type="text" class="form-control" id="description" name="description" value="<?=session()->getFlashdata('description')?>">
+                        <div class="invalid-feedback">
+                            Harus Diisi
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" form="formSheet" class="btn btn-success">Buat Pengajuan</button>
             </div>
         </div>
     </div>

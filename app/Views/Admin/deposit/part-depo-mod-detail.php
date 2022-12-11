@@ -31,34 +31,31 @@
                     <?php }?>
                 </td>
             </tr>
-            <tr>
-                <td>Status</td>
-                <td>:</td>
-                <td><?=$a->status?></td>
-            </tr>
-            <?php if($a->status != 'diproses'){?>
-            <tr>
-                <td>Telah diproses oleh</td>
-                <td>:</td>
-                <td><?=$a->nama_admin?></td>
-            </tr>
-            <tr>
-                <td>Tanggal diproses</td>
-                <td>:</td>
-                <td><?= date('d F Y', strtotime($a->date_updated))?></td>
-            </tr>
+            <?php if ($a->jenis_deposit == "manasuka") {?>
+                <tr>
+                    <td>Status</td>
+                    <td>:</td>
+                    <td><?=$a->status?></td>
+                </tr>
+                <?php if($a->status != 'diproses'){?>
+                <tr>
+                    <td>Telah diproses oleh</td>
+                    <td>:</td>
+                    <td><?=$a->nama_admin?></td>
+                </tr>
+                <?php }?>
+                <tr style=" vertical-align: top;">
+                    <td>Bukti transfer</td>
+                    <td>:</td>
+                    <td>
+                        <?php if(!$a->bukti_transfer){?>
+                            Belum mengunggah bukti bayar
+                        <?php }else{?>
+                            <img src="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" style="max-width: 450px">
+                        <?php }?>
+                    </td>
+                </tr>
             <?php }?>
-            <tr>
-                <td>Bukti transfer</td>
-                <td>:</td>
-                <td>
-                    <?php if(!$a->bukti_transfer){?>
-                        Belum mengunggah bukti bayar
-                    <?php }else{?>
-                        <img src="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" style="max-width: 450px">
-                    <?php }?>
-                </td>
-            </tr>
         </table>
         <?php if ($confirmation) {?>
             <i class="text-danger">*Pemohon tidak mempunyai cukup saldo untuk pengajuan penarikan transaksi ini</i><br>

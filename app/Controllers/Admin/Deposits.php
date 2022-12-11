@@ -59,7 +59,8 @@ class Deposits extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail Simpanan']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Detail Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Detail Simpanan']),
-			'duser' => $detail_user,
+			'duser' => $this->account,
+			'detail_user' => $detail_user,
 			'deposit_list' => $depo_list,
 			'total_saldo_wajib' => $total_saldo_wajib,
 			'total_saldo_pokok' => $total_saldo_pokok,
@@ -68,6 +69,70 @@ class Deposits extends Controller
 		];
 		
 		return view('admin/deposit/anggota-detail', $data);
+	}
+
+	public function add_proc()
+	{
+
+		$iduser = $this->request->getPost('iduser');
+		$jenis_pengajuan = $this->request->getPost('jenis_pengajuan');
+
+		if ($jenis_pengajuan == "") {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Gagal membuat pengajuan: Pilih jenis pengajuan terlebih dahulu',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset = ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('admin/deposit/user/'.$iduser);
+		}
+
+		$jenis_deposit = 'manasuka';
+
+		$nominal = $this->request->getPost('nominal');
+		$deskripsi = $this->request->getPost('deskripsi');
+
+		$cash_in = 0;
+		$cash_out = 0;
+
+		if ($jenis_pengajuan == 'penyimpanan') {
+			$cash_in = $nominal;
+		}else{
+			$cash_out = $nominal;
+		}
+
+		$dataset = [
+			'jenis_pengajuan' => $jenis_pengajuan,
+			'jenis_deposit' => $jenis_deposit,
+			'cash_in' => $cash_in,
+			'cash_out' => $cash_out,
+			'deskripsi' => $deskripsi,
+			'status' => 'diterima',
+			'date_created' => date('Y-m-d H:i:s'),
+			'idanggota' => $iduser,
+			'idadmin' => $this->account->iduser
+		];
+
+		$this->m_deposit->insertDeposit($dataset);
+
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Pengajuan berhasil dibuat',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = [
+			'notif' => $alert
+		];
+
+		session()->setFlashdata($data_session);
+		return redirect()->to('admin/deposit/user/'.$iduser);
 	}
 
 	public function create_param_manasuka()
