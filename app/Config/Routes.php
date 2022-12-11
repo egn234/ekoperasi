@@ -99,9 +99,15 @@ $routes->group('admin', static function ($routes)
 
         $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
-        $routes->add('detail/(:num)', 'Admin\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
-    });  
+        $routes->add('detail/(:num)', 'Admin\Pinjaman::detail/$1', ['as' => 'admin_pin_detail']);
+    });
 
+    //GROUP LAPORAN BULANAN
+    $routes->group('report', static function ($routes)
+    {
+        $routes->get('list', 'Admin\Report::index');
+        $routes->get('generate-monthly-report', 'Admin\Report::generate_report_monthly');
+    });
 });
 
 //GROUP BENDAHARA
@@ -126,7 +132,7 @@ $routes->group('bendahara', static function ($routes)
 
         $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
-        $routes->add('detail/(:num)', 'Bendahara\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
+        $routes->add('detail/(:num)', 'Bendahara\Pinjaman::detail/$1', ['as' => 'bendahara_pin_detail']);
     });
 });
 
@@ -139,24 +145,11 @@ $routes->group('ketua', static function ($routes)
     $routes->post('profile/edit_proc', 'Ketua\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Ketua\Profile::update_pass');
 
-    //GROUP DAFTAR PINJAMAN
-    $routes->group('pinjaman', static function ($routes)
-    {
-        $routes->get('list', 'Ketua\Pinjaman::index');
-
-        $routes->post('cancel-pinjaman', 'Ketua\Pinjaman::cancel_loan');
-        $routes->post('approve-pinjaman', 'Ketua\Pinjaman::approve_loan');
-
-        $routes->add('approve-pinjaman/(:num)', 'Ketua\Pinjaman::approve_proc/$1', ['as' => 'ketua_approve_pinjaman']);
-        $routes->add('cancel-pinjaman/(:num)', 'Ketua\Pinjaman::cancel_proc/$1', ['as' => 'ketua_cancel_pinjaman']);
-        $routes->add('detail/(:num)', 'Ketua\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
-    });
 });
 
 //GROUP ANGGOTA
 $routes->group('anggota', static function ($routes)
 {
-
     $routes->get('dashboard', 'Anggota\Dashboard::index');
     $routes->get('profile', 'Anggota\Profile::index');
     $routes->get('closebook', 'Anggota\Closebook::index');
@@ -187,9 +180,8 @@ $routes->group('anggota', static function ($routes)
 
         $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
 
-        $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'an_pin_detail']);
-    });    
-
+        $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
+    });
 });
 
 /*
