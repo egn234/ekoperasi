@@ -81,6 +81,38 @@ class m_monthly_report extends Model
         return $this->db->query($sql)->getResult();
     }
 
+    function countNewWajibMonthlyByUser($iduser)
+    {
+        $year = date('Y');
+        $month = date('m');
+        $sql = "
+            SELECT count(idanggota) AS hitung FROM tb_deposit 
+                WHERE MONTH(date_created) = $month
+                AND YEAR(date_created) = $year
+                AND deskripsi = 'biaya awal registrasi'
+                AND status = 'diproses'
+                AND idanggota = $iduser
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
+    function setNewWajibMonthlyByUser($iduser)
+    {
+        $year = date('Y');
+        $month = date('m');
+        $sql = "
+            UPDATE tb_deposit 
+                SET status = 'diterima' 
+                WHERE MONTH(date_created) = $month
+                AND YEAR(date_created) = $year
+                AND deskripsi = 'biaya awal registrasi'
+                AND idanggota = $iduser
+        ";
+        
+        return $this->db->query($sql)->getResult();
+    }
+
     function insertMonthlyReport($data)
     {
         $builder = $this->db->table('tb_monthly_report');

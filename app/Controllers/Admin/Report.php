@@ -53,19 +53,18 @@ class Report extends Controller
 		$list_anggota = $this->m_monthly_report->getAllIdAnggotaAktif();
 
 		foreach ($list_anggota as $member) {
+
+			$cek_new_user = $this->m_monthly_report->countNewWajibMonthlyByUser($member->iduser)[0]->hitung;
+
+			if ($cek_new_user != 0) {
 			
-			$saldo_mutasi = [
-				$this->m_param->getParamById(2)[0]->nilai,
-				$this->m_param->getParamById(3)[0]->nilai
-			];
+				$this->m_monthly_report->setNewWajibMonthlyByUser($member->iduser);
+				$param_manasuka = $this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nominal;
 
-			$jenis_deposit = ['wajib', 'manasuka'];
-
-			for ($i = 0; $i < 2; $i++) {
 				$dataset_deposit = [
 					'jenis_pengajuan' => 'penyimpanan',
-					'jenis_deposit' => $jenis_deposit[$i],
-					'cash_in' => $saldo_mutasi[$i],
+					'jenis_deposit' => 'manasuka',
+					'cash_in' => $param_manasuka,
 					'cash_out' => 0,
 					'deskripsi' => 'Diambil dari potongan gaji bulanan',
 					'status' => 'diterima',
@@ -75,7 +74,32 @@ class Report extends Controller
 				];
 
 				$this->m_deposit->insertDeposit($dataset_deposit);
+			}else{
+				
+				$saldo_mutasi = [
+					$this->m_param->getParamById(2)[0]->nilai,
+					$this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nominal
+				];
+
+				$jenis_deposit = ['wajib', 'manasuka'];
+
+				for ($i = 0; $i < 2; $i++) {
+					$dataset_deposit = [
+						'jenis_pengajuan' => 'penyimpanan',
+						'jenis_deposit' => $jenis_deposit[$i],
+						'cash_in' => $saldo_mutasi[$i],
+						'cash_out' => 0,
+						'deskripsi' => 'Diambil dari potongan gaji bulanan',
+						'status' => 'diterima',
+						'date_created' => date('Y-m-d H:i:s'),				
+						'idanggota' => $member->iduser,
+						'idadmin' => $this->account->iduser
+					];
+
+					$this->m_deposit->insertDeposit($dataset_deposit);
+				}
 			}
+			
 
 			$cek_list_pinjaman = $this->m_monthly_report->countPinjamanAktifByAnggota($member->iduser)[0]->hitung;
 

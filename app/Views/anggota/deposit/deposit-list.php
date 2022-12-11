@@ -132,9 +132,16 @@
                                     </div>
                                 </div>
                                 <hr>
+                                <div class="mb-3">
+                                    <h5 class="font-size-15">Total Saldo Simpanan:</h5>
+                                    <div class="text-muted h3">
+                                        Rp <?=number_format(($total_saldo_manasuka+$total_saldo_pokok+$total_saldo_wajib), 2, ',','.')?>
+                                    </div>
+                                </div>
+                                <hr>
                                 <hr>
                                 <div class="mb-3">
-                                    <h5 class="font-size-15">Pascabayar Manasuka:</h5>
+                                    <h5 class="font-size-15">Nominal Setoran Manasuka:</h5>
                                     <div class="text-muted h3">
                                         <?php if (!$param_manasuka) {
                                             echo 'Parameter belum di set';
