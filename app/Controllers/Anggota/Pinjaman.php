@@ -5,6 +5,7 @@ use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_pinjaman;
 use App\Models\M_cicilan;
+use App\Models\M_param;
 
 class Pinjaman extends Controller
 {
@@ -15,6 +16,7 @@ class Pinjaman extends Controller
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_pinjaman = new M_pinjaman();
 		$this->m_cicilan = new M_cicilan();
+		$this->m_param = new M_param();
 	}
 
 	public function index()
@@ -115,5 +117,82 @@ class Pinjaman extends Controller
 		$dataset += ['notif' => $alert];
 		session()->setFlashdata($dataset);
 		return redirect()->back();
+	}
+
+	public function generate_form($idpinjaman)
+	{
+		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
+		$bunga = $this->m_param->getParamById(9)[0]->nilai/100;
+		$provisi = $this->m_param->getParamById(5)[0]->nilai/100;
+
+		$data = [
+			'detail_pinjaman' => $detail_pinjaman,
+			'bunga' => $bunga,
+			'provisi' => $provisi
+		];
+		
+		return view('anggota/partials/form-pinjaman', $data);
+	}
+
+	public function upload_form($idpinjaman)
+	{
+		$file = $this->request->getFile('form_bukti');
+
+		if ($file->isValid()) {
+			
+			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
+			
+			if ($cek_bukti) {
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $cek_bukti);
+			}
+
+			$newName = $file->getRandomName();
+			$file->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
+			
+			$form_bukti = $file->getName();
+			$date_updated = date('Y-m-d H:i:s');
+
+			$data = [
+				'form_bukti' => $form_bukti,
+				'status' => 2,
+				'date_updated' => $date_updated
+			];
+
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $data);
+			
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Form Persetujuan berhasil diunggah',
+				 	'status' => 'success'
+				]
+			);
+
+		}else{
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Form Persetujuan gagal diunggah',
+				 	'status' => 'danger'
+				]
+			);
+			
+		}
+		
+		$data_session = [
+			'notif' => $alert
+		];
+		session()->setFlashdata($data_session);
+		return redirect()->to('anggota/pinjaman/list');
+	}
+
+	public function up_form()
+	{
+		if ($_POST['rowid']) {
+			$id = $_POST['rowid'];
+			$user = $this->m_pinjaman->getPinjamanById($id)[0];
+			$data = ['a' => $user];
+			echo view('anggota/pinjaman/part-pinj-mod-upload', $data);
+		}
 	}
 }

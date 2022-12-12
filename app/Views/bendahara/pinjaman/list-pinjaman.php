@@ -57,6 +57,7 @@
                                         <th>Nominal</th>
                                         <th>Tanggal Pengajuan</th>
                                         <th>Lama Angsuran (bulan)</th>
+                                        <th>Form Persetujuan</th>
                                         <th>Aksi</th>
                                     </thead>
                                     <tbody>
@@ -69,6 +70,11 @@
                                                 <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
                                                 <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
                                                 <td><?= $a->angsuran_bulanan ?></td>
+                                                <td>
+                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_bukti?>" target="_blank">
+                                                        <i class="fa fa-download"></i> File
+                                                    </a>
+                                                </td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
                                                         <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="<?=$a->idpinjaman?>">

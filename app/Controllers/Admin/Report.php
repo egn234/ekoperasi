@@ -61,7 +61,7 @@ class Report extends Controller
 			if ($cek_new_user != 0) {
 			
 				$this->m_monthly_report->setNewWajibMonthlyByUser($member->iduser);
-				
+
 				$param_manasuka = $this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nilai;
 
 				$dataset_deposit = [
@@ -139,7 +139,7 @@ class Report extends Controller
 
 						$this->m_cicilan->insertCicilan($dataset_cicilan);
 
-						$status_pinjaman = ['status' => 4];
+						$status_pinjaman = ['status' => 5];
 						$this->m_pinjaman->updatePinjaman($idpinjaman, $status_pinjaman);
 
 					}elseif ($cek_cicilan != 0 && $cek_cicilan < $pinjaman->angsuran_bulanan) {
@@ -194,4 +194,6 @@ class Report extends Controller
 		session()->setFlashdata($dataset_notif);
 		return redirect()->back();
 	}
+
+	
 }

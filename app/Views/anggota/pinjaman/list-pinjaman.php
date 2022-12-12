@@ -78,21 +78,31 @@
                                                     <?php if($a->status == 0){?>
                                                         Ditolak
                                                     <?php }elseif($a->status == 1){?>
-                                                        Diproses Admin
+                                                        Upload Form Persetujuan SDM
                                                     <?php }elseif($a->status == 2){?>
-                                                        Diproses Bendahara
+                                                        Diproses Admin
                                                     <?php }elseif($a->status == 3){?>
-                                                        Sedang Berlangsung
+                                                        Diproses Bendahara
                                                     <?php }elseif($a->status == 4){?>
+                                                        Sedang Berlangsung
+                                                    <?php }elseif($a->status == 5){?>
                                                         Lunas
                                                     <?php }?>
                                                 </td>
                                                 <td><?= $a->angsuran_bulanan ?></td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
-                                                        <?php if ($a->status == 4 || $a->status == 3) {?>
+                                                        <?php if ($a->status == 5 || $a->status == 4) {?>
                                                             <a href="<?= url_to('anggota_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
                                                                 <i class="fa fa-file-alt"></i> Detail
+                                                            </a>
+                                                        <?php } ?>
+                                                        <?php if ($a->status == 1) {?>
+                                                            <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$a->idpinjaman?>">
+                                                                <i class="fa fa-upload"></i> Upload form
+                                                            </a>
+                                                            <a href="<?= url_to('anggota_print_form', $a->idpinjaman) ?>" class="btn btn-info btn-sm" target="_blank">
+                                                                <i class="fa fa-file-alt"></i> Print form
                                                             </a>
                                                         <?php } ?>
                                                     </div>
@@ -120,6 +130,14 @@
 
 </div>
 <!-- END layout-wrapper -->
+
+<div id="uploadBT" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 <div id="addPengajuan" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -196,6 +214,19 @@
 
 <script type="text/javascript">
     $('.dtable').DataTable();
+    $(document).ready(function() {
+        $('#uploadBT').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/anggota/pinjaman/up_form',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+    });
 </script>
 
 </body>
