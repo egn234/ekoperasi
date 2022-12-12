@@ -8,6 +8,7 @@ use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_monthly_report;
 use App\Models\M_param;
+use App\Models\M_param_manasuka;
 use App\Models\M_cicilan;
 
 class Report extends Controller
@@ -20,6 +21,7 @@ class Report extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_monthly_report = new M_monthly_report();
 		$this->m_param = new M_param();
+		$this->m_param_manasuka = new M_param_manasuka();
 		$this->m_cicilan = new M_cicilan();
 	}
 
@@ -59,7 +61,8 @@ class Report extends Controller
 			if ($cek_new_user != 0) {
 			
 				$this->m_monthly_report->setNewWajibMonthlyByUser($member->iduser);
-				$param_manasuka = $this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nominal;
+				
+				$param_manasuka = $this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nilai;
 
 				$dataset_deposit = [
 					'jenis_pengajuan' => 'penyimpanan',
@@ -78,7 +81,7 @@ class Report extends Controller
 				
 				$saldo_mutasi = [
 					$this->m_param->getParamById(2)[0]->nilai,
-					$this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nominal
+					$this->m_param_manasuka->getParamByUserId($member->iduser)[0]->nilai
 				];
 
 				$jenis_deposit = ['wajib', 'manasuka'];
@@ -100,7 +103,6 @@ class Report extends Controller
 				}
 			}
 			
-
 			$cek_list_pinjaman = $this->m_monthly_report->countPinjamanAktifByAnggota($member->iduser)[0]->hitung;
 
 			if ($cek_list_pinjaman != 0) {

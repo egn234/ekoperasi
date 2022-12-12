@@ -101,16 +101,19 @@ class m_monthly_report extends Model
     {
         $year = date('Y');
         $month = date('m');
+        $now = date('Y-m-d H:i:s');
+
         $sql = "
             UPDATE tb_deposit 
-                SET status = 'diterima' 
+                SET status = 'diterima',
+                    date_updated = '$now'
                 WHERE MONTH(date_created) = $month
                 AND YEAR(date_created) = $year
                 AND deskripsi = 'biaya awal registrasi'
                 AND idanggota = $iduser
         ";
-        
-        return $this->db->query($sql)->getResult();
+
+        $this->db->query($sql);
     }
 
     function insertMonthlyReport($data)
