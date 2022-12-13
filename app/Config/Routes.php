@@ -103,11 +103,14 @@ $routes->group('admin', static function ($routes)
         $routes->add('detail/(:num)', 'Admin\Pinjaman::detail/$1', ['as' => 'admin_pin_detail']);
     });
 
-    //GROUP LAPORAN BULANAN
+    //GROUP LAPORAN
     $routes->group('report', static function ($routes)
     {
         $routes->get('list', 'Admin\Report::index');
         $routes->get('generate-monthly-report', 'Admin\Report::generate_report_monthly');
+        $routes->get('generate-deposit-member', 'Admin\Report::generate_deposit_member');
+        $routes->get('generate-loan-member', 'Admin\Report::generate_loan_member');
+        $routes->get('generate-loan-deposit-member', 'Admin\Report::generate_loan_deposit_member');
     });
 });
 
@@ -135,6 +138,16 @@ $routes->group('bendahara', static function ($routes)
         $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
         $routes->add('detail/(:num)', 'Bendahara\Pinjaman::detail/$1', ['as' => 'bendahara_pin_detail']);
     });
+
+    //GROUP LAPORAN
+    $routes->group('report', static function ($routes)
+    {
+        $routes->get('list', 'Bendahara\Report::index');
+        $routes->get('generate-monthly-report', 'Bendahara\Report::generate_report_monthly');
+        $routes->get('generate-deposit-member', 'Bendahara\Report::generate_deposit_member');
+        $routes->get('generate-loan-member', 'Bendahara\Report::generate_loan_member');
+        $routes->get('generate-loan-deposit-member', 'Bendahara\Report::generate_loan_deposit_member');
+    });
 });
 
 //GROUP KETUA
@@ -146,6 +159,14 @@ $routes->group('ketua', static function ($routes)
     $routes->post('profile/edit_proc', 'Ketua\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Ketua\Profile::update_pass');
 
+    //GROUP LAPORAN
+    $routes->group('report', static function ($routes)
+    {
+        $routes->get('list', 'Ketua\Report::index');
+        $routes->get('generate-deposit-member', 'Ketua\Report::generate_deposit_member');
+        $routes->get('generate-loan-member', 'Ketua\Report::generate_loan_member');
+        $routes->get('generate-loan-deposit-member', 'Ketua\Report::generate_loan_deposit_member');
+    });
 });
 
 //GROUP ANGGOTA

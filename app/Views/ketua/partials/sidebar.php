@@ -15,6 +15,12 @@
                         <span data-key="t-dashboard">Dashboard</span>
                     </a>
                 </li>
+                <li>
+                    <a href="<?= url_to('ketua/report/list') ?>">
+                        <i data-feather="trending-up"></i>
+                        <span data-key="t-reporting">Reporting</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- Sidebar -->

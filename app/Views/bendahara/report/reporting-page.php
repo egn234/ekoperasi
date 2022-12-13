@@ -1,10 +1,10 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->include('bendahara/partials/head-main') ?>
 
 <head>
 
     <?= $title_meta ?>
 
-    <?= $this->include('admin/partials/head-css') ?>
+    <?= $this->include('bendahara/partials/head-css') ?>
     
     <style type="text/css">
         input::-webkit-outer-spin-button,
@@ -16,14 +16,14 @@
 
 </head>
 
-<?= $this->include('admin/partials/body') ?>
+<?= $this->include('bendahara/partials/body') ?>
 
 <!-- <body data-layout="horizontal"> -->
 
 <!-- Begin page -->
 <div id="layout-wrapper">
 
-    <?= $this->include('admin/partials/menu') ?>
+    <?= $this->include('bendahara/partials/menu') ?>
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -90,13 +90,13 @@
                                     <div class="col-sm-12">
                                         <h4 class="card-title">Daftar Laporan Bulanan</h4>
                                         <div class="float-md-end">
-                                            <a href="<?=url_to('admin/report/generate-deposit-member')?>" class="btn btn-success">
+                                            <a href="<?=url_to('bendahara/report/generate-deposit-member')?>" class="btn btn-success">
                                                 Generate Daftar Saldo Anggota
                                             </a>
-                                            <a href="<?=url_to('admin/report/generate-loan-member')?>" class="btn btn-success">
+                                            <a href="<?=url_to('bendahara/report/generate-loan-member')?>" class="btn btn-success">
                                                 Generate Daftar Pinjaman Anggota
                                             </a>
-                                            <a href="<?=url_to('admin/report/generate-loan-deposit-member')?>" class="btn btn-success">
+                                            <a href="<?=url_to('bendahara/report/generate-loan-deposit-member')?>" class="btn btn-success">
                                                 Generate Daftar Saldo dan Pinjaman Anggota
                                             </a>
                                         </div>
@@ -115,7 +115,7 @@
         <!-- End Page-content -->
 
 
-        <?= $this->include('admin/partials/footer') ?>
+        <?= $this->include('bendahara/partials/footer') ?>
     </div>
     <!-- end main content-->
 
@@ -134,17 +134,17 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Batal</button>
-                <a href="<?=url_to('admin/report/generate-monthly-report')?>" class="btn btn-success">Ya</a>
+                <a href="<?=url_to('bendahara/report/generate-monthly-report')?>" class="btn btn-success">Ya</a>
             </div>
         </div>
     </div>
 </div><!-- /.modal -->
 
 
-<?= $this->include('admin/partials/right-sidebar') ?>
+<?= $this->include('bendahara/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->
-<?= $this->include('admin/partials/vendor-scripts') ?>
+<?= $this->include('bendahara/partials/vendor-scripts') ?>
 
 <!-- Required datatable js -->
 <script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>

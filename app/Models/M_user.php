@@ -251,5 +251,63 @@ class M_user extends Model
         $builder->where('iduser', $iduser);
         $builder->update();
     }
+
+    function getUserLoanDeposit()
+    {
+        $sql = "
+            SELECT 
+                tb_user.nama_lengkap AS nama,
+                tb_user.nik AS nik,
+                (SELECT IFNULL(SUM(sub_a.cash_in), 0) - IFNULL(SUM(sub_a.cash_out), 0) 
+                    FROM tb_deposit sub_a 
+                    WHERE sub_a.jenis_deposit = 'wajib' 
+                    AND sub_a.idanggota = tb_user.iduser
+                ) AS wajib, 
+                (SELECT IFNULL(SUM(sub_b.cash_in), 0) - IFNULL(SUM(sub_b.cash_out), 0) 
+                    FROM tb_deposit sub_b 
+                    WHERE sub_b.jenis_deposit = 'pokok' 
+                    AND sub_b.idanggota = tb_user.iduser
+                ) AS pokok,
+                (SELECT IFNULL(SUM(sub_c.cash_in), 0) - IFNULL(SUM(sub_c.cash_out), 0) 
+                    FROM tb_deposit sub_c 
+                    WHERE sub_c.jenis_deposit = 'manasuka' 
+                    AND sub_c.idanggota = tb_user.iduser
+                ) AS manasuka,
+                IFNULL((SUM(tb_deposit.cash_in) - SUM(tb_deposit.cash_out)), 0) AS total_saldo,
+                (SELECT sub_d.nominal 
+                    FROM tb_pinjaman sub_d 
+                    WHERE sub_d.idanggota = tb_user.iduser 
+                    AND sub_d.status = 4
+                ) AS pinjaman,
+                (SELECT IFNULL(SUM(sub_e_a.nominal), 0) 
+                    FROM tb_pinjaman sub_e 
+                    LEFT JOIN tb_cicilan sub_e_a ON sub_e.idpinjaman = sub_e_a.idpinjaman 
+                    WHERE sub_e.idanggota = tb_user.iduser 
+                    AND sub_e.status = 4
+                ) AS terbayar,
+                (SELECT (sub_f.nominal - IFNULL(SUM(sub_f_a.nominal), 0)) 
+                    FROM tb_pinjaman sub_f 
+                    LEFT JOIN tb_cicilan sub_f_a ON sub_f.idpinjaman = sub_f_a.idpinjaman 
+                    WHERE sub_f.idanggota = tb_user.iduser AND sub_f.status = 4
+                ) AS sisa_bayar,
+                (SELECT COUNT(sub_g_a.idcicilan) 
+                    FROM tb_pinjaman sub_g 
+                    LEFT JOIN tb_cicilan sub_g_a ON sub_g.idpinjaman = sub_g_a.idpinjaman 
+                    WHERE sub_g.idanggota = tb_user.iduser 
+                    AND sub_g.status = 4
+                ) AS cicilan_ke,
+                (SELECT sub_h.angsuran_bulanan 
+                    FROM tb_pinjaman sub_h 
+                    WHERE sub_h.idanggota = tb_user.iduser 
+                    AND sub_h.status = 4
+                ) AS angsuran
+            FROM tb_user
+                LEFT JOIN tb_deposit ON tb_user.iduser = tb_deposit.idanggota
+            WHERE tb_user.idgroup = 4
+            GROUP BY tb_user.iduser
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
     
 }

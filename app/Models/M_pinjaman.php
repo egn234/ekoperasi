@@ -115,4 +115,25 @@ class m_pinjaman extends Model
         $builder->where('idpinjaman', $idpinjaman);
         $builder->update($data);
     }
+
+    function getAllPinjamanMember()
+    {
+        $sql = "
+            SELECT 
+                tb_user.nama_lengkap AS nama,
+                tb_user.nik AS nik,
+                tb_pinjaman.nominal AS pinjaman,
+                IFNULL(SUM(tb_cicilan.nominal), 0) AS terbayar,
+                (tb_pinjaman.nominal - IFNULL(SUM(tb_cicilan.nominal), 0)) AS sisa_bayar,
+                COUNT(tb_cicilan.idcicilan) AS cicilan_ke,
+                tb_pinjaman.angsuran_bulanan AS angsuran
+            FROM `tb_pinjaman` 
+                JOIN tb_user ON tb_user.iduser = tb_pinjaman.idanggota
+                LEFT JOIN tb_cicilan USING (idpinjaman)
+            WHERE status = 4
+            GROUP BY tb_user.iduser;
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
 }

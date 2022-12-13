@@ -201,7 +201,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="nominal">Nominal (Rp.)</label>
-                        <input type="number" class="form-control" id="nominal" name="nominal" value="<?=session()->getFlashdata('nominal')?>" min="1" required>
+                        <input type="text" class="form-control" id="nominal" name="nominal" value="<?=session()->getFlashdata('nominal')?>" required>
                         <div class="invalid-feedback">
                             Harus Diisi
                         </div>
@@ -234,7 +234,7 @@
                 <form action="<?=($param_manasuka)?url_to('anggota_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('admin/deposit/create_param_manasuka')?>" id="formParam" method="post">
                     <div class="mb-3">
                         <label for="nominal_param">Besarnya Nominal (Rp)</label>
-                        <input type="number" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
+                        <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
                         <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
                     </div>
                 </form>
@@ -264,6 +264,8 @@
 <!-- Required datatable js -->
 <script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- form mask -->
+<script src="<?=base_url()?>/assets/libs/imask/imask.min.js"></script>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
@@ -291,6 +293,28 @@
                     $('.fetched-data').html(data); //menampilkan data ke dalam modal
                 }
             });
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var currencyMask = IMask(document.getElementById('nominal'), {
+            mask: 'num',
+            blocks: {
+            num: {
+                    // nested masks are available!
+                    mask: Number,
+                    thousandsSeparator: '.'
+                }
+            }
+        });
+        var currencyMask = IMask(document.getElementById('nominal_param'), {
+            mask: 'num',
+            blocks: {
+            num: {
+                    // nested masks are available!
+                    mask: Number,
+                    thousandsSeparator: '.'
+                }
+            }
         });
     });
 </script>

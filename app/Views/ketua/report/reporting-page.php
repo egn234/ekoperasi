@@ -1,10 +1,10 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->include('ketua/partials/head-main') ?>
 
 <head>
 
     <?= $title_meta ?>
 
-    <?= $this->include('admin/partials/head-css') ?>
+    <?= $this->include('ketua/partials/head-css') ?>
     
     <style type="text/css">
         input::-webkit-outer-spin-button,
@@ -16,14 +16,14 @@
 
 </head>
 
-<?= $this->include('admin/partials/body') ?>
+<?= $this->include('ketua/partials/body') ?>
 
 <!-- <body data-layout="horizontal"> -->
 
 <!-- Begin page -->
 <div id="layout-wrapper">
 
-    <?= $this->include('admin/partials/menu') ?>
+    <?= $this->include('ketua/partials/menu') ?>
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -44,11 +44,6 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <h4 class="card-title">Daftar Laporan Bulanan</h4>
-                                        <div class="btn-group float-md-end">
-                                            <a class="btn btn-success <?=($cek_report != 0)?'disabled':''?>" data-bs-toggle="modal"  data-bs-target="#konfGenerate">
-                                                Generate Laporan Untuk Bulan Ini
-                                            </a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -90,13 +85,13 @@
                                     <div class="col-sm-12">
                                         <h4 class="card-title">Daftar Laporan Bulanan</h4>
                                         <div class="float-md-end">
-                                            <a href="<?=url_to('admin/report/generate-deposit-member')?>" class="btn btn-success">
+                                            <a href="<?=url_to('ketua/report/generate-deposit-member')?>" class="btn btn-success">
                                                 Generate Daftar Saldo Anggota
                                             </a>
-                                            <a href="<?=url_to('admin/report/generate-loan-member')?>" class="btn btn-success">
+                                            <a href="<?=url_to('ketua/report/generate-loan-member')?>" class="btn btn-success">
                                                 Generate Daftar Pinjaman Anggota
                                             </a>
-                                            <a href="<?=url_to('admin/report/generate-loan-deposit-member')?>" class="btn btn-success">
+                                            <a href="<?=url_to('ketua/report/generate-loan-deposit-member')?>" class="btn btn-success">
                                                 Generate Daftar Saldo dan Pinjaman Anggota
                                             </a>
                                         </div>
@@ -115,36 +110,17 @@
         <!-- End Page-content -->
 
 
-        <?= $this->include('admin/partials/footer') ?>
+        <?= $this->include('ketua/partials/footer') ?>
     </div>
     <!-- end main content-->
 
 </div>
 <!-- END layout-wrapper -->
 
-<div id="konfGenerate" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Konfirmasi Generate Laporan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Buat Laporan untuk bulan ini?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Batal</button>
-                <a href="<?=url_to('admin/report/generate-monthly-report')?>" class="btn btn-success">Ya</a>
-            </div>
-        </div>
-    </div>
-</div><!-- /.modal -->
-
-
-<?= $this->include('admin/partials/right-sidebar') ?>
+<?= $this->include('ketua/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->
-<?= $this->include('admin/partials/vendor-scripts') ?>
+<?= $this->include('ketua/partials/vendor-scripts') ?>
 
 <!-- Required datatable js -->
 <script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>

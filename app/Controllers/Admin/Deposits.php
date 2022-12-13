@@ -93,7 +93,7 @@ class Deposits extends Controller
 
 		$jenis_deposit = 'manasuka';
 
-		$nominal = $this->request->getPost('nominal');
+		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
 		$deskripsi = $this->request->getPost('deskripsi');
 
 		$cash_in = 0;
@@ -139,7 +139,7 @@ class Deposits extends Controller
 	{
 		$dataset = [
 			'idanggota' => $this->request->getPost('iduser'),
-			'nilai' => $this->request->getPost('nilai'),
+			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'created' => date('Y-m-d H:i:s')
 		];
 
@@ -162,7 +162,7 @@ class Deposits extends Controller
 	public function set_param_manasuka($idmnskparam = false)
 	{
 		$dataset = [
-			'nilai' => $this->request->getPost('nilai'),
+			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'updated' => date('Y-m-d H:i:s')
 		];
 

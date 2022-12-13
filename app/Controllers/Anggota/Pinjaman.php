@@ -78,7 +78,7 @@ class Pinjaman extends Controller
 		}
 		
 		$dataset = [
-			'nominal' => $this->request->getPost('nominal'),
+			'nominal' => filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT),
 			'tipe_permohonan' => $this->request->getPost('tipe_permohonan'),
 			'deskripsi' => $this->request->getPost('deskripsi'),
 			'angsuran_bulanan' => $angsuran_bulanan

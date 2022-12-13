@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Admin;
+namespace App\Controllers\Bendahara;
 
 require_once ROOTPATH.'vendor/autoload.php';
 
@@ -33,14 +33,14 @@ class Report extends Controller
 		$cek_report = $this->m_monthly_report->countReportCurrentMonth()[0]->hitung;
 
 		$data = [
-			'title_meta' => view('admin/partials/title-meta', ['title' => 'Dashboard']),
-			'page_title' => view('admin/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
+			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Dashboard']),
+			'page_title' => view('bendahara/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
 			'duser' => $this->account,
 			'list_report' => $list_report,
 			'cek_report' => $cek_report
 		];
 		
-		return view('admin/report/reporting-page', $data);
+		return view('bendahara/report/reporting-page', $data);
 	}
 
 	public function generate_report_monthly()
@@ -175,7 +175,7 @@ class Report extends Controller
 		];
 		
 		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
-		$spreadsheet = $reader->loadFromString(view('admin/report/export-monthly-report', $data_excel));
+		$spreadsheet = $reader->loadFromString(view('bendahara/report/export-monthly-report', $data_excel));
 
 		$filename = 'monthly_report_' . date('Ymd') . '.xlsx';
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -201,21 +201,21 @@ class Report extends Controller
 	{
 		$report = $this->m_deposit->getDepositMemberReport();
 		$data = ['report' => $report];
-		echo view('admin/report/reporting-deposit-member', $data);
+		echo view('bendahara/report/reporting-deposit-member', $data);
 	}
 
 	public function generate_loan_member()
 	{
 		$report = $this->m_pinjaman->getAllPinjamanMember();
 		$data = ['report' => $report];
-		echo view('admin/report/reporting-loan-member', $data);
+		echo view('bendahara/report/reporting-loan-member', $data);
 	}
 
 	public function generate_loan_deposit_member()
 	{
 		$report = $this->m_user->getUserLoanDeposit();
 		$data = ['report' => $report];
-		echo view('admin/report/reporting-loan-deposit-member', $data);
+		echo view('bendahara/report/reporting-loan-deposit-member', $data);
 	}
 	
 }
