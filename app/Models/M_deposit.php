@@ -176,6 +176,19 @@ class m_deposit extends Model
         return $this->db->query($sql)->getResult();
     }
 
+    function cekSaldoManasukaByUser($iduser)
+    {
+        $sql = "
+            SELECT SUM(cash_in) - SUM(cash_out) AS saldo_manasuka 
+            FROM tb_deposit 
+            WHERE idanggota = $iduser 
+            AND jenis_deposit = 'manasuka' 
+            AND status = 'diterima'
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
     function getDepositMemberReport()
     {
         $sql = "

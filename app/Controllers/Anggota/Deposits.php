@@ -63,6 +63,22 @@ class Deposits extends Controller
 		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
 		$deskripsi = $this->request->getPost('deskripsi');
 
+		$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
+
+		if ($cek_saldo < $nominal) {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Gagal membuat pengajuan: Saldo manasuka kurang untuk membuat pengajuan',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset = ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('anggota/deposit/list');
+		}
+
 		$cash_in = 0;
 		$cash_out = 0;
 

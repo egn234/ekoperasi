@@ -85,7 +85,7 @@
                                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
                                                             <i class="fa fa-file-alt"></i> Detail
                                                         </a>
-                                                        <?php if (!$a->bukti_transfer && $a->jenis_deposit == 'manasuka' && $a->status != "diterima") {?>
+                                                        <?php if (!$a->bukti_transfer && $a->jenis_deposit == 'manasuka' && $a->status != "diterima" && $a->status != "ditolak") {?>
                                                             <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$a->iddeposit?>">
                                                                 <i class="fa fa-upload"></i> upload bukti
                                                             </a>
