@@ -56,48 +56,74 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Jenis Mutasi</th>
-                                        <th>Nilai</th>
-                                        <th>Status</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($deposit_list as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->jenis_pengajuan . ' ' . $a->jenis_deposit ?></td>
-                                                <td>
-                                                    <?php if ($a->cash_in == 0) {?>
-                                                        <span class="badge badge-soft-danger">- <?= number_format($a->cash_out, 2, ',', '.')?>
-                                                    <?php }else{?>
-                                                        <span class="badge badge-soft-success">+ <?= number_format($a->cash_in, 2, ',', '.')?>
-                                                    <?php }?>
-                                                </td>
-                                                <td><?= $a->status ?></td>
-                                                <td><?= $a->date_created ?></td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> Detail
-                                                        </a>
-                                                        <?php if (!$a->bukti_transfer && $a->jenis_deposit == 'manasuka' && $a->status != "diterima" && $a->status != "ditolak") {?>
-                                                            <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$a->iddeposit?>">
-                                                                <i class="fa fa-upload"></i> upload bukti
-                                                            </a>
-                                                        <?php }?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
+                                <?php $i = 1 + (10 * ($currentpage - 1)); ?>
+                                <?php foreach ($deposit_list2 as $k) : ?>
 
+                                    <?php if ($k['cash_in'] == 0) {?>
+                                        <div class="card border-black">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <i class="fa fa-upload"></i>
+                                                        <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="float-end">
+                                                            <b>- <?= number_format($k['cash_out'], 2, ',', '.')?></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="text-muted">
+                                                        <?= $k['status'] ?> pada
+                                                        <?= $k['date_created'] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php }else{?>
+                                        <div class="card border-success">
+                                            <div class="card-body">
+                                                <div class="row md-3">
+                                                    <div class="col-8">
+                                                        <i class="fa fa-upload"></i>
+                                                        <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="float-end">
+                                                            <span class="text-success"><b>+ <?= number_format($k['cash_in'], 2, ',', '.')?></b></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-8">
+                                                        <span class="text-muted">
+                                                            Status: <?= $k['status'] ?> <br>
+                                                            Tanggal: <?= $k['date_created'] ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="btn-group float-end">
+                                                            <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
+                                                                <i class="fa fa-file-alt"></i> Detail
+                                                            </a>
+                                                            <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
+                                                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
+                                                                    <i class="fa fa-upload"></i> upload bukti
+                                                                </a>
+                                                            <?php }?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php }?>
+                                <?php endforeach;?>
+                                <div class="mb-3 col-12">
+                                    <div class="float-md-end">
+                                        <?= $pager->links('grup1', 'default_minia')?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -112,16 +138,16 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <h5 class="font-size-15">Saldo Simpanan Wajib:</h5>
+                                    <h5 class="font-size-15">Saldo Simpanan Pokok:</h5>
                                     <div class="text-muted h3">
-                                        Rp <?=number_format($total_saldo_wajib, 2, ',','.')?>
+                                        Rp <?=number_format($total_saldo_pokok, 2, ',','.')?>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <h5 class="font-size-15">Saldo Simpanan Pokok:</h5>
+                                    <h5 class="font-size-15">Saldo Simpanan Wajib:</h5>
                                     <div class="text-muted h3">
-                                        Rp <?=number_format($total_saldo_pokok, 2, ',','.')?>
+                                        Rp <?=number_format($total_saldo_wajib, 2, ',','.')?>
                                     </div>
                                 </div>
                                 <hr>
@@ -157,7 +183,6 @@
                         </div>
                     </div> <!-- end col -->
                 </div> <!-- end row -->
-
 
             </div> <!-- container-fluid -->
         </div>

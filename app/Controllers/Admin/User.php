@@ -106,6 +106,9 @@ class User extends Controller
 						'unit_kerja' => $cell->getCellByColumnAndRow(9, $i)->getValue(),
 						'nomor_telepon' => $cell->getCellByColumnAndRow(10, $i)->getValue(),
 						'email' => $cell->getCellByColumnAndRow(11, $i)->getValue(),
+					];
+
+					$saldo = [
 						'saldo_pokok' => $cell->getCellByColumnAndRow(12, $i)->getValue(),
 						'saldo_wajib' => $cell->getCellByColumnAndRow(13, $i)->getValue(),
 						'saldo_manasuka' => $cell->getCellByColumnAndRow(14, $i)->getValue()
@@ -129,12 +132,12 @@ class User extends Controller
 
 							$iduser_new = $this->m_user->getUser($dataset['username'])[0]->iduser;
 							
-							if ($dataset['saldo_pokok'] != null || $dataset['saldo_pokok'] != 0) {
+							if ($saldo['saldo_pokok'] != null || $saldo['saldo_pokok'] != 0) {
 								
 								$saldo_pokok = [
 									'jenis_pengajuan' => 'penyimpanan',
 									'jenis_deposit' => 'pokok',
-									'cash_in' => $dataset['saldo_pokok'],
+									'cash_in' => $saldo['saldo_pokok'],
 									'cash_out' => 0,
 									'deskripsi' => 'saldo pokok',
 									'status' => 'diterima',
@@ -146,7 +149,7 @@ class User extends Controller
 							}else{
 
 								$init_aktivasi = $this->m_param->getParamById(1)[0]->nilai;
-								$dataset = [
+								$saldo_pokok = [
 									'jenis_pengajuan' => 'penyimpanan',
 									'jenis_deposit' => 'pokok',
 									'cash_in' => $init_aktivasi,
@@ -157,15 +160,15 @@ class User extends Controller
 									'idanggota' => $iduser_new
 								];
 
-								$this->m_deposit->insertDeposit($dataset);
+								$this->m_deposit->insertDeposit($saldo_pokok);
 							}
 
-							if ($dataset['saldo_wajib'] != null || $dataset['saldo_wajib'] != 0) {
+							if ($saldo['saldo_wajib'] != null || $saldo['saldo_wajib'] != 0) {
 
 								$saldo_wajib = [
 									'jenis_pengajuan' => 'penyimpanan',
 									'jenis_deposit' => 'wajib',
-									'cash_in' => $dataset['saldo_wajib'],
+									'cash_in' => $saldo['saldo_wajib'],
 									'cash_out' => 0,
 									'deskripsi' => 'saldo wajib',
 									'status' => 'diterima',
@@ -177,7 +180,7 @@ class User extends Controller
 							}else{
 								
 								$init_aktivasi = $this->m_param->getParamById(2)[0]->nilai;
-								$dataset = [
+								$saldo_wajib = [
 									'jenis_pengajuan' => 'penyimpanan',
 									'jenis_deposit' => 'pokok',
 									'cash_in' => $init_aktivasi,
@@ -188,15 +191,15 @@ class User extends Controller
 									'idanggota' => $iduser_new
 								];
 
-								$this->m_deposit->insertDeposit($dataset);
+								$this->m_deposit->insertDeposit($saldo_wajib);
 							}
 
-							if ($dataset['saldo_manasuka'] != null || $dataset['saldo_manasuka'] != 0) {
+							if ($saldo['saldo_manasuka'] != null || $saldo['saldo_manasuka'] != 0) {
 
 								$saldo_manasuka = [
 									'jenis_pengajuan' => 'penyimpanan',
 									'jenis_deposit' => 'manasuka',
-									'cash_in' => $dataset['saldo_manasuka'],
+									'cash_in' => $saldo['saldo_manasuka'],
 									'cash_out' => 0,
 									'deskripsi' => 'saldo manasuka',
 									'status' => 'diterima',

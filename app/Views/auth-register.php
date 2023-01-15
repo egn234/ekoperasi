@@ -3,7 +3,7 @@
     <head>
 
         <meta charset="utf-8" />
-        <title>Register | Minia - Minimal Admin & Dashboard Template</title>
+        <title>Register | Ekoperasi</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
         <meta content="Themesbrand" name="author" />
@@ -47,7 +47,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="nik_number">NIK <span class="text-danger">*</span></label>
+                                                    <label class="form-label" for="nik_number">Nomor KTP/NIK <span class="text-danger">*</span></label>
                                                     <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
                                                     <div class="invalid-feedback">
                                                         NIK harus 16 digit
@@ -55,14 +55,14 @@
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-6">
-                                                        <label class="form-label" for="birthplace">Tempat <span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="birthplace">Tempat Lahir <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?=session()->getFlashdata('tempat_lahir')?>" required>
                                                         <div class="invalid-feedback">
                                                             Harus Diisi
                                                         </div>
                                                     </div>
                                                     <div class="col-6">
-                                                        <label class="form-label" for="birthday">Tanggal Lahir<span class="text-danger">*</span></label>
+                                                        <label class="form-label" for="birthday">Tanggal Lahir <span class="text-danger">*</span></label>
                                                         <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?=session()->getFlashdata('tanggal_lahir')?>" required>
                                                         <div class="invalid-feedback">
                                                             Harus Diisi
@@ -70,7 +70,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="institution">Institusi <span class="text-danger">*</span></label>
+                                                    <label class="form-label" for="institution">Institusi/Unit Kerja <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="institution" name="instansi" required>
                                                         <option value="" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Institusi...</option>
                                                         <option value="YPT" <?=(session()->getFlashdata('instansi') == 'YPT')?'selected':''?> >YPT</option>
@@ -179,7 +179,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <p>
-                                BERSEDIA MENJADI ANGGOTA KOPERASI KARYAWAN STMB “ GIAT “ DAN SANGGUP MEMATUHI SEGALA PERATURAN YANG BERLAKU DI KOPERASI.
+                                BERSEDIA MENJADI ANGGOTA KOPERASI GIAT SEJAHTERA BERSAMA DAN SANGGUP MEMATUHI SEGALA PERATURAN YANG BERLAKU DI KOPERASI.
                                 BERSAMA INI SAYA BERSEDIA MEMBAYAR :
                                 <ul>
                                     <li>1.  IURAN POKOK SEBESAR Rp. <?= number_format($simp_pokok->nilai, 0, ',', '.')?></li>

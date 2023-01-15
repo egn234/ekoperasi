@@ -4,6 +4,7 @@ namespace App\Controllers\Anggota;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_deposit;
+use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
 
 class Deposits extends Controller
@@ -14,12 +15,15 @@ class Deposits extends Controller
 		$this->m_user = new M_user();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
+		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
 	}
 
 	public function index()
 	{
 		$depo_list = $this->m_deposit->getDepositByUserId($this->account->iduser);
+
+		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
 		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
 		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
@@ -35,7 +39,15 @@ class Deposits extends Controller
 			'total_saldo_wajib' => $total_saldo_wajib,
 			'total_saldo_pokok' => $total_saldo_pokok,
 			'total_saldo_manasuka' => $total_saldo_manasuka,
-			'param_manasuka' => $param_manasuka
+			'param_manasuka' => $param_manasuka,
+
+			'deposit_list2' => $this->m_deposit_pag
+				->where('idanggota', $this->account->iduser)
+				->orderBy('date_created', 'DESC')
+				->paginate(10, 'grup1'),
+
+			'pager' => $this->m_deposit_pag->pager,
+			'currentpage' => $currentpage
 		];
 		
 		return view('anggota/deposit/deposit-list', $data);
@@ -63,28 +75,29 @@ class Deposits extends Controller
 		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
 		$deskripsi = $this->request->getPost('deskripsi');
 
-		$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
-
-		if ($cek_saldo < $nominal) {
-			$alert = view(
-				'partials/notification-alert', 
-				[
-					'notif_text' => 'Gagal membuat pengajuan: Saldo manasuka kurang untuk membuat pengajuan',
-				 	'status' => 'warning'
-				]
-			);
-			
-			$dataset = ['notif' => $alert];
-			session()->setFlashdata($dataset);
-			return redirect()->to('anggota/deposit/list');
-		}
 
 		$cash_in = 0;
 		$cash_out = 0;
 
 		if ($jenis_pengajuan == 'penyimpanan') {
 			$cash_in = $nominal;
+		
 		}else{
+			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
+
+			if ($cek_saldo < $nominal) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal membuat pengajuan: Saldo manasuka kurang untuk membuat pengajuan',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset = ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('anggota/deposit/list');
+			}
 			$cash_out = $nominal;
 		}
 
