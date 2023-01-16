@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use App\Models\M_user;
+use App\Models\M_param_manasuka;
 
 class login extends Controller
 {
@@ -52,7 +53,15 @@ class login extends Controller
 						return redirect()->to('ketua/dashboard');
 					}
 					elseif($user->idgroup == 4){
-						return redirect()->to('anggota/dashboard');
+						$this->m_param_manasuka = new M_param_manasuka();
+						$cek_new_user = $this->m_param_manasuka->where('idanggota', $userdata['iduser'])->get()->getResult();
+
+						if ($cek_new_user != null) {
+							return redirect()->to('anggota/dashboard');
+						}else{
+				    		echo "<script>alert('Isi data diri terlebih dahulu'); window.location.href = '".base_url()."/anggota/profile/set-manasuka';</script>";
+				    		exit;
+						}
 					}
 				}
 				else {

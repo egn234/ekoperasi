@@ -177,7 +177,7 @@
                                     </div>
                                 </div>
                                 <span class="mt-5 d-flex justify-content-center">
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Set Parameter Manasuka</button>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Pengajuan/Pembatalan Manasuka Bulanan</button>
                                 </span>
                             </div>
                         </div>

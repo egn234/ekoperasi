@@ -205,15 +205,25 @@ class Deposits extends Controller
 			'updated' => date('Y-m-d H:i:s')
 		];
 
-		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
-		
-		$alert = view(
-			'partials/notification-alert', 
-			[
-				'notif_text' => 'Parameter Manasuka berhasil di set',
-			 	'status' => 'success'
-			]
-		);
+		if ($dataset['nilai'] == 0 || $dataset['nilai'] > 50000) {
+			$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+			
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Parameter Manasuka berhasil di set',
+				 	'status' => 'success'
+				]
+			);
+		} else {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Pengajuan manasuka tidak boleh kurang dari Rp 50.000',
+				 	'status' => 'warning'
+				]
+			);
+		}
 		
 		$data_session = ['notif' => $alert];
 		session()->setFlashdata($data_session);

@@ -5,6 +5,8 @@ namespace App\Controllers\Anggota;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_group;
+use App\Models\M_param;
+use App\Models\M_param_manasuka;
 
 class Profile extends Controller
 {
@@ -13,6 +15,8 @@ class Profile extends Controller
 	{
 		$this->m_user = new M_user();
 		$this->m_group = new M_group();
+		$this->m_param = new M_param();
+		$this->m_param_manasuka = new M_param_manasuka();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 
@@ -126,5 +130,35 @@ class Profile extends Controller
 		$dataset += ['notif' => $alert];
 		session()->setFlashdata($dataset);
 		return redirect()->to('anggota/profile');
+	}
+
+	public function set_manasuka()
+	{
+		$default_param = $this->m_param->getParamById(3)[0]->nilai;
+
+		$data = [
+			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Profile']),
+			'page_title' => view('anggota/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+			'duser' => $this->account,
+			'default_param' => $default_param
+		];
+		
+		return view('anggota/prof/set-manasuka', $data);
+	}
+
+	public function set_manasuka_proc()
+	{
+		$iduser = $this->request->getPost('iduser');
+		$nominal_param = filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT);
+
+		$param_r = [
+			'idanggota' => $iduser,
+			'nilai' => $nominal_param,
+			'created' => date('Y-m-d H:i:s')
+		];
+
+		$this->m_param_manasuka->insertParamManasuka($param_r);
+
+		return redirect()->to('anggota/dashboard');
 	}
 }

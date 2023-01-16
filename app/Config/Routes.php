@@ -174,10 +174,12 @@ $routes->group('anggota', static function ($routes)
 {
     $routes->get('dashboard', 'Anggota\Dashboard::index');
     $routes->get('profile', 'Anggota\Profile::index');
+    $routes->get('profile/set-manasuka', 'Anggota\Profile::set_manasuka');
     $routes->get('closebook', 'Anggota\Closebook::index');
     $routes->get('closebook-request', 'Anggota\Closebook::closebook_proc');
     $routes->get('closebook-cancel', 'Anggota\Closebook::closebook_cancel');
 
+    $routes->post('profile/set-manasuka-proc', 'Anggota\Profile::set_manasuka_proc');
     $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
 

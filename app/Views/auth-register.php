@@ -50,7 +50,7 @@
                                                     <label class="form-label" for="nik_number">Nomor KTP/NIK <span class="text-danger">*</span></label>
                                                     <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
                                                     <div class="invalid-feedback">
-                                                        NIK harus 16 digit
+                                                        Nomor KTP harus 16 digit
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
@@ -153,7 +153,7 @@
                                             </div>
                                         </div>
                                         <div class="mt-4 mt-md-5 text-center">
-                                            <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Ekoperasi   . Crafted with <i class="mdi mdi-heart text-danger"></i> by EggAnt</p>
+                                            <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Ekoperasi   . Crafted with <i class="mdi mdi-heart text-danger"></i> by Ko+Lab</p>
                                         </div>
                                     </div>
                                 </div>

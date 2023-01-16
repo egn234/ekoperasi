@@ -165,14 +165,6 @@ class register extends Controller
 
 			$this->m_deposit->insertDeposit($dataset);
 		}
-
-		$param_r = [
-			'idanggota' => $iduser_new,
-			'nilai' => $this->m_param->getParamById(3)[0]->nilai,
-			'created' => date('Y-m-d H:i:s')
-		];
-
-		$this->m_param_manasuka->insertParamManasuka($param_r);
 		
 		$alert = view(
 			'partials/notification-alert', 
