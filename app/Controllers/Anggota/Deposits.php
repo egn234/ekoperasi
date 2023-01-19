@@ -40,7 +40,6 @@ class Deposits extends Controller
 			'total_saldo_pokok' => $total_saldo_pokok,
 			'total_saldo_manasuka' => $total_saldo_manasuka,
 			'param_manasuka' => $param_manasuka,
-
 			'deposit_list2' => $this->m_deposit_pag
 				->where('idanggota', $this->account->iduser)
 				->orderBy('date_created', 'DESC')
@@ -96,8 +95,24 @@ class Deposits extends Controller
 				
 				$dataset = ['notif' => $alert];
 				session()->setFlashdata($dataset);
-				return redirect()->to('anggota/deposit/list');
+				return redirect()->back();
 			}
+
+			if ($nominal < 300000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal membuat pengajuan: Penarikan minimal Rp 300.000',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset = ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+				
+			}
+			
 			$cash_out = $nominal;
 		}
 
@@ -205,7 +220,7 @@ class Deposits extends Controller
 			'updated' => date('Y-m-d H:i:s')
 		];
 
-		if ($dataset['nilai'] == 0 || $dataset['nilai'] > 50000) {
+		if ($dataset['nilai'] > 50000) {
 			$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
 			
 			$alert = view(
@@ -228,6 +243,34 @@ class Deposits extends Controller
 		$data_session = ['notif' => $alert];
 		session()->setFlashdata($data_session);
 
+		return redirect()->back();
+	}
+
+	public function cancel_param_manasuka($idmnskparam = false)
+	{
+		$iduser = $this->account->iduser;
+
+		$dataset = [
+			'nilai' => 0,
+			'updated' => date('Y-m-d H:i:s')
+		];
+		
+		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+
+
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Pengajuan pembatalan manasuka berhasil',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = [
+			'notif' => $alert
+		];
+
+		session()->setFlashdata($data_session);
 		return redirect()->back();
 	}
 

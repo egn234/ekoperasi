@@ -189,6 +189,9 @@
                             </div>
                         </div>
                     </div>
+                    <span class="text-xs">
+                        <i>*Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at</i>
+                    </span>
                 </form>
             </div>
             <div class="modal-footer">

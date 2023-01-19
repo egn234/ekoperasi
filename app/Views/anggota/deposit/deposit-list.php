@@ -176,9 +176,10 @@
                                         <?php }?>
                                     </div>
                                 </div>
-                                <span class="mt-5 d-flex justify-content-center">
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Pengajuan/Pembatalan Manasuka Bulanan</button>
-                                </span>
+                                <div class="mt-5 d-grid gap-2">
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Pengajuan Manasuka Bulanan</button>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka">Pembatalan Manasuka Bulanan</button>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -248,11 +249,11 @@
     </div>
 </div><!-- /.modal -->
 
-<div id="set_param_manasuka" class="modal fade" tabindex="-1">
+<div class="modal fade" id="set_param_manasuka" aria-hidden="true" aria-labelledby="set_param_manasuka" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Set Nominal Pembayaran Manasuka</h5>
+                <h5 class="modal-title fs-5" id="myModalLabel">Set Nominal Pembayaran Manasuka</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -263,14 +264,40 @@
                         <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
                     </div>
                 </form>
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="konfirmasi_check" form="register_form" required>
+                        <label class="form-check-label" for="konfirmasi_check">
+                            <p class="mb-0"> setuju dan sadar untuk mengajukan simpanan manasuka </p>
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" form="formParam" class="btn btn-success">Set</button>
+                <button type="submit" id="confirm_button" form="formParam" class="btn btn-success" disabled>Set</button>
             </div>
         </div>
     </div>
-</div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="batal_manasuka" aria-hidden="true" aria-labelledby="batal_manasuka" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5" id="myModalLabel">Konfirmasi pembatalan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Anda akan berhenti setoran manasuka bulanan, konfirmasi?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                <a href="<?= url_to('anggota_cancel_parameter_manasuka', $param_manasuka[0]->idmnskparam) ?>" type="submit" class="btn btn-primary" disabled>Konfirmasi</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="detailMutasi" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -318,6 +345,17 @@
                     $('.fetched-data').html(data); //menampilkan data ke dalam modal
                 }
             });
+        });
+
+        $('#konfirmasi_check').click(function(){
+            //If the checkbox is checked.
+            if($(this).is(':checked')){
+                //Enable the submit button.
+                $('#confirm_button').attr("disabled", false);
+            } else{
+                //If it is not checked, disable the button.
+                $('#confirm_button').attr("disabled", true);
+            }
         });
     });
     document.addEventListener("DOMContentLoaded", function () {

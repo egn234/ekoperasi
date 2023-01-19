@@ -21,6 +21,10 @@ class Dashboard extends Controller
 	{
 		$parameter_cutoff = $this->m_param->getParamById(8)[0]->nilai;
 		$count_initial = $this->m_deposit->countInitialDeposit($this->account->iduser)[0]->hitung;
+
+		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
 		
 		if ($count_initial != 0) {	
 			$cek_initial = $this->m_deposit->getInitialDeposit($this->account->iduser);
@@ -68,7 +72,10 @@ class Dashboard extends Controller
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Dashboard']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
-			'duser' => $this->account
+			'duser' => $this->account,
+			'total_saldo_pokok' => $total_saldo_pokok,
+			'total_saldo_wajib' => $total_saldo_wajib,
+			'total_saldo_manasuka' => $total_saldo_manasuka
 		];
 		
 		return view('anggota/dashboard', $data);

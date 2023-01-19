@@ -55,6 +55,9 @@ class M_user extends Model
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
+                status_pegawai, 
+                nama_bank, 
+                no_rek, 
                 alamat, 
                 instansi, 
                 unit_kerja, 
@@ -88,6 +91,9 @@ class M_user extends Model
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
+                status_pegawai, 
+                nama_bank, 
+                no_rek, 
                 alamat, 
                 instansi, 
                 unit_kerja, 
@@ -122,6 +128,9 @@ class M_user extends Model
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
+                status_pegawai, 
+                nama_bank, 
+                no_rek, 
                 alamat, 
                 instansi, 
                 unit_kerja, 
@@ -156,6 +165,9 @@ class M_user extends Model
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
+                status_pegawai, 
+                nama_bank, 
+                no_rek, 
                 alamat, 
                 instansi, 
                 unit_kerja, 
@@ -307,6 +319,12 @@ class M_user extends Model
             GROUP BY tb_user.iduser
         ";
 
+        return $this->db->query($sql)->getResult();
+    }
+
+    function getUsernameGiat()
+    {
+        $sql = "SELECT username from tb_user WHERE username LIKE 'GIAT%' ORDER BY username DESC LIMIT 1";
         return $this->db->query($sql)->getResult();
     }
     

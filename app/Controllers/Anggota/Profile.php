@@ -34,11 +34,14 @@ class Profile extends Controller
 	public function update_proc()
 	{
 		$dataset = [
-			'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+			'nama_lengkap' => strtoupper($this->request->getPost('nama_lengkap')),
 			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
 			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
+			'status_pegawai' => $this->request->getPost('status_pegawai'),
 			'instansi' => $this->request->getPost('instansi'),
 			'alamat' => $this->request->getPost('alamat'),
+			'nama_bank' => strtoupper($this->request->getPost('nama_bank')),
+			'no_rek' => $this->request->getPost('no_rek'),
 			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
 			'email' => $this->request->getPost('email'),
 			'unit_kerja' => $this->request->getPost('unit_kerja')

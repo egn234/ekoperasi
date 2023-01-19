@@ -39,7 +39,7 @@
                                             <?=session()->getFlashdata('notif_login')?>
                                             <div class="mb-3">
                                                 <label class="form-label">Username</label>
-                                                <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username">
+                                                <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" placeholder="Masukkan username">
                                             </div>
                                             <div class="mb-3">
                                                 <div class="d-flex align-items-start">

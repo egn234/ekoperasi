@@ -94,24 +94,41 @@ class User extends Controller
 
 				for ($i=2; $i <= $baris; $i++)
 				{ 
+					$cek_username = $this->m_user->getUsernameGiat()[0]->username;
+					$filter_int = filter_var($cek_username, FILTER_SANITIZE_NUMBER_INT);
+					$clean_int = intval($filter_int);
+
+					if ($clean_int >= 1000) {
+						$username = 'GIAT'.($clean_int+1);
+					}elseif ($clean_int >= 100) {
+						$username = 'GIAT0'.($clean_int+1);
+					}elseif ($clean_int >= 10) {
+						$username = 'GIAT00'.($clean_int+1);
+					}elseif ($clean_int >= 1) {
+						$username = 'GIAT000'.($clean_int+1);
+					}
+
 					$dataset = [
-						'username' => $cell->getCellByColumnAndRow(1, $i)->getValue(),
+						'username' => $username,
 						'pass' => md5($cell->getCellByColumnAndRow(2, $i)->getValue()),
 						'nik' => $cell->getCellByColumnAndRow(3, $i)->getValue(),
-						'nama_lengkap' => $cell->getCellByColumnAndRow(4, $i)->getValue(),
+						'nama_lengkap' => strtoupper($cell->getCellByColumnAndRow(4, $i)->getValue()),
 						'tempat_lahir' => $cell->getCellByColumnAndRow(5, $i)->getValue(),
-						'tanggal_lahir' => $cell->getCellByColumnAndRow(6, $i)->getValue(),
+						'tanggal_lahir' => date('Y-m-d', strtotime($cell->getCellByColumnAndRow(6, $i)->getValue())),
 						'alamat' => $cell->getCellByColumnAndRow(7, $i)->getValue(),
 						'instansi' => $cell->getCellByColumnAndRow(8, $i)->getValue(),
 						'unit_kerja' => $cell->getCellByColumnAndRow(9, $i)->getValue(),
-						'nomor_telepon' => $cell->getCellByColumnAndRow(10, $i)->getValue(),
-						'email' => $cell->getCellByColumnAndRow(11, $i)->getValue(),
+						'status_pegawai' => $cell->getCellByColumnAndRow(10, $i)->getValue(),
+						'nomor_telepon' => $cell->getCellByColumnAndRow(11, $i)->getValue(),
+						'email' => $cell->getCellByColumnAndRow(12, $i)->getValue(),
+						'nama_bank' => strtoupper($cell->getCellByColumnAndRow(13, $i)->getValue()),
+						'no_rek' => $cell->getCellByColumnAndRow(14, $i)->getValue(),
 					];
 
 					$saldo = [
-						'saldo_pokok' => $cell->getCellByColumnAndRow(12, $i)->getValue(),
-						'saldo_wajib' => $cell->getCellByColumnAndRow(13, $i)->getValue(),
-						'saldo_manasuka' => $cell->getCellByColumnAndRow(14, $i)->getValue()
+						'saldo_pokok' => $cell->getCellByColumnAndRow(15, $i)->getValue(),
+						'saldo_wajib' => $cell->getCellByColumnAndRow(16, $i)->getValue(),
+						'saldo_manasuka' => $cell->getCellByColumnAndRow(17, $i)->getValue()
 					];
 
 					$cek_username = $this->m_user->countUsername($dataset['username'])[0]->hitung;

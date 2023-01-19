@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_deposit;
+use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
 
 class Deposits extends Controller
@@ -14,6 +15,7 @@ class Deposits extends Controller
 		$this->m_user = new M_user();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
+		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
 	}
 
@@ -55,6 +57,7 @@ class Deposits extends Controller
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo;
 		$detail_user = $this->m_user->getUserById($iduser)[0];
 		$param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser);
+		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail Simpanan']),
@@ -65,7 +68,14 @@ class Deposits extends Controller
 			'total_saldo_wajib' => $total_saldo_wajib,
 			'total_saldo_pokok' => $total_saldo_pokok,
 			'total_saldo_manasuka' => $total_saldo_manasuka,
-			'param_manasuka' => $param_manasuka
+			'param_manasuka' => $param_manasuka,
+			'deposit_list2' => $this->m_deposit_pag
+				->where('idanggota', $iduser)
+				->orderBy('date_created', 'DESC')
+				->paginate(10, 'grup1'),
+
+			'pager' => $this->m_deposit_pag->pager,
+			'currentpage' => $currentpage
 		];
 		
 		return view('admin/deposit/anggota-detail', $data);
@@ -166,19 +176,58 @@ class Deposits extends Controller
 			'updated' => date('Y-m-d H:i:s')
 		];
 
-		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
-		
-		$alert = view(
-			'partials/notification-alert', 
-			[
-				'notif_text' => 'Parameter Manasuka berhasil di set',
-			 	'status' => 'success'
-			]
-		);
+
+		if ($dataset['nilai'] > 50000) {
+			$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+			
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Parameter Manasuka berhasil di set',
+				 	'status' => 'success'
+				]
+			);
+		} else {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Pengajuan manasuka tidak boleh kurang dari Rp 50.000',
+				 	'status' => 'warning'
+				]
+			);
+		}
 		
 		$data_session = ['notif' => $alert];
 		session()->setFlashdata($data_session);
 
+		return redirect()->back();
+	}
+
+	public function cancel_param_manasuka($idmnskparam = false)
+	{
+		$iduser = $this->account->iduser;
+
+		$dataset = [
+			'nilai' => 0,
+			'updated' => date('Y-m-d H:i:s')
+		];
+		
+		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+
+
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Pembatalan manasuka berhasil',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = [
+			'notif' => $alert
+		];
+
+		session()->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
@@ -215,7 +264,7 @@ class Deposits extends Controller
 			'date_updated' => date('Y-m-d H:i:s')
 		];
 
-		$this->m_deposit->setStatus($iddeposit, $dataset);;
+		$this->m_deposit->setStatus($iddeposit, $dataset);
 		
 		$alert = view(
 			'partials/notification-alert', 

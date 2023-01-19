@@ -38,6 +38,95 @@
                 <!-- end page title -->
 
                 <div class="row">
+                    <div class="col-md-9 col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h4 class="card-title">Daftar Pengajuan Simpanan</h4>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="btn-group float-md-end">
+                                            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
+                                                Tambah Pengajuan Manasuka
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <?=session()->getFlashdata('notif');?>
+                                <?php $i = 1 + (10 * ($currentpage - 1)); ?>
+                                <?php foreach ($deposit_list2 as $k) : ?>
+
+                                    <?php if ($k['cash_in'] == 0) {?>
+                                        <div class="card border-black">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <i class="fa fa-upload"></i>
+                                                        <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="float-end">
+                                                            <b>- <?= number_format($k['cash_out'], 2, ',', '.')?></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="text-muted">
+                                                        <?= $k['status'] ?> pada
+                                                        <?= $k['date_created'] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php }else{?>
+                                        <div class="card border-success">
+                                            <div class="card-body">
+                                                <div class="row md-3">
+                                                    <div class="col-8">
+                                                        <i class="fa fa-upload"></i>
+                                                        <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="float-end">
+                                                            <span class="text-success"><b>+ <?= number_format($k['cash_in'], 2, ',', '.')?></b></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-8">
+                                                        <span class="text-muted">
+                                                            Status: <?= $k['status'] ?> <br>
+                                                            Tanggal: <?= $k['date_created'] ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="btn-group float-end">
+                                                            <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
+                                                                <i class="fa fa-file-alt"></i> Detail
+                                                            </a>
+                                                            <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
+                                                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
+                                                                    <i class="fa fa-upload"></i> upload bukti
+                                                                </a>
+                                                            <?php }?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php }?>
+                                <?php endforeach;?>
+                                <div class="mb-3 col-12">
+                                    <div class="float-md-end">
+                                        <?= $pager->links('grup1', 'default_minia')?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
                     
                     <div class="col-md-3 col-sm-12">
                         <div class="card">
@@ -57,16 +146,16 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <h5 class="font-size-15">Saldo Simpanan Wajib:</h5>
+                                    <h5 class="font-size-15">Saldo Simpanan Pokok:</h5>
                                     <div class="text-muted h3">
-                                        Rp <?=number_format($total_saldo_wajib, 2, ',','.')?>
+                                        Rp <?=number_format($total_saldo_pokok, 2, ',','.')?>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <h5 class="font-size-15">Saldo Simpanan Pokok:</h5>
+                                    <h5 class="font-size-15">Saldo Simpanan Wajib:</h5>
                                     <div class="text-muted h3">
-                                        Rp <?=number_format($total_saldo_pokok, 2, ',','.')?>
+                                        Rp <?=number_format($total_saldo_wajib, 2, ',','.')?>
                                     </div>
                                 </div>
                                 <hr>
@@ -95,68 +184,10 @@
                                         <?php }?>
                                     </div>
                                 </div>
-                                <span class="mt-5 d-flex justify-content-center">
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Set Parameter Manasuka</button>
-                                </span>
-                            </div>
-                        </div>
-                    </div> <!-- end col -->
-                    
-                    <div class="col-md-9 col-sm-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <h4 class="card-title">Daftar Pengajuan Simpanan</h4>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="btn-group float-md-end">
-                                            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
-                                                Tambah Pengajuan Manasuka
-                                            </a>
-                                        </div>
-                                    </div>
+                                <div class="mt-5 d-grid gap-2">
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Pengajuan Manasuka Bulanan</button>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka">Pembatalan Manasuka Bulanan</button>
                                 </div>
-                            </div>
-                            <div class="card-body">
-                                <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Jenis Mutasi</th>
-                                        <th>Nilai</th>
-                                        <th>Status</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th></th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($deposit_list as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->jenis_pengajuan . ' ' . $a->jenis_deposit ?></td>
-                                                <td>
-                                                    <?php if ($a->cash_in == 0) {?>
-                                                        <span class="badge badge-soft-danger">- <?= number_format($a->cash_out, 2, ',', '.')?>
-                                                    <?php }else{?>
-                                                        <span class="badge badge-soft-success">+ <?= number_format($a->cash_in, 2, ',', '.')?>
-                                                    <?php }?>
-                                                </td>
-                                                <td><?= $a->status ?></td>
-                                                <td><?= $a->date_created ?></td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> detail
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
-
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -174,26 +205,10 @@
 </div>
 <!-- END layout-wrapper -->
 
-<div id="set_param_manasuka" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+<div id="uploadBT" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Set Nominal Pembayaran Manasuka</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="<?=($param_manasuka)?url_to('admin_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('admin/deposit/create_param_manasuka')?>" id="formSheet" method="post">
-                    <div class="mb-3">
-                        <label for="nominal_param">Besarnya Nominal (Rp)</label>
-                        <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
-                        <input type="text" id="iduser" name="iduser" value="<?=$detail_user->iduser?>" hidden>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" form="formSheet" class="btn btn-success">Set</button>
-            </div>
+            <span class="fetched-data"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -202,7 +217,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addPengajuanLabel">Penambahan Pengajuan Saldo Manasuka</h5>
+                <h5 class="modal-title" id="addPengajuanLabel">Permintaan Pengajuan Saldo Manasuka</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -221,7 +236,6 @@
                     <div class="mb-3">
                         <label class="form-label" for="nominal">Nominal (Rp.)</label>
                         <input type="text" class="form-control" id="nominal" name="nominal" value="<?=session()->getFlashdata('nominal')?>" required>
-                        <input type="number" class="form-control" id="iduser" name="iduser" value="<?=$detail_user->iduser?>" hidden>
                         <div class="invalid-feedback">
                             Harus Diisi
                         </div>
@@ -242,6 +256,48 @@
         </div>
     </div>
 </div><!-- /.modal -->
+
+<div class="modal fade" id="set_param_manasuka" aria-hidden="true" aria-labelledby="set_param_manasuka" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5" id="myModalLabel">Set Nominal Pembayaran Manasuka</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<?=($param_manasuka)?url_to('admin_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('admin/deposit/create_param_manasuka')?>" id="formParam" method="post">
+                    <div class="mb-3">
+                        <label for="nominal_param">Besarnya Nominal (Rp)</label>
+                        <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
+                        <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" id="confirm_button" form="formParam" class="btn btn-success">Set</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="batal_manasuka" aria-hidden="true" aria-labelledby="batal_manasuka" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5" id="myModalLabel">Konfirmasi pembatalan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Set berhenti setoran manasuka bulanan untuk anggota ini, konfirmasi?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                <a href="<?= url_to('admin_cancel_parameter_manasuka', $param_manasuka[0]->idmnskparam) ?>" type="submit" class="btn btn-primary" disabled>Konfirmasi</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="detailMutasi" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">

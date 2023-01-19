@@ -160,6 +160,21 @@
                                                 <div class="row">
                                                     <div class="col-xl-2">
                                                         <div>
+                                                            <h5 class="font-size-15">Bank/No.rek :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?=strtoupper($duser->nama_bank . " - ". $duser->no_rek)?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
                                                             <h5 class="font-size-15">Institusi :</h5>
                                                         </div>
                                                     </div>
@@ -181,6 +196,21 @@
                                                     <div class="col-xl">
                                                         <div class="text-muted">
                                                             <?=$duser->unit_kerja?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
+                                                            <h5 class="font-size-15">Status Kepegawaian :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?=strtoupper($duser->status_pegawai)?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -263,10 +293,44 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
+                                                    <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?= $duser->unit_kerja?>" required>
+                                                    <div class="invalid-feedback">
+                                                        Harus Diisi
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="staffing">Jenis Kepegawaian <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="staffing" name="status_pegawai" required>
+                                                        <option value="" <?=($duser->status_pegawai)?'':'selected'?> disabled>Pilih...</option>
+                                                        <option value="tetap" <?=($duser->status_pegawai == 'tetap')?'selected':''?> >Tetap</option>
+                                                        <option value="kontrak" <?=($duser->status_pegawai == 'kontrak')?'selected':''?> >Kontrak</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        Pilih Terlebih dahulu
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
                                                     <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="address" name="alamat" value="<?= $duser->alamat ?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-4">
+                                                        <label class="form-label" for="bankname">Nama Bank <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="bankname" name="nama_bank" value="<?= $duser->nama_bank ?>" required>
+                                                        <div class="invalid-feedback">
+                                                            Harus Diisi
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <label class="form-label" for="norek">Nomor Rekening <span class="text-danger">*</span></label>
+                                                        <input type="number" class="form-control" id="norek" name="no_rek" value="<?= $duser->no_rek ?>" required>
+                                                        <div class="invalid-feedback">
+                                                            Harus Diisi
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
@@ -279,13 +343,6 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="email_addr">Email <span class="text-danger">*</span></label>
                                                     <input type="email" class="form-control" id="email_addr" name="email" value="<?= $duser->email ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?= $duser->unit_kerja?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>

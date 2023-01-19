@@ -82,11 +82,13 @@ $routes->group('admin', static function ($routes)
         $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
         $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
         $routes->post('add_req', 'Admin\Deposits::add_proc');
+        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
         
+        $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'admin_set_parameter_manasuka']);
+        $routes->add('cancel_param_manasuka/(:num)', 'Admin\Deposits::cancel_param_manasuka/$1', ['as' => 'admin_cancel_parameter_manasuka']);
         $routes->add('user/(:num)', 'Admin\Deposits::detail_anggota/$1', ['as' => 'anggota_detail']);
         $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
-        $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'admin_set_parameter_manasuka']);
         
     });
 
@@ -189,16 +191,14 @@ $routes->group('anggota', static function ($routes)
         $routes->get('list', 'Anggota\Deposits::index');
        
         $routes->post('add_req', 'Anggota\Deposits::add_proc');
-        $routes->post('add_req', 'Admin\Deposits::add_proc');
         $routes->post('detail_mutasi', 'Anggota\Deposits::detail_mutasi');
         $routes->post('up_mutasi', 'Anggota\Deposits::up_mutasi');
-        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
+        $routes->post('create_param_manasuka', 'Anggota\Deposits::create_param_manasuka');
         
-        $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'anggota_set_parameter_manasuka']);
+        $routes->add('set_param_manasuka/(:num)', 'Anggota\Deposits::set_param_manasuka/$1', ['as' => 'anggota_set_parameter_manasuka']);
+        $routes->add('cancel_param_manasuka/(:num)', 'Anggota\Deposits::cancel_param_manasuka/$1', ['as' => 'anggota_cancel_parameter_manasuka']);
         $routes->add('upload_bukti_transfer/(:num)', 'Anggota\Deposits::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
     });
-
-    $routes->get('phpword', 'Anggota\Phpword::index');
 
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)

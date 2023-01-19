@@ -59,7 +59,7 @@ class login extends Controller
 						if ($cek_new_user != null) {
 							return redirect()->to('anggota/dashboard');
 						}else{
-				    		echo "<script>alert('Isi data diri terlebih dahulu'); window.location.href = '".base_url()."/anggota/profile/set-manasuka';</script>";
+				    		echo "<script>alert('Selamat datang di Ekoperasi! silahkan isi pengajuan manasuka terlebih dahulu'); window.location.href = '".base_url()."/anggota/profile/set-manasuka';</script>";
 				    		exit;
 						}
 					}

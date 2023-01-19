@@ -24,10 +24,25 @@ class register extends Controller
 		$simpanan_pokok = $this->m_param->getParamById(1)[0];
 		$simpanan_wajib = $this->m_param->getParamById(2)[0];
 		
+		$cek_username = $this->m_user->getUsernameGiat()[0]->username;
+		$filter_int = filter_var($cek_username, FILTER_SANITIZE_NUMBER_INT);
+		$clean_int = intval($filter_int);
+
+		if ($clean_int >= 1000) {
+			$username = 'GIAT'.($clean_int+1);
+		}elseif ($clean_int >= 100) {
+			$username = 'GIAT0'.($clean_int+1);
+		}elseif ($clean_int >= 10) {
+			$username = 'GIAT00'.($clean_int+1);
+		}elseif ($clean_int >= 1) {
+			$username = 'GIAT000'.($clean_int+1);
+		}
+
 		$data = [
 			'title_meta' => view('partials/title-meta', ['title' => 'Register']),
 			'simp_pokok' => $simpanan_pokok,
-			'simp_wajib' => $simpanan_wajib
+			'simp_wajib' => $simpanan_wajib,
+			'username' => $username
 		];
 		return view('auth-register', $data);		
 	}
@@ -35,15 +50,18 @@ class register extends Controller
 	public function register_proc()
 	{
 		$dataset = [
-			'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+			'nama_lengkap' => strtoupper($this->request->getPost('nama_lengkap')),
 			'nik' => $this->request->getPost('nik'),
 			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
 			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
 			'instansi' => $this->request->getPost('instansi'),
+			'unit_kerja' => $this->request->getPost('unit_kerja'),
+			'status_pegawai' => $this->request->getPost('status_pegawai'),
 			'alamat' => $this->request->getPost('alamat'),
+			'nama_bank' => strtoupper($this->request->getPost('nama_bank')),
+			'no_rek' => $this->request->getPost('no_rek'),
 			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
 			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
 			'username' => $this->request->getPost('username'),
 			'pass' => md5($this->request->getPost('pass')),
 			'idgroup' => 4
@@ -56,6 +74,20 @@ class register extends Controller
 				'partials/notification-alert', 
 				[
 					'notif_text' => 'Pilih Institusi terlebih dahulu',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('register');
+		}
+
+		if ($dataset['status_pegawai'] == "") {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Pilih status status_pegawai terlebih dahulu',
 				 	'status' => 'warning'
 				]
 			);
@@ -111,20 +143,6 @@ class register extends Controller
 			return redirect()->to('register');			
 		}
 
-		if ($dataset['idgroup'] == "") {
-			$alert = view(
-				'partials/notification-alert', 
-				[
-					'notif_text' => 'Pilih Grup terlebih dahulu',
-				 	'status' => 'warning'
-				]
-			);
-			
-			$dataset += ['notif' => $alert];
-			session()->setFlashdata($dataset);
-			return redirect()->to('register');
-		}
-
 		$img = $this->request->getFile('profil_pic');
 		
 		if ($img->isValid()) {
@@ -175,6 +193,7 @@ class register extends Controller
 		);
 		
 		$data_session = [
+			'username' => $this->request->getPost('username'),
 			'notif_login' => $alert
 		];
 

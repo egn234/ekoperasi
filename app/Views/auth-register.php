@@ -85,10 +85,44 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
+                                                    <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?=session()->getFlashdata('unit_kerja')?>" required>
+                                                    <div class="invalid-feedback">
+                                                        Harus Diisi
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="staffing">Jenis Kepegawaian <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="staffing" name="status_pegawai" required>
+                                                        <option value="" <?=(session()->getFlashdata('status_pegawai'))?'':'selected'?> disabled>Pilih...</option>
+                                                        <option value="tetap" <?=(session()->getFlashdata('status_pegawai') == 'tetap')?'selected':''?> >Tetap</option>
+                                                        <option value="kontrak" <?=(session()->getFlashdata('status_pegawai') == 'kontrak')?'selected':''?> >Kontrak</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        Pilih Terlebih dahulu
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
                                                     <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="address" name="alamat" value="<?=session()->getFlashdata('alamat')?>" required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-4">
+                                                        <label class="form-label" for="bankname">Nama Bank <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="bankname" name="nama_bank" value="<?=session()->getFlashdata('nama_bank')?>" required>
+                                                        <div class="invalid-feedback">
+                                                            Harus Diisi
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <label class="form-label" for="norek">Nomor Rekening <span class="text-danger">*</span></label>
+                                                        <input type="number" class="form-control" id="norek" name="no_rek" value="<?=session()->getFlashdata('no_rek')?>" required>
+                                                        <div class="invalid-feedback">
+                                                            Harus Diisi
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
@@ -106,15 +140,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?=session()->getFlashdata('unit_kerja')?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
                                                     <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" required>
+                                                    <input type="text" class="form-control" id="username" name="username" value="<?= $username ?>" Readonly required>
                                                     <div class="invalid-feedback">
                                                         Harus Diisi
                                                     </div>
