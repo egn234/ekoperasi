@@ -37,6 +37,7 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 
 $routes->get('/', 'Login::index');
+$routes->get('test', 'Test_field::index');
 $routes->get('registrasi', 'Register::index');
 
 $routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);

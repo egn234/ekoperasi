@@ -72,7 +72,10 @@
                                                 <td><?= $a->angsuran_bulanan ?></td>
                                                 <td>
                                                     <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_bukti?>" target="_blank">
-                                                        <i class="fa fa-download"></i> File
+                                                        <i class="fa fa-download"></i> Form SDM
+                                                    </a>
+                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->slip_gaji?>" target="_blank">
+                                                        <i class="fa fa-download"></i> Slip Gaji
                                                     </a>
                                                 </td>
                                                 <td>
@@ -110,7 +113,7 @@
 <!-- END layout-wrapper -->
 
 <div id="tolakPinjaman" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <span class="fetched-data"></span>
         </div>
@@ -118,7 +121,7 @@
 </div><!-- /.modal -->
 
 <div id="approvePinjaman" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <span class="fetched-data"></span>
         </div>

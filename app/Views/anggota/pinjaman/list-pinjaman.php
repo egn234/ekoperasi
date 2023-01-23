@@ -56,6 +56,8 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
+                                <?=session()->getFlashdata('notif_bulanan');?>
+                                <?=session()->getFlashdata('notif_gaji');?>
                                 <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <th width="5%">No</th>
@@ -80,19 +82,21 @@
                                                     <?php }elseif($a->status == 1){?>
                                                         Upload Form Persetujuan SDM
                                                     <?php }elseif($a->status == 2){?>
-                                                        Diproses Admin
-                                                    <?php }elseif($a->status == 3){?>
                                                         Diproses Bendahara
+                                                    <?php }elseif($a->status == 3){?>
+                                                        Diproses Ketua
                                                     <?php }elseif($a->status == 4){?>
-                                                        Sedang Berlangsung
+                                                        Diproses Ketua
                                                     <?php }elseif($a->status == 5){?>
+                                                        Sedang Berlangsung
+                                                    <?php }elseif($a->status == 6){?>
                                                         Lunas
                                                     <?php }?>
                                                 </td>
                                                 <td><?= $a->angsuran_bulanan ?></td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
-                                                        <?php if ($a->status == 5 || $a->status == 4) {?>
+                                                        <?php if ($a->status == 5 || $a->status == 6) {?>
                                                             <a href="<?= url_to('anggota_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
                                                                 <i class="fa fa-file-alt"></i> Detail
                                                             </a>

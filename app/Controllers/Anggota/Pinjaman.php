@@ -53,6 +53,19 @@ class Pinjaman extends Controller
 	public function add_proc()
 	{
 		$cek_cicilan_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser)[0]->hitung;
+		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
+		$satuan_waktu = $this->request->getPost('satuan_waktu');
+		$cek_pegawai = $this->m_user->where('iduser', $this->account->iduser)
+									->get()
+									->getResult()[0]
+									->status_pegawai;
+		if($cek_pegawai = 'tetap'){
+			$batas_bulanan = 24;
+			$batas_nominal = 50000000;
+		}else{
+			$batas_bulanan = 12;
+			$batas_nominal = 15000000;
+		}
 
 		if ($cek_cicilan_aktif != 0) {
 			$alert = view(
@@ -68,15 +81,12 @@ class Pinjaman extends Controller
 			return redirect()->back();
 		}
 
-		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
-		$satuan_waktu = $this->request->getPost('satuan_waktu');
-
 		if ($satuan_waktu == 2) {
 			$angsuran_bulanan = $cek_cicilan * 12;
 		}else{
 			$angsuran_bulanan = $cek_cicilan;
 		}
-		
+
 		$dataset = [
 			'nominal' => filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT),
 			'tipe_permohonan' => $this->request->getPost('tipe_permohonan'),
@@ -84,39 +94,76 @@ class Pinjaman extends Controller
 			'angsuran_bulanan' => $angsuran_bulanan
 		];
 
-		if ($dataset['tipe_permohonan'] == "") {
+		if ($angsuran_bulanan > $batas_bulanan) {
 			$alert = view(
 				'partials/notification-alert', 
 				[
-					'notif_text' => 'Pilih Tipe Permohonan Terlebih Dahulu',
+					'notif_text' => 'Tidak dapat mengajukan cicilan lebih dari '. $angsuran_bulanan .' bulan',
 				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif_bulanan' => $alert];
+			$confirmation = false;
+		}else{
+			$confirmation = true;
+		}
+
+		if ($dataset['nominal'] > $batas_nominal) {
+			
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Tidak dapat mengajukan cicilan lebih dari Rp'. number_format($dataset['nominal'], 0, ',','.'),
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			$confirmation = false;
+		}else{
+			$confirmation = true;
+		}
+		
+		if ($confirmation) {
+
+			if ($dataset['tipe_permohonan'] == "") {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Pilih Tipe Permohonan Terlebih Dahulu',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}
+
+			$dataset += [
+				'date_created' => date('Y-m-d H:i:s'),
+				'status' => 1,
+				'idanggota' => $this->account->iduser
+			];
+
+			$this->m_pinjaman->insertPinjaman($dataset);
+
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Berhasil mengajukan pinjaman',
+				 	'status' => 'success'
 				]
 			);
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
 			return redirect()->back();
+		}else{
+			session()->setFlashdata($dataset);
+			return redirect()->back();
 		}
-
-		$dataset += [
-			'date_created' => date('Y-m-d H:i:s'),
-			'status' => 1,
-			'idanggota' => $this->account->iduser
-		];
-
-		$this->m_pinjaman->insertPinjaman($dataset);
-
-		$alert = view(
-			'partials/notification-alert', 
-			[
-				'notif_text' => 'Berhasil mengajukan pinjaman',
-			 	'status' => 'success'
-			]
-		);
-		
-		$dataset += ['notif' => $alert];
-		session()->setFlashdata($dataset);
-		return redirect()->back();
 	}
 
 	public function generate_form($idpinjaman)
@@ -136,29 +183,20 @@ class Pinjaman extends Controller
 
 	public function upload_form($idpinjaman)
 	{
-		$file = $this->request->getFile('form_bukti');
+		$file_1 = $this->request->getFile('form_bukti');
+		$file_2 = $this->request->getFile('slip_gaji');
 
-		if ($file->isValid()) {
-			
+		if ($file_1->isValid()) {	
 			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
 			
 			if ($cek_bukti) {
-				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $cek_bukti);
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti);
 			}
 
-			$newName = $file->getRandomName();
-			$file->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
+			$newName = $file_1->getRandomName();
+			$file_1->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
 			
-			$form_bukti = $file->getName();
-			$date_updated = date('Y-m-d H:i:s');
-
-			$data = [
-				'form_bukti' => $form_bukti,
-				'status' => 2,
-				'date_updated' => $date_updated
-			];
-
-			$this->m_pinjaman->updatePinjaman($idpinjaman, $data);
+			$form_bukti = $file_1->getName();
 			
 			$alert = view(
 				'partials/notification-alert', 
@@ -167,6 +205,7 @@ class Pinjaman extends Controller
 				 	'status' => 'success'
 				]
 			);
+			$confirmation = true;
 
 		}else{
 			$alert = view(
@@ -176,14 +215,65 @@ class Pinjaman extends Controller
 				 	'status' => 'danger'
 				]
 			);
+			$confirmation = false;
+		}
+
+		if ($file_2->isValid()) {	
+			$cek_gaji = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->slip_gaji;
 			
+			if ($cek_gaji) {
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_gaji);
+			}
+
+			$newName = $file_2->getRandomName();
+			$file_2->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
+			
+			$slip_gaji = $file_2->getName();
+			
+			$alert2 = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Slip gaji berhasil diunggah',
+				 	'status' => 'success'
+				]
+			);
+			$confirmation = true;
+
+		}else{
+			$alert2 = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Slip gaji gagal diunggah',
+				 	'status' => 'danger'
+				]
+			);
+			$confirmation = false;
 		}
 		
-		$data_session = [
-			'notif' => $alert
-		];
-		session()->setFlashdata($data_session);
-		return redirect()->to('anggota/pinjaman/list');
+		if (!$confirmation) {
+			$data_session = [
+				'notif' => $alert,
+				'notif_gaji' => $alert2
+			];
+		}else{
+			$date_updated = date('Y-m-d H:i:s');
+
+			$data = [
+				'form_bukti' => $form_bukti,
+				'slip_gaji' => $slip_gaji,
+				'status' => 2,
+				'date_updated' => $date_updated
+			];
+
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $data);
+			
+			$data_session = [
+				'notif' => $alert,
+				'notif_gaji' => $alert2
+			];
+		}
+			session()->setFlashdata($data_session);
+			return redirect()->back();		
 	}
 
 	public function up_form()

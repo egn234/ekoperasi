@@ -29,7 +29,7 @@ class m_monthly_report extends Model
 
     function getAllMonthlyReport()
     {
-    	$sql = "SELECT * FROM tb_monthly_report";
+    	$sql = "SELECT * FROM tb_monthly_report ORDER BY date_monthly DESC";
     	return $this->db->query($sql)->getResult();    
     }
 

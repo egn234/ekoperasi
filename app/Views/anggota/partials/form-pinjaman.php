@@ -87,16 +87,12 @@
 			</td>
 			<td>:</td>
 			<td>
-				Rp <?=number_format(($detail_pinjaman->nominal/$detail_pinjaman->angsuran_bulanan), 2, ',', '.')?>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Bunga per bulan
-			</td>
-			<td>:</td>
-			<td>
-				Rp <?=number_format(($detail_pinjaman->nominal*($detail_pinjaman->angsuran_bulanan*$bunga))/$detail_pinjaman->angsuran_bulanan, 2, ',', '.')?>
+				Rp <?=number_format(
+						($detail_pinjaman->nominal/$detail_pinjaman->angsuran_bulanan)
+						+($detail_pinjaman->nominal
+							*($detail_pinjaman->angsuran_bulanan*$bunga)
+						)/$detail_pinjaman->angsuran_bulanan
+					, 2, ',', '.')?>
 			</td>
 		</tr>
 		<tr>
@@ -105,7 +101,7 @@
 			</td>
 			<td>:</td>
 			<td>
-				Rp <?=number_format(($detail_pinjaman->nominal*($detail_pinjaman->angsuran_bulanan*$bunga))/$detail_pinjaman->angsuran_bulanan, 2, ',', '.')?>
+				Rp <?=number_format(($detail_pinjaman->nominal*($detail_pinjaman->angsuran_bulanan*$provisi))/$detail_pinjaman->angsuran_bulanan, 2, ',', '.')?>
 			</td>
 		</tr>
 		<tr>

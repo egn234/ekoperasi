@@ -8,6 +8,10 @@
                         <label class="form-label" for="frmprstjn">Form persetujuan yang sudah di tanda tangan (.pdf)</label>
                         <input type="file" name="form_bukti" id="frmprstjn" class="form-control" accept=".pdf" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="slipgaji">Slip Gaji (.pdf)</label>
+                        <input type="file" name="slip_gaji" id="slipgaji" class="form-control" accept=".pdf" required>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
