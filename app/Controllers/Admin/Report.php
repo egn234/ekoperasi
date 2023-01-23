@@ -141,7 +141,7 @@ class Report extends Controller
 
 						$this->m_cicilan->insertCicilan($dataset_cicilan);
 
-						$status_pinjaman = ['status' => 5];
+						$status_pinjaman = ['status' => 6];
 						$this->m_pinjaman->updatePinjaman($idpinjaman, $status_pinjaman);
 
 					}elseif ($cek_cicilan != 0 && $cek_cicilan < $pinjaman->angsuran_bulanan) {

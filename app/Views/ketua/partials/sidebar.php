@@ -16,6 +16,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?= url_to('ketua/pinjaman/list') ?>">
+                        <i data-feather="dollar-sign"></i>
+                        <span data-key="t-pinjaman">Pinjaman</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?= url_to('ketua/report/list') ?>">
                         <i data-feather="trending-up"></i>
                         <span data-key="t-reporting">Reporting</span>

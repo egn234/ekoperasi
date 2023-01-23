@@ -17,7 +17,7 @@ class Pinjaman extends Controller
 
 	public function index()
 	{
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(4);
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Pinjaman']),
@@ -33,6 +33,7 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idadmin' => $this->account->iduser,
+			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
 			'status' => 0,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -56,8 +57,10 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idadmin' => $this->account->iduser,
-			'status' => 3,
-			'date_updated' => date('Y-m-d H:i:s')
+			'status' => 5,
+			'date_updated' => date('Y-m-d H:i:s'),
+			'bln_perdana' => date('m', strtotime("+ 1 month")),
+			'tanggal_bayar' => date('d')
 		];
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);

@@ -139,7 +139,6 @@ $routes->group('bendahara', static function ($routes)
 
         $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
-        $routes->add('detail/(:num)', 'Bendahara\Pinjaman::detail/$1', ['as' => 'bendahara_pin_detail']);
     });
 
     //GROUP LAPORAN
@@ -161,6 +160,18 @@ $routes->group('ketua', static function ($routes)
     
     $routes->post('profile/edit_proc', 'Ketua\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Ketua\Profile::update_pass');
+    
+    //GROUP DAFTAR PINJAMAN
+    $routes->group('pinjaman', static function ($routes)
+    {
+        $routes->get('list', 'Ketua\Pinjaman::index');
+
+        $routes->post('cancel-pinjaman', 'Ketua\Pinjaman::cancel_loan');
+        $routes->post('approve-pinjaman', 'Ketua\Pinjaman::approve_loan');
+
+        $routes->add('approve-pinjaman/(:num)', 'Ketua\Pinjaman::approve_proc/$1', ['as' => 'ketua_approve_pinjaman']);
+        $routes->add('cancel-pinjaman/(:num)', 'Ketua\Pinjaman::cancel_proc/$1', ['as' => 'ketua_cancel_pinjaman']);
+    });
 
     //GROUP LAPORAN
     $routes->group('report', static function ($routes)

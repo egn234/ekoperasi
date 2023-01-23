@@ -53,13 +53,13 @@ class m_monthly_report extends Model
 
     function getPinjamanAktifByAnggota($iduser)
     {
-        $sql = "SELECT * FROM tb_pinjaman WHERE idanggota = $iduser AND status = 3";
+        $sql = "SELECT * FROM tb_pinjaman WHERE idanggota = $iduser AND status = 5";
         return $this->db->query($sql)->getResult();
     }
 
     function countPinjamanAktifByAnggota($iduser)
     {
-        $sql = "SELECT count(idpinjaman) AS hitung FROM tb_pinjaman WHERE idanggota = $iduser AND status = 3";
+        $sql = "SELECT count(idpinjaman) AS hitung FROM tb_pinjaman WHERE idanggota = $iduser AND status = 5";
         return $this->db->query($sql)->getResult();
     }
 
@@ -183,7 +183,7 @@ class m_monthly_report extends Model
             SELECT count(iduser) AS hitung 
             FROM tb_user 
             JOIN tb_pinjaman ON tb_user.iduser = tb_pinjaman.idanggota 
-            WHERE status = 3
+            WHERE status = 5
         ";
 
         return $this->db->query($sql)->getResult();

@@ -17,7 +17,7 @@ class Pinjaman extends Controller
 
 	public function index()
 	{
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(3);
 
 		$data = [
 			'title_meta' => view('ketua/partials/title-meta', ['title' => 'Pinjaman']),
@@ -33,6 +33,7 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idketua' => $this->account->iduser,
+			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
 			'status' => 0,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -56,7 +57,7 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idketua' => $this->account->iduser,
-			'status' => 3,
+			'status' => 4,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
 

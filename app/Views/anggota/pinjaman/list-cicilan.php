@@ -121,12 +121,16 @@
                                         <?php if($detail_pinjaman->status == 0){?>
                                             Ditolak
                                         <?php }elseif($detail_pinjaman->status == 1){?>
-                                            Diproses Admin
+                                            Upload Form Persetujuan SDM
                                         <?php }elseif($detail_pinjaman->status == 2){?>
                                             Diproses Bendahara
                                         <?php }elseif($detail_pinjaman->status == 3){?>
-                                            Sedang Berlangsung
+                                            Diproses Ketua
                                         <?php }elseif($detail_pinjaman->status == 4){?>
+                                            Diproses Ketua
+                                        <?php }elseif($detail_pinjaman->status == 5){?>
+                                            Sedang Berlangsung
+                                        <?php }elseif($detail_pinjaman->status == 6){?>
                                             Lunas
                                         <?php }?>
                                     </div>

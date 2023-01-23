@@ -58,9 +58,7 @@ class Pinjaman extends Controller
 		$dataset = [
 			'idbendahara' => $this->account->iduser,
 			'status' => 3,
-			'date_updated' => date('Y-m-d H:i:s'),
-			'bln_perdana' => date('m', strtotime("+ 1 month")),
-			'tanggal_bayar' => date('d')
+			'date_updated' => date('Y-m-d H:i:s')
 		];
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
