@@ -159,9 +159,11 @@ $routes->group('ketua', static function ($routes)
 {
     $routes->get('dashboard', 'Ketua\Dashboard::index', ['as' => 'dashboard_ketua']);
     $routes->get('profile', 'Ketua\Profile::index');
+    $routes->get('notification/mark-all-read', 'Ketua\Notifications::mark_all_read');
     
     $routes->post('profile/edit_proc', 'Ketua\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Ketua\Profile::update_pass');
+    $routes->post('notification/mark-as-read', 'Ketua\Notifications::mark_as_read');
     
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)

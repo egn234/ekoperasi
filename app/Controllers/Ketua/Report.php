@@ -4,6 +4,7 @@ namespace App\Controllers\Ketua;
 require_once ROOTPATH.'vendor/autoload.php';
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_monthly_report;
@@ -11,6 +12,8 @@ use App\Models\M_param;
 use App\Models\M_param_manasuka;
 use App\Models\M_cicilan;
 use App\Models\M_pinjaman;
+
+use App\Controllers\Ketua\Notifications;
 
 class Report extends Controller
 {
@@ -25,6 +28,7 @@ class Report extends Controller
 		$this->m_param_manasuka = new M_param_manasuka();
 		$this->m_cicilan = new M_cicilan();
 		$this->m_pinjaman = new M_pinjaman();
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -35,6 +39,8 @@ class Report extends Controller
 		$data = [
 			'title_meta' => view('ketua/partials/title-meta', ['title' => 'Dashboard']),
 			'page_title' => view('ketua/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'list_report' => $list_report,
 			'cek_report' => $cek_report

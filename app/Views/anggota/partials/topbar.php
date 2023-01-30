@@ -83,7 +83,7 @@
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1"><?= $a->message ?></h6>
                                             <div class="font-size-13 text-muted">
-                                                <p class="mb-1">Pinjaman UNDERED</p> 
+                                                <p class="mb-1">Pinjaman </p> 
                                                 <p class="mb-0"><i class="mdi mdi-clock-outline"></i> <span><?= $a->timestamp ?></span></p>
                                             </div>
                                         </div>

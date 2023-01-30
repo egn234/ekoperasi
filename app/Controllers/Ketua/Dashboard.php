@@ -2,9 +2,12 @@
 namespace App\Controllers\Ketua;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_monthly_report;
+
+use App\Controllers\Ketua\Notifications;
 
 class Dashboard extends Controller
 {
@@ -15,6 +18,7 @@ class Dashboard extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_monthly_report = new M_monthly_report();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -30,6 +34,8 @@ class Dashboard extends Controller
 		$data = [
 			'title_meta' => view('ketua/partials/title-meta', ['title' => 'Dashboard']),
 			'page_title' => view('ketua/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'total_anggota' => $total_anggota,
 			'monthly_user' => $monthly_user,
 			'uang_giat' => $uang_giat,
