@@ -2,9 +2,12 @@
 namespace App\Controllers\Admin;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_pinjaman;
 use App\Models\M_Notification;
+
+use App\Controllers\Admin\Notifications;
 
 class Pinjaman extends Controller
 {
@@ -15,6 +18,7 @@ class Pinjaman extends Controller
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_pinjaman = new M_pinjaman();
 		$this->m_notification = new M_notification();
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -24,6 +28,8 @@ class Pinjaman extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Pinjaman']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'list_pinjaman' => $list_pinjaman
 		];

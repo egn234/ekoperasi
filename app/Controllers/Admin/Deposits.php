@@ -2,10 +2,13 @@
 namespace App\Controllers\Admin;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
+
+use App\Controllers\Admin\Notifications;
 
 class Deposits extends Controller
 {
@@ -17,6 +20,7 @@ class Deposits extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -26,6 +30,8 @@ class Deposits extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Kelola Anggota']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Kelola Anggota', 'li_1' => 'EKoperasi', 'li_2' => 'Kelola Anggota']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'anggota_list' => $anggota_list
 		];
@@ -41,6 +47,8 @@ class Deposits extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Kelola Transaksi Simpanan']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Kelola Transaksi Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Kelola Transaksi Simpanan']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'transaksi_list' => $transaksi_list,
 			'transaksi_list_filter' => $transaksi_list_filter
@@ -62,6 +70,8 @@ class Deposits extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail Simpanan']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Detail Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Detail Simpanan']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'detail_user' => $detail_user,
 			'deposit_list' => $depo_list,

@@ -4,11 +4,14 @@ namespace App\Controllers\Admin;
 require_once ROOTPATH.'vendor/autoload.php';
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_group;
 use App\Models\M_deposit;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
+
+use App\Controllers\Admin\Notifications;
 
 class User extends Controller
 {
@@ -21,6 +24,7 @@ class User extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
 		$this->m_param_manasuka = new M_param_manasuka();
+		$this->notification = new Notifications();
 	}
 
 	public function list()
@@ -30,6 +34,8 @@ class User extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'User']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'User List', 'li_1' => 'EKoperasi', 'li_2' => 'User List']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'usr_list' => $user_list
 		];
@@ -44,6 +50,8 @@ class User extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Closebook User']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'CLosebook User List', 'li_1' => 'EKoperasi', 'li_2' => 'Closebook User List']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'usr_list' => $user_list
 		];
@@ -58,6 +66,8 @@ class User extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'User']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Tambah User', 'li_1' => 'EKoperasi', 'li_2' => 'New User']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'grp_list' => $group_list
 		];
@@ -490,6 +500,8 @@ class User extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail User']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Detail User', 'li_1' => 'EKoperasi', 'li_2' => 'User Detail']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'det_user' => $detail_user,
 			'grp_list' => $group_list

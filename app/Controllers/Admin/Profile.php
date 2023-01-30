@@ -3,8 +3,11 @@
 namespace App\Controllers\Admin;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_group;
+
+use App\Controllers\Admin\Notifications;
 
 class Profile extends Controller
 {
@@ -14,6 +17,7 @@ class Profile extends Controller
 		$this->m_user = new M_user();
 		$this->m_group = new M_group();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -21,6 +25,8 @@ class Profile extends Controller
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Profile']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account
 		];
 		
