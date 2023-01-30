@@ -123,11 +123,13 @@ $routes->group('bendahara', static function ($routes)
     $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
     $routes->get('profile', 'Bendahara\Profile::index');
     $routes->get('parameter', 'Bendahara\Kelola_param::index');
+    $routes->get('notification/mark-all-read', 'Bendahara\Notifications::mark_all_read');
 
     $routes->post('profile/edit_proc', 'Bendahara\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Bendahara\Profile::update_pass');
     $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');
     $routes->post('parameter/set_param_oth', 'Bendahara\Kelola_param::set_param_other');
+    $routes->post('notification/mark-as-read', 'Bendahara\Notifications::mark_as_read');
 
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)
@@ -197,7 +199,6 @@ $routes->group('anggota', static function ($routes)
     $routes->post('profile/set-manasuka-proc', 'Anggota\Profile::set_manasuka_proc');
     $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
-
     $routes->post('notification/mark-as-read', 'Anggota\Notifications::mark_as_read');
 
     //GRUP DAFTAR SIMPANAN

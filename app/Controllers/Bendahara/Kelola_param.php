@@ -2,9 +2,12 @@
 namespace App\Controllers\Bendahara;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_param;
 use App\Models\M_param_hist;
+
+use App\Controllers\Bendahara\Notifications;
 
 class Kelola_param extends Controller
 {
@@ -14,6 +17,7 @@ class Kelola_param extends Controller
 		$this->m_user = new M_user();
 		$this->m_param = new M_param();
 		$this->m_param_hist = new M_param_hist();
+		$this->notification = new Notifications();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 
@@ -25,6 +29,8 @@ class Kelola_param extends Controller
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Set Parameter']),
 			'page_title' => view('bendahara/partials/page-title', ['title' => 'Parameter', 'li_1' => 'EKoperasi', 'li_2' => 'Parameter']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'param_simp' => $param_simp,
 			'param_other' => $param_other

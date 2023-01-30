@@ -7,7 +7,6 @@
 <!-- pace js -->
 <script src="<?=base_url()?>/assets/libs/pace-js/pace.min.js"></script>
 
-
 <script>
     $(document).ready(function(){
         $(".update-notification").click(function(){
