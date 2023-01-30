@@ -2,10 +2,13 @@
 namespace App\Controllers\Anggota;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
+
+use App\Controllers\Anggota\Notifications;
 
 class Deposits extends Controller
 {
@@ -17,6 +20,7 @@ class Deposits extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -34,12 +38,9 @@ class Deposits extends Controller
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Simpanan']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Simpanan']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
-			'deposit_list' => $depo_list,
-			'total_saldo_wajib' => $total_saldo_wajib,
-			'total_saldo_pokok' => $total_saldo_pokok,
-			'total_saldo_manasuka' => $total_saldo_manasuka,
-			'param_manasuka' => $param_manasuka,
 			'deposit_list2' => $this->m_deposit_pag
 				->where('idanggota', $this->account->iduser)
 				->orderBy('date_created', 'DESC')
@@ -47,6 +48,11 @@ class Deposits extends Controller
 
 			'pager' => $this->m_deposit_pag->pager,
 			'currentpage' => $currentpage
+			'deposit_list' => $depo_list,
+			'total_saldo_wajib' => $total_saldo_wajib,
+			'total_saldo_pokok' => $total_saldo_pokok,
+			'total_saldo_manasuka' => $total_saldo_manasuka,
+			'param_manasuka' => $param_manasuka,
 		];
 		
 		return view('anggota/deposit/deposit-list', $data);

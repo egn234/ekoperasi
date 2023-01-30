@@ -2,10 +2,14 @@
 namespace App\Controllers\Anggota;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_pinjaman;
 use App\Models\M_cicilan;
 use App\Models\M_param;
+use App\Models\M_notification;
+
+use App\Controllers\Anggota\Notifications;
 
 class Pinjaman extends Controller
 {
@@ -17,6 +21,8 @@ class Pinjaman extends Controller
 		$this->m_pinjaman = new M_pinjaman();
 		$this->m_cicilan = new M_cicilan();
 		$this->m_param = new M_param();
+		$this->m_notification = new M_notification();
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -26,6 +32,8 @@ class Pinjaman extends Controller
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Pinjaman']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'list_pinjaman' => $list_pinjaman
 		];
@@ -42,6 +50,8 @@ class Pinjaman extends Controller
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Pinjaman']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'detail_pinjaman' => $detail_pinjaman,
 			'list_cicilan' => $list_cicilan
@@ -266,6 +276,16 @@ class Pinjaman extends Controller
 			];
 
 			$this->m_pinjaman->updatePinjaman($idpinjaman, $data);
+
+			$notification_data = [
+				'anggota_id' => $this->account->iduser,
+				'pinjaman_id' => $idpinjaman,
+				'message' => 'Pengajuan pinjaman dari anggota '. $this->account->nama_lengkap,
+				'timestamp' => date('Y-m-d H:i:s'),
+				'group_type' => 2
+			];
+
+			$this->m_notification->insert($notification_data);
 			
 			$data_session = [
 				'notif' => $alert,

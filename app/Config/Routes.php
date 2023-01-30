@@ -192,10 +192,13 @@ $routes->group('anggota', static function ($routes)
     $routes->get('closebook', 'Anggota\Closebook::index');
     $routes->get('closebook-request', 'Anggota\Closebook::closebook_proc');
     $routes->get('closebook-cancel', 'Anggota\Closebook::closebook_cancel');
+    $routes->get('notification/mark-all-read', 'Anggota\Notifications::mark_all_read');
 
     $routes->post('profile/set-manasuka-proc', 'Anggota\Profile::set_manasuka_proc');
     $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
+
+    $routes->post('notification/mark-as-read', 'Anggota\Notifications::mark_as_read');
 
     //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)

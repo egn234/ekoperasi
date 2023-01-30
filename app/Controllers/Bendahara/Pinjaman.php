@@ -4,6 +4,7 @@ namespace App\Controllers\Bendahara;
 use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_pinjaman;
+use App\Models\M_Notification;
 
 class Pinjaman extends Controller
 {
@@ -13,6 +14,7 @@ class Pinjaman extends Controller
 		$this->m_user = new M_user();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_pinjaman = new M_pinjaman();
+		$this->m_notification = new M_notification();
 	}
 
 	public function index()
@@ -40,10 +42,24 @@ class Pinjaman extends Controller
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 
+		$notification_data = [
+			'bendahara_id' => $this->account->iduser,
+			'anggota_id' => $this->m_pinjaman->where('idpinjaman', $idpinjaman)
+											 ->get()
+											 ->getResult()[0]
+											 ->idanggota,
+			'pinjaman_id' => $idpinjaman,
+			'message' => 'Pengajuan pinjaman ditolak oleh bendahara '. $this->account->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 4
+		];
+
+		$this->m_notification->insert($notification_data);
+
 		$alert = view(
 			'partials/notification-alert', 
 			[
-				'notif_text' => 'Pengajuan pinjaman barhasil ditolak',
+				'notif_text' => 'Pengajuan pinjaman berhasil ditolak',
 			 	'status' => 'success'
 			]
 		);
@@ -63,10 +79,38 @@ class Pinjaman extends Controller
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 
+		$notification_anggota = [
+			'bendahara_id' => $this->account->iduser,
+			'anggota_id' => $this->m_pinjaman->where('idpinjaman', $idpinjaman)
+											 ->get()
+											 ->getResult()[0]
+											 ->idanggota,
+			'pinjaman_id' => $idpinjaman,
+			'message' => 'Pengajuan pinjaman diterima oleh bendahara '. $this->account->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 4
+		];
+
+		$this->m_notification->insert($notification_anggota);
+
+		$notification_ketua = [
+			'bendahara_id' => $this->account->iduser,
+			'anggota_id' => $this->m_pinjaman->where('idpinjaman', $idpinjaman)
+											 ->get()
+											 ->getResult()[0]
+											 ->idanggota,
+			'pinjaman_id' => $idpinjaman,
+			'message' => 'Bendahara '. $this->account->nama_lengkap .' meminta persetujuan anda untuk permohonan peminjaman',
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 3
+		];
+
+		$this->m_notification->insert($notification_ketua);
+
 		$alert = view(
 			'partials/notification-alert', 
 			[
-				'notif_text' => 'Pengajuan pinjaman barhasil disetujui',
+				'notif_text' => 'Pengajuan pinjaman berhasil disetujui',
 			 	'status' => 'success'
 			]
 		);

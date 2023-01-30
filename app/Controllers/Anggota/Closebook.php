@@ -2,9 +2,12 @@
 namespace App\Controllers\Anggota;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_param;
+
+use App\Controllers\Anggota\Notifications;
 
 class Closebook extends Controller
 {
@@ -15,6 +18,7 @@ class Closebook extends Controller
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
+		$this->notification = new Notifications();
 	}
 
 	public function index()
@@ -26,6 +30,8 @@ class Closebook extends Controller
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Tutup Buku']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Tutup Buku', 'li_1' => 'EKoperasi', 'li_2' => 'Tutup Buku']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'total_saldo_wajib' => $total_saldo_wajib,
 			'total_saldo_pokok' => $total_saldo_pokok,
