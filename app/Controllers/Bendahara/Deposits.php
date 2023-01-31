@@ -42,7 +42,7 @@ class Deposits extends Controller
 	public function list_transaksi()
 	{
 		$transaksi_list = $this->m_deposit->getAllDeposit();
-		$transaksi_list_filter = $this->m_deposit->getAllDepositFilter();
+		$transaksi_list_filter = $this->m_deposit->getAllDepositFilterBendahara();
 		
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Kelola Transaksi Simpanan']),

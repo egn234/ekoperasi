@@ -96,7 +96,6 @@ class Deposits extends Controller
 
 		$iduser = $this->request->getPost('iduser');
 		$jenis_pengajuan = $this->request->getPost('jenis_pengajuan');
-
 		if ($jenis_pengajuan == "") {
 			$alert = view(
 				'partials/notification-alert', 
@@ -108,20 +107,52 @@ class Deposits extends Controller
 			
 			$dataset = ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('admin/deposit/user/'.$iduser);
+			return redirect()->back();
 		}
 
-		$jenis_deposit = 'manasuka';
+		$jenis_deposit = 'manasuka free';
 
 		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
-		$deskripsi = $this->request->getPost('deskripsi');
+		$deskripsi = $this->request->getPost('description');
+
 
 		$cash_in = 0;
 		$cash_out = 0;
+		$status = 'diterima';
 
 		if ($jenis_pengajuan == 'penyimpanan') {
 			$cash_in = $nominal;
 		}else{
+			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
+
+			if ($cek_saldo < $nominal) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal membuat pengajuan: Saldo manasuka kurang untuk membuat pengajuan',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset = ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}
+
+			if ($nominal < 300000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal membuat pengajuan: Penarikan minimal Rp 300.000',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset = ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+				
+			}
 			$cash_out = $nominal;
 		}
 
@@ -131,7 +162,7 @@ class Deposits extends Controller
 			'cash_in' => $cash_in,
 			'cash_out' => $cash_out,
 			'deskripsi' => $deskripsi,
-			'status' => 'diterima',
+			'status' => $status,
 			'date_created' => date('Y-m-d H:i:s'),
 			'idanggota' => $iduser,
 			'idadmin' => $this->account->iduser
@@ -152,7 +183,7 @@ class Deposits extends Controller
 		];
 
 		session()->setFlashdata($data_session);
-		return redirect()->to('admin/deposit/user/'.$iduser);
+		return redirect()->back();
 	}
 
 	public function create_param_manasuka()

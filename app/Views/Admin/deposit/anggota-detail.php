@@ -60,7 +60,11 @@
                                 <?php foreach ($deposit_list2 as $k) : ?>
 
                                     <?php if ($k['cash_in'] == 0) {?>
-                                        <div class="card border-black">
+                                        <div class="card <?=
+                                            $k['status'] == 'diproses' || $k['status'] == 'diproses bendahara' || $k['status'] == 'diproses admin' || $k['status'] == 'upload bukti' ? 'border-secondary' 
+                                                : ($k['status'] == 'diterima' ? 'border-success' 
+                                                    : 'border-danger') 
+                                        ?>">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-6">
@@ -73,20 +77,38 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <span class="text-muted">
-                                                        <?= $k['status'] ?> pada
-                                                        <?= $k['date_created'] ?>
-                                                    </span>
+                                                <div class="row mt-3">
+                                                    <div class="col-8">
+                                                        <span class="text-muted">
+                                                            Status: <?= $k['status'] ?> <br>
+                                                            Tanggal: <?= $k['date_created'] ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="btn-group float-end">
+                                                            <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka free' && $k['jenis_pengajuan'] == 'penyimpanan' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
+                                                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
+                                                                    <i class="fa fa-upload"></i> upload bukti
+                                                                </a>
+                                                            <?php }?>
+                                                            <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
+                                                                <i class="fa fa-file-alt"></i> Detail
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     <?php }else{?>
-                                        <div class="card border-success">
+                                        <div class="card <?= 
+                                            $k['status'] == 'diproses' || $k['status'] == 'diproses bendahara' || $k['status'] == 'diproses admin' || $k['status'] == 'upload bukti' ? 'border-secondary' 
+                                                : ($k['status'] == 'diterima' ? 'border-success' 
+                                                    : 'border-danger') 
+                                        ?>">
                                             <div class="card-body">
                                                 <div class="row md-3">
                                                     <div class="col-8">
-                                                        <i class="fa fa-upload"></i>
+                                                        <i class="fa fa-download"></i>
                                                         <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
                                                     </div>
                                                     <div class="col-4">
@@ -107,7 +129,7 @@
                                                             <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
                                                                 <i class="fa fa-file-alt"></i> Detail
                                                             </a>
-                                                            <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
+                                                            <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka free' && $k['jenis_pengajuan'] == 'penyimpanan' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
                                                                 <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
                                                                     <i class="fa fa-upload"></i> upload bukti
                                                                 </a>

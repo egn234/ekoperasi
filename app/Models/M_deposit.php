@@ -53,6 +53,23 @@ class m_deposit extends Model
                 tb_user.email 
             FROM tb_deposit 
             JOIN tb_user ON tb_deposit.idanggota = tb_user.iduser 
+            WHERE tb_deposit.status = 'diproses admin'
+            ORDER BY tb_deposit.date_created DESC
+        ";
+        
+        return $this->db->query($sql)->getResult();    
+    }
+
+    function getAllDepositFilterBendahara()
+    {
+        $sql = "
+            SELECT 
+                tb_deposit.*,
+                tb_user.nama_lengkap,
+                tb_user.nik,
+                tb_user.email 
+            FROM tb_deposit 
+            JOIN tb_user ON tb_deposit.idanggota = tb_user.iduser 
             WHERE tb_deposit.status = 'diproses bendahara'
             ORDER BY tb_deposit.date_created DESC
         ";
