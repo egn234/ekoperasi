@@ -26,30 +26,34 @@
                 <td>:</td>
                 <td><?=$a->deskripsi?></td>
             </tr>
-            <?php if ($a->jenis_deposit == "manasuka") {?>
+            <?php if ($a->jenis_deposit == "manasuka" || $a->jenis_deposit == "manasuka free") {?>
                 <tr>
                     <td>Status</td>
                     <td>:</td>
                     <td><?=$a->status?></td>
                 </tr>
-                <?php if($a->status != 'diproses'){?>
-                <tr>
-                    <td>Telah diproses oleh</td>
-                    <td>:</td>
-                    <td><?=$a->nama_admin?></td>
-                </tr>
+                <?php if($a->status == 'diterima'){?>
+                    <tr>
+                        <td>Telah diproses oleh</td>
+                        <td>:</td>
+                        <td><?=$a->nama_admin?></td>
+                    </tr>
                 <?php }?>
-                <tr style=" vertical-align: top;">
-                    <td>Bukti transfer</td>
-                    <td>:</td>
-                    <td>
-                        <?php if(!$a->bukti_transfer){?>
-                            Belum mengunggah bukti bayar
-                        <?php }else{?>
-                            <img src="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" style="max-width: 450px">
-                        <?php }?>
-                    </td>
-                </tr>
+                <?php if($a->jenis_deposit == 'manasuka free' && $a->jenis_pengajuan == 'penyimpanan'){?>
+                    <tr style=" vertical-align: top;">
+                        <td>Bukti transfer</td>
+                        <td>:</td>
+                        <td>
+                            <?php if(!$a->bukti_transfer){?>
+                                Belum mengunggah bukti bayar
+                            <?php }else{?>
+                                <a href="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" target="_blank">
+                                    <?=$a->bukti_transfer?> <i class="fa fa-external-link-alt"></i>
+                                </a>
+                            <?php }?>
+                        </td>
+                    </tr>
+                <?php }?>
             <?php }?>
         </table>
     </div>

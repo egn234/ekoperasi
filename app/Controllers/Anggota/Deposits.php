@@ -47,12 +47,12 @@ class Deposits extends Controller
 				->paginate(10, 'grup1'),
 
 			'pager' => $this->m_deposit_pag->pager,
-			'currentpage' => $currentpage
+			'currentpage' => $currentpage,
 			'deposit_list' => $depo_list,
 			'total_saldo_wajib' => $total_saldo_wajib,
 			'total_saldo_pokok' => $total_saldo_pokok,
 			'total_saldo_manasuka' => $total_saldo_manasuka,
-			'param_manasuka' => $param_manasuka,
+			'param_manasuka' => $param_manasuka
 		];
 		
 		return view('anggota/deposit/deposit-list', $data);
@@ -75,18 +75,19 @@ class Deposits extends Controller
 			return redirect()->to('anggota/deposit/list');
 		}
 
-		$jenis_deposit = 'manasuka';
+		$jenis_deposit = 'manasuka free';
 
 		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
-		$deskripsi = $this->request->getPost('deskripsi');
+		$deskripsi = $this->request->getPost('description');
 
 
 		$cash_in = 0;
 		$cash_out = 0;
+		$status = false;
 
 		if ($jenis_pengajuan == 'penyimpanan') {
 			$cash_in = $nominal;
-		
+			$status = 'upload bukti';
 		}else{
 			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
 
@@ -118,8 +119,8 @@ class Deposits extends Controller
 				return redirect()->back();
 				
 			}
-			
 			$cash_out = $nominal;
+			$status = 'diproses bendahara';
 		}
 
 		$dataset = [
@@ -128,7 +129,7 @@ class Deposits extends Controller
 			'cash_in' => $cash_in,
 			'cash_out' => $cash_out,
 			'deskripsi' => $deskripsi,
-			'status' => 'diproses',
+			'status' => $status,
 			'date_created' => date('Y-m-d H:i:s'),
 			'idanggota' => $this->account->iduser
 		];
@@ -167,7 +168,13 @@ class Deposits extends Controller
 			$img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/tf/', $newName);
 			$bukti_transfer = $img->getName();
 
-			$this->m_deposit->updateBuktiTransfer($iddeposit, $bukti_transfer);
+			$insertData = [
+				'bukti_transfer' => $bukti_transfer,
+				'status' => 'diproses bendahara',
+				'date_updated' => date('Y-m-d H:i:s')
+			];
+
+			$this->m_deposit->updateBuktiTransfer($iddeposit, $insertData);
 			
 			$alert = view(
 				'partials/notification-alert', 
@@ -192,7 +199,7 @@ class Deposits extends Controller
 			'notif' => $alert
 		];
 		session()->setFlashdata($data_session);
-		return redirect()->to('anggota/deposit/list');
+		return redirect()->back();
 	}
 
 	public function create_param_manasuka()

@@ -147,12 +147,11 @@ class m_deposit extends Model
         $builder->insert($dataset);
     }
     
-    function updateBuktiTransfer($iddeposit, $bukti_transfer)
+    function updateBuktiTransfer($iddeposit, $data)
     {
         $builder = $this->db->table('tb_deposit');
-        $builder->set('bukti_transfer', $bukti_transfer);
         $builder->where('iddeposit', $iddeposit);
-        $builder->update();
+        $builder->update($data);
     }
     
     function setStatus($iddeposit, $dataset)
