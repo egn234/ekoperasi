@@ -23,6 +23,17 @@
                 </li>
                 
                 <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="file-text"></i>
+                        <span data-key="t-deposit">Kelola Simpanan</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="<?= url_to('bendahara/deposit/list') ?>" data-key="t-deposit">Daftar Anggota</a></li>
+                        <li><a href="<?= url_to('bendahara/deposit/list_transaksi') ?>" data-key="t-deposit">Daftar Pengajuan</a></li>
+                    </ul>
+                </li>
+
+                <li>
                     <a href="<?= url_to('bendahara/pinjaman/list') ?>">
                         <i data-feather="dollar-sign"></i>
                         <span data-key="t-pinjaman">Pinjaman</span>

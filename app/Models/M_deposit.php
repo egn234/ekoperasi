@@ -53,7 +53,7 @@ class m_deposit extends Model
                 tb_user.email 
             FROM tb_deposit 
             JOIN tb_user ON tb_deposit.idanggota = tb_user.iduser 
-            WHERE tb_deposit.status = 'diproses'
+            WHERE tb_deposit.status = 'diproses bendahara'
             ORDER BY tb_deposit.date_created DESC
         ";
         
@@ -126,7 +126,7 @@ class m_deposit extends Model
             FROM tb_deposit 
             WHERE idanggota = $iduser 
                 AND status = 'diterima' 
-                AND jenis_deposit = 'manasuka'
+                AND jenis_deposit LIKE 'manasuka%'
         ";
         
         return $this->db->query($sql)->getResult();  

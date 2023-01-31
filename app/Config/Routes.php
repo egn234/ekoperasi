@@ -82,7 +82,6 @@ $routes->group('admin', static function ($routes)
         $routes->get('list', 'Admin\Deposits::index');
         $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
 
-        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
         $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
         $routes->post('add_req', 'Admin\Deposits::add_proc');
         $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
@@ -132,6 +131,21 @@ $routes->group('bendahara', static function ($routes)
     $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');
     $routes->post('parameter/set_param_oth', 'Bendahara\Kelola_param::set_param_other');
     $routes->post('notification/mark-as-read', 'Bendahara\Notifications::mark_as_read');
+    
+    //GRUP DAFTAR SIMPANAN
+    $routes->group('deposit', static function ($routes)
+    {
+        $routes->get('list', 'Bendahara\Deposits::index');
+        $routes->get('list_transaksi', 'Bendahara\Deposits::list_transaksi');
+
+        $routes->post('detail_mutasi', 'Bendahara\Deposits::detail_mutasi');
+        $routes->post('add_req', 'Bendahara\Deposits::add_proc');
+        
+        $routes->add('user/(:num)', 'Bendahara\Deposits::detail_anggota/$1', ['as' => 'b_anggota_detail']);
+        $routes->add('confirm/(:num)', 'Bendahara\Deposits::konfirmasi_mutasi/$1', ['as' => 'bendahara_konfirmasi_simpanan']);
+        $routes->add('cancel/(:num)', 'Bendahara\Deposits::batalkan_mutasi/$1', ['as' => 'bendahara_batalkan_simpanan']);
+        
+    });
 
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)
