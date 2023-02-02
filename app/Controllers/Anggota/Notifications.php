@@ -18,6 +18,7 @@ class Notifications extends Controller
 	public function index()
 	{
 		$notification_list = $this->m_notification->where('anggota_id', $this->account->iduser)
+											->orderBy('timestamp', 'DESC')
 											->where('group_type', '4')
 											->get()
 											->getResult();

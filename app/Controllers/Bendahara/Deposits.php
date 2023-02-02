@@ -7,6 +7,7 @@ use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
+use App\Models\M_notification;
 
 use App\Controllers\Bendahara\Notifications;
 
@@ -20,6 +21,7 @@ class Deposits extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
+		$this->m_notification = new M_notification();
 		$this->notification = new Notifications();
 	}
 
@@ -101,6 +103,39 @@ class Deposits extends Controller
 		];
 
 		$this->m_deposit->setStatus($iddeposit, $dataset);
+
+		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
+		$nama_anggota = $this->m_user->where('iduser', $idanggota)->get()->getResult()[0]->nama_lengkap;
+		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
+
+		$message = false;
+		if ($jenis_pengajuan == 'penarikan') {
+			$message = 'penarikan';
+		}else{
+			$message = 'penyimpanan';
+		};
+
+		$notification_admin = [
+			'bendahara_id' => $this->account->iduser,
+			'anggota_id' => $idanggota,
+			'deposit_id' => $iddeposit,
+			'message' => 'Pengajuan '. $message .' manasuka baru dari anggota '. $nama_anggota,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 1
+		];
+
+		$this->m_notification->insert($notification_admin);
+
+		$notification_anggota = [
+			'bendahara_id' => $this->account->iduser,
+			'anggota_id' => $idanggota,
+			'deposit_id' => $iddeposit,
+			'message' => 'Pengajuan '. $message .' manasuka disetujui oleh bendahara '. $this->account->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 4
+		];
+
+		$this->m_notification->insert($notification_anggota);
 		
 		$alert = view(
 			'partials/notification-alert', 
@@ -126,6 +161,27 @@ class Deposits extends Controller
 
 		$this->m_deposit->setStatus($iddeposit, $dataset);
 		
+		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
+		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
+
+		$message = false;
+		if ($jenis_pengajuan == 'penarikan') {
+			$message = 'penarikan';
+		}else{
+			$message = 'penyimpanan';
+		};
+
+		$notification_anggota = [
+			'bendahara_id' => $this->account->iduser,
+			'anggota_id' => $idanggota,
+			'deposit_id' => $iddeposit,
+			'message' => 'Pengajuan '. $message .' manasuka ditolak oleh bendahara '. $this->account->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 4
+		];
+
+		$this->m_notification->insert($notification_anggota);
+
 		$alert = view(
 			'partials/notification-alert', 
 			[

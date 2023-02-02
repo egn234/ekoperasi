@@ -7,6 +7,7 @@ use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
+use App\Models\M_notification;
 
 use App\Controllers\Anggota\Notifications;
 
@@ -20,6 +21,7 @@ class Deposits extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
+		$this->m_notification = new M_notification();
 		$this->notification = new Notifications();
 	}
 
@@ -136,6 +138,23 @@ class Deposits extends Controller
 
 		$this->m_deposit->insertDeposit($dataset);
 
+		$new_deposit = $this->m_deposit->orderBy('date_created', 'DESC')
+									   ->limit(1)
+									   ->get()
+									   ->getResult()[0];
+
+		if ($new_deposit->status == 'diproses bendahara') {
+			$notification_data = [
+				'anggota_id' => $this->account->iduser,
+				'deposit_id' => $new_deposit->iddeposit,
+				'message' => 'Pengajuan penarikan manasuka dari anggota '. $this->account->nama_lengkap,
+				'timestamp' => date('Y-m-d H:i:s'),
+				'group_type' => 2
+			];
+
+			$this->m_notification->insert($notification_data);
+		}
+
 		$alert = view(
 			'partials/notification-alert', 
 			[
@@ -175,6 +194,16 @@ class Deposits extends Controller
 			];
 
 			$this->m_deposit->updateBuktiTransfer($iddeposit, $insertData);
+
+			$notification_data = [
+				'anggota_id' => $this->account->iduser,
+				'deposit_id' => $iddeposit,
+				'message' => 'Pengajuan penyimpanan manasuka dari anggota '. $this->account->nama_lengkap,
+				'timestamp' => date('Y-m-d H:i:s'),
+				'group_type' => 2
+			];
+
+			$this->m_notification->insert($notification_data);
 			
 			$alert = view(
 				'partials/notification-alert', 
