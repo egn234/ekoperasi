@@ -275,7 +275,7 @@
                                                     <select class="form-select" id="institution" name="instansi" required>
                                                         <option value="" <?=($det_user->instansi)?'':'selected'?> disabled>Pilih Institusi...</option>
                                                         <option value="YPT" <?=($det_user->instansi == 'YPT')?'selected':''?> >YPT</option>
-                                                        <option value="Telkom University" <?=($det_user->instansi == 'Telkom University')?'selected':''?> >Telkom University</option>
+                                                        <option value="Universitas Telkom" <?=($det_user->instansi == 'Universitas Telkom')?'selected':''?> >Universitas Telkom</option>
                                                         <option value="Trengginas Jaya" <?=($det_user->instansi == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
                                                         <option value="BUT" <?=($det_user->instansi == 'BUT')?'selected':''?> >BUT</option>
                                                         <option value="Telkom" <?=($det_user->instansi == 'Telkom')?'selected':''?> >Telkom</option>

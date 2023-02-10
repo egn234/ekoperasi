@@ -105,16 +105,16 @@ class User extends Controller
 				for ($i=2; $i <= $baris; $i++)
 				{ 
 					$cek_username = $this->m_user->getUsernameGiat()[0]->username;
-					$filter_int = filter_var($cek_username, FILTER_SANITIZE_NUMBER_INT);
+					$filter_int = (int) filter_var($cek_username, FILTER_SANITIZE_NUMBER_INT);
 					$clean_int = intval($filter_int);
 
-					if ($clean_int >= 1000) {
+					if ($clean_int >= 999) {
 						$username = 'GIAT'.($clean_int+1);
-					}elseif ($clean_int >= 100) {
+					}elseif ($clean_int >= 99) {
 						$username = 'GIAT0'.($clean_int+1);
-					}elseif ($clean_int >= 10) {
+					}elseif ($clean_int >= 9) {
 						$username = 'GIAT00'.($clean_int+1);
-					}elseif ($clean_int >= 1) {
+					}elseif ($clean_int >= 0) {
 						$username = 'GIAT000'.($clean_int+1);
 					}
 
@@ -209,7 +209,7 @@ class User extends Controller
 								$init_aktivasi = $this->m_param->getParamById(2)[0]->nilai;
 								$saldo_wajib = [
 									'jenis_pengajuan' => 'penyimpanan',
-									'jenis_deposit' => 'pokok',
+									'jenis_deposit' => 'wajib',
 									'cash_in' => $init_aktivasi,
 									'cash_out' => 0,
 									'deskripsi' => 'biaya awal registrasi',
