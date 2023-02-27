@@ -27,7 +27,7 @@
         <?php $c = 1; ?>
         <?php 
             foreach ($usr_list as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $datetime);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -35,8 +35,8 @@
                 }else{
                     $count_cicilan = " - ";
                 }
-                $pokok_wajib = $this->m_monthly_report->getSumSimpanan1($a->iduser, $datetime)[0]->nominal;  
-                $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $datetime)[0]->nominal;  
+                $pokok_wajib = $this->m_monthly_report->getSumSimpanan1($a->iduser, $startDate, $endDate)[0]->nominal;  
+                $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
                 $p_bunga = ($cicilan)?$cicilan[0]->bunga:0;
                 $p_provisi = ($cicilan)?$cicilan[0]->provisi:0;

@@ -10,7 +10,6 @@ class M_param extends Model
     protected $primaryKey = 'idparameter';
 
     protected $returnType = 'array';
-    protected $useSoftDeletes = true;
 
     protected $allowedFields = [];
 

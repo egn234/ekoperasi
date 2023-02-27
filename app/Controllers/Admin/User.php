@@ -159,6 +159,15 @@ class User extends Controller
 
 							$iduser_new = $this->m_user->getUser($dataset['username'])[0]->iduser;
 							
+							helper('filesystem');
+							$imgSource = FCPATH . 'assets/images/users/image.jpg';
+
+							mkdir(FCPATH . 'uploads/user/'.$dataset['username'], 0777);
+							mkdir(FCPATH . 'uploads/user/'.$dataset['username'].'/profil_pic', 0777);
+							
+							$imgDest = FCPATH . 'uploads/user/'.$dataset['username'].'/profil_pic/image.jpg';
+							copy($imgSource, $imgDest);
+
 							if ($saldo['saldo_pokok'] != null || $saldo['saldo_pokok'] != 0) {
 								
 								$saldo_pokok = [

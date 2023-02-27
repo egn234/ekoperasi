@@ -111,10 +111,11 @@ $routes->group('admin', static function ($routes)
     $routes->group('report', static function ($routes)
     {
         $routes->get('list', 'Admin\Report::index');
-        $routes->get('generate-monthly-report', 'Admin\Report::generate_report_monthly');
-        $routes->get('generate-deposit-member', 'Admin\Report::generate_deposit_member');
-        $routes->get('generate-loan-member', 'Admin\Report::generate_loan_member');
-        $routes->get('generate-loan-deposit-member', 'Admin\Report::generate_loan_deposit_member');
+        $routes->get('generate-monthly-report', 'Admin\Report::gen_report');
+
+        $routes->post('print-potongan-pinjaman', 'Admin\Report::print_potongan_pinjaman');
+        $routes->post('print-rekap-tahunan', 'Admin\Report::print_rekap_tahunan');
+        $routes->post('print-rekening-koran', 'Admin\Report::print_rekening_koran');
     });
 });
 
@@ -163,10 +164,11 @@ $routes->group('bendahara', static function ($routes)
     $routes->group('report', static function ($routes)
     {
         $routes->get('list', 'Bendahara\Report::index');
-        $routes->get('generate-monthly-report', 'Bendahara\Report::generate_report_monthly');
-        $routes->get('generate-deposit-member', 'Bendahara\Report::generate_deposit_member');
-        $routes->get('generate-loan-member', 'Bendahara\Report::generate_loan_member');
-        $routes->get('generate-loan-deposit-member', 'Bendahara\Report::generate_loan_deposit_member');
+        $routes->get('generate-monthly-report', 'Bendahara\Report::gen_report');
+        
+        $routes->post('print-potongan-pinjaman', 'Bendahara\Report::print_potongan_pinjaman');
+        $routes->post('print-rekap-tahunan', 'Bendahara\Report::print_rekap_tahunan');
+        $routes->post('print-rekening-koran', 'Bendahara\Report::print_rekening_koran');
     });
 });
 
@@ -197,9 +199,11 @@ $routes->group('ketua', static function ($routes)
     $routes->group('report', static function ($routes)
     {
         $routes->get('list', 'Ketua\Report::index');
-        $routes->get('generate-deposit-member', 'Ketua\Report::generate_deposit_member');
-        $routes->get('generate-loan-member', 'Ketua\Report::generate_loan_member');
-        $routes->get('generate-loan-deposit-member', 'Ketua\Report::generate_loan_deposit_member');
+        $routes->get('generate-monthly-report', 'Ketua\Report::gen_report');
+
+        $routes->post('print-potongan-pinjaman', 'Ketua\Report::print_potongan_pinjaman');
+        $routes->post('print-rekap-tahunan', 'Ketua\Report::print_rekap_tahunan');
+        $routes->post('print-rekening-koran', 'Ketua\Report::print_rekening_koran');
     });
 });
 

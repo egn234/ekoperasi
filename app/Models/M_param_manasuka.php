@@ -10,7 +10,6 @@ class M_param_manasuka extends Model
     protected $primaryKey = 'idmnskparam';
 
     protected $returnType = 'array';
-    protected $useSoftDeletes = true;
 
     protected $allowedFields = [];
 

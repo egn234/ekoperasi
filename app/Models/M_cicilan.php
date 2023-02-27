@@ -9,7 +9,6 @@ class m_cicilan extends Model
     protected $primaryKey = 'idcicilan';
 
     protected $returnType = 'array';
-    protected $useSoftDeletes = true;
 
     protected $allowedFields = [];
 

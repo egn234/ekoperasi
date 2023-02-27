@@ -9,7 +9,6 @@ class m_pinjaman extends Model
     protected $primaryKey = 'idpinjaman';
 
     protected $returnType = 'array';
-    protected $useSoftDeletes = true;
 
     protected $allowedFields = [];
 
@@ -132,6 +131,33 @@ class m_pinjaman extends Model
                 LEFT JOIN tb_cicilan USING (idpinjaman)
             WHERE status = 4
             GROUP BY tb_user.iduser;
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
+    function getPinjamanTahunan($idanggota, $startDate, $endDate)
+    {
+        $sql = "
+            SELECT tb_pinjaman.nominal - 
+                (
+                    SELECT SUM(tb_cicilan.nominal) 
+                    FROM tb_cicilan 
+                    WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman
+                    AND date_created BETWEEN '$startDate' AND '$endDate'
+                ) AS jumlah_pinjaman,
+                tb_pinjaman.angsuran_bulanan AS jumlah_cicilan,
+                tb_pinjaman.angsuran_bulanan - 
+                (
+                    SELECT COUNT(tb_cicilan.nominal)
+                    FROM tb_cicilan
+                    WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman
+                    AND date_created BETWEEN '$startDate' AND '$endDate'
+                )AS hitungan_cicilan
+                FROM tb_pinjaman
+                    WHERE status = '5'
+                    AND date_created BETWEEN '$startDate' AND '$endDate'
+                    AND idanggota = $idanggota
         ";
 
         return $this->db->query($sql)->getResult();

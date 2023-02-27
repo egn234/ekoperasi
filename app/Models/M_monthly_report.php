@@ -9,14 +9,16 @@ class m_monthly_report extends Model
     protected $primaryKey = 'idreportm';
 
     protected $returnType = 'array';
-    protected $useSoftDeletes = true;
 
-    protected $allowedFields = [];
+    protected $allowedFields = [
+        'date_monthly',
+        'file',
+        'flag'
+    ];
 
-    protected $useTimestamps = false;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    protected $useTimestamps = true;
+    protected $createdField  = 'created';
+    protected $updatedField  = 'updated';
 
     protected $validationRules    = [];
     protected $validationMessages = [];
@@ -190,50 +192,45 @@ class m_monthly_report extends Model
     }
 
     //FUNCTION UNTUK DOWNLOAD EXCEL
-    function getSumSimpanan1($iduser, $datetime)
+    function getSumSimpanan1($iduser, $startDate, $endDate)
     {
-        $bulan = date('m', strtotime($datetime));
         $sql = "
             SELECT 
                 SUM(cash_in)-SUM(cash_out) AS nominal 
                 FROM tb_deposit 
                 WHERE idanggota = $iduser 
                     AND status = 'diterima'
-                    AND MONTH(date_created) = $bulan
-                    AND 
-                    (
-                        jenis_deposit = 'pokok'
-                        OR jenis_deposit = 'wajib'
-                    )
+                    AND deskripsi NOT IN ('saldo pokok', 'saldo wajib')
+                    AND date_created BETWEEN '$startDate' AND '$endDate'
+                    AND jenis_deposit IN ('pokok', 'wajib')
         ";
 
         return $this->db->query($sql)->getResult();
     }
 
-    function getSumSimpanan2($iduser, $datetime)
+    function getSumSimpanan2($iduser, $startDate, $endDate)
     {
-        $bulan = date('m', strtotime($datetime));
         $sql = "
             SELECT 
                 SUM(cash_in)-SUM(cash_out) AS nominal 
                 FROM tb_deposit 
                 WHERE idanggota = $iduser 
                     AND status = 'diterima'
-                    AND MONTH(date_created) = $bulan
-                    AND jenis_deposit = 'manasuka'
+                    AND deskripsi != 'saldo manasuka'
+                    AND date_created BETWEEN '$startDate' AND '$endDate'
+                    AND jenis_deposit IN ('manasuka', 'manasuka free')
         ";
 
         return $this->db->query($sql)->getResult();
     }
 
-    function getHitunganPinjaman($iduser, $datetime)
+    function getHitunganPinjaman($iduser, $startDate, $endDate)
     {
-        $bulan = date('m', strtotime($datetime));
         $sql = "
             SELECT 
-                (SELECT nominal FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND MONTH(date_created) = $bulan LIMIT 1) AS nominal,
-                (SELECT bunga FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND MONTH(date_created) = $bulan LIMIT 1) AS bunga,
-                (SELECT provisi FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND MONTH(date_created) = $bulan LIMIT 1) AS provisi
+                (SELECT nominal FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS nominal,
+                (SELECT bunga FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND  date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS bunga,
+                (SELECT provisi FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND  date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS provisi
             FROM tb_pinjaman WHERE idanggota = $iduser;
         ";
 

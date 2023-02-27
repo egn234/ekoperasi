@@ -9,14 +9,14 @@ class m_deposit extends Model
     protected $primaryKey = 'iddeposit';
 
     protected $returnType = 'array';
-    protected $useSoftDeletes = true;
 
-    protected $allowedFields = [];
+    protected $allowedFields = [
+        'status'
+    ];
 
-    protected $useTimestamps = false;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    protected $useTimestamps = true;
+    protected $createdField  = 'date_created';
+    protected $updatedField  = 'date_updated';
 
     protected $validationRules    = [];
     protected $validationMessages = [];
