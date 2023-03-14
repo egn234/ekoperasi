@@ -61,6 +61,11 @@ class Pinjaman extends Controller
 		];
 
 		$this->m_notification->insert($notification_anggota);
+		
+		$this->m_notification->where('pinjaman_id', $idpinjaman)
+			->where('group_type', 2)
+			->set('status', 'read')
+			->update();
 
 		$alert = view(
 			'partials/notification-alert', 
@@ -80,7 +85,9 @@ class Pinjaman extends Controller
 		$dataset = [
 			'idketua' => $this->account->iduser,
 			'status' => 4,
-			'date_updated' => date('Y-m-d H:i:s')
+			'date_updated' => date('Y-m-d H:i:s'),
+			'bln_perdana' => date('m', strtotime("+ 1 month")),
+			'tanggal_bayar' => date('d')
 		];
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
@@ -101,16 +108,10 @@ class Pinjaman extends Controller
 
 		$this->m_notification->insert($notification_anggota);
 		
-		$notification_admin = [
-			'ketua_id' => $this->account->iduser,
-			'anggota_id' => $anggota_id,
-			'pinjaman_id' => $idpinjaman,
-			'message' => 'Pengajuan pinjaman baru oleh anggota '. $this->m_user->where('iduser', $anggota_id)->get()->getResult()[0]->nama_lengkap,
-			'timestamp' => date('Y-m-d H:i:s'),
-			'group_type' => 1
-		];
-
-		$this->m_notification->insert($notification_admin);
+		$this->m_notification->where('pinjaman_id', $idpinjaman)
+			->where('group_type', 2)
+			->set('status', 'read')
+			->update();
 
 		$alert = view(
 			'partials/notification-alert', 

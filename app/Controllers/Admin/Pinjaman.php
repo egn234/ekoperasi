@@ -23,7 +23,7 @@ class Pinjaman extends Controller
 
 	public function index()
 	{
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(4);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Pinjaman']),
@@ -77,29 +77,59 @@ class Pinjaman extends Controller
 
 	public function approve_proc($idpinjaman = false)
 	{
+		// $dataset = [
+		// 	'idadmin' => $this->account->iduser,
+		// 	'status' => 4,
+		// 	'date_updated' => date('Y-m-d H:i:s'),
+		// 	'bln_perdana' => date('m', strtotime("+ 1 month")),
+		// 	'tanggal_bayar' => date('d')
+		// ];
+		
 		$dataset = [
 			'idadmin' => $this->account->iduser,
-			'status' => 5,
-			'date_updated' => date('Y-m-d H:i:s'),
-			'bln_perdana' => date('m', strtotime("+ 1 month")),
-			'tanggal_bayar' => date('d')
+			'status' => 3,
+			'date_updated' => date('Y-m-d H:i:s')
 		];
 
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 		
-		$notification_data = [
+		$idanggota = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
+			->get()
+			->getResult()[0]
+			->idanggota;
+
+		$notification_anggota = [
 			'admin_id' => $this->account->iduser,
-			'anggota_id' => $this->m_pinjaman->where('idpinjaman', $idpinjaman)
-											 ->get()
-											 ->getResult()[0]
-											 ->idanggota,
+			'anggota_id' => $idanggota,
 			'pinjaman_id' => $idpinjaman,
 			'message' => 'Pengajuan pinjaman diterima oleh admin '. $this->account->nama_lengkap,
 			'timestamp' => date('Y-m-d H:i:s'),
 			'group_type' => 4
 		];
 
-		$this->m_notification->insert($notification_data);
+		$this->m_notification->insert($notification_anggota);
+
+		$notification_ketua = [
+			'admin_id' => $this->account->iduser,
+			'anggota_id' => $idanggota,
+			'pinjaman_id' => $idpinjaman,
+			'message' => 'Pengajuan pinjaman baru dari '. $this->m_user->where('iduser', $idanggota)->get()->getResult()[0]->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 3
+		];
+
+		$this->m_notification->insert($notification_ketua);
+
+		$notification_bendahara = [
+			'admin_id' => $this->account->iduser,
+			'anggota_id' => $idanggota,
+			'pinjaman_id' => $idpinjaman,
+			'message' => 'Pengajuan pinjaman baru dari '. $this->m_user->where('iduser', $idanggota)->get()->getResult()[0]->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 2
+		];
+
+		$this->m_notification->insert($notification_bendahara);
 
 		$alert = view(
 			'partials/notification-alert', 

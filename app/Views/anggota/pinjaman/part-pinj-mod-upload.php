@@ -12,6 +12,12 @@
                         <label class="form-label" for="slipgaji">Slip Gaji (.pdf)</label>
                         <input type="file" name="slip_gaji" id="slipgaji" class="form-control" accept=".pdf" required>
                     </div>
+                    <?php if($duser->status_pegawai == 'kontrak'){?>
+                        <div class="mb-3">
+                            <label class="form-label" for="formKontrak">Bukti Kontrak (.pdf)</label>
+                            <input type="file" name="form_kontrak" id="formKontrak" class="form-control" accept=".pdf" required>
+                        </div>
+                    <?php } ?>
                 </form>
             </div>
             <div class="modal-footer">

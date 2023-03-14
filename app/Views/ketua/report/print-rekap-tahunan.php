@@ -5,8 +5,11 @@
 <?php
     use App\Models\M_monthly_report;
     use App\Models\M_deposit;
+    use App\Models\M_pinjaman;
+
     $this->m_monthly_report = new M_monthly_report();
     $this->m_deposit = new M_deposit();
+    $this->m_pinjaman = new M_pinjaman();
 ?>
 <table border = "1" width="100%">
     <thead>
@@ -85,6 +88,14 @@
                                                      ->get()
                                                      ->getResult()[0]
                                                      ->nominal;
+                
+                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
+                                                    ->where('status', '5')
+                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                    ->where('idanggota', $a->iduser)
+                                                    ->get()
+                                                    ->getResult()[0]
+                                                    ->saldo_pinjaman;
 
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
@@ -97,9 +108,9 @@
                 <td><?= number_format($simpanan_wajib, 0, '.', ','); ?></td>
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
-                <td> jumlah pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
                 <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td> total saldo pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>
@@ -175,6 +186,14 @@
                                                      ->getResult()[0]
                                                      ->nominal;
 
+                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
+                                                    ->where('status', '5')
+                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                    ->where('idanggota', $a->iduser)
+                                                    ->get()
+                                                    ->getResult()[0]
+                                                    ->saldo_pinjaman;
+
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
 
@@ -186,9 +205,9 @@
                 <td><?= number_format($simpanan_wajib, 0, '.', ','); ?></td>
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
-                <td> jumlah pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
                 <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td> total saldo pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>
@@ -264,6 +283,14 @@
                                                      ->getResult()[0]
                                                      ->nominal;
 
+                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
+                                                    ->where('status', '5')
+                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                    ->where('idanggota', $a->iduser)
+                                                    ->get()
+                                                    ->getResult()[0]
+                                                    ->saldo_pinjaman;
+
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
 
@@ -275,9 +302,9 @@
                 <td><?= number_format($simpanan_wajib, 0, '.', ','); ?></td>
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
-                <td> jumlah pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
                 <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td> total saldo pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>
@@ -353,6 +380,14 @@
                                                      ->getResult()[0]
                                                      ->nominal;
 
+                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
+                                                    ->where('status', '5')
+                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                    ->where('idanggota', $a->iduser)
+                                                    ->get()
+                                                    ->getResult()[0]
+                                                    ->saldo_pinjaman;
+
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
 
@@ -364,9 +399,9 @@
                 <td><?= number_format($simpanan_wajib, 0, '.', ','); ?></td>
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
-                <td> jumlah pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
                 <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td> total saldo pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>
@@ -442,6 +477,14 @@
                                                      ->getResult()[0]
                                                      ->nominal;
 
+                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
+                                                    ->where('status', '5')
+                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                    ->where('idanggota', $a->iduser)
+                                                    ->get()
+                                                    ->getResult()[0]
+                                                    ->saldo_pinjaman;
+
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
 
@@ -453,9 +496,9 @@
                 <td><?= number_format($simpanan_wajib, 0, '.', ','); ?></td>
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
-                <td> jumlah pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
                 <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td> total saldo pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>
@@ -531,6 +574,14 @@
                                                      ->getResult()[0]
                                                      ->nominal;
 
+                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
+                                                    ->where('status', '5')
+                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                    ->where('idanggota', $a->iduser)
+                                                    ->get()
+                                                    ->getResult()[0]
+                                                    ->saldo_pinjaman;
+
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
 
@@ -542,9 +593,9 @@
                 <td><?= number_format($simpanan_wajib, 0, '.', ','); ?></td>
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
-                <td> jumlah pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
                 <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td> total saldo pinjaman </td>
+                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>

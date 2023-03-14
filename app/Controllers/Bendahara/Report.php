@@ -347,8 +347,8 @@ class Report extends Controller
 												 ->where('idanggota', $member->iduser)
 												 ->get()->getResult();
 
-				$sheet->setCellValue('G'.$row, ($jum_pinjaman)?$jum_pinjaman[0]->nominal:'');
-				$sheet->setCellValue('L'.$row, '=L'.($row-1).'+G'.$row.'-H'.$row);
+				$sheet->setCellValue('G'.$row, ($jum_pinjaman)?$jum_pinjaman[0]->nominal:'0');
+				$sheet->setCellValue('L'.$row, '=IFERROR(L'.($row-1).'+G'.$row.'-H'.$row.', L'.($row-1).')');
 				$sheet->setCellValue('M'.$row, ($jum_pinjaman)?$jum_pinjaman[0]->angsuran_bulanan:'=M'.($row-1));
 				$row++;
 			}
@@ -415,7 +415,7 @@ class Report extends Controller
 			$sheet->setCellValue("I24", "=SUM(I9:I23)");
 			$sheet->setCellValue("J24", "=SUM(J9:J23)");
 			$sheet->setCellValue("K24", "=SUM(K9:K23)");
-			$sheet->setCellValue("L24", "=SUM(L9:L23)");
+			$sheet->setCellValue("L24", "=G24-H24");
 
 			//STYLING
 			$defStyle = [

@@ -115,7 +115,7 @@
                                                     <select class="form-select" id="filterBulan" name="date_monthly" required>
                                                         <option>-Pilih Bulan-</option>
                                                         <?php foreach ($list_report as $v) {?>
-                                                            <option value="<?=$v->date_monthly?>"><?= date('F Y',strtotime($a->date_monthly)) ?></option>
+                                                            <option value="<?=$v->date_monthly?>"><?= date('F Y',strtotime($v->date_monthly)) ?></option>
                                                         <?php }?>
                                                     </select>
                                                 </div>

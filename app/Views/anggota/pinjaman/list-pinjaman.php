@@ -58,6 +58,7 @@
                                 <?=session()->getFlashdata('notif');?>
                                 <?=session()->getFlashdata('notif_bulanan');?>
                                 <?=session()->getFlashdata('notif_gaji');?>
+                                <?=session()->getFlashdata('notif_kontrak');?>
                                 <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <th width="5%">No</th>
@@ -80,16 +81,14 @@
                                                     <?php if($a->status == 0){?>
                                                         Ditolak
                                                     <?php }elseif($a->status == 1){?>
-                                                        Upload Form Persetujuan SDM
+                                                        Upload Kelengkapan Form
                                                     <?php }elseif($a->status == 2){?>
-                                                        Diproses Bendahara
+                                                        Menunggu Verifikasi
                                                     <?php }elseif($a->status == 3){?>
-                                                        Diproses Ketua
+                                                        Menunggu Approval Sekretariat
                                                     <?php }elseif($a->status == 4){?>
-                                                        Diproses Ketua
-                                                    <?php }elseif($a->status == 5){?>
                                                         Sedang Berlangsung
-                                                    <?php }elseif($a->status == 6){?>
+                                                    <?php }elseif($a->status == 5){?>
                                                         Lunas
                                                     <?php }?>
                                                 </td>

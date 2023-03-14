@@ -30,6 +30,7 @@ class Dashboard extends Controller
 		$monthly_income = $this->m_monthly_report->sumMonthlyIncome()[0]->hitung;
 		$monthly_outcome = $this->m_monthly_report->sumMonthlyOutcome()[0]->hitung;
 		$anggota_pinjaman = $this->m_monthly_report->countMonthlyAnggotaPinjaman()[0]->hitung;
+		$monthly_graph = $this->m_deposit->dashboard_getMonthlyGraphic();
 
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Dashboard']),
@@ -42,6 +43,7 @@ class Dashboard extends Controller
 			'monthly_income' => $monthly_income,
 			'monthly_outcome' => $monthly_outcome,
 			'anggota_pinjaman' => $anggota_pinjaman,
+			'monthly_graph' => $monthly_graph,
 			'duser' => $this->account
 		];
 		

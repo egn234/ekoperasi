@@ -232,4 +232,32 @@ class m_deposit extends Model
         ";
         return $this->db->query($sql)->getResult();
     }
+
+    function dashboard_getMonthlyGraphic()
+    {
+        $sql = "
+            SELECT *
+            FROM(
+                SELECT 
+                    SUM(cash_in)
+                    + (
+                        SELECT SUM(nominal)+SUM(bunga)+SUM(provisi) FROM tb_cicilan
+                        WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                    )
+                    - SUM(cash_out)
+                    - (
+                        SELECT IFNULL(SUM(nominal), 0)
+                        FROM tb_pinjaman
+                        WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                    ) AS saldo,
+                    DATE_FORMAT(date_created, '%Y-%m') AS month
+                FROM tb_deposit a
+                GROUP BY month
+                ORDER BY month DESC
+                LIMIT 5
+            ) t
+            ORDER BY month ASC
+        ";
+        return $this->db->query($sql)->getResult();
+    }
 }

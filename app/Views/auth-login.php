@@ -26,12 +26,12 @@
                                 <div class="d-flex flex-column h-100">
                                     <div class="mb-4 mb-md-5 text-center">
                                         <a href="/" class="d-block auth-logo">
-                                            <img src="<?=base_url()?>/logo_giat.png" alt="" height="28"> <span class="logo-txt">Ekoperasi</span>
+                                            <img src="<?=base_url()?>/logo_giat.ico" alt="" height="28"> <span class="logo-txt">Ekoperasi</span>
                                         </a>
                                     </div>
                                     <div class="auth-content my-auto">
                                         <div class="text-center">
-                                            <img src="<?=base_url()?>/logo_giat.png" alt="" height="100">
+                                            <img src="<?=base_url()?>/logo_giat.ico" alt="" height="100">
                                             <h5 class="mb-0"> </h5>
                                             <p class="text-muted mt-2">Mulai login untuk masuk Ekoperasi</p>
                                         </div>
@@ -67,7 +67,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-4 mt-md-5 text-center">
-                                        <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Ko+Lab   . Crafted with <i class="mdi mdi-heart text-danger"></i> by EggAnt</p>
+                                        <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Telkom University   . Crafted with <i class="mdi mdi-heart text-danger"></i> by Ko+Lab</p>
                                     </div>
                                 </div>
                             </div>

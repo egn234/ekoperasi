@@ -23,7 +23,7 @@ class Pinjaman extends Controller
 
 	public function index()
 	{
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(3);
 
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Pinjaman']),
@@ -61,6 +61,11 @@ class Pinjaman extends Controller
 		];
 
 		$this->m_notification->insert($notification_data);
+		
+		$this->m_notification->where('pinjaman_id', $idpinjaman)
+			->where('group_type', 3)
+			->set('status', 'read')
+			->update();
 
 		$alert = view(
 			'partials/notification-alert', 
@@ -79,10 +84,12 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idbendahara' => $this->account->iduser,
-			'status' => 3,
-			'date_updated' => date('Y-m-d H:i:s')
+			'status' => 4,
+			'date_updated' => date('Y-m-d H:i:s'),
+			'bln_perdana' => date('m', strtotime("+ 1 month")),
+			'tanggal_bayar' => date('d')
 		];
-
+		
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 
 		$notification_anggota = [
@@ -99,19 +106,10 @@ class Pinjaman extends Controller
 
 		$this->m_notification->insert($notification_anggota);
 
-		$notification_ketua = [
-			'bendahara_id' => $this->account->iduser,
-			'anggota_id' => $this->m_pinjaman->where('idpinjaman', $idpinjaman)
-											 ->get()
-											 ->getResult()[0]
-											 ->idanggota,
-			'pinjaman_id' => $idpinjaman,
-			'message' => 'Bendahara '. $this->account->nama_lengkap .' meminta persetujuan anda untuk permohonan peminjaman',
-			'timestamp' => date('Y-m-d H:i:s'),
-			'group_type' => 3
-		];
-
-		$this->m_notification->insert($notification_ketua);
+		$this->m_notification->where('pinjaman_id', $idpinjaman)
+			->where('group_type', 3)
+			->set('status', 'read')
+			->update();
 
 		$alert = view(
 			'partials/notification-alert', 

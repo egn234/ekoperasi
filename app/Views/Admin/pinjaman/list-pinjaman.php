@@ -73,10 +73,15 @@
                                                 <td>
                                                     <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_bukti?>" target="_blank">
                                                         <i class="fa fa-download"></i> Form SDM
-                                                    </a>
+                                                    </a><br>
                                                     <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->slip_gaji?>" target="_blank">
                                                         <i class="fa fa-download"></i> Slip Gaji
-                                                    </a>
+                                                    </a><br>
+                                                    <?php if($a->status_pegawai == 'kontrak'){?>
+                                                        <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_kontrak?>" target="_blank">
+                                                            <i class="fa fa-download"></i> Bukti Kontrak
+                                                        </a>
+                                                    <?php } ?>
                                                 </td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">

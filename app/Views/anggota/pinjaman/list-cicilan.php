@@ -49,31 +49,36 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Nominal Pokok</th>
-                                        <th>Bunga</th>
-                                        <th>Provisi</th>
-                                        <th>Total Potongan</th>
-                                        <th>Tanggal</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($list_cicilan as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td>Rp <?= number_format($a->bunga, 2, ',', '.') ?></td>
-                                                <td>Rp <?= number_format($a->provisi, 2, ',', '.') ?></td>
-                                                <td>Rp <?= number_format($a->nominal + $a->bunga + $a->provisi, 2, ',', '.') ?></td>
-                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
-
+                                <?php $i = 1 + (10 * ($currentpage - 1)); ?>
+                                <?php foreach ($list_cicilan2 as $k) : ?>
+                                    <div class="card border-success">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <i class="fa fa-upload"></i>
+                                                    <b class="text-bold">Potongan deposit untuk cicilan</b>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="float-end">
+                                                        <b>- <?= number_format($k['nominal']+$k['bunga'], 2, ',', '.')?></b>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-8">
+                                                    <span class="text-muted">
+                                                        Tanggal: <?= $k['date_created'] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach;?>
+                                <div class="mb-3 col-12">
+                                    <div class="float-md-end">
+                                        <?= $pager->links('grup1', 'default_minia')?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -102,16 +107,53 @@
                                 </div>
                                 <hr>
                                 <div class="mb-3">
-                                    <h6 class="font-size-15">Total Bulan Angsuran:</h6>
+                                    <h6 class="font-size-15">Jumlah Cicilan:</h6>
                                     <div class="text-muted h6">
                                         <?=$detail_pinjaman->angsuran_bulanan?> Bulan
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
+                                    <h6 class="font-size-15">Jumlah Cicilan yang lunas:</h6>
+                                    <div class="text-muted h6">
+                                        <?=count($list_cicilan2)?> Bulan
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <h6 class="font-size-15">Sisa cicilan:</h6>
+                                    <div class="text-muted h6">
+                                        <?=$detail_pinjaman->angsuran_bulanan - count($list_cicilan2)?> Bulan
+                                    </div>
+                                </div>
+                                <hr>
+                                <?php if($detail_pinjaman->status == 5){?>
+                                    <div class="mb-3">
+                                        <h6 class="font-size-15">Tanggal Cicilan Awal:</h6>
+                                        <div class="text-muted h6">
+                                            <?= date('Y-m-d', strtotime($detail_pinjaman->date_updated))?>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="mb-3">
+                                        <h6 class="font-size-15">Tanggal Lunas:</h6>
+                                        <div class="text-muted h6">
+                                            <?= date('Y-m-d', strtotime('+'.$detail_pinjaman->angsuran_bulanan.' month', strtotime($detail_pinjaman->date_updated))) ?>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                <?php } ?>
+                                <div class="mb-3">
                                     <h6 class="font-size-15">Total Pinjaman:</h6>
                                     <div class="text-muted h6">
                                         Rp <?=number_format($detail_pinjaman->nominal, 2, ',','.')?>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <h6 class="font-size-15">Sisa Cicilan:</h6>
+                                    <div class="text-muted h6">
+                                        Rp <?=number_format($detail_pinjaman->nominal - $tagihan_lunas->tagihan_lunas, 2, ',','.')?>
                                     </div>
                                 </div>
                                 <hr>

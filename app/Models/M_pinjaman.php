@@ -57,6 +57,7 @@ class m_pinjaman extends Model
     {
         $sql = "
             SELECT
+                a.status_pegawai AS status_pegawai,
                 a.username AS username_peminjam,
                 a.nama_lengkap AS nama_peminjam,
                 a.nik AS nik_peminjam,

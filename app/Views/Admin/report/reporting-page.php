@@ -78,7 +78,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="btn-group float-md-end">
-                                            <a class="btn btn-success <?=($cek_report != 0)?'disabled':''?>" data-bs-toggle="modal"  data-bs-target="#konfGenerate">
+                                            <a class="btn btn-success <?=(($cek_report != 0)?'disabled':(date('d') < $getDay))?'disabled':''?>" data-bs-toggle="modal"  data-bs-target="#konfGenerate">
                                                 Generate Laporan Untuk Bulan Ini
                                             </a>
                                         </div>
@@ -126,7 +126,7 @@
                                                     <select class="form-select" id="filterBulan" name="date_monthly" required>
                                                         <option>-Pilih Bulan-</option>
                                                         <?php foreach ($list_report as $v) {?>
-                                                            <option value="<?=$v->date_monthly?>"><?= date('F Y',strtotime($a->date_monthly)) ?></option>
+                                                            <option value="<?=$v->date_monthly?>"><?= date('F Y',strtotime($v->date_monthly)) ?></option>
                                                         <?php }?>
                                                     </select>
                                                 </div>
