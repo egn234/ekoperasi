@@ -7,6 +7,7 @@ use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
+use App\Models\M_param_manasuka_log;
 use App\Models\M_notification;
 
 use App\Controllers\Admin\Notifications;
@@ -61,6 +62,8 @@ class Deposits extends Controller
 
 	public function detail_anggota($iduser = false)
 	{
+		$m_param_manasuka_log = new M_param_manasuka_log();
+
 		$depo_list = $this->m_deposit->getDepositByUserId($iduser);
 		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($iduser)[0]->saldo;
 		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($iduser)[0]->saldo;
@@ -68,6 +71,17 @@ class Deposits extends Controller
 		$detail_user = $this->m_user->getUserById($iduser)[0];
 		$param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser);
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
+
+		$mnsk_param_log = $m_param_manasuka_log->select("COUNT(id) as hitung")
+			->where('idmnskparam', $param_manasuka[0]->idmnskparam)
+			->get()->getResult()[0]
+			->hitung != 0
+			? $m_param_manasuka_log->where('idmnskparam', $param_manasuka[0]->idmnskparam)
+				->limit(1)
+				->get()
+				->getResult()[0]
+				->created_at 
+			: date('Y-m-d H:i:s', strtotime('-3 months'));
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail Simpanan']),
@@ -81,6 +95,7 @@ class Deposits extends Controller
 			'total_saldo_pokok' => $total_saldo_pokok,
 			'total_saldo_manasuka' => $total_saldo_manasuka,
 			'param_manasuka' => $param_manasuka,
+			'param_manasuka_cek' => $mnsk_param_log,
 			'deposit_list2' => $this->m_deposit_pag
 				->where('idanggota', $iduser)
 				->orderBy('date_created', 'DESC')
@@ -214,6 +229,7 @@ class Deposits extends Controller
 
 	public function set_param_manasuka($idmnskparam = false)
 	{
+		$m_param_manasuka_log = new M_param_manasuka_log();
 		$dataset = [
 			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'updated' => date('Y-m-d H:i:s')
@@ -222,6 +238,14 @@ class Deposits extends Controller
 
 		if ($dataset['nilai'] > 50000) {
 			$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+			
+			$temp_log = [
+				'nominal' => $dataset['nilai'],
+				'idmnskparam' => $idmnskparam,
+				'created_at' => date('Y-m-d H:i:s')
+			];
+			
+			$m_param_manasuka_log->insert($temp_log);
 			
 			$alert = view(
 				'partials/notification-alert', 

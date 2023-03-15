@@ -7,6 +7,7 @@ use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_deposit_pag;
 use App\Models\M_param_manasuka;
+use App\Models\M_param_manasuka_log;
 use App\Models\M_notification;
 
 use App\Controllers\Anggota\Notifications;
@@ -27,6 +28,8 @@ class Deposits extends Controller
 
 	public function index()
 	{
+		$m_param_manasuka_log = new M_param_manasuka_log();
+
 		$depo_list = $this->m_deposit->getDepositByUserId($this->account->iduser);
 
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
@@ -36,6 +39,17 @@ class Deposits extends Controller
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
 	
 		$param_manasuka = $this->m_param_manasuka->getParamByUserId($this->account->iduser);
+
+		$mnsk_param_log = $m_param_manasuka_log->select("COUNT(id) as hitung")
+			->where('idmnskparam', $param_manasuka[0]->idmnskparam)
+			->get()->getResult()[0]
+			->hitung != 0
+			? $m_param_manasuka_log->where('idmnskparam', $param_manasuka[0]->idmnskparam)
+				->limit(1)
+				->get()
+				->getResult()[0]
+				->created_at 
+			: date('Y-m-d H:i:s', strtotime('-3 months'));
 
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Simpanan']),
@@ -54,6 +68,7 @@ class Deposits extends Controller
 			'total_saldo_wajib' => $total_saldo_wajib,
 			'total_saldo_pokok' => $total_saldo_pokok,
 			'total_saldo_manasuka' => $total_saldo_manasuka,
+			'param_manasuka_cek' => $mnsk_param_log,
 			'param_manasuka' => $param_manasuka
 		];
 		
@@ -272,6 +287,7 @@ class Deposits extends Controller
 
 	public function set_param_manasuka($idmnskparam = false)
 	{
+		$m_param_manasuka_log = new M_param_manasuka_log();
 		$dataset = [
 			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'updated' => date('Y-m-d H:i:s')
@@ -279,6 +295,14 @@ class Deposits extends Controller
 
 		if ($dataset['nilai'] > 50000) {
 			$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+			
+			$temp_log = [
+				'nominal' => $dataset['nilai'],
+				'idmnskparam' => $idmnskparam,
+				'created_at' => date('Y-m-d H:i:s')
+			];
+			
+			$m_param_manasuka_log->insert($temp_log);
 			
 			$alert = view(
 				'partials/notification-alert', 
