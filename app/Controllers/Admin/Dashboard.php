@@ -33,7 +33,7 @@ class Dashboard extends Controller
 		$monthly_outcome = $this->m_monthly_report->sumMonthlyOutcome()[0]->hitung;
 		$anggota_pinjaman = $this->m_monthly_report->countMonthlyAnggotaPinjaman()[0]->hitung;
 		$monthly_graph = $this->m_deposit->dashboard_getMonthlyGraphic();
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(4);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Dashboard']),

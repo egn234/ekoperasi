@@ -95,7 +95,7 @@
                                                 <td><?= $a->angsuran_bulanan ?></td>
                                                 <td>
                                                     <div class="btn-group d-flex justify-content-center">
-                                                        <?php if ($a->status == 5 || $a->status == 6) {?>
+                                                        <?php if ($a->status == 4 || $a->status == 5) {?>
                                                             <a href="<?= url_to('anggota_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
                                                                 <i class="fa fa-file-alt"></i> Detail
                                                             </a>

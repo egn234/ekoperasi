@@ -38,6 +38,12 @@
                         <td>:</td>
                         <td><?=$a->nama_admin?></td>
                     </tr>
+                <?php }elseif($a->status == 'ditolak'){?>
+                    <tr>
+                        <td>Alasan Ditolak</td>
+                        <td>:</td>
+                        <td><?=$a->alasan_tolak?></td>
+                    </tr>
                 <?php }?>
                 <?php if($a->jenis_deposit == 'manasuka free' && $a->jenis_pengajuan == 'penyimpanan'){?>
                     <tr style=" vertical-align: top;">

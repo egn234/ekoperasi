@@ -61,16 +61,8 @@
                 <?php }?>
             <?php }?>
         </table>
-        <?php if ($confirmation) {?>
-            <i class="text-danger">*Pemohon tidak mempunyai cukup saldo untuk pengajuan penarikan transaksi ini</i><br>
-            <i class="text-danger">**Saldo Pemohon saat ini: Rp <?= number_format($total_saldo, 2, ',', '.')?></i>
-        <?php } ?>
     </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-    <?php if ($a->status == 'diproses admin') {?>
-        <a href="<?= url_to('admin_batalkan_simpanan', $a->iddeposit)?>" class="btn btn-danger">Batalkan Pengajuan</a>
-        <a href="<?= url_to('admin_konfirmasi_simpanan', $a->iddeposit)?>" class="btn btn-success <?= ($confirmation)?'disabled':''?>">Konfirmasi Pengajuan</a>
-    <?php }?>
 </div>

@@ -82,6 +82,12 @@
                                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
                                                             <i class="fa fa-file-alt"></i> detail
                                                         </a>
+                                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakMnsk" data-id="<?=$a->iddeposit?>">
+                                                            <i class="fa fa-file-alt"></i> Tolak
+                                                        </a>
+                                                        <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveMnsk" data-id="<?=$a->iddeposit?>">
+                                                            <i class="fa fa-file-alt"></i> Setujui
+                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -164,6 +170,13 @@
 
 </div>
 <!-- END layout-wrapper -->
+<div id="tolakMnsk" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 <div id="detailMutasi" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -173,6 +186,13 @@
     </div>
 </div><!-- /.modal -->
 
+<div id="approveMnsk" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 <?= $this->include('admin/partials/right-sidebar') ?>
 
@@ -193,6 +213,28 @@
             $.ajax({
                 type: 'POST',
                 url: '<?= base_url() ?>/admin/deposit/detail_mutasi',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+        $('#approveMnsk').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/admin/deposit/approve-mnsk',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+        $('#tolakMnsk').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/admin/deposit/cancel-mnsk',
                 data: 'rowid=' + rowid,
                 success: function(data) {
                     $('.fetched-data').html(data); //menampilkan data ke dalam modal

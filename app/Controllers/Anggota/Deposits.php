@@ -88,6 +88,21 @@ class Deposits extends Controller
 		$status = false;
 
 		if ($jenis_pengajuan == 'penyimpanan') {
+			
+			if ($nominal <= 300000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal membuat pengajuan: Penyimpanan tidak boleh kurang dari Rp 300.000',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset = ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}
+
 			$cash_in = $nominal;
 			$status = 'upload bukti';
 		}else{
@@ -107,11 +122,11 @@ class Deposits extends Controller
 				return redirect()->back();
 			}
 
-			if ($nominal < 300000) {
+			if ($nominal <= 300000) {
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gagal membuat pengajuan: Penarikan minimal Rp 300.000',
+						'notif_text' => 'Gagal membuat pengajuan: Penarikan tidak boleh kurang dari Rp 300.000',
 					 	'status' => 'warning'
 					]
 				);
@@ -119,10 +134,10 @@ class Deposits extends Controller
 				$dataset = ['notif' => $alert];
 				session()->setFlashdata($dataset);
 				return redirect()->back();
-				
 			}
+
 			$cash_out = $nominal;
-			$status = 'diproses bendahara';
+			$status = 'diproses admin';
 		}
 
 		$dataset = [
@@ -143,13 +158,13 @@ class Deposits extends Controller
 									   ->get()
 									   ->getResult()[0];
 
-		if ($new_deposit->status == 'diproses bendahara') {
+		if ($new_deposit->status == 'diproses admin') {
 			$notification_data = [
 				'anggota_id' => $this->account->iduser,
 				'deposit_id' => $new_deposit->iddeposit,
 				'message' => 'Pengajuan penarikan manasuka dari anggota '. $this->account->nama_lengkap,
 				'timestamp' => date('Y-m-d H:i:s'),
-				'group_type' => 2
+				'group_type' => 1
 			];
 
 			$this->m_notification->insert($notification_data);
@@ -189,7 +204,7 @@ class Deposits extends Controller
 
 			$insertData = [
 				'bukti_transfer' => $bukti_transfer,
-				'status' => 'diproses bendahara',
+				'status' => 'diproses admin',
 				'date_updated' => date('Y-m-d H:i:s')
 			];
 
@@ -200,7 +215,7 @@ class Deposits extends Controller
 				'deposit_id' => $iddeposit,
 				'message' => 'Pengajuan penyimpanan manasuka dari anggota '. $this->account->nama_lengkap,
 				'timestamp' => date('Y-m-d H:i:s'),
-				'group_type' => 2
+				'group_type' => 1
 			];
 
 			$this->m_notification->insert($notification_data);

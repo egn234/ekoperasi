@@ -147,6 +147,72 @@
                         <!--end card-->
                     </div>
                 </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h4 class="card-title">Daftar Pengajuan Pinjaman</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <?=session()->getFlashdata('notif');?>
+                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
+                                    <thead>
+                                        <th width="5%">No</th>
+                                        <th>Nama Pemohon</th>
+                                        <th>Tipe</th>
+                                        <th>Nominal</th>
+                                        <th>Tanggal Pengajuan</th>
+                                        <th>Lama Angsuran (bulan)</th>
+                                        <th>Form Persetujuan</th>
+                                        <th>Aksi</th>
+                                    </thead>
+                                    <tbody>
+                                        <?php $c = 1?>
+                                        <?php foreach ($list_pinjaman as $a) {?>
+                                            <tr>
+                                                <td><?= $c ?></td>
+                                                <td><?= $a->nama_peminjam ?></td>
+                                                <td><?= $a->tipe_permohonan ?></td>
+                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
+                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
+                                                <td><?= $a->angsuran_bulanan ?></td>
+                                                <td>
+                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_bukti?>" target="_blank">
+                                                        <i class="fa fa-download"></i> Form SDM
+                                                    </a><br>
+                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->slip_gaji?>" target="_blank">
+                                                        <i class="fa fa-download"></i> Slip Gaji
+                                                    </a><br>
+                                                    <?php if($a->status_pegawai == 'kontrak'){?>
+                                                        <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_kontrak?>" target="_blank">
+                                                            <i class="fa fa-download"></i> Bukti Kontrak
+                                                        </a>
+                                                    <?php } ?>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group d-flex justify-content-center">
+                                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="<?=$a->idpinjaman?>">
+                                                            <i class="fa fa-file-alt"></i> Tolak
+                                                        </a>
+                                                        <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePinjaman" data-id="<?=$a->idpinjaman?>">
+                                                            <i class="fa fa-file-alt"></i> Setujui
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php $c++; ?>
+                                        <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
             </div>
             <!-- container-fluid -->
         </div>
@@ -158,6 +224,22 @@
 
 </div>
 <!-- END layout-wrapper -->
+
+<div id="tolakPinjaman" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="approvePinjaman" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 <?= $this->include('ketua/partials/right-sidebar') ?>
 
@@ -172,11 +254,43 @@
 <!-- dashboard init -->
 <script src="<?=base_url()?>/assets/js/pages/dashboard.init.js"></script>
 
+<!-- Required datatable js -->
+<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
 <!-- apexcharts js -->
 <script src="<?=base_url()?>/assets/libs/apexcharts/apexcharts.min.js"></script>
 
 <!-- App js -->
 <script src="<?=base_url()?>/assets/js/app.js"></script>
+
+<script type="text/javascript">
+    $('.dtable').DataTable();
+    $(document).ready(function() {
+        $('#tolakPinjaman').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/ketua/pinjaman/cancel-pinjaman',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+        $('#approvePinjaman').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/ketua/pinjaman/approve-pinjaman',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+    });
+</script>
 
 <script type="text/javascript">
 

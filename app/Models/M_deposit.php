@@ -249,9 +249,11 @@ class m_deposit extends Model
                         SELECT IFNULL(SUM(nominal), 0)
                         FROM tb_pinjaman
                         WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                        AND status = 4
                     ) AS saldo,
                     DATE_FORMAT(date_created, '%Y-%m') AS month
                 FROM tb_deposit a
+                WHERE a.status = 'diterima'
                 GROUP BY month
                 ORDER BY month DESC
                 LIMIT 5

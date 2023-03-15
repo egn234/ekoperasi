@@ -95,17 +95,15 @@ class Deposits extends Controller
 
 	public function konfirmasi_mutasi($iddeposit = false)
 	{
-
 		$dataset = [
 			'idbendahara' => $this->account->iduser,
-			'status' => 'diproses admin',
+			'status' => 'diterima',
 			'date_updated' => date('Y-m-d H:i:s')
 		];
 
 		$this->m_deposit->setStatus($iddeposit, $dataset);
 
 		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
-		$nama_anggota = $this->m_user->where('iduser', $idanggota)->get()->getResult()[0]->nama_lengkap;
 		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
 
 		$message = false;
@@ -114,17 +112,6 @@ class Deposits extends Controller
 		}else{
 			$message = 'penyimpanan';
 		};
-
-		$notification_admin = [
-			'bendahara_id' => $this->account->iduser,
-			'anggota_id' => $idanggota,
-			'deposit_id' => $iddeposit,
-			'message' => 'Pengajuan '. $message .' manasuka baru dari anggota '. $nama_anggota,
-			'timestamp' => date('Y-m-d H:i:s'),
-			'group_type' => 1
-		];
-
-		$this->m_notification->insert($notification_admin);
 
 		$notification_anggota = [
 			'bendahara_id' => $this->account->iduser,
@@ -152,9 +139,9 @@ class Deposits extends Controller
 
 	public function batalkan_mutasi($iddeposit = false)
 	{
-
 		$dataset = [
 			'idbendahara' => $this->account->iduser,
+			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
 			'status' => 'ditolak',
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -185,7 +172,7 @@ class Deposits extends Controller
 		$alert = view(
 			'partials/notification-alert', 
 			[
-				'notif_text' => 'Permohonan Berhasil Dikonfirmasi',
+				'notif_text' => 'Permohonan Berhasil Ditolak',
 			 	'status' => 'success'
 			]
 		);
@@ -199,55 +186,68 @@ class Deposits extends Controller
 	{
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
-			
-
 			$dsimpanan = $this->m_deposit->getDepositById($id)[0];
-			
 			$duser = $this->m_user->getUserById($dsimpanan->idanggota)[0];
+			$data = [
+				'a' => $dsimpanan,
+				'duser' => $duser
+			];
+			echo view('bendahara/deposit/part-depo-mod-detail', $data);
+		}
+	}
 
-			$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($dsimpanan->idanggota)[0]->saldo;
-			$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($dsimpanan->idanggota)[0]->saldo;
-			$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($dsimpanan->idanggota)[0]->saldo;
+	public function cancel_mnsk()
+	{
+		if ($_POST['rowid']) {
+			$id = $_POST['rowid'];
+			$deposit = $this->m_deposit->getDepositById($id)[0];
+			$data = [
+				'a' => $deposit,
+				'flag' => 0
+			];
+			echo view('bendahara/deposit/part-depo-mod-approval', $data);
+		}
+	}
+
+	public function approve_mnsk()
+	{
+		if ($_POST['rowid']) {
+			$id = $_POST['rowid'];
+			$deposit = $this->m_deposit->getDepositById($id)[0];
+
+			$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($deposit->idanggota)[0]->saldo;
+			$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($deposit->idanggota)[0]->saldo;
+			$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($deposit->idanggota)[0]->saldo;
 			$total_saldo = '';
 
 			$confirmation = false;
 
-			if ($dsimpanan->cash_in == 0) {
-				if ($dsimpanan->jenis_deposit == 'wajib') {
+			if ($deposit->cash_in == 0) {
+				if ($deposit->jenis_deposit == 'wajib') {
 
 					$total_saldo = $total_saldo_wajib;
 					
-					if ($total_saldo_wajib < $dsimpanan->cash_out) {
+					if ($total_saldo_wajib < $deposit->cash_out) {
 						$confirmation = true;
 					}else{
 						$confirmation = false;
 					}
 				
-				}elseif ($dsimpanan->jenis_deposit == 'pokok') {
+				}elseif ($deposit->jenis_deposit == 'pokok') {
 					
 					$total_saldo = $total_saldo_pokok;
 					
-					if ($total_saldo_pokok < $dsimpanan->cash_out) {
+					if ($total_saldo_pokok < $deposit->cash_out) {
 						$confirmation = true;
 					}else{
 						$confirmation = false;
 					}
 				
-				}elseif ($dsimpanan->jenis_deposit == 'manasuka') {
+				}elseif ($deposit->jenis_deposit == 'manasuka') {
 					
 					$total_saldo = $total_saldo_manasuka;
 					
-					if ($total_saldo_manasuka < $dsimpanan->cash_out) {
-						$confirmation = true;
-					}else{
-						$confirmation = false;
-					}
-
-				}elseif ($dsimpanan->jenis_deposit == 'manasuka free') {
-					
-					$total_saldo = $total_saldo_manasuka;
-					
-					if ($total_saldo_manasuka < $dsimpanan->cash_out) {
+					if ($total_saldo_manasuka < $deposit->cash_out) {
 						$confirmation = true;
 					}else{
 						$confirmation = false;
@@ -257,13 +257,12 @@ class Deposits extends Controller
 			}
 
 			$data = [
-				'a' => $dsimpanan,
-				'duser' => $duser,
+				'a' => $deposit,
+				'flag' => 1,
 				'total_saldo' => $total_saldo,
 				'confirmation' => $confirmation
 			];
-			echo view('bendahara/deposit/part-depo-mod-detail', $data);
+			echo view('bendahara/deposit/part-depo-mod-approval', $data);
 		}
 	}
-
 }

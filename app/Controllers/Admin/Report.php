@@ -172,12 +172,12 @@ class Report extends Controller
 				$this->m_deposit->insertDeposit($data_manasuka);
 
 				//PENGECEKAN PINJAMAN
-				$cek_pinjaman = $this->m_pinjaman->where('status', 5)
+				$cek_pinjaman = $this->m_pinjaman->where('status', 4)
 												 ->where('idanggota', $a->iduser)
 												 ->countAllResults();
 				if ($cek_pinjaman != 0) {
 					
-					$pinjaman = $this->m_pinjaman->where('status', 5)
+					$pinjaman = $this->m_pinjaman->where('status', 4)
 												 ->where('idanggota', $a->iduser)
 												 ->orderBy('date_updated', 'DESC')
 												 ->get()
@@ -546,7 +546,7 @@ class Report extends Controller
 				$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
 				$jum_pinjaman = $this->m_pinjaman->select('nominal, angsuran_bulanan')
-												 ->where('status', '5')
+												 ->where('status', '4')
 												 ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
 												 ->where('idanggota', $member->iduser)
 												 ->get()->getResult();
@@ -588,7 +588,7 @@ class Report extends Controller
 			}
 
 			//SISA CICILAN
-			$pinjaman_aktif = $this->m_pinjaman->where('status', '5')
+			$pinjaman_aktif = $this->m_pinjaman->where('status', '4')
 											   ->where('idanggota', $member->iduser)
 											   ->get()->getResult();
 			$row = 10;

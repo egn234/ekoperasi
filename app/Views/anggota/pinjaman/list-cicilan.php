@@ -113,21 +113,21 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="mb-3">
-                                    <h6 class="font-size-15">Jumlah Cicilan yang lunas:</h6>
-                                    <div class="text-muted h6">
-                                        <?=count($list_cicilan2)?> Bulan
+                                <?php if($detail_pinjaman->status == 4){?>
+                                    <div class="mb-3">
+                                        <h6 class="font-size-15">Jumlah Cicilan yang lunas:</h6>
+                                        <div class="text-muted h6">
+                                            <?=count($list_cicilan2)?> Bulan
+                                        </div>
                                     </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <h6 class="font-size-15">Sisa cicilan:</h6>
-                                    <div class="text-muted h6">
-                                        <?=$detail_pinjaman->angsuran_bulanan - count($list_cicilan2)?> Bulan
+                                    <hr>
+                                    <div class="mb-3">
+                                        <h6 class="font-size-15">Sisa cicilan:</h6>
+                                        <div class="text-muted h6">
+                                            <?=$detail_pinjaman->angsuran_bulanan - count($list_cicilan2)?> Bulan
+                                        </div>
                                     </div>
-                                </div>
-                                <hr>
-                                <?php if($detail_pinjaman->status == 5){?>
+                                    <hr>
                                     <div class="mb-3">
                                         <h6 class="font-size-15">Tanggal Cicilan Awal:</h6>
                                         <div class="text-muted h6">
@@ -150,29 +150,29 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="mb-3">
-                                    <h6 class="font-size-15">Sisa Cicilan:</h6>
-                                    <div class="text-muted h6">
-                                        Rp <?=number_format($detail_pinjaman->nominal - $tagihan_lunas->tagihan_lunas, 2, ',','.')?>
+                                <?php if($detail_pinjaman->status == 4){?>
+                                    <div class="mb-3">
+                                        <h6 class="font-size-15">Sisa Cicilan:</h6>
+                                        <div class="text-muted h6">
+                                            Rp <?=number_format($detail_pinjaman->nominal - $tagihan_lunas->tagihan_lunas, 2, ',','.')?>
+                                        </div>
                                     </div>
-                                </div>
-                                <hr>
+                                    <hr>
+                                <?php } ?>
                                 <div class="mb-3">
                                     <h6 class="font-size-15">Status:</h6>
                                     <div class="text-muted h6">
                                         <?php if($detail_pinjaman->status == 0){?>
                                             Ditolak
                                         <?php }elseif($detail_pinjaman->status == 1){?>
-                                            Upload Form Persetujuan SDM
+                                            Upload Kelengkapan Form
                                         <?php }elseif($detail_pinjaman->status == 2){?>
-                                            Diproses Bendahara
+                                            Menunggu Verifikasi
                                         <?php }elseif($detail_pinjaman->status == 3){?>
-                                            Diproses Ketua
+                                            Menunggu Approval Sekretariat
                                         <?php }elseif($detail_pinjaman->status == 4){?>
-                                            Diproses Ketua
-                                        <?php }elseif($detail_pinjaman->status == 5){?>
                                             Sedang Berlangsung
-                                        <?php }elseif($detail_pinjaman->status == 6){?>
+                                        <?php }elseif($detail_pinjaman->status == 5){?>
                                             Lunas
                                         <?php }?>
                                     </div>

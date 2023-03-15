@@ -86,9 +86,13 @@ $routes->group('admin', static function ($routes)
         $routes->post('add_req', 'Admin\Deposits::add_proc');
         $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
         
+        $routes->post('cancel-mnsk', 'Admin\Deposits::cancel_mnsk');
+        $routes->post('approve-mnsk', 'Admin\Deposits::approve_mnsk');
+
         $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'admin_set_parameter_manasuka']);
         $routes->add('cancel_param_manasuka/(:num)', 'Admin\Deposits::cancel_param_manasuka/$1', ['as' => 'admin_cancel_parameter_manasuka']);
         $routes->add('user/(:num)', 'Admin\Deposits::detail_anggota/$1', ['as' => 'anggota_detail']);
+
         $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
         
@@ -142,6 +146,9 @@ $routes->group('bendahara', static function ($routes)
         $routes->post('detail_mutasi', 'Bendahara\Deposits::detail_mutasi');
         $routes->post('add_req', 'Bendahara\Deposits::add_proc');
         
+        $routes->post('cancel-mnsk', 'Bendahara\Deposits::cancel_mnsk');
+        $routes->post('approve-mnsk', 'Bendahara\Deposits::approve_mnsk');
+
         $routes->add('user/(:num)', 'Bendahara\Deposits::detail_anggota/$1', ['as' => 'b_anggota_detail']);
         $routes->add('confirm/(:num)', 'Bendahara\Deposits::konfirmasi_mutasi/$1', ['as' => 'bendahara_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Bendahara\Deposits::batalkan_mutasi/$1', ['as' => 'bendahara_batalkan_simpanan']);

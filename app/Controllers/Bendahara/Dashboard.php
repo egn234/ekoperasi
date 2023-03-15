@@ -6,6 +6,7 @@ use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_monthly_report;
+use App\Models\M_pinjaman;
 
 use App\Controllers\Bendahara\Notifications;
 
@@ -17,6 +18,7 @@ class Dashboard extends Controller
 		$this->m_user = new M_user();
 		$this->m_deposit = new M_deposit();
 		$this->m_monthly_report = new M_monthly_report();
+		$this->m_pinjaman = new M_pinjaman();
 		$this->notification = new Notifications();
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
@@ -31,6 +33,7 @@ class Dashboard extends Controller
 		$monthly_outcome = $this->m_monthly_report->sumMonthlyOutcome()[0]->hitung;
 		$anggota_pinjaman = $this->m_monthly_report->countMonthlyAnggotaPinjaman()[0]->hitung;
 		$monthly_graph = $this->m_deposit->dashboard_getMonthlyGraphic();
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(3);
 
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Dashboard']),
@@ -44,6 +47,7 @@ class Dashboard extends Controller
 			'monthly_outcome' => $monthly_outcome,
 			'anggota_pinjaman' => $anggota_pinjaman,
 			'monthly_graph' => $monthly_graph,
+			'list_pinjaman' => $list_pinjaman,
 			'duser' => $this->account
 		];
 		
