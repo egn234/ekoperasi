@@ -1,3 +1,8 @@
+<?php
+    use App\Models\M_pinjaman;
+    $m_pinjaman = new M_pinjaman();
+?>
+
 <?= $this->include('anggota/partials/head-main') ?>
 
 <head>
@@ -38,7 +43,7 @@
                 <!-- end page title -->
 
                 <div class="row">
-                    <div class="col-9">
+                    <div class="col-md-9 col-sm-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">
@@ -54,26 +59,51 @@
                                     <div class="card border-success">
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-6">
-                                                    <i class="fa fa-upload"></i>
-                                                    <b class="text-bold">Potongan deposit untuk cicilan</b>
+                                                <div class="col-md-6 col-12">
+                                                    <b class="text-bold">Saldo Pinjaman</b>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-md-6 col-12">
                                                     <div class="float-end">
-                                                        <b>- <?= number_format($k['nominal']+$k['bunga'], 2, ',', '.')?></b>
+                                                        <b>Rp <?= number_format(round($detail_pinjaman->nominal - $k['saldo']), 0, ',', '.')?></b>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row mt-3">
-                                                <div class="col-8">
-                                                    <span class="text-muted">
-                                                        Tanggal: <?= $k['date_created'] ?>
-                                                    </span>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    Cicilan/bln
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <div class="float-end">
+                                                        Rp <?= number_format($k['total_saldo'], 0, ',', '.')?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    Cicilan ke
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <div class="float-end">
+                                                        <?= $k['counter']?>/<?= $detail_pinjaman->angsuran_bulanan?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12">
+                                                    Tanggal
+                                                </div>
+                                                <div class="col-md-6 col-12">
+                                                    <div class="float-end">
+                                                        <?= $k['date']?>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                <?php endforeach;?>
+                                <?php 
+                                    $i++;
+                                    endforeach;
+                                ?>
                                 <div class="mb-3 col-12">
                                     <div class="float-md-end">
                                         <?= $pager->links('grup1', 'default_minia')?>
@@ -82,7 +112,7 @@
                             </div>
                         </div>
                     </div> <!-- end col -->
-                    <div class="col-3">
+                    <div class="col-md-3 col-sm-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row">

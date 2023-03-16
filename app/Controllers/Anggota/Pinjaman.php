@@ -46,7 +46,6 @@ class Pinjaman extends Controller
 	function detail($idpinjaman = false)
 	{
 		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
-		$list_cicilan = $this->m_cicilan->getCicilanByIdPinjaman($idpinjaman);
 		$tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
@@ -57,14 +56,27 @@ class Pinjaman extends Controller
 			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'list_cicilan2' => $this->m_cicilan_pag
+				->select('
+					(
+						SELECT SUM(nominal)
+						FROM tb_cicilan b WHERE b.date_created <= tb_cicilan.date_created
+					) AS saldo,
+					DATE_FORMAT(date_created, "%Y-%m-%d") as date,
+					(
+						SELECT COUNT(idcicilan)
+						FROM tb_cicilan c WHERE c.date_created <= tb_cicilan.date_created
+					) AS counter,
+					tb_cicilan.*,
+					SUM(tb_cicilan.nominal) as total_saldo'
+				)
 				->where('idpinjaman', $idpinjaman)
 				->orderBy('date_created', 'DESC')
+				->groupBy('date')
 				->paginate(10, 'grup1'),
 
 			'pager' => $this->m_cicilan_pag->pager,
 			'currentpage' => $currentpage,
 			'detail_pinjaman' => $detail_pinjaman,
-			'list_cicilan' => $list_cicilan,
 			'tagihan_lunas' => $tagihan_lunas
 		];
 		
