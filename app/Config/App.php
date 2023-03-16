@@ -5,6 +5,8 @@ namespace Config;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Session\Handlers\FileHandler;
 
+setlocale(LC_TIME, 'id_ID.UTF-8');
+
 class App extends BaseConfig
 {
     /**

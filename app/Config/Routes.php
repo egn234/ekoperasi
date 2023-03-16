@@ -105,10 +105,12 @@ $routes->group('admin', static function ($routes)
 
         $routes->post('cancel-pinjaman', 'Admin\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Admin\Pinjaman::approve_loan');
+        $routes->post('detail-pinjaman', 'Admin\Pinjaman::detail_pinjaman');
+        $routes->post('lunasi-pinjaman', 'Admin\Pinjaman::pengajuan_lunas');
 
         $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
-        $routes->add('detail/(:num)', 'Admin\Pinjaman::detail/$1', ['as' => 'admin_pin_detail']);
+        $routes->add('lunasi-pinjaman/(:num)', 'Admin\Pinjaman::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
     });
 
     //GROUP LAPORAN

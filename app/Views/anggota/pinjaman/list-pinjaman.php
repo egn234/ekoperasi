@@ -115,7 +115,6 @@
                                         <?php }?>
                                     </tbody>
                                 </table>
-
                             </div>
                         </div>
                     </div> <!-- end col -->

@@ -28,7 +28,22 @@ class m_pinjaman extends Model
 
     function getAllPinjaman()
     {
-    	$sql = "SELECT * FROM tb_pinjaman";
+    	$sql = "
+            SELECT
+                a.status_pegawai AS status_pegawai,
+                a.username AS username_peminjam,
+                a.nama_lengkap AS nama_peminjam,
+                a.nik AS nik_peminjam,
+                b.*,
+                c.nama_lengkap AS nama_admin,
+                c.nik AS nik_admin,
+                d.nama_lengkap AS nama_bendahara,
+                d.nik AS nik_bendahara
+            FROM tb_user a 
+            JOIN tb_pinjaman b ON a.iduser = b.idanggota
+            LEFT JOIN tb_user c ON c.iduser = b.idadmin
+            LEFT JOIN tb_user d ON d.iduser = b.idbendahara
+        ";
     	return $this->db->query($sql)->getResult();    
     }
 
@@ -37,7 +52,9 @@ class m_pinjaman extends Model
         $sql = "
             SELECT
                 a.nama_lengkap AS nama_peminjam,
+                a.username AS username_peminjam,
                 a.nik AS nik_peminjam,
+                a.status_pegawai AS status_pegawai,
                 b.*,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
