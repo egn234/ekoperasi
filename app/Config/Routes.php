@@ -164,9 +164,14 @@ $routes->group('bendahara', static function ($routes)
 
         $routes->post('cancel-pinjaman', 'Bendahara\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Bendahara\Pinjaman::approve_loan');
+        $routes->post('detail-pinjaman', 'Bendahara\Pinjaman::detail_pinjaman');
+        $routes->post('lunasi-pinjaman', 'Bendahara\Pinjaman::pengajuan_lunas');
+        $routes->post('lunasi-pinjaman-tolak', 'Bendahara\Pinjaman::pengajuan_lunas_tolak');
 
         $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
+        $routes->add('lunasi-pinjaman/(:num)', 'Bendahara\Pinjaman::pelunasan_proc/$1', ['as' => 'bendahara_konfirmasi_lunas']);
+        $routes->add('lunasi-pinjaman2/(:num)', 'Bendahara\Pinjaman::pelunasan_proc_tolak/$1', ['as' => 'bendahara_tolak_lunas']);
     });
 
     //GROUP LAPORAN

@@ -103,6 +103,78 @@
                     </div> <!-- end col -->
                 </div> <!-- end row -->
 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h4 class="card-title">Daftar Pengajuan Pelunasan</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
+                                    <thead>
+                                        <th width="5%">No</th>
+                                        <th>Peminjam</th>
+                                        <th>Nominal</th>
+                                        <th>Tanggal Pengajuan</th>
+                                        <th>Status Pinjaman</th>
+                                        <th width="20%">Aksi</th>
+                                    </thead>
+                                    <tbody>
+                                        <?php $c = 1?>
+                                        <?php foreach ($list_pinjaman2 as $a) {?>
+                                            <tr>
+                                                <td><?= $c ?></td>
+                                                <td><?= $a->nama_peminjam ?></td>
+                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
+                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
+                                                <td>
+                                                    <?php if($a->status == 0){?>
+                                                        Ditolak
+                                                    <?php }elseif($a->status == 1){?>
+                                                        Upload Kelengkapan Form
+                                                    <?php }elseif($a->status == 2){?>
+                                                        Menunggu Verifikasi
+                                                    <?php }elseif($a->status == 3){?>
+                                                        Menunggu Approval Sekretariat
+                                                    <?php }elseif($a->status == 4){?>
+                                                        Sedang Berlangsung
+                                                    <?php }elseif($a->status == 5){?>
+                                                        Lunas
+                                                    <?php }elseif($a->status == 6){?>
+                                                        Konfirmasi Pelunasan
+                                                    <?php }?>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex justify-content-center">
+                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="<?=$a->idpinjaman?>">
+                                                            <i class="fa fa-file-alt"></i> Detail
+                                                        </a>
+                                                        <?php if($a->status == 6){?>
+                                                            <div class="btn-group ms-2">
+                                                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="<?=$a->idpinjaman?>">
+                                                                    <i class="fa fa-file-alt"></i> Approve
+                                                                </a>
+                                                                <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjamanTolak" data-id="<?=$a->idpinjaman?>">
+                                                                    <i class="fa fa-file-alt"></i> Tolak
+                                                                </a>
+                                                            </div>
+                                                        <?php } ?>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php $c++; ?>
+                                        <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+
             </div> <!-- container-fluid -->
         </div>
         <!-- End Page-content -->
@@ -131,6 +203,29 @@
     </div>
 </div><!-- /.modal -->
 
+<div id="detailPinjaman" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="lunasiPinjaman" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="lunasiPinjamanTolak" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
 
 <?= $this->include('bendahara/partials/right-sidebar') ?>
 
@@ -162,6 +257,39 @@
             $.ajax({
                 type: 'POST',
                 url: '<?= base_url() ?>/bendahara/pinjaman/approve-pinjaman',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+        $('#detailPinjaman').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/bendahara/pinjaman/detail-pinjaman',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+        $('#lunasiPinjaman').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/bendahara/pinjaman/lunasi-pinjaman',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+        $('#lunasiPinjamanTolak').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/bendahara/pinjaman/lunasi-pinjaman-tolak',
                 data: 'rowid=' + rowid,
                 success: function(data) {
                     $('.fetched-data').html(data); //menampilkan data ke dalam modal
