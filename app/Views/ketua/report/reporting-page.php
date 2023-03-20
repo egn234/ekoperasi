@@ -113,7 +113,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="filterBulan">Laporan</label>
                                                     <select class="form-select" id="filterBulan" name="date_monthly" required>
-                                                        <option>-Pilih Bulan-</option>
+                                                        <option value="0">-Pilih Bulan-</option>
                                                         <?php foreach ($list_report as $v) {?>
                                                             <option value="<?=$v->date_monthly?>"><?= date('F Y',strtotime($v->date_monthly)) ?></option>
                                                         <?php }?>

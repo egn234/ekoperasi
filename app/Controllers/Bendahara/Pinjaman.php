@@ -95,6 +95,45 @@ class Pinjaman extends Controller
 			'bln_perdana' => date('m', strtotime("+ 1 month")),
 			'tanggal_bayar' => date('d')
 		];
+
+		$bukti_tf = $this->request->getFile('bukti_tf') ? $this->request->getFile('bukti_tf') : false;
+		$data_session = [];
+		if($bukti_tf){
+			if ($bukti_tf->isValid()) {	
+				$cek_tf = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
+				
+				if ($cek_tf) {
+					unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_tf);
+				}
+	
+				$newName = $bukti_tf->getRandomName();
+				$bukti_tf->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
+				
+				$bukti = $bukti_tf->getName();
+				$dataset += ['bukti_tf' => $bukti];
+				$alert3 = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Bukti transfer berhasil dikirim',
+						 'status' => 'success'
+					]
+				);
+				$data_session += ['notif_tf' => $alert3];
+				$confirmation3 = true;
+	
+			}else{
+				$alert3 = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Bukti kontrak gagal diunggah',
+						 'status' => 'danger'
+					]
+				);
+				$data_session = ['notif_kontrak' => $alert3];
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+		}
 		
 		$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 
@@ -125,9 +164,17 @@ class Pinjaman extends Controller
 			]
 		);
 		
-		$data_session = ['notif' => $alert];
+		$data_session += ['notif' => $alert];
 		session()->setFlashdata($data_session);
 		return redirect()->back();
+	}
+
+	public function approve_proc1($idpinjaman = false)
+	{
+		echo $idpinjaman;
+		if ($_POST['bukti_tf']) {
+			print_r($_POST['bukti_tf']);
+		};
 	}
 
 	public function pelunasan_proc($idpinjaman = false)

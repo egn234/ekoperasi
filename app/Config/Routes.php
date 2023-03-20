@@ -38,6 +38,7 @@ $routes->set404Override();
 
 $routes->get('/', 'Login::index');
 $routes->get('test', 'Test_field::index');
+$routes->get('test/test_cicilan', 'Test_field::insert_cicilan');
 $routes->get('registrasi', 'Register::index');
 
 $routes->post('auth', 'Login::login_proc', ['as' => 'auth_login_proc']);
@@ -259,10 +260,12 @@ $routes->group('anggota', static function ($routes)
 
         $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
         $routes->post('up_form', 'Anggota\Pinjaman::up_form');
+        $routes->post('top-up', 'Anggota\Pinjaman::top_up');
 
         $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
         $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);
         $routes->add('upload_form_persetujuan/(:num)', 'Anggota\Pinjaman::upload_form/$1', ['as' => 'an_de_upfrmprstjn']);
+        $routes->add('top-up-req/(:num)', 'Anggota\Pinjaman::top_up_proc/$1', ['as' => 'anggota_pinjaman_topup']);
     });
 });
 

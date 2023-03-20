@@ -98,6 +98,17 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <?php if($detail_pinjaman->status == 4 && $detail_pinjaman->angsuran_bulanan - $k['counter'] <= 2 && $detail_pinjaman->angsuran_bulanan - $k['counter'] != 0 ){?>
+                                                <div class="row mt-2">
+                                                    <div class="col-12">
+                                                        <div class="float-end">
+                                                            <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#topUp" data-id="<?=$detail_pinjaman->idpinjaman?>">
+                                                                <i class="fa fa-upload"></i> Top Up Pinjaman
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php }?>
                                         </div>
                                     </div>
                                 <?php 
@@ -222,6 +233,14 @@
 </div>
 <!-- END layout-wrapper -->
 
+<div id="topUp" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
 <?= $this->include('anggota/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->
@@ -235,6 +254,19 @@
 
 <script type="text/javascript">
     $('.dtable').DataTable();
+    $(document).ready(function() {
+        $('#topUp').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/anggota/pinjaman/top-up',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+    });
 </script>
 
 </body>

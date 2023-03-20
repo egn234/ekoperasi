@@ -60,11 +60,13 @@ class Pinjaman extends Controller
 					(
 						SELECT SUM(nominal)
 						FROM tb_cicilan b WHERE b.date_created <= tb_cicilan.date_created
+        				AND idpinjaman = tb_cicilan.idpinjaman
 					) AS saldo,
 					DATE_FORMAT(date_created, "%Y-%m-%d") as date,
 					(
 						SELECT COUNT(idcicilan)
 						FROM tb_cicilan c WHERE c.date_created <= tb_cicilan.date_created
+                        AND idpinjaman = tb_cicilan.idpinjaman
 					) AS counter,
 					tb_cicilan.*,
 					SUM(tb_cicilan.nominal) as total_saldo'
@@ -92,7 +94,7 @@ class Pinjaman extends Controller
 									->get()
 									->getResult()[0]
 									->status_pegawai;
-		if($cek_pegawai = 'tetap'){
+		if($cek_pegawai == 'tetap'){
 			$batas_bulanan = 24;
 			$batas_nominal = 50000000;
 		}else{
@@ -193,6 +195,118 @@ class Pinjaman extends Controller
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
 			return redirect()->back();
+		}else{
+			session()->setFlashdata($dataset);
+			return redirect()->back();
+		}
+	}
+
+	public function top_up_proc($idpinjaman = false)
+	{
+		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
+		$satuan_waktu = $this->request->getPost('satuan_waktu');
+		$cek_pegawai = $this->m_user->where('iduser', $this->account->iduser)
+									->get()
+									->getResult()[0]
+									->status_pegawai;
+		if($cek_pegawai == 'tetap'){
+			$batas_bulanan = 24;
+			$batas_nominal = 50000000;
+		}else{
+			$batas_bulanan = 12;
+			$batas_nominal = 15000000;
+		}
+
+		if ($satuan_waktu == 2) {
+			$angsuran_bulanan = $cek_cicilan * 12;
+		}else{
+			$angsuran_bulanan = $cek_cicilan;
+		}
+
+		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
+		$saldo_pinjaman = $this->request->getPost('sisa_cicilan');
+
+		$dataset = [
+			'nominal' => $nominal,
+			'tipe_permohonan' => $this->request->getPost('tipe_permohonan'),
+			'potongan_topup' => $saldo_pinjaman,
+			'deskripsi' => $this->request->getPost('deskripsi'),
+			'angsuran_bulanan' => $angsuran_bulanan
+		];
+
+		if ($angsuran_bulanan > $batas_bulanan) {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Tidak dapat mengajukan cicilan lebih dari '. $angsuran_bulanan .' bulan',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif_bulanan' => $alert];
+			$confirmation = false;
+		}else{
+			$confirmation = true;
+		}
+
+		if ($dataset['nominal'] > $batas_nominal) {
+			
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Tidak dapat mengajukan cicilan lebih dari Rp '. number_format($dataset['nominal'], 0, ',','.'),
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			$confirmation = false;
+		}else{
+			$confirmation = true;
+		}
+		
+		if ($confirmation) {
+
+			if ($dataset['tipe_permohonan'] == "") {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Pilih Tipe Permohonan Terlebih Dahulu',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}
+
+			$dataset += [
+				'date_created' => date('Y-m-d H:i:s'),
+				'status' => 1,
+				'idanggota' => $this->account->iduser
+			];
+
+			$this->m_pinjaman->insertPinjaman($dataset);
+
+			$dataset_pinjaman = [
+				'status' => 5,
+				'date_updated' => date('Y-m-d H:i:s')
+			];
+
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset_pinjaman);
+
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Berhasil mengajukan top up',
+				 	'status' => 'success'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('anggota/pinjaman/list');
 		}else{
 			session()->setFlashdata($dataset);
 			return redirect()->back();
@@ -372,6 +486,26 @@ class Pinjaman extends Controller
 				'duser' => $this->account
 			];
 			echo view('anggota/pinjaman/part-pinj-mod-upload', $data);
+		}
+	}
+
+	public function top_up()
+	{
+		if ($_POST['rowid']) {
+			$id = $_POST['rowid'];
+			$user = $this->m_pinjaman->getPinjamanById($id)[0];
+			$sum_cicilan = $this->m_cicilan->select("SUM(nominal) as saldo")
+				->where('idpinjaman', $id)
+				->get()
+				->getResult()[0]
+				->saldo;
+			$sisa_pinjaman = $user->nominal - $sum_cicilan;
+			$data = [
+				'a' => $user,
+				'sisa' => $sisa_pinjaman,
+				'duser' => $this->account
+			];
+			echo view('anggota/pinjaman/part-cicil-mod-topup', $data);
 		}
 	}
 }

@@ -51,7 +51,7 @@
         <?php $c = 1; ?>
         <?php 
             foreach ($pegawai_but as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman2($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -90,7 +90,7 @@
                                                      ->nominal;
                 
                 $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status', '5')
+                                                    ->where('status between 4 and 5')
                                                     ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
                                                     ->where('idanggota', $a->iduser)
                                                     ->get()
@@ -148,7 +148,7 @@
         </tr>
         <?php 
             foreach ($pegawai_giat as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman2($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -187,7 +187,7 @@
                                                      ->nominal;
 
                 $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status', '5')
+                                                    ->where('status between 4 and 5')
                                                     ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
                                                     ->where('idanggota', $a->iduser)
                                                     ->get()
@@ -245,7 +245,7 @@
         </tr>
         <?php 
             foreach ($pegawai_telkom as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman2($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -284,7 +284,7 @@
                                                      ->nominal;
 
                 $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status', '5')
+                                                    ->where('status between 4 and 5')
                                                     ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
                                                     ->where('idanggota', $a->iduser)
                                                     ->get()
@@ -342,7 +342,7 @@
         </tr>
         <?php 
             foreach ($pegawai_trengginas as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman2($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -381,7 +381,7 @@
                                                      ->nominal;
 
                 $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status', '5')
+                                                    ->where('status between 4 and 5')
                                                     ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
                                                     ->where('idanggota', $a->iduser)
                                                     ->get()
@@ -439,7 +439,7 @@
         </tr>
         <?php 
             foreach ($pegawai_telyu as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman2($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -478,7 +478,7 @@
                                                      ->nominal;
 
                 $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status', '5')
+                                                    ->where('status between 4 and 5')
                                                     ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
                                                     ->where('idanggota', $a->iduser)
                                                     ->get()
@@ -536,7 +536,7 @@
         </tr>
         <?php 
             foreach ($pegawai_ypt as $a) {
-                $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+                $cicilan = $this->m_monthly_report->getHitunganPinjaman2($a->iduser, $startDate, $endDate);
                 $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
 
                 if ($pinjaman) {
@@ -575,7 +575,7 @@
                                                      ->nominal;
 
                 $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status', '5')
+                                                    ->where("status between 4 and 5")
                                                     ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
                                                     ->where('idanggota', $a->iduser)
                                                     ->get()

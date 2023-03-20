@@ -35,6 +35,7 @@ class m_pinjaman extends Model
                 a.nama_lengkap AS nama_peminjam,
                 a.nik AS nik_peminjam,
                 b.*,
+                (SELECT COUNT(idcicilan) FROM tb_cicilan WHERE idpinjaman = b.idpinjaman) AS sisa_cicilan,
                 c.nama_lengkap AS nama_admin,
                 c.nik AS nik_admin,
                 d.nama_lengkap AS nama_bendahara,
@@ -116,7 +117,7 @@ class m_pinjaman extends Model
 
     function countPinjamanAktifByAnggota($iduser)
     {
-        $sql = "SELECT count(idpinjaman) AS hitung FROM tb_pinjaman WHERE idanggota = $iduser AND status = 3";
+        $sql = "SELECT count(idpinjaman) AS hitung FROM tb_pinjaman WHERE idanggota = $iduser AND status = 4";
         return $this->db->query($sql)->getResult();
     }
 
@@ -173,7 +174,7 @@ class m_pinjaman extends Model
                     AND date_created BETWEEN '$startDate' AND '$endDate'
                 )AS hitungan_cicilan
                 FROM tb_pinjaman
-                    WHERE status = '5'
+                    WHERE status = 4
                     AND date_created BETWEEN '$startDate' AND '$endDate'
                     AND idanggota = $idanggota
         ";

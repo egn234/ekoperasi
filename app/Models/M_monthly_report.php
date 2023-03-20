@@ -67,7 +67,7 @@ class m_monthly_report extends Model
 
     function countCicilanByPinjaman($idpinjaman)
     {
-        $sql = "SELECT count(idcicilan) AS hitung FROM tb_cicilan WHERE idpinjaman = $idpinjaman";
+        $sql = "SELECT count(idcicilan) AS hitung FROM tb_cicilan WHERE idpinjaman = $idpinjaman AND tipe_bayar = 'otomatis'";
         return $this->db->query($sql)->getResult();        
     }
 
@@ -228,10 +228,24 @@ class m_monthly_report extends Model
     {
         $sql = "
             SELECT 
-                (SELECT nominal FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS nominal,
-                (SELECT bunga FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND  date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS bunga,
-                (SELECT provisi FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND  date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS provisi
+                (SELECT SUM(nominal) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND tipe_bayar = 'otomatis' AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS nominal,
+                (SELECT SUM(bunga) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND tipe_bayar = 'otomatis' AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS bunga,
+                (SELECT SUM(provisi) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND tipe_bayar = 'otomatis' AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS provisi
             FROM tb_pinjaman WHERE idanggota = $iduser;
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+    
+    function getHitunganPinjaman2($iduser, $startDate, $endDate)
+    {
+        $sql = "
+            SELECT 
+                (SELECT SUM(nominal) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS nominal,
+                (SELECT SUM(bunga) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS bunga,
+                (SELECT SUM(provisi) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS provisi
+            FROM tb_pinjaman 
+            WHERE idanggota = $iduser;
         ";
 
         return $this->db->query($sql)->getResult();

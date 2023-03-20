@@ -221,7 +221,7 @@ class Report extends Controller
 
 								$this->m_cicilan->insertCicilan($dataset_cicilan);
 
-								$status_pinjaman = ['status' => 6];
+								$status_pinjaman = ['status' => 5];
 								$this->m_pinjaman->updatePinjaman($idpinjaman, $status_pinjaman);
 
 							}elseif ($cek_cicilan != 0 && $cek_cicilan < $pin->angsuran_bulanan) {
@@ -264,7 +264,22 @@ class Report extends Controller
 
 	public function print_potongan_pinjaman()
 	{
+
 		$date_monthly = $this->request->getPost('date_monthly');
+
+		if($date_monthly == 0){
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Belum memilih bulan laporan',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset_notif = ['notif_print' => $alert];
+			session()->setFlashdata($dataset_notif);
+			return redirect()->back();
+		}
 		
 		$getDay = $this->m_monthly_report->select('DAY(created) AS day')
 										  ->where('date_monthly', $date_monthly)
@@ -545,10 +560,11 @@ class Report extends Controller
 				$endDate = $tahun.'-'.$i.'-'.$setDay;
 				$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
-				$jum_pinjaman = $this->m_pinjaman->select('nominal, angsuran_bulanan')
-												 ->where('status', '4')
-												 ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
+				$jum_pinjaman = $this->m_pinjaman->select("SUM(nominal) as nominal, angsuran_bulanan, DATE(CONCAT(YEAR('".$startDate."'),'-',(bln_perdana - 1),'-',tanggal_bayar)) as tgl")
+												 ->where('status BETWEEN 4 AND 5')
+												 ->where("DATE(CONCAT(YEAR('".$startDate."'),'-',bln_perdana-1,'-',tanggal_bayar)) BETWEEN '".$startDate."' AND '".$endDate."'")
 												 ->where('idanggota', $member->iduser)
+												 ->groupBy('tgl')
 												 ->get()->getResult();
 
 				$sheet->setCellValue('G'.$row, ($jum_pinjaman)?$jum_pinjaman[0]->nominal:'0');
@@ -571,18 +587,17 @@ class Report extends Controller
 					$tipe = 'provisi';
 				}
 
-				for ($i = 1; $i < 13; ++$i) {
-					
+				for ($i = 1; $i < 13; $i++) {					
 					$endDate = $tahun.'-'.$i.'-'.$setDay;
 					$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
-					$saldo = $this->m_cicilan->select('tb_cicilan.'.$tipe.' AS saldo')
+					$saldo = $this->m_cicilan->select('ROUND(SUM(tb_cicilan.'.$tipe.')) AS saldo')
 											 ->join('tb_pinjaman', 'tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman')
 											 ->where("tb_cicilan.date_created BETWEEN '".$startDate."' AND '".$endDate."'")
                                              ->where('idanggota', $member->iduser)
                                              ->get()->getResult();
 
-					$sheet->setCellValue($column.$row, ($saldo)?$saldo[0]->saldo:'');
+					$sheet->setCellValue($column.$row, ($saldo)?$saldo[0]->saldo:'0');
 					$row++;
 				}
 			}

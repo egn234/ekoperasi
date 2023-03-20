@@ -120,11 +120,9 @@
                     </div> <!-- end col -->
                 </div> <!-- end row -->
 
-
             </div> <!-- container-fluid -->
         </div>
         <!-- End Page-content -->
-
 
         <?= $this->include('anggota/partials/footer') ?>
     </div>

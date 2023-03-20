@@ -153,7 +153,7 @@
                                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="<?=$a->idpinjaman?>">
                                                             <i class="fa fa-file-alt"></i> Detail
                                                         </a>
-                                                        <?php if($a->status == 4 || $a->status == 5){?>
+                                                        <?php if($a->status == 4 && $a->angsuran_bulanan - $a->sisa_cicilan < 3 && $a->angsuran_bulanan - $a->sisa_cicilan != 0){?>
                                                             <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="<?=$a->idpinjaman?>">
                                                                 <i class="fa fa-file-alt"></i> Lunasi Pinjaman
                                                             </a>

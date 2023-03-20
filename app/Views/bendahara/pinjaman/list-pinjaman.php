@@ -49,6 +49,7 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
+                                <?=session()->getFlashdata('notif_tf');?>
                                 <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
                                     <thead>
                                         <th width="5%">No</th>
@@ -188,23 +189,23 @@
 <!-- END layout-wrapper -->
 
 <div id="tolakPinjaman" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span class="tolak-data"></span>
         </div>
     </div>
 </div><!-- /.modal -->
 
 <div id="approvePinjaman" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span class="terima-data"></span>
         </div>
     </div>
 </div><!-- /.modal -->
 
 <div id="detailPinjaman" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <span class="fetched-data"></span>
         </div>
@@ -248,7 +249,7 @@
                 url: '<?= base_url() ?>/bendahara/pinjaman/cancel-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('.tolak-data').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
@@ -259,7 +260,7 @@
                 url: '<?= base_url() ?>/bendahara/pinjaman/approve-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('.terima-data').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
