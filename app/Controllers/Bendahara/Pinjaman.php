@@ -7,7 +7,7 @@ use App\Models\M_user;
 use App\Models\M_pinjaman;
 use App\Models\M_cicilan;
 use App\Models\M_param;
-use App\Models\M_Notification;
+use App\Models\M_notification;
 
 use App\Controllers\Bendahara\Notifications;
 

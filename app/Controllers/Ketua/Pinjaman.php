@@ -5,7 +5,7 @@ use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_pinjaman;
-use App\Models\M_Notification;
+use App\Models\M_notification;
 
 use App\Controllers\Ketua\Notifications;
 
