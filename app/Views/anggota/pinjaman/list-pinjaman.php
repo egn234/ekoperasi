@@ -218,7 +218,9 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
 <script type="text/javascript">
-    $('.dtable').DataTable();
+    $('.dtable').DataTable({
+        "scrollX": true
+    });
     $(document).ready(function() {
         $('#uploadBT').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
