@@ -104,7 +104,8 @@ class User extends Controller
 
 				for ($i=2; $i <= $baris; $i++)
 				{ 
-					$cek_username = $this->m_user->getUsernameGiat()[0]->username;
+					$cek_username = ($this->m_user->getUsernameGiat())?$this->m_user->getUsernameGiat()[0]->username:'GIAT0001';
+
 					$filter_int = (int) filter_var($cek_username, FILTER_SANITIZE_NUMBER_INT);
 					$clean_int = intval($filter_int);
 

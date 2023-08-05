@@ -32,6 +32,7 @@
                                     <div class="auth-content my-auto">
                                         <div class="text-center">
                                             <img src="<?=base_url()?>/logo_giat.ico" alt="" height="100">
+                                            <img src="<?=base_url()?>/assets/images/logo_kolab.jpg" alt="" height="100">
                                             <h5 class="mb-0"> </h5>
                                             <p class="text-muted mt-2">Mulai login untuk masuk Ekoperasi</p>
                                         </div>
