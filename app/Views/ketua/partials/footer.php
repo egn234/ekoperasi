@@ -6,7 +6,8 @@
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end d-none d-sm-block">
-                    Design & Develop by <a href="#!" class="text-decoration-underline">EggAnt</a>
+                    Design & Develop by 
+                    <img src="<?=base_url()?>/assets/images/logo_kolab.jpg" alt="" height="28">
                 </div>
             </div>
         </div>

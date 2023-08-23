@@ -29,7 +29,7 @@
                                     <div class="d-flex flex-column h-100">
                                         <div class="mb-4 mb-md-5 text-center">
                                             <a href="/" class="d-block auth-logo">
-                                                <img src="assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Ekoperasi</span>
+                                                <img src="<?=base_url()?>/logo_giat.ico" alt="" height="28"> <span class="logo-txt">Ekoperasi</span>
                                             </a>
                                         </div>
                                         <div class="auth-content my-auto">
@@ -180,7 +180,10 @@
                                             </div>
                                         </div>
                                         <div class="mt-4 mt-md-5 text-center">
-                                            <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Ekoperasi   . Crafted with <i class="mdi mdi-heart text-danger"></i> by Ko+Lab</p>
+                                            <p class="mb-0">
+                                                © <script>document.write(new Date().getFullYear())</script> Ekoperasi. Designed by 
+                                                <img src="<?=base_url()?>/assets/images/logo_kolab.jpg" alt="" height="28">
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

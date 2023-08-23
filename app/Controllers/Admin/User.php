@@ -43,6 +43,19 @@ class User extends Controller
 		echo view('admin/user/user-list', $data);
 	}
 
+	public function data_user()
+	{
+		$list_user = $this->m_user->getAllUser();
+		$data = [
+			'title' => 'Daftar Dosen',
+			'usertype' => 'Admin',
+			'duser' => $this->account,
+			'list_user' => $list_user
+		];
+
+		return json_encode($data);
+	}
+
 	public function list_closebook()
 	{	
 		$user_list = $this->m_user->getAllClosebookUser();

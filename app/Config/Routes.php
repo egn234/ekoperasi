@@ -68,8 +68,8 @@ $routes->group('admin', static function ($routes)
         $routes->get('closebook-list', 'Admin\User::list_closebook');
         $routes->get('add', 'Admin\User::add_user');
         $routes->get('export_table', 'Admin\User::export_table');
+        $routes->get('data_user', 'Admin\User::data_user');
 
-       
         $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
         $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
         $routes->post('tab_upload', 'Admin\User::get_table_upload');
