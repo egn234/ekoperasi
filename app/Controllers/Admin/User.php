@@ -28,7 +28,7 @@ class User extends Controller
 	}
 
 	public function list()
-	{	
+	{
 		$user_list = $this->m_user->getAllUser();
 
 		$data = [
@@ -57,7 +57,7 @@ class User extends Controller
 	}
 
 	public function list_closebook()
-	{	
+	{
 		$user_list = $this->m_user->getAllClosebookUser();
 
 		$data = [
@@ -547,6 +547,34 @@ class User extends Controller
 			'email' => $this->request->getPost('email'),
 			'unit_kerja' => $this->request->getPost('unit_kerja')
 		];
+
+		$nik_baru = $this->request->getPost('nik');
+		$nik_awal = $this->account->nik;
+
+		if ($nik_baru != $nik_awal) {
+			$cek_nik = $this->m_user->select('count(iduser) as hitung')
+				->where("nik = '".$nik_baru."' AND iduser != ".$iduser)
+				->get()->getResult()[0]->hitung;
+
+			if ($cek_nik == 0) {
+				$dataset += ['nik' => $nik_baru];
+			}else{
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'NIK telah terdaftar',
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+		}
 
 		$new_pass = $this->request->getPost('pass');
 		$cek_pass = $this->request->getPost('pass2');

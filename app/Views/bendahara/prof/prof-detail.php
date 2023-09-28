@@ -222,7 +222,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="nik_number">NIK</label>
-                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $duser->nik?>" name="nik" disabled>
+                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $duser->nik?>" name="nik" required>
                                                     <div class="invalid-feedback">
                                                         NIK harus 16 digit
                                                     </div>
@@ -324,21 +324,30 @@
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Lama</label>
                                                     <div class="col-sm-9">
-                                                        <input type="password" name="old_pass" class="form-control" id="horizontal-password-input" required>
+                                                        <div class="input-group auth-pass-inputgroup">
+                                                            <input type="password" name="old_pass" class="form-control" id="horizontal-password-input-old" required>
+                                                            <button class="btn btn-light ms-0 password-toggle" type="button" data-target="horizontal-password-input-old"><i class="mdi mdi-eye-outline"></i></button>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Baru</label>
                                                     <div class="col-sm-9">
-                                                        <input type="password" name="pass" class="form-control" id="horizontal-password-input" required>
+                                                        <div class="input-group auth-pass-inputgroup">
+                                                            <input type="password" name="pass" class="form-control" id="horizontal-password-input-new" required>
+                                                            <button class="btn btn-light ms-0 password-toggle" type="button" data-target="horizontal-password-input-new"><i class="mdi mdi-eye-outline"></i></button>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="row mb-4">
                                                     <label for="horizontal-password-input" class="col-sm-3 col-form-label">Ulang Password Baru</label>
                                                     <div class="col-sm-9">
-                                                        <input type="password" name="pass2" class="form-control" id="horizontal-password-input" required>
+                                                        <div class="input-group auth-pass-inputgroup">
+                                                            <input type="password" name="pass2" class="form-control" id="horizontal-password-input-confirm" required>
+                                                            <button class="btn btn-light ms-0 password-toggle" type="button" data-target="horizontal-password-input-confirm"><i class="mdi mdi-eye-outline"></i></button>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -382,6 +391,29 @@
 <?= $this->include('bendahara/partials/vendor-scripts') ?>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
+
+<script type="text/javascript">
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordToggles = document.querySelectorAll(".password-toggle");
+
+        passwordToggles.forEach(function (toggle) {
+            toggle.addEventListener("click", function () {
+                const targetId = toggle.getAttribute("data-target");
+                const passwordInput = document.getElementById(targetId);
+
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
+                } else {
+                    passwordInput.type = "password";
+                    toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
+                }
+            });
+        });
+    });
+
+</script>
 
 </body>
 

@@ -245,7 +245,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="nik_number">NIK</label>
-                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $det_user->nik?>" name="nik" disabled>
+                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $det_user->nik?>" name="nik" required>
                                                     <div class="invalid-feedback">
                                                         NIK harus 16 digit
                                                     </div>
@@ -314,15 +314,21 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="username" name="username" value="<?= $det_user->username?>" disabled>
+                                                    <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                                                    <div class="input-group auth-pass-inputgroup">
+                                                        <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
+                                                        <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
+                                                    </div>
                                                     <div class="invalid-feedback">
-                                                        Harus Diisi
+                                                        Minimal 8 karakter
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="password">Password Baru<span class="text-danger">*</span></label>
-                                                    <input type="password" class="form-control" id="password" minlength="8" name="pass">
+                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
+                                                    <div class="input-group auth-pass-inputgroup">
+                                                        <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
+                                                        <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
+                                                    </div>
                                                     <div class="invalid-feedback">
                                                         Minimal 8 karakter
                                                     </div>
@@ -436,6 +442,27 @@
 <?= $this->include('admin/partials/vendor-scripts') ?>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordToggles = document.querySelectorAll(".password-toggle");
+
+        passwordToggles.forEach(function (toggle) {
+            toggle.addEventListener("click", function () {
+                const targetId = toggle.getAttribute("data-target");
+                const passwordInput = document.getElementById(targetId);
+
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
+                } else {
+                    passwordInput.type = "password";
+                    toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 
