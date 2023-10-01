@@ -88,6 +88,7 @@ class Report extends Controller
 							->where('status', 'diproses')
 							->where('jenis_deposit', 'pokok')
 							->where('deskripsi', 'biaya awal registrasi')
+							->where('idanggota IN (SELECT iduser FROM tb_user WHERE flag = 1)')
 							->set('status', 'diterima')
 							->set('idadmin', $this->account->iduser)
 							->update();
@@ -97,6 +98,7 @@ class Report extends Controller
 							->where('status', 'diproses')
 							->where('jenis_deposit', 'wajib')
 							->where('deskripsi', 'biaya awal registrasi')
+							->where('idanggota IN (SELECT iduser FROM tb_user WHERE flag = 1)')
 							->set('status', 'diterima')
 							->set('idadmin', $this->account->iduser)
 							->update();
@@ -422,7 +424,7 @@ class Report extends Controller
 		foreach($user_list as $member){
 			
 			$sheet = $spreadsheet->createSheet();
-			$sheet->setTitle($member->nama_lengkap);
+			$sheet->setTitle($member->username);
 			
 			$sheet->setCellValue('A1', 'DAFTAR SIMPAN PINJAM ANGGOTA KOPERASI "GIAT"');
 			$sheet->setCellValue('A2', 'UNIVERSITAS TELKOM BANDUNG');
@@ -685,4 +687,5 @@ class Report extends Controller
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 		$writer->save('php://output');
 	}
+
 }

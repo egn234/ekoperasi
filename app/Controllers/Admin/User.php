@@ -10,6 +10,9 @@ use App\Models\M_group;
 use App\Models\M_deposit;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
+use App\Models\M_pinjaman;
+use App\Models\M_cicilan;
+
 
 use App\Controllers\Admin\Notifications;
 
@@ -24,6 +27,8 @@ class User extends Controller
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
 		$this->m_param_manasuka = new M_param_manasuka();
+		$this->m_pinjaman = new M_pinjaman();
+		$this->m_cicilan = new M_cicilan();
 		$this->notification = new Notifications();
 	}
 
@@ -262,11 +267,106 @@ class User extends Controller
 
 							$param_r = [
 								'idanggota' => $iduser_new,
-								'nilai' => $this->m_param->getParamById(3)[0]->nilai,
 								'created' => date('Y-m-d H:i:s')
 							];
 
+							$param_mnsk = (int) $cell->getCellByColumnAndRow(21, $i)->getValue();
+
+							if ($param_mnsk != 0) {
+								$param_r += ['nilai' => $param_mnsk];
+							}else{
+								$param_r += ['nilai' => $this->m_param->getParamById(3)[0]->nilai];
+							}
+
 							$this->m_param_manasuka->insertParamManasuka($param_r);
+
+							$pinjaman = [
+								'nominal' => (int) $cell->getCellByColumnAndRow(18, $i)->getValue(),
+								'angsuran_bulanan' => (int) $cell->getCellByColumnAndRow(19, $i)->getValue(),
+							];
+
+							$cicilan_ke = (int) $cell->getCellByColumnAndRow(20, $i)->getValue();
+
+							if($pinjaman['nominal'] != 0 || $pinjaman['angsuran_bulanan'] != 0 || $cicilan_ke != 0){
+								
+								$pinjaman += [
+									'tipe_permohonan' => 'pinjaman',
+									'deskripsi' => 'impor otomatis sistem',
+									'status' => 4,
+									'idbendahara' => $this->m_user->where('idgroup', 2)->get()->getResult()[0]->iduser,
+									'idketua' => $this->m_user->where('idgroup', 3)->get()->getResult()[0]->iduser,
+									'idanggota' => $iduser_new,
+									'idadmin' => $this->account->iduser,
+								];
+
+								$this->m_pinjaman->insertPinjaman($pinjaman);
+								$idpinjaman = $this->m_pinjaman->insertID();
+
+								$tanggal_report = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai;
+								$year = date('Y');
+								$month = date('m', strtotime(date('Y-m-d').' -1 month'));
+
+								$nominal_cicilan = $pinjaman['nominal'] / $pinjaman['angsuran_bulanan'];
+
+								for ($i = $cicilan_ke; $i > 0; --$i) { 
+								    $formattedDate = sprintf('%d-%02d-%02d 00:00:00', $year, $month, $tanggal_report);
+
+									$cek_cicilan = $this->m_cicilan->where('idpinjaman', $idpinjaman)
+																   ->countAllResults();
+									if ($cek_cicilan == 0) {
+
+										$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+										$provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
+
+										$dataset_cicilan = [
+											'nominal' => $nominal_cicilan,
+											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
+											'provisi' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$provisi))/$pinjaman['angsuran_bulanan'],
+											'date_created' => $formattedDate,
+											'idpinjaman' => $idpinjaman
+										];
+
+										$this->m_cicilan->insertCicilan($dataset_cicilan);
+										
+									}elseif ($cek_cicilan == ($pinjaman['angsuran_bulanan'] - 1)) {
+
+										$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+
+										$dataset_cicilan = [
+											'nominal' => ($nominal_cicilan/$pinjaman['angsuran_bulanan']),
+											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
+											'date_created' => $formattedDate,
+											'idpinjaman' => $idpinjaman
+										];
+
+										$this->m_cicilan->insertCicilan($dataset_cicilan);
+
+										$status_pinjaman = ['status' => 5];
+										$this->m_pinjaman->updatePinjaman($idpinjaman, $status_pinjaman);
+
+									}elseif ($cek_cicilan != 0 && $cek_cicilan < $pinjaman['angsuran_bulanan']) {
+
+										$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+
+										$dataset_cicilan = [
+											'nominal' => $nominal_cicilan,
+											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
+											'date_created' => $formattedDate,
+											'idpinjaman' => $idpinjaman
+										];
+
+										$this->m_cicilan->insertCicilan($dataset_cicilan);
+									}
+
+								    // Decrement the month (and year if necessary) for the next iteration
+								    if ($month == 1) {
+								        $year--;
+								        $month = 12; // December
+								    } else {
+								        $month--;
+								    }
+								}
+							}
 						}
 						else
 						{
