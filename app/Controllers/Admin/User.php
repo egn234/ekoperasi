@@ -402,7 +402,39 @@ class User extends Controller
 			session()->setFlashdata($dataset);
 			return redirect()->to('admin/user/add');
 		}
+		
+		//check duplicate nip
+		$nip = $this->request->getPost('nip');
 
+		if($nip != null || $nip != ''){
+			$cek_nip = $this->m_user->select('count(id) as hitung')
+				->where('nip', $nip)
+				->get()
+				->getResult()[0]
+				->hitung;
+
+			if($cek_nip != 0){
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'NIK Telah Terdaftar',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset += [
+					'nip' => $nip,
+					'notif' => $alert
+				];
+				
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}else{
+				$dataset += ['nip' => $nip];
+			}
+		}
+
+		//check duplicate nik
 		$cek_nik = $this->m_user->countNIK($dataset['nik'])[0]->hitung;
 
 		if ($cek_nik != 0) {
@@ -547,7 +579,40 @@ class User extends Controller
 			'email' => $this->request->getPost('email'),
 			'unit_kerja' => $this->request->getPost('unit_kerja')
 		];
+		
+		//check duplicate nip
+		$nip_baru = $this->request->getPost('nip');
 
+		if($nip_baru != null || $nip_baru != ''){
+			$nip_awal = $this->account->nip;
+
+			if($nip_awal != $nip_baru){
+				$cek_nip = $this->m_user->select('count(iduser) as hitung')
+					->where("nip = '".$nip_baru."' AND iduser != ".$iduser)
+					->get()->getResult()[0]->hitung;
+
+				if ($cek_nip == 0) {
+					$dataset += ['nip' => $nip_baru];
+				}else{
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'NIP telah terdaftar',
+						 	'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}	
+			}
+		}
+
+		//check duplicate nik
 		$nik_baru = $this->request->getPost('nik');
 		$nik_awal = $this->account->nik;
 

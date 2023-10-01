@@ -49,6 +49,39 @@ class Profile extends Controller
 			'unit_kerja' => $this->request->getPost('unit_kerja')
 		];
 
+		//check duplicate nip
+		$nip_baru = $this->request->getPost('nip');
+
+		if($nip_baru != null || $nip_baru != ''){
+			$nip_awal = $this->account->nip;
+
+			if($nip_awal != $nip_baru){
+				$cek_nip = $this->m_user->select('count(iduser) as hitung')
+					->where("nip = '".$nip_baru."' AND iduser != ".$this->account->iduser)
+					->get()->getResult()[0]->hitung;
+
+				if ($cek_nip == 0) {
+					$dataset += ['nip' => $nip_baru];
+				}else{
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'NIP telah terdaftar',
+						 	'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}	
+			}
+		}
+
+		//check duplicate nik
 		$nik_baru = $this->request->getPost('nik');
 		$nik_awal = $this->account->nik;
 

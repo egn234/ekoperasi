@@ -67,6 +67,13 @@
                                                     NIK harus 16 digit
                                                 </div>
                                             </div>
+                                            <div class="mb-3">
+                                                <label class="form-label" for="nip_number">NIP</label>
+                                                <input type="number" class="form-control" id="nip_number" value="<?=session()->getFlashdata('nik')?>" name="nip">
+                                                <div class="invalid-feedback">
+                                                    NIP harus 8 digit
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-sm-6">
                                                     <div class="mb-3">

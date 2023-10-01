@@ -198,11 +198,11 @@
                                             Rp <?=number_format($param_manasuka[0]->nilai, 2, ',','.')?>
                                         <?php }?>
                                     </div>
-                                </div>
+                                </div><!-- 
                                 <div class="mt-5 d-grid gap-2">
                                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">Pengajuan Manasuka Bulanan</button>
                                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka">Pembatalan Manasuka Bulanan</button>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -227,7 +227,7 @@
         </div>
     </div>
 </div><!-- /.modal -->
-
+<!-- 
 <div class="modal fade" id="set_param_manasuka" aria-hidden="true" aria-labelledby="set_param_manasuka" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -269,7 +269,7 @@
         </div>
     </div>
 </div>
-
+ -->
 <div id="detailMutasi" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

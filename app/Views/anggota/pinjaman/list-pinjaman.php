@@ -190,7 +190,17 @@
                         </div>
                     </div>
                     <span class="text-xs">
-                        <i>*Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at</i>
+                        <i>
+                        *Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at </br>
+                        <?=
+                            ($duser->status_pegawai == 'tetap')
+                            ?
+                            '*Maksimal permintaan pinjaman dalam 1 sesi hanya sampai dengan Rp50.000.000 </br>
+                            *Maksimal cicilan yang bisa diajukan sampai dengan 24 bulan'
+                            :'*Maksimal permintaan pinjaman dalam 1 sesi hanya sampai dengan Rp15.000.000 </br>
+                            *Maksimal cicilan yang bisa diajukan sampai dengan 12 bulan'
+                        ?>
+                        </i>
                     </span>
                 </form>
             </div>
@@ -201,8 +211,6 @@
         </div>
     </div>
 </div><!-- /.modal -->
-
-
 
 <?= $this->include('anggota/partials/right-sidebar') ?>
 

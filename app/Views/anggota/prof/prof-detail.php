@@ -115,6 +115,22 @@
                                                 <div class="row">
                                                     <div class="col-xl-2">
                                                         <div>
+                                                            <h5 class="font-size-15">NIP :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?=($duser->nip)?$duser->nip:'-'?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
                                                             <h5 class="font-size-15">Tempat, Tanggal Lahir :</h5>
                                                         </div>
                                                     </div>
@@ -255,6 +271,13 @@
                                                     <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $duser->nik?>" name="nik" required>
                                                     <div class="invalid-feedback">
                                                         NIK harus 16 digit
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="nip_number">NIP</label>
+                                                    <input type="number" class="form-control" id="nip_number" value="<?=($duser->nip)?$duser->nip:''?>" name="nip">
+                                                    <div class="invalid-feedback">
+                                                        NIP harus 8 digit
                                                     </div>
                                                 </div>
                                                 <div class="row">

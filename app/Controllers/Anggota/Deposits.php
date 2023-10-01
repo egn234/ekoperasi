@@ -104,7 +104,7 @@ class Deposits extends Controller
 
 		if ($jenis_pengajuan == 'penyimpanan') {
 			
-			if ($nominal <= 300000) {
+			if ($nominal < 300000) {
 				$alert = view(
 					'partials/notification-alert', 
 					[
@@ -137,7 +137,7 @@ class Deposits extends Controller
 				return redirect()->back();
 			}
 
-			if ($nominal <= 300000) {
+			if ($nominal < 300000) {
 				$alert = view(
 					'partials/notification-alert', 
 					[

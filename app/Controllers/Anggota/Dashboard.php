@@ -30,36 +30,36 @@ class Dashboard extends Controller
 		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
 		
-		if ($count_initial != 0) {	
-			$cek_initial = $this->m_deposit->getInitialDeposit($this->account->iduser);
-			if ($cek_initial[0]->status == 'diproses') {
-				if (($parameter_cutoff - 3) >= date('d') && date('d') <= $parameter_cutoff) {
-					$alert = view(
-						'partials/notification-alert', 
-						[
-							'notif_text' => 'Segera konfirmasi bukti bayar untuk penyimpanan pokok sebelum tanggal '. $parameter_cutoff,
-						 	'status' => 'warning'
-						]
-					);
+		// if ($count_initial != 0) {	
+		// 	$cek_initial = $this->m_deposit->getInitialDeposit($this->account->iduser);
+		// 	if ($cek_initial[0]->status == 'diproses') {
+		// 		if (($parameter_cutoff - 3) >= date('d') && date('d') <= $parameter_cutoff) {
+		// 			$alert = view(
+		// 				'partials/notification-alert', 
+		// 				[
+		// 					'notif_text' => 'Segera konfirmasi bukti bayar untuk penyimpanan pokok sebelum tanggal '. $parameter_cutoff,
+		// 				 	'status' => 'warning'
+		// 				]
+		// 			);
 					
-					session()->setFlashdata('notif_pokok', $alert);
-				}
-			}
+		// 			session()->setFlashdata('notif_pokok', $alert);
+		// 		}
+		// 	}
 
-			if ($cek_initial[1]->status == 'diproses') {
-				if (($parameter_cutoff - 3) >= date('d') && date('d') <= $parameter_cutoff) {
-					$alert = view(
-						'partials/notification-alert', 
-						[
-							'notif_text' => 'Segera konfirmasi bukti bayar untuk penyimpanan wajib sebelum tanggal '. $parameter_cutoff,
-						 	'status' => 'warning'
-						]
-					);
+		// 	if ($cek_initial[1]->status == 'diproses') {
+		// 		if (($parameter_cutoff - 3) >= date('d') && date('d') <= $parameter_cutoff) {
+		// 			$alert = view(
+		// 				'partials/notification-alert', 
+		// 				[
+		// 					'notif_text' => 'Segera konfirmasi bukti bayar untuk penyimpanan wajib sebelum tanggal '. $parameter_cutoff,
+		// 				 	'status' => 'warning'
+		// 				]
+		// 			);
 					
-					session()->setFlashdata('notif_wajib', $alert);
-				}
-			}
-		}
+		// 			session()->setFlashdata('notif_wajib', $alert);
+		// 		}
+		// 	}
+		// }
 
 		if ($this->account->closebook_request == 'closebook') {
 			$alert = view(

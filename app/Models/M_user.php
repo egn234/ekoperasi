@@ -51,7 +51,8 @@ class M_user extends Model
             SELECT 
                 iduser,
                 username, 
-                nik, 
+                nik,
+                nip,
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
@@ -87,7 +88,8 @@ class M_user extends Model
             SELECT 
                 iduser,
                 username, 
-                nik, 
+                nik,
+                nip,
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
@@ -124,7 +126,8 @@ class M_user extends Model
             SELECT 
                 iduser,
                 username, 
-                nik, 
+                nik,
+                nip,
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
@@ -161,7 +164,8 @@ class M_user extends Model
             SELECT 
                 iduser,
                 username, 
-                nik, 
+                nik,
+                nip,
                 nama_lengkap, 
                 tempat_lahir, 
                 tanggal_lahir, 
