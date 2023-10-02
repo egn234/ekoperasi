@@ -1,15 +1,17 @@
 <?php
-    header("Content-type: application/vnd.ms-excel");
-    header("Content-Disposition: attachment; filename=REKAP_TAHUNAN_PER_TGL_" . date('d_F_Y') . ".xls"); 
+    // header("Content-type: application/vnd.ms-excel");
+    // header("Content-Disposition: attachment; filename=REKAP_TAHUNAN_PER_TGL_" . date('d_F_Y') . ".xls"); 
 ?>
 <?php
     use App\Models\M_monthly_report;
     use App\Models\M_deposit;
     use App\Models\M_pinjaman;
+    use App\Models\M_cicilan;
 
     $this->m_monthly_report = new M_monthly_report();
     $this->m_deposit = new M_deposit();
     $this->m_pinjaman = new M_pinjaman();
+    $this->m_cicilan = new M_cicilan();
 ?>
 <table border = "1" width="100%">
     <thead>
@@ -477,13 +479,27 @@
                                                      ->getResult()[0]
                                                      ->nominal;
 
-                $jumlah_pinjaman = $this->m_pinjaman->select("SUM(nominal) AS saldo_pinjaman")
-                                                    ->where('status between 4 and 5')
-                                                    ->where("date_updated BETWEEN '".$startDate."' AND '".$endDate."'")
-                                                    ->where('idanggota', $a->iduser)
-                                                    ->get()
-                                                    ->getResult()[0]
-                                                    ->saldo_pinjaman;
+                if($pinjaman){
+                    $cicilan_dalam = $this->m_cicilan->select("SUM(nominal) as nominal")
+                        ->where('idpinjaman', $pinjaman[0]->idpinjaman)
+                        ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+                        ->get()->getResult()[0]
+                        ->nominal;
+
+                    $cicilan_luar = $this->m_cicilan->select("SUM(nominal) as nominal")
+                        ->where('idpinjaman', $pinjaman[0]->idpinjaman)
+                        ->where("date_created < '".$startDate."'")
+                        ->get()->getResult()[0]
+                        ->nominal;
+
+                    $jumlah_pinjaman = $pinjaman[0]->nominal - $cicilan_luar;
+
+                }else{
+                    $cicilan_dalam = 0;
+                    $cicilan_luar = 0;
+                    $jumlah_pinjaman = 0;
+                }
+                
 
                 $manasuka = $this->m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
                 $p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
@@ -497,8 +513,8 @@
                 <td><?= number_format($simpanan_manasuka, 0, '.', ','); ?></td>
                 <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', ','); ?></td>
                 <td><?= number_format($jumlah_pinjaman, 0, '.', ','); ?></td>
-                <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td><?= number_format($jumlah_pinjaman-$p_pokok, 0, '.', ',')?></td>
+                <td><?= number_format($cicilan_dalam, 0, '.', ','); ?></td>
+                <td><?= number_format($jumlah_pinjaman-$cicilan_dalam, 0, '.', ',')?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                 <td><?=$a->username?></td>

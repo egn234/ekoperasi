@@ -289,10 +289,20 @@ class User extends Controller
 
 							if($pinjaman['nominal'] != 0 || $pinjaman['angsuran_bulanan'] != 0 || $cicilan_ke != 0){
 								
+								$tanggal_report = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai;
+								$today = new \DateTime();
+								$monthInterval = new \DateInterval('P'.$cicilan_ke.'M'); // P25M represents a period of 25 months
+								$monthAgo = $today->sub($monthInterval);
+								$year = $monthAgo->format('Y'); // Get the year value
+								$month = $monthAgo->format('m');
+								$date_pinjaman = sprintf('%d-%02d-%02d 00:00:00', $year, $month, $tanggal_report);
+								
 								$pinjaman += [
 									'tipe_permohonan' => 'pinjaman',
 									'deskripsi' => 'impor otomatis sistem',
 									'status' => 4,
+									'date_created' => $date_pinjaman,
+									'date_updated' => $date_pinjaman,
 									'idbendahara' => $this->m_user->where('idgroup', 2)->get()->getResult()[0]->iduser,
 									'idketua' => $this->m_user->where('idgroup', 3)->get()->getResult()[0]->iduser,
 									'idanggota' => $iduser_new,
@@ -302,16 +312,7 @@ class User extends Controller
 								$this->m_pinjaman->insertPinjaman($pinjaman);
 								$idpinjaman = $this->m_pinjaman->insertID();
 
-								$tanggal_report = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai;
 								$nominal_cicilan = $pinjaman['nominal'] / $pinjaman['angsuran_bulanan'];
-
-								$today = new \DateTime();
-								$monthInterval = new \DateInterval('P'.$cicilan_ke.'M'); // P25M represents a period of 25 months
-								$monthAgo = $today->sub($monthInterval);
-
-								$year = $monthAgo->format('Y'); // Get the year value
-
-								$month = $monthAgo->format('m');
 
 								$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
 								$provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
