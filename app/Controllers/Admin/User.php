@@ -303,20 +303,25 @@ class User extends Controller
 								$idpinjaman = $this->m_pinjaman->insertID();
 
 								$tanggal_report = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai;
-								$year = date('Y');
-								$month = date('m', strtotime(date('Y-m-d').' -1 month'));
-
 								$nominal_cicilan = $pinjaman['nominal'] / $pinjaman['angsuran_bulanan'];
 
-								for ($i = $cicilan_ke; $i > 0; --$i) { 
+								$today = new \DateTime();
+								$monthInterval = new \DateInterval('P'.$cicilan_ke.'M'); // P25M represents a period of 25 months
+								$monthAgo = $today->sub($monthInterval);
+
+								$year = $monthAgo->format('Y'); // Get the year value
+
+								$month = $monthAgo->format('m');
+
+								$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+								$provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
+
+								for ($k = 0; $k < $cicilan_ke; ++$k) { 
 								    $formattedDate = sprintf('%d-%02d-%02d 00:00:00', $year, $month, $tanggal_report);
 
-									$cek_cicilan = $this->m_cicilan->where('idpinjaman', $idpinjaman)
+								    $cek_cicilan = $this->m_cicilan->where('idpinjaman', $idpinjaman)
 																   ->countAllResults();
 									if ($cek_cicilan == 0) {
-
-										$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
-										$provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
 
 										$dataset_cicilan = [
 											'nominal' => $nominal_cicilan,
@@ -329,8 +334,6 @@ class User extends Controller
 										$this->m_cicilan->insertCicilan($dataset_cicilan);
 										
 									}elseif ($cek_cicilan == ($pinjaman['angsuran_bulanan'] - 1)) {
-
-										$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
 
 										$dataset_cicilan = [
 											'nominal' => ($nominal_cicilan/$pinjaman['angsuran_bulanan']),
@@ -346,8 +349,6 @@ class User extends Controller
 
 									}elseif ($cek_cicilan != 0 && $cek_cicilan < $pinjaman['angsuran_bulanan']) {
 
-										$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
-
 										$dataset_cicilan = [
 											'nominal' => $nominal_cicilan,
 											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
@@ -359,11 +360,11 @@ class User extends Controller
 									}
 
 								    // Decrement the month (and year if necessary) for the next iteration
-								    if ($month == 1) {
-								        $year--;
-								        $month = 12; // December
+								    if ($month == 12) {
+								        $year++;
+								        $month = 1;
 								    } else {
-								        $month--;
+								        $month++;
 								    }
 								}
 							}
