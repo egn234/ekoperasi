@@ -146,14 +146,20 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
-                                                <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
+                                                <div class="input-group auth-pass-inputgroup">
+                                                    <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
+                                                    <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
+                                                </div>
                                                 <div class="invalid-feedback">
                                                     Minimal 8 karakter
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
-                                                <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
+                                                <div class="input-group auth-pass-inputgroup">
+                                                    <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
+                                                    <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
+                                                </div>
                                                 <div class="invalid-feedback">
                                                     Minimal 8 karakter
                                                 </div>
@@ -232,6 +238,25 @@
         });
     }, false);
 })();
+
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordToggles = document.querySelectorAll(".password-toggle");
+
+    passwordToggles.forEach(function (toggle) {
+        toggle.addEventListener("click", function () {
+            const targetId = toggle.getAttribute("data-target");
+            const passwordInput = document.getElementById(targetId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
+            } else {
+                passwordInput.type = "password";
+                toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
+            }
+        });
+    });
+});
 
 window.onload = () => {
  const myInput = document.getElementById('retype_pass');
