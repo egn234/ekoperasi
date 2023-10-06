@@ -143,13 +143,13 @@
                 <tr>
                     <td><?= $c; ?></td>
                     <td><?= $a->nama_lengkap; ?></td>
-                    <td><?= number_format($simpanan_pokok, 0, '.', '.'); ?></td>
-                    <td><?= number_format($simpanan_wajib, 0, '.', '.'); ?></td>
-                    <td><?= number_format($simpanan_manasuka, 0, '.', '.'); ?></td>
-                    <td><?= number_format(($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok), 0, '.', '.'); ?></td>
-                    <td><?= number_format($jumlah_pinjaman, 0, '.', '.'); ?></td>
-                    <td><?= number_format($cicilan_dalam, 0, '.', '.'); ?></td>
-                    <td><?= number_format($jumlah_pinjaman-$cicilan_dalam, 0, '.', '.')?></td>
+                    <td><?= $simpanan_pokok; ?></td>
+                    <td><?= $simpanan_wajib; ?></td>
+                    <td><?= $simpanan_manasuka; ?></td>
+                    <td><?= ($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok); ?></td>
+                    <td><?= $jumlah_pinjaman; ?></td>
+                    <td><?= $cicilan_dalam; ?></td>
+                    <td><?= $jumlah_pinjaman-$cicilan_dalam?></td>
                     <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                     <td><?= ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - '; ?></td>
                     <td><?=$a->username?></td>
