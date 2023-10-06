@@ -47,13 +47,13 @@
                 <td><?= $c; ?></td>
                 <td><?= $a->nama_lengkap; ?></td>
                 <td>'<?= $a->nik; ?></td>
-                <td><?= number_format($pokok_wajib, 0, '.', ','); ?></td>
-                <td><?= number_format($manasuka, 0, '.', ','); ?></td>
-                <td><?= number_format($p_pokok, 0, '.', ','); ?></td>
-                <td><?= number_format($p_bunga, 0, '.', ','); ?></td>
-                <td><?= number_format($p_provisi, 0, '.', ','); ?></td>
-                <td><?= number_format(($p_pokok + $p_bunga + $p_provisi), 0, '.', ','); ?></td>
-                <td><?= number_format($total_potongan, 0, '.', ','); ?></td>
+                <td><?= $pokok_wajib; ?></td>
+                <td><?= $manasuka; ?></td>
+                <td><?= $p_pokok; ?></td>
+                <td><?= $p_bunga; ?></td>
+                <td><?= $p_provisi; ?></td>
+                <td><?= ($p_pokok + $p_bunga + $p_provisi); ?></td>
+                <td><?= $total_potongan; ?></td>
                 <td><?= ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ';?></td>
                 <td><?= $count_cicilan; ?></td>
             </tr>
