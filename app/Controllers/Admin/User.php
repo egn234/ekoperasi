@@ -459,18 +459,21 @@ class User extends Controller
 	public function add_user_proc()
 	{
 		$dataset = [
-			'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+			'nama_lengkap' => strtoupper((string) $this->request->getPost('nama_lengkap')),
 			'nik' => $this->request->getPost('nik'),
 			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
 			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
 			'instansi' => $this->request->getPost('instansi'),
 			'alamat' => $this->request->getPost('alamat'),
 			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
+			'status_pegawai' => $this->request->getPost('status_pegawai'),
 			'email' => $this->request->getPost('email'),
 			'unit_kerja' => $this->request->getPost('unit_kerja'),
 			'username' => $this->request->getPost('username'),
 			'pass' => md5($this->request->getPost('pass')),
-			'idgroup' => $this->request->getPost('idgroup')
+			'idgroup' => $this->request->getPost('idgroup'),
+			'nama_bank' => strtoupper((string) $this->request->getPost('nama_bank')),
+			'no_rek' => $this->request->getPost('no_rek'),
 		];
 
 		$pass2 = md5($this->request->getPost('pass2'));
@@ -509,7 +512,7 @@ class User extends Controller
 		$nip = $this->request->getPost('nip');
 
 		if($nip != null || $nip != ''){
-			$cek_nip = $this->m_user->select('count(id) as hitung')
+			$cek_nip = $this->m_user->select('count(iduser) as hitung')
 				->where('nip', $nip)
 				->get()
 				->getResult()[0]
@@ -672,14 +675,20 @@ class User extends Controller
 		$old_user = $this->m_user->getUserById($iduser)[0];
 
 		$dataset = [
-			'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+			'nama_lengkap' => strtoupper((string) $this->request->getPost('nama_lengkap')),
+			'nik' => $this->request->getPost('nik'),
 			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
 			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
 			'instansi' => $this->request->getPost('instansi'),
 			'alamat' => $this->request->getPost('alamat'),
 			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
+			'status_pegawai' => $this->request->getPost('status_pegawai'),
 			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja')
+			'unit_kerja' => $this->request->getPost('unit_kerja'),
+			'pass' => md5($this->request->getPost('pass')),
+			'idgroup' => $this->request->getPost('idgroup'),
+			'nama_bank' => strtoupper((string) $this->request->getPost('nama_bank')),
+			'no_rek' => $this->request->getPost('no_rek'),
 		];
 		
 		//check duplicate nip

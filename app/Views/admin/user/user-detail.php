@@ -33,7 +33,7 @@
 
                             <div class="page-title-right">
                                 <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item"><a href="<?=base_url()?>/pengelola/dashboard">PAGlowUP</a></li>
+                                    <li class="breadcrumb-item"><a href="<?=base_url()?>/pengelola/dashboard">Ekoperasi</a></li>
                                     <li class="breadcrumb-item active">Detail UMKM</li>
                                 </ol>
                             </div>
@@ -199,6 +199,35 @@
                                                 <div class="row">
                                                     <div class="col-xl-2">
                                                         <div>
+                                                            <h5 class="font-size-15">Nama Bank :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?=$det_user->nama_bank?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
+                                                            <h5 class="font-size-15">Nomor Rekening :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?=$det_user->no_rek?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
                                                             <h5 class="font-size-15">Institusi :</h5>
                                                         </div>
                                                     </div>
@@ -220,6 +249,21 @@
                                                     <div class="col-xl">
                                                         <div class="text-muted">
                                                             <?=$det_user->unit_kerja?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
+                                                            <h5 class="font-size-15">Status Pegawai :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?=$det_user->status_pegawai?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -336,10 +380,36 @@
                                                         Harus Diisi
                                                     </div>
                                                 </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-4">
+                                                        <label class="form-label" for="bankname">Nama Bank <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="bankname" name="nama_bank" value="<?= $det_user->nama_bank?>" required>
+                                                        <div class="invalid-feedback">
+                                                            Harus Diisi
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <label class="form-label" for="norek">Nomor Rekening <span class="text-danger">*</span></label>
+                                                        <input type="number" class="form-control" id="norek" name="no_rek" value="<?= $det_user->no_rek?>" required>
+                                                        <div class="invalid-feedback">
+                                                            Harus Diisi
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                                                    <label class="form-label" for="status_peg">Status Pegawai <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="status_peg" name="status_pegawai" required>
+                                                        <option value="tetap" <?=($det_user->status_pegawai == 'tetap')?'selected':''?> >Tetap</option>
+                                                        <option value="kontrak" <?=($det_user->status_pegawai == 'kontrak')?'selected':''?> >Kontrak</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        Pilih Terlebih dahulu
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="password">Password Baru</label>
                                                     <div class="input-group auth-pass-inputgroup">
-                                                        <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
+                                                        <input type="password" class="form-control" id="password" minlength="8" name="pass">
                                                         <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
                                                     </div>
                                                     <div class="invalid-feedback">
@@ -349,16 +419,9 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
                                                     <div class="input-group auth-pass-inputgroup">
-                                                        <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
+                                                        <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2">
                                                         <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password Baru</label>
-                                                    <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2">
                                                     <div class="invalid-feedback">
                                                         Minimal 8 karakter
                                                     </div>

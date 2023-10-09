@@ -137,6 +137,32 @@
                                                     Harus Diisi
                                                 </div>
                                             </div>
+                                            <div class="row mb-3">
+                                                <div class="col-4">
+                                                    <label class="form-label" for="bankname">Nama Bank <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="bankname" name="nama_bank" value="<?=session()->getFlashdata('nama_bank')?>" required>
+                                                    <div class="invalid-feedback">
+                                                        Harus Diisi
+                                                    </div>
+                                                </div>
+                                                <div class="col-8">
+                                                    <label class="form-label" for="norek">Nomor Rekening <span class="text-danger">*</span></label>
+                                                    <input type="number" class="form-control" id="norek" name="no_rek" value="<?=session()->getFlashdata('no_rek')?>" required>
+                                                    <div class="invalid-feedback">
+                                                        Harus Diisi
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label" for="status_peg">Status Pegawai <span class="text-danger">*</span></label>
+                                                <select class="form-select" id="status_peg" name="status_pegawai" required>
+                                                    <option value="tetap" <?=(session()->getFlashdata('unit_kerja') == 'tetap')?'selected':''?> >Tetap</option>
+                                                    <option value="kontrak" <?=(session()->getFlashdata('unit_kerja') == 'kontrak')?'selected':''?> >Kontrak</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Pilih Terlebih dahulu
+                                                </div>
+                                            </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" required>

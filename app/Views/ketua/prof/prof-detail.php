@@ -45,7 +45,7 @@
                                             <div class="flex-grow-1">
                                                 <div>
                                                     <h5 class="font-size-16 mb-1"><?=$duser->nama_lengkap?></h5>
-                                                    <p class="text-muted font-size-13">Administrator</p>
+                                                    <p class="text-muted font-size-13">Ketua GIAT</p>
 
                                                     <div class="d-flex flex-wrap align-items-start gap-2 gap-lg-3 text-muted font-size-13">
                                                         <div><i class="mdi mdi-circle-medium me-1 text-success align-middle"></i><?=$duser->nomor_telepon?></div>
