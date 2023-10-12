@@ -137,6 +137,10 @@
                     }
                 },
                 {
+                    title: "Username",
+                    data: "username"
+                },
+                {
                     title: "Nama",
                     data: "nama_lengkap"
                 },

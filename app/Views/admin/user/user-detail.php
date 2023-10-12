@@ -57,7 +57,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <div>
-                                                    <h5 class="font-size-16 mb-1"><?=$det_user->nama_lengkap?></h5>
+                                                    <h5 class="font-size-16 mb-1"><?=$det_user->username?> - <?=$det_user->nama_lengkap?></h5>
                                                     <p class="text-muted font-size-13"><?=$det_user->group_type?></p>
 
                                                     <div class="d-flex flex-wrap align-items-start gap-2 gap-lg-3 text-muted font-size-13">

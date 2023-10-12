@@ -47,6 +47,7 @@
                                     <thead>
                                         <tr>
                                             <th width="5%">No</th>
+                                            <th>Username</th>
                                             <th>Nama</th>
                                             <th>Instansi</th>
                                             <th>Alamat Email</th>
@@ -60,6 +61,7 @@
                                         <?php foreach ($anggota_list as $a) {?>
                                             <tr>
                                                 <td><?= $c ?></td>
+                                                <td><?= $a->username ?></td>
                                                 <td><?= $a->nama_lengkap ?></td>
                                                 <td><?= $a->instansi ?></td>
                                                 <td><?= $a->email ?></td>

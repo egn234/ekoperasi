@@ -44,7 +44,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <div>
-                                                    <h5 class="font-size-16 mb-1"><?=$duser->nama_lengkap?></h5>
+                                                    <h5 class="font-size-16 mb-1"><?=$duser->username?> - <?=$duser->nama_lengkap?></h5>
                                                     <p class="text-muted font-size-13">Administrator</p>
 
                                                     <div class="d-flex flex-wrap align-items-start gap-2 gap-lg-3 text-muted font-size-13">
