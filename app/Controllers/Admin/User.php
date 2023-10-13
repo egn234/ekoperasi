@@ -270,9 +270,9 @@ class User extends Controller
 								'created' => date('Y-m-d H:i:s')
 							];
 
-							$param_mnsk = (int) $cell->getCellByColumnAndRow(21, $i)->getValue();
+							$param_mnsk = $cell->getCellByColumnAndRow(21, $i)->getValue();
 
-							if ($param_mnsk != 0) {
+							if ($param_mnsk != "" || $param_mnsk != null) {
 								$param_r += ['nilai' => $param_mnsk];
 							}else{
 								$param_r += ['nilai' => $this->m_param->getParamById(3)[0]->nilai];
