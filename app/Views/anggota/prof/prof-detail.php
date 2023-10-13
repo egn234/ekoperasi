@@ -429,6 +429,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
+                                                <div class="row justify-content-end">
+                                                    <div class="col-sm-9">
+                                                        <div><button type="submit" class="btn btn-primary w-md">Submit</button></div>
+                                                    </div>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
