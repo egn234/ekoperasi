@@ -23,7 +23,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="nominal">Nominal (Rp.)</label>
-                        <input type="text" class="form-control" id="nominal" name="nominal" data-mask="#.##0" data-mask-reverse="true" data-mask-max="9999999999.99" value="<?=session()->getFlashdata('nominal')?>" required>
+                        <input type="text" class="form-control" id="nominal" name="nominal" data-mask="#.##0" data-mask-reverse="true" data-mask-max="999999999999.99" value="<?=session()->getFlashdata('nominal')?>" required>
                         <input type="number" class="form-control" id="sisa_cicilan" name="sisa_cicilan" value="<?=$sisa?>" hidden>
                         <div class="invalid-feedback">
                             Harus Diisi

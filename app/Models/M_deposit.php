@@ -198,7 +198,7 @@ class m_deposit extends Model
             SELECT SUM(cash_in) - SUM(cash_out) AS saldo_manasuka 
             FROM tb_deposit 
             WHERE idanggota = $iduser 
-            AND jenis_deposit = 'manasuka' 
+            AND jenis_deposit LIKE 'manasuka%' 
             AND status = 'diterima'
         ";
 

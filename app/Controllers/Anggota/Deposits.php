@@ -97,7 +97,6 @@ class Deposits extends Controller
 		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
 		$deskripsi = $this->request->getPost('description');
 
-
 		$cash_in = 0;
 		$cash_out = 0;
 		$status = false;

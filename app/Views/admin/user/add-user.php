@@ -165,7 +165,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" required>
+                                                <input type="text" class="form-control" id="username" name="username" value="<?= $username ?>" Readonly required>
                                                 <div class="invalid-feedback">
                                                     Harus Diisi
                                                 </div>

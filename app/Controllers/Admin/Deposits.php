@@ -140,7 +140,7 @@ class Deposits extends Controller
 		if ($jenis_pengajuan == 'penyimpanan') {
 			$cash_in = $nominal;
 		}else{
-			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
+			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($iduser)[0]->saldo_manasuka;
 
 			if ($cek_saldo < $nominal) {
 				$alert = view(

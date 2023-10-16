@@ -81,13 +81,28 @@ class User extends Controller
 	{
 		$group_list = $this->m_group->getAllGroup();
 
+		$cek_username = $this->m_user->getUsernameGiat()[0]->username;
+		$filter_int = filter_var($cek_username, FILTER_SANITIZE_NUMBER_INT);
+		$clean_int = intval($filter_int);
+
+		if ($clean_int >= 1000) {
+			$username = 'GIAT'.($clean_int+1);
+		}elseif ($clean_int >= 100) {
+			$username = 'GIAT0'.($clean_int+1);
+		}elseif ($clean_int >= 10) {
+			$username = 'GIAT00'.($clean_int+1);
+		}elseif ($clean_int >= 1) {
+			$username = 'GIAT000'.($clean_int+1);
+		}
+
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'User']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Tambah User', 'li_1' => 'EKoperasi', 'li_2' => 'New User']),
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
-			'grp_list' => $group_list
+			'grp_list' => $group_list,
+			'username' => $username
 		];
 		
 		echo view('admin/user/add-user', $data);
