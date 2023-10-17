@@ -258,4 +258,48 @@ class Pinjaman extends Controller
 			echo view('admin/pinjaman/part-pinjaman-mod-lunasin', $data);
 		}
 	}
+
+	public function data_pinjaman()
+	{
+		$request = service('request');
+        $model = new M_pinjaman();
+
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'] ?? '';
+
+        // Fetch data from the model using $start and $length
+		$model->select('a.status_pegawai AS status_pegawai');
+		$model->select('a.username AS username_peminjam');
+		$model->select('a.nama_lengkap AS nama_peminjam');
+		$model->select('a.nik AS nik_peminjam');
+		$model->select('tb_pinjaman.*');
+		$model->select('(SELECT COUNT(idcicilan) FROM tb_cicilan WHERE idpinjaman = tb_pinjaman.idpinjaman) AS sisa_cicilan', false);
+		$model->select('c.nama_lengkap AS nama_admin');
+		$model->select('c.nik AS nik_admin');
+		$model->select('d.nama_lengkap AS nama_bendahara');
+		$model->select('d.nik AS nik_bendahara');
+		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
+		$model->join('tb_user c', 'c.iduser = tb_pinjaman.idadmin', 'left');
+		$model->join('tb_user d', 'd.iduser = tb_pinjaman.idbendahara', 'left');
+        $data = $model->asArray()->findAll($length, $start);
+
+        // Total records (you can also use $model->countAll() for exact total)
+        $recordsTotal = $model->countAllResults();
+
+        // Records after filtering (if any)
+        $recordsFiltered = $recordsTotal;
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+
+        return $this->response->setJSON($response);
+	}
 }

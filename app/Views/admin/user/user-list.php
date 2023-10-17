@@ -112,7 +112,7 @@
 <?= $this->include('admin/partials/vendor-scripts') ?>
 
 <!-- Required datatable js -->
-<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
@@ -121,12 +121,12 @@
         $('#dataTable').DataTable({
             ajax: {
                 url: "<?= base_url() ?>admin/user/data_user",
-                dataSrc: "list_user"
+                type: "POST"
             },
             "autoWidth": false,
             "scrollX": true,
+            serverSide: true,
             columnDefs: [{
-                searchable: true,
                 orderable: false,
                 targets: "_all",
                 defaultContent: "-",

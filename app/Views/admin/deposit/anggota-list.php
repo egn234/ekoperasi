@@ -43,41 +43,9 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">No</th>
-                                            <th>Nama</th>
-                                            <th>Instansi</th>
-                                            <th>Alamat Email</th>
-                                            <th>No. Telpon</th>
-                                            <th>Status Akun</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($anggota_list as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_lengkap ?></td>
-                                                <td><?= $a->instansi ?></td>
-                                                <td><?= $a->email ?></td>
-                                                <td><?= $a->nomor_telepon ?></td>
-                                                <td><?=($a->user_flag == 1)?'Aktif':'Tidak Aktif'?></td>
-                                                <td align="center">
-                                                    <div class="row">
-                                                        <div class="btn-group d-flex justify-content-center">
-                                                            <a href="<?= url_to('anggota_detail', $a->iduser) ?>" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
+                                <table id="dataTable" class="table table-sm table-striped nowrap w-100">
 
+                                </table>
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -133,13 +101,84 @@
 <?= $this->include('admin/partials/vendor-scripts') ?>
 
 <!-- Required datatable js -->
-<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 <script type="text/javascript">
-    $('.dtable').DataTable();
     $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>admin/deposit/data_user",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            "autoWidth": false,
+            "scrollX": true,
+            serverSide: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                { 
+                    title: "No",
+                    "render": function(data, type, row, meta) {
+                        return (meta.row + 1);
+                    }
+                },
+                {
+                    title: "Username",
+                    data: "username"
+                },
+                {
+                    title: "Nama",
+                    data: "nama_lengkap"
+                },
+                {
+                    title: "instansi",
+                    data: "instansi"
+                },
+                {
+                    title: "Alamat Email",
+                    data: "email"
+                },
+                {
+                    title: "No. Telpon",
+                    data: "nomor_telepon"
+                },
+                {
+                    title: "Status Akun",
+                    render: function(data, type, row) {
+                        let flag = row.user_flag
+                        let statakun
+
+                        if (flag === "1") {
+                            statakun = "Aktif"
+                        }else{
+                            statakun = "Nonaktif"
+                        }
+
+                        return statakun;
+                    }
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let href = '<?= base_url()?>admin/deposit/user/'+ row.iduser;
+                        let html = '<div class="row"><div class="btn-group d-flex justify-content-center">';
+                        let close = '</div>';        
+                        let button_a = '<a href="' + href + '" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>';
+
+                        return html + button_a + close + close;
+                    }
+                }
+            ]
+        });
+
         $('#switchUser').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({

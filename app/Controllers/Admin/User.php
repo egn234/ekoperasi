@@ -34,15 +34,12 @@ class User extends Controller
 
 	public function list()
 	{
-		$user_list = $this->m_user->getAllUser();
-
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'User']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'User List', 'li_1' => 'EKoperasi', 'li_2' => 'User List']),
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
-			'duser' => $this->account,
-			'usr_list' => $user_list
+			'duser' => $this->account
 		];
 		
 		echo view('admin/user/user-list', $data);
@@ -50,15 +47,38 @@ class User extends Controller
 
 	public function data_user()
 	{
-		$list_user = $this->m_user->getAllUser();
-		$data = [
-			'title' => 'Daftar Dosen',
-			'usertype' => 'Admin',
-			'duser' => $this->account,
-			'list_user' => $list_user
-		];
+        $request = service('request');
+        $model = new M_user(); // Replace with your actual model name
 
-		return json_encode($data);
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'];
+
+        // Start building the query for filtering
+	    $model->like('username', $searchValue)
+	          ->orLike('nama_lengkap', $searchValue)
+	          ->orLike('nomor_telepon', $searchValue);
+
+        // Fetch data from the model using $start and $length
+        $data = $model->asArray()->findAll($length, $start);
+
+        // Total records (you can also use $model->countAll() for exact total)
+        $recordsTotal = $model->countAll();
+
+        // Records after filtering (if any)
+        $recordsFiltered = $recordsTotal;
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ];
+
+        return $this->response->setJSON($response);
 	}
 
 	public function list_closebook()

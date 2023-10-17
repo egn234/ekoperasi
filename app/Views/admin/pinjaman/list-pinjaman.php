@@ -114,56 +114,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Peminjam</th>
-                                        <th>Nominal</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Status Pinjaman</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($list_pinjaman2 as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_peminjam ?></td>
-                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
-                                                <td>
-                                                    <?php if($a->status == 0){?>
-                                                        Ditolak
-                                                    <?php }elseif($a->status == 1){?>
-                                                        Upload Kelengkapan Form
-                                                    <?php }elseif($a->status == 2){?>
-                                                        Menunggu Verifikasi
-                                                    <?php }elseif($a->status == 3){?>
-                                                        Menunggu Approval Sekretariat
-                                                    <?php }elseif($a->status == 4){?>
-                                                        Sedang Berlangsung
-                                                    <?php }elseif($a->status == 5){?>
-                                                        Lunas
-                                                    <?php }elseif($a->status == 6){?>
-                                                        Konfirmasi Pelunasan
-                                                    <?php }?>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> Detail
-                                                        </a>
-                                                        <?php if($a->status == 4 && $a->angsuran_bulanan - $a->sisa_cicilan < 3 && $a->angsuran_bulanan - $a->sisa_cicilan != 0){?>
-                                                            <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                                <i class="fa fa-file-alt"></i> Lunasi Pinjaman
-                                                            </a>
-                                                        <?php } ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dt_list" class="table table-sm table-striped nowrap w-100">
                                 </table>
                             </div>
                         </div>
@@ -227,7 +178,99 @@
 
 <script type="text/javascript">
     $('.dtable').DataTable();
+
+    function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+        number = parseFloat(number).toFixed(decimals);
+        number = number.replace('.', decimalSeparator);
+        var parts = number.split(decimalSeparator);
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+        return parts.join(decimalSeparator);
+    }
+
     $(document).ready(function() {
+        $('#dt_list').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>admin/pinjaman/data_pinjaman",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            serverSide: true,
+            searching: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                { 
+                    title: "No",
+                    "render": function(data, type, row, meta) {
+                        return (meta.row + 1);
+                    }
+                },
+                {
+                    title: "Username",
+                    data: "username_peminjam"
+                },
+                {
+                    title: "Nama Lengkap",
+                    data: "nama_peminjam"
+                },
+                {
+                    title: "Nominal",
+                    "render": function(data, type, row, meta) {
+                        return 'Rp '+numberFormat(row.nominal, 2);
+                    }
+                },
+                {
+                    title: "Status",
+                    "render": function(data, type, row, meta) {
+                        let otuput;
+                        
+                        if(row.status == 0){
+                            otuput = 'Ditolak';
+                        }else if(row.status == 1){
+                            otuput = 'Upload Kelengkapan Form';
+                        }else if(row.status == 2){
+                            otuput = 'Menunggu Verifikasi';
+                        }else if(row.status == 3){
+                            otuput = 'Menunggu Approval Sekretariat';
+                        }else if(row.status == 4){
+                            otuput = 'Sedang Berlangsung';
+                        }else if(row.status == 5){
+                            otuput = 'Lunas';
+                        }else if(row.status == 6){
+                            otuput = 'Konfirmasi Pelunasan';
+                        }
+
+                        return otuput;
+                    }
+                },
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_created"
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let head = '<div class="btn-group d-flex justify-content-center">';
+                        let btn_a = '<a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Detail</a>';
+                        let btn_b = '';
+                        let tail = '</div>';
+                        if (row.status == 4 && row.angsuran_bulanan - row.sisa_cicilan < 3 && row.angsuran_bulanan - row.sisa_cicilan != 0){
+                            btn_b = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Lunasi Pinjaman</a>';
+                        }
+
+                        return head + btn_a + btn_b + tail;
+                    }
+                }
+            ]
+        });
+
         $('#approvePinjaman').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({

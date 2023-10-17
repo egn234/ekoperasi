@@ -68,12 +68,12 @@ $routes->group('admin', static function ($routes)
         $routes->get('closebook-list', 'Admin\User::list_closebook');
         $routes->get('add', 'Admin\User::add_user');
         $routes->get('export_table', 'Admin\User::export_table');
-        $routes->get('data_user', 'Admin\User::data_user');
 
         $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
         $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
         $routes->post('tab_upload', 'Admin\User::get_table_upload');
         
+        $routes->add('data_user', 'Admin\User::data_user');
         $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
     });
 
@@ -94,6 +94,9 @@ $routes->group('admin', static function ($routes)
         $routes->add('cancel_param_manasuka/(:num)', 'Admin\Deposits::cancel_param_manasuka/$1', ['as' => 'admin_cancel_parameter_manasuka']);
         $routes->add('user/(:num)', 'Admin\Deposits::detail_anggota/$1', ['as' => 'anggota_detail']);
 
+        $routes->add('data_user', 'Admin\Deposits::data_user');
+        $routes->add('data_transaksi', 'Admin\Deposits::data_transaksi');
+        $routes->add('data_transaksi_filter', 'Admin\Deposits::data_transaksi_filter');
         $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
         
@@ -109,6 +112,7 @@ $routes->group('admin', static function ($routes)
         $routes->post('detail-pinjaman', 'Admin\Pinjaman::detail_pinjaman');
         $routes->post('lunasi-pinjaman', 'Admin\Pinjaman::pengajuan_lunas');
 
+        $routes->add('data_pinjaman', 'Admin\Pinjaman::data_pinjaman');
         $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
         $routes->add('lunasi-pinjaman/(:num)', 'Admin\Pinjaman::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
