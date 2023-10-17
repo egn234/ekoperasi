@@ -54,7 +54,7 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table id="dataTable" class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
+                                <table id="dataTable" class="table table-sm table-striped nowrap w-100">
                                     <!-- Load From ajax -->
                                 </table>
                             </div>
@@ -118,11 +118,13 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        var table = $('#dataTable').DataTable({
+        $('#dataTable').DataTable({
             ajax: {
                 url: "<?= base_url() ?>admin/user/data_user",
                 dataSrc: "list_user"
             },
+            "autoWidth": false,
+            "scrollX": true,
             columnDefs: [{
                 searchable: true,
                 orderable: false,
@@ -197,10 +199,9 @@
                         return rowdiv + justify_content + button + button_status + close + close
                     }
                 }
-            ],
-            scrollX: true
+            ]
         });
-
+        
         $('#switchUser').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({
@@ -212,8 +213,6 @@
                 }
             });
         });
-
-        table.draw();
     });
 </script>
 </body>

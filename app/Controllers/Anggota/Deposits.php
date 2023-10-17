@@ -150,6 +150,27 @@ class Deposits extends Controller
 				return redirect()->back();
 			}
 
+			$cek_status_penarikan = $this->m_deposit->select('COUNT(iddeposit) AS hitung')
+				->where('status LIKE "diproses%"')
+				->where('jenis_pengajuan', 'penarikan')
+				->where('jenis_deposit LIKE "manasuka%"')
+				->get()->getResult()[0]
+				->hitung;
+
+			if ($cek_status_penarikan > 0) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gagal membuat pengajuan: Selesaikan dahulu pengajuan sebelumnya',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset = ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}
+
 			$cash_out = $nominal;
 			$status = 'diproses admin';
 		}
