@@ -124,12 +124,6 @@
                 defaultContent: "-",
             }],
             columns: [
-                { 
-                    title: "No",
-                    "render": function(data, type, row, meta) {
-                        return (meta.row + 1);
-                    }
-                },
                 {
                     title: "Username",
                     data: "username"

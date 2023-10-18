@@ -27,15 +27,12 @@ class Deposits extends Controller
 
 	public function index()
 	{
-		$anggota_list = $this->m_user->getAllAnggotaSaldo();
-
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Kelola Anggota']),
 			'page_title' => view('bendahara/partials/page-title', ['title' => 'Kelola Anggota', 'li_1' => 'EKoperasi', 'li_2' => 'Kelola Anggota']),
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
-			'duser' => $this->account,
-			'anggota_list' => $anggota_list
+			'duser' => $this->account
 		];
 		
 		return view('bendahara/deposit/anggota-list', $data);
@@ -43,17 +40,12 @@ class Deposits extends Controller
 
 	public function list_transaksi()
 	{
-		$transaksi_list = $this->m_deposit->getAllDeposit();
-		$transaksi_list_filter = $this->m_deposit->getAllDepositFilterBendahara();
-		
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Kelola Transaksi Simpanan']),
 			'page_title' => view('bendahara/partials/page-title', ['title' => 'Kelola Transaksi Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Kelola Transaksi Simpanan']),
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
-			'duser' => $this->account,
-			'transaksi_list' => $transaksi_list,
-			'transaksi_list_filter' => $transaksi_list_filter
+			'duser' => $this->account
 		];
 		
 		return view('bendahara/deposit/deposit-list', $data);
@@ -264,5 +256,152 @@ class Deposits extends Controller
 			];
 			echo view('bendahara/deposit/part-depo-mod-approval', $data);
 		}
+	}
+
+	public function data_transaksi()
+	{
+		$request = service('request');
+        $model = new M_deposit();
+
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'];
+
+        // Fetch data from the model using $start and $length
+		$model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.nik, tb_user.email');
+		$model->like('nama_lengkap', $searchValue);
+		$model->orLike('username', $searchValue);
+		$model->orLike('nik', $searchValue);
+		$model->orLike('email', $searchValue);
+		$model->orLike('status', $searchValue);
+		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
+		$model->orderBy('tb_deposit.date_created', 'DESC');
+        $data = $model->asArray()->findAll($length, $start);
+
+        // Total records (you can also use $model->countAll() for exact total)
+        $recordsTotal = $model->countAllResults();
+
+        // Records after filtering (if any)
+		$model->like('nama_lengkap', $searchValue);
+		$model->orLike('username', $searchValue);
+		$model->orLike('nik', $searchValue);
+		$model->orLike('email', $searchValue);
+		$model->orLike('status', $searchValue);
+		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
+        $recordsFiltered = $model->countAllResults();
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+
+        return $this->response->setJSON($response);
+	}
+
+	public function data_transaksi_filter()
+	{
+		$request = service('request');
+        $model = new M_deposit();
+
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'];
+
+        // Fetch data from the model using $start and $length
+		$model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.nik, tb_user.email');
+		$model->where('tb_deposit.status', 'diproses bendahara');
+	    $model->groupStart()
+			->like('nama_lengkap', $searchValue)
+			->orLike('username', $searchValue)
+			->orLike('nik', $searchValue)
+			->orLike('email', $searchValue)
+			->orLike('status', $searchValue);
+		$model->groupEnd();
+		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
+		$model->orderBy('tb_deposit.date_created', 'DESC');
+        $data = $model->asArray()->findAll($length, $start);
+
+        // Total records (you can also use $model->countAll() for exact total)
+		$model->where('tb_deposit.status', 'diproses bendahara');
+		$model->orderBy('tb_deposit.date_created', 'DESC');
+        $recordsTotal = $model->countAllResults();
+
+        // Records after filtering (if any)
+		$model->where('tb_deposit.status', 'diproses bendahara');
+	    $model->groupStart()
+			->like('nama_lengkap', $searchValue)
+			->orLike('username', $searchValue)
+			->orLike('nik', $searchValue)
+			->orLike('email', $searchValue)
+			->orLike('status', $searchValue);
+		$model->groupEnd();
+		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
+        $recordsFiltered = $model->countAllResults();
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+
+        return $this->response->setJSON($response);
+	}
+
+	public function data_user()
+	{
+        $request = service('request');
+        $model = new M_user(); // Replace with your actual model name
+
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'];
+
+        // Start building the query for filtering
+	    $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag')
+	    ->where('idgroup', 4)
+	    ->groupStart()
+	    	->like('username', $searchValue)
+	        ->orLike('nama_lengkap', $searchValue)
+	        ->orLike('nomor_telepon', $searchValue)
+	    ->groupEnd();
+
+        // Fetch data from the model using $start and $length
+        $data = $model->asArray()->findAll($length, $start);
+        
+
+        // Total records (you can also use $model->countAll() for exact total)
+	    $model->select('iduser')->where('idgroup', 4);
+        $recordsTotal = $model->countAllResults();
+
+        // Records after filtering (if any)
+	    $model->select('iduser')
+	    ->where('idgroup', 4)
+	    ->groupStart()
+	    	->like('username', $searchValue)
+	        ->orLike('nama_lengkap', $searchValue)
+	        ->orLike('nomor_telepon', $searchValue)
+	    ->groupEnd();
+        $recordsFiltered = $model->countAllResults();
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+
+        return $this->response->setJSON($response);
 	}
 }

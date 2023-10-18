@@ -122,7 +122,6 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
 <script type="text/javascript">
-    $('.dtable').DataTable();
     function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
         number = parseFloat(number).toFixed(decimals);
         number = number.replace('.', decimalSeparator);
@@ -150,12 +149,6 @@
                 defaultContent: "-",
             }],
             columns: [
-                { 
-                    title: "No",
-                    "render": function(data, type, row, meta) {
-                        return (meta.row + 1);
-                    }
-                },
                 {
                     title: "Username",
                     data: "username"
@@ -217,6 +210,7 @@
             },
             autoWidth: false,
             scrollX: true,
+            searching: true,
             serverSide: true,
             columnDefs: [{
                 orderable: false,
@@ -224,12 +218,6 @@
                 defaultContent: "-",
             }],
             columns: [
-                { 
-                    title: "No",
-                    "render": function(data, type, row, meta) {
-                        return (meta.row + 1);
-                    }
-                },
                 {
                     title: "Username",
                     data: "username"
@@ -281,7 +269,6 @@
                 }
             ]
         });
-
 
         $('#detailMutasi').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');

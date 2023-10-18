@@ -102,7 +102,6 @@ class Deposits extends Controller
 
 	public function add_proc()
 	{
-
 		$iduser = $this->request->getPost('iduser');
 		$jenis_pengajuan = $this->request->getPost('jenis_pengajuan');
 		if ($jenis_pengajuan == "") {
@@ -486,6 +485,7 @@ class Deposits extends Controller
         $draw = $request->getPost('draw');
         $searchValue = $request->getPost('search')['value'];
 
+        // Fetch data from the model using $start and $length
 		$model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.nik, tb_user.email');
 		$model->like('nama_lengkap', $searchValue);
 		$model->orLike('username', $searchValue);
@@ -494,15 +494,19 @@ class Deposits extends Controller
 		$model->orLike('status', $searchValue);
 		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
 		$model->orderBy('tb_deposit.date_created', 'DESC');
-
-        // Fetch data from the model using $start and $length
         $data = $model->asArray()->findAll($length, $start);
 
         // Total records (you can also use $model->countAll() for exact total)
         $recordsTotal = $model->countAllResults();
 
         // Records after filtering (if any)
-        $recordsFiltered = $recordsTotal;
+		$model->like('nama_lengkap', $searchValue);
+		$model->orLike('username', $searchValue);
+		$model->orLike('nik', $searchValue);
+		$model->orLike('email', $searchValue);
+		$model->orLike('status', $searchValue);
+		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
+        $recordsFiltered = $model->countAllResults();
 
         // Prepare the response in the DataTable format
         $response = [

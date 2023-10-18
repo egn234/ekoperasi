@@ -49,51 +49,7 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Nama Pemohon</th>
-                                        <th>Jenis Pengajuan</th>
-                                        <th>Jenis Simpanan</th>
-                                        <th>Nilai</th>
-                                        <th>Status</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($transaksi_list_filter as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_lengkap ?></td>
-                                                <td><?= $a->jenis_pengajuan ?></td>
-                                                <td><?= $a->jenis_deposit ?></td>
-                                                <td>
-                                                    <?php if ($a->cash_in == 0) {?>
-                                                        <span class="badge badge-soft-danger">- <?= number_format($a->cash_out, 2, ',', '.')?>
-                                                    <?php }else{?>
-                                                        <span class="badge badge-soft-success">+ <?= number_format($a->cash_in, 2, ',', '.')?>
-                                                    <?php }?>
-                                                </td>
-                                                <td><?= $a->status ?></td>
-                                                <td><?= $a->date_created ?></td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$a->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> detail
-                                                        </a>
-                                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakMnsk" data-id="<?=$a->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> Tolak
-                                                        </a>
-                                                        <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveMnsk" data-id="<?=$a->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> Setujui
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dt_list_filter" class="table table-sm table-striped nowrap w-100">
                                 </table>
                             </div>
                         </div>
@@ -111,47 +67,8 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Jenis Pengajuan</th>
-                                        <th>Nama Lengkap</th>
-                                        <th>Jenis Simpanan</th>
-                                        <th>Nilai</th>
-                                        <th>Status</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($transaksi_list as $b) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $b->nama_lengkap ?></td>
-                                                <td><?= $b->jenis_pengajuan ?></td>
-                                                <td><?= $b->jenis_deposit ?></td>
-                                                <td>
-                                                    <?php if ($b->cash_in == 0) {?>
-                                                        <span class="badge badge-soft-danger">- <?= number_format($b->cash_out, 2, ',', '.')?>
-                                                    <?php }else{?>
-                                                        <span class="badge badge-soft-success">+ <?= number_format($b->cash_in, 2, ',', '.')?>
-                                                    <?php }?>
-                                                </td>
-                                                <td><?= $b->status ?></td>
-                                                <td><?= $b->date_created ?></td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$b->iddeposit?>">
-                                                            <i class="fa fa-file-alt"></i> detail
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dt_list" class="table table-sm table-striped nowrap w-100">
                                 </table>
-
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -205,8 +122,154 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
 <script type="text/javascript">
-    $('.dtable').DataTable();
+    function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+        number = parseFloat(number).toFixed(decimals);
+        number = number.replace('.', decimalSeparator);
+        var parts = number.split(decimalSeparator);
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+        return parts.join(decimalSeparator);
+    }
+
     $(document).ready(function() {
+        $('#dt_list').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>bendahara/deposit/data_transaksi",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            serverSide: true,
+            searching: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                {
+                    title: "Username",
+                    data: "username"
+                },
+                {
+                    title: "Nama Lengkap",
+                    data: "nama_lengkap"
+                },
+                {
+                    title: "Jenis Pengajuan",
+                    data: "jenis_pengajuan"
+                },
+                {
+                    title: "Jenis Simpanan",
+                    data: "jenis_deposit"
+                },
+                {
+                    title: "Nominal",
+                    "render": function(data, type, row, meta) {
+                        let hasil = row.cash_in - row.cash_out;
+                        let html;
+                        if (hasil < 0) {
+                            html = '<span class="badge badge-soft-danger">- ';
+                        }else{
+                            html = '<span class="badge badge-soft-success">+ '
+                        }
+                        return html + numberFormat(Math.abs(hasil), 2);
+                    }
+                },
+                {
+                    title: "Status",
+                    data: "status"
+                },
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_created"
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let html = '<div class="btn-group d-flex justify-content-center">';
+                        let close = '</a></div>';        
+                        let button_a = '<a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="'+row.iddeposit+'">';
+                        let str_button = '<i class="fa fa-file-alt"></i> detail';
+
+                        return html + button_a + str_button + close;
+                    }
+                }
+            ]
+        });
+
+        $('#dt_list_filter').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>bendahara/deposit/data_transaksi_filter",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            searching: true,
+            serverSide: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                {
+                    title: "Username",
+                    data: "username"
+                },
+                {
+                    title: "Nama Lengkap",
+                    data: "nama_lengkap"
+                },
+                {
+                    title: "Jenis Pengajuan",
+                    data: "jenis_pengajuan"
+                },
+                {
+                    title: "Jenis Simpanan",
+                    data: "jenis_deposit"
+                },
+                {
+                    title: "Nominal",
+                    "render": function(data, type, row, meta) {
+                        let hasil = row.cash_in - row.cash_out;
+                        let html;
+                        if (hasil < 0) {
+                            html = '<span class="badge badge-soft-danger">- ';
+                        }else{
+                            html = '<span class="badge badge-soft-success">+ '
+                        }
+                        return html + numberFormat(Math.abs(hasil), 2);
+                    }
+                },
+                {
+                    title: "Status",
+                    data: "status"
+                },
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_created"
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let head = '<div class="btn-group d-flex justify-content-center">';
+                        let button1 = '<a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="'+row.iddeposit+'"><i class="fa fa-file-alt"></i> detail</a>';
+                        let button2 = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakMnsk" data-id="'+row.iddeposit+'"><i class="fa fa-file-alt"></i> Tolak</a>';
+                        let button3 = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveMnsk" data-id="'+row.iddeposit+'"><i class="fa fa-file-alt"></i> Setujui</a>';
+                        let tail = '</div>';
+
+                        return head + button1 + button2 + button3 + tail;
+                    }
+                }
+            ]
+        });
+
         $('#detailMutasi').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({

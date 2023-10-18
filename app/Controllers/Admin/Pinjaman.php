@@ -27,17 +27,12 @@ class Pinjaman extends Controller
 
 	public function index()
 	{
-		$list_pinjaman = $this->m_pinjaman->getPinjamanByStatus(2);
-		$list_pinjaman2 = $this->m_pinjaman->getAllPinjaman();
-
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Pinjaman']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
-			'duser' => $this->account,
-			'list_pinjaman' => $list_pinjaman,
-			'list_pinjaman2' => $list_pinjaman2
+			'duser' => $this->account
 		];
 		
 		return view('admin/pinjaman/list-pinjaman', $data);
@@ -189,7 +184,6 @@ class Pinjaman extends Controller
 		$data_session = ['notif' => $alert];
 		session()->setFlashdata($data_session);
 		return redirect()->back();
-
 	}
 
 	public function cancel_loan()
@@ -268,6 +262,57 @@ class Pinjaman extends Controller
         $start = $request->getPost('start') ?? 0;
         $length = $request->getPost('length') ?? 10;
         $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'];
+
+        // Fetch data from the model using $start and $length
+		$model->select('a.status_pegawai AS status_pegawai');
+		$model->select('a.username AS username_peminjam');
+		$model->select('a.nama_lengkap AS nama_peminjam');
+		$model->select('a.nik AS nik_peminjam');
+		$model->select('tb_pinjaman.*');
+		$model->select('(SELECT COUNT(idcicilan) FROM tb_cicilan WHERE idpinjaman = tb_pinjaman.idpinjaman) AS sisa_cicilan', false);
+		$model->select('c.nama_lengkap AS nama_admin');
+		$model->select('c.nik AS nik_admin');
+		$model->select('d.nama_lengkap AS nama_bendahara');
+		$model->select('d.nik AS nik_bendahara');
+		$model->groupStart()
+			->like('a.nama_lengkap', $searchValue)
+			->orLike('a.username', $searchValue);
+		$model->groupEnd();
+		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
+		$model->join('tb_user c', 'c.iduser = tb_pinjaman.idadmin', 'left');
+		$model->join('tb_user d', 'd.iduser = tb_pinjaman.idbendahara', 'left');
+        $data = $model->asArray()->findAll($length, $start);
+
+        // Total records (you can also use $model->countAll() for exact total)
+        $recordsTotal = $model->countAllResults();
+
+        // Records after filtering (if any)
+        $model->like('a.nama_lengkap', $searchValue)
+			->orLike('a.username', $searchValue);
+		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
+        $recordsFiltered = $model->countAllResults();
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+
+        return $this->response->setJSON($response);
+	}
+
+	public function data_pinjaman_filter()
+	{
+		$request = service('request');
+        $model = new M_pinjaman();
+
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
         $searchValue = $request->getPost('search')['value'] ?? '';
 
         // Fetch data from the model using $start and $length
@@ -281,16 +326,28 @@ class Pinjaman extends Controller
 		$model->select('c.nik AS nik_admin');
 		$model->select('d.nama_lengkap AS nama_bendahara');
 		$model->select('d.nik AS nik_bendahara');
+		$model->where('tb_pinjaman.status', 2);
+		$model->groupStart()
+			->like('a.nama_lengkap', $searchValue)
+			->orLike('a.username', $searchValue);
+		$model->groupEnd();
 		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
 		$model->join('tb_user c', 'c.iduser = tb_pinjaman.idadmin', 'left');
 		$model->join('tb_user d', 'd.iduser = tb_pinjaman.idbendahara', 'left');
         $data = $model->asArray()->findAll($length, $start);
 
         // Total records (you can also use $model->countAll() for exact total)
+		$model->where('tb_pinjaman.status', 2);
         $recordsTotal = $model->countAllResults();
 
         // Records after filtering (if any)
-        $recordsFiltered = $recordsTotal;
+		$model->where('tb_pinjaman.status', 2);
+		$model->groupStart()
+			->like('a.nama_lengkap', $searchValue)
+			->orLike('a.username', $searchValue);
+		$model->groupEnd();
+		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
+        $recordsFiltered = $model->countAllResults();
 
         // Prepare the response in the DataTable format
         $response = [

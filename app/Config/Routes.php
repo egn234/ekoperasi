@@ -113,6 +113,7 @@ $routes->group('admin', static function ($routes)
         $routes->post('lunasi-pinjaman', 'Admin\Pinjaman::pengajuan_lunas');
 
         $routes->add('data_pinjaman', 'Admin\Pinjaman::data_pinjaman');
+        $routes->add('data_pinjaman_filter', 'Admin\Pinjaman::data_pinjaman_filter');
         $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
         $routes->add('lunasi-pinjaman/(:num)', 'Admin\Pinjaman::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
@@ -156,6 +157,9 @@ $routes->group('bendahara', static function ($routes)
         $routes->post('cancel-mnsk', 'Bendahara\Deposits::cancel_mnsk');
         $routes->post('approve-mnsk', 'Bendahara\Deposits::approve_mnsk');
 
+        $routes->add('data_user', 'Bendahara\Deposits::data_user');
+        $routes->add('data_transaksi', 'Bendahara\Deposits::data_transaksi');
+        $routes->add('data_transaksi_filter', 'Bendahara\Deposits::data_transaksi_filter');
         $routes->add('user/(:num)', 'Bendahara\Deposits::detail_anggota/$1', ['as' => 'b_anggota_detail']);
         $routes->add('confirm/(:num)', 'Bendahara\Deposits::konfirmasi_mutasi/$1', ['as' => 'bendahara_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Bendahara\Deposits::batalkan_mutasi/$1', ['as' => 'bendahara_batalkan_simpanan']);
@@ -173,6 +177,8 @@ $routes->group('bendahara', static function ($routes)
         $routes->post('lunasi-pinjaman', 'Bendahara\Pinjaman::pengajuan_lunas');
         $routes->post('lunasi-pinjaman-tolak', 'Bendahara\Pinjaman::pengajuan_lunas_tolak');
 
+        $routes->add('data_pinjaman', 'Bendahara\Pinjaman::data_pinjaman');
+        $routes->add('data_pinjaman_filter', 'Bendahara\Pinjaman::data_pinjaman_filter');
         $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
         $routes->add('lunasi-pinjaman/(:num)', 'Bendahara\Pinjaman::pelunasan_proc/$1', ['as' => 'bendahara_konfirmasi_lunas']);

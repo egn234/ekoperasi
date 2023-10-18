@@ -49,54 +49,7 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Nama Pemohon</th>
-                                        <th>Tipe</th>
-                                        <th>Nominal</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Lama Angsuran (bulan)</th>
-                                        <th>Form Persetujuan</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($list_pinjaman as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_peminjam ?></td>
-                                                <td><?= $a->tipe_permohonan ?></td>
-                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
-                                                <td><?= $a->angsuran_bulanan ?></td>
-                                                <td>
-                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_bukti?>" target="_blank">
-                                                        <i class="fa fa-download"></i> Form SDM
-                                                    </a><br>
-                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->slip_gaji?>" target="_blank">
-                                                        <i class="fa fa-download"></i> Slip Gaji
-                                                    </a><br>
-                                                    <?php if($a->status_pegawai == 'kontrak'){?>
-                                                        <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_kontrak?>" target="_blank">
-                                                            <i class="fa fa-download"></i> Bukti Kontrak
-                                                        </a>
-                                                    <?php } ?>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> Tolak
-                                                        </a>
-                                                        <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> Setujui
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dt_list_filter" class="table table-sm table-striped nowrap w-100">
                                 </table>
                             </div>
                         </div>
@@ -177,8 +130,6 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
 <script type="text/javascript">
-    $('.dtable').DataTable();
-
     function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
         number = parseFloat(number).toFixed(decimals);
         number = number.replace('.', decimalSeparator);
@@ -206,12 +157,6 @@
                 defaultContent: "-",
             }],
             columns: [
-                { 
-                    title: "No",
-                    "render": function(data, type, row, meta) {
-                        return (meta.row + 1);
-                    }
-                },
                 {
                     title: "Username",
                     data: "username_peminjam"
@@ -266,6 +211,78 @@
                         }
 
                         return head + btn_a + btn_b + tail;
+                    }
+                }
+            ]
+        });
+
+        $('#dt_list_filter').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>admin/pinjaman/data_pinjaman_filter",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            serverSide: true,
+            searching: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                {
+                    title: "Username",
+                    data: "username_peminjam"
+                },
+                {
+                    title: "Nama Lengkap",
+                    data: "nama_peminjam"
+                },
+                {
+                    title: "Tipe",
+                    data: "tipe_permohonan"
+                },
+                {
+                    title: "Nominal",
+                    render: function(data, type, row, meta) {
+                        return 'Rp '+numberFormat(row.nominal, 2);
+                    }
+                },
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_created"
+                },
+                {
+                    title: "Lama Angsuran (bulan)",
+                    data: "angsuran_bulanan"
+                },
+                {
+                    title: "Form Persetujuan",
+                    render: function(data, type, row, full) {
+                        let link_a = '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.form_bukti+'" target="_blank"><i class="fa fa-download"></i> Form SDM</a><br>';
+                        let link_b = '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.slip_gaji+'" target="_blank"><i class="fa fa-download"></i> Slip Gaji</a><br>';
+                        let link_c = '';
+
+                        if (row.status_pegawai === 'kontrak') {
+                            link_c = '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.form_kontrak+'" target="_blank"><i class="fa fa-download"></i> Bukti Kontrak</a>';
+                        }
+                                                        
+                        return link_a + link_b + link_c;
+                    }
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let head = '<div class="btn-group d-flex justify-content-center">'
+                        let tolak_btn = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Tolak</a>';
+                        let terima_btn = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Setujui</a>';
+                        let tail = '</div>';
+
+                        return head + tolak_btn + terima_btn + tail;
                     }
                 }
             ]
