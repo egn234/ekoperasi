@@ -153,7 +153,7 @@ class Deposits extends Controller
 			$cek_status_penarikan = $this->m_deposit->select('COUNT(iddeposit) AS hitung')
 				->where('status LIKE "diproses%"')
 				->where('jenis_pengajuan', 'penarikan')
-				->where('idanggota', $this->account->iduser);
+				->where('idanggota', $this->account->iduser)
 				->where('jenis_deposit LIKE "manasuka%"')
 				->get()->getResult()[0]
 				->hitung;
