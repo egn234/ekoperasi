@@ -106,17 +106,23 @@ $routes->group('admin', static function ($routes)
     $routes->group('pinjaman', static function ($routes)
     {
         $routes->get('list', 'Admin\Pinjaman::index');
+        $routes->get('list_pelunasan', 'Admin\Pinjaman::list_pelunasan');
 
         $routes->post('cancel-pinjaman', 'Admin\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Admin\Pinjaman::approve_loan');
         $routes->post('detail-pinjaman', 'Admin\Pinjaman::detail_pinjaman');
-        $routes->post('lunasi-pinjaman', 'Admin\Pinjaman::pengajuan_lunas');
+        $routes->post('approve-pelunasan', 'Admin\Pinjaman::pengajuan_lunas');
+        $routes->post('cancel-pelunasan', 'Admin\Pinjaman::tolak_pengajuan_lunas');
+        $routes->post('lunasi-partial', 'Admin\Pinjaman::pelunasan_partial');
 
         $routes->add('data_pinjaman', 'Admin\Pinjaman::data_pinjaman');
+        $routes->add('data_pelunasan', 'Admin\Pinjaman::data_pelunasan');
         $routes->add('data_pinjaman_filter', 'Admin\Pinjaman::data_pinjaman_filter');
         $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
         $routes->add('lunasi-pinjaman/(:num)', 'Admin\Pinjaman::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
+        $routes->add('tolak-lunasi-pinjaman/(:num)', 'Admin\Pinjaman::tolak_pelunasan_proc/$1', ['as' => 'admin_tolak_lunas']);
+        $routes->add('lunasi-partial/(:num)', 'Admin\Pinjaman::pelunasan_partial_proc/$1', ['as' => 'admin_lunasi_partial']);
     });
 
     //GROUP LAPORAN
@@ -174,15 +180,15 @@ $routes->group('bendahara', static function ($routes)
         $routes->post('cancel-pinjaman', 'Bendahara\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Bendahara\Pinjaman::approve_loan');
         $routes->post('detail-pinjaman', 'Bendahara\Pinjaman::detail_pinjaman');
-        $routes->post('lunasi-pinjaman', 'Bendahara\Pinjaman::pengajuan_lunas');
-        $routes->post('lunasi-pinjaman-tolak', 'Bendahara\Pinjaman::pengajuan_lunas_tolak');
+        $routes->post('approve-pelunasan', 'Bendahara\Pinjaman::pengajuan_lunas');
+        $routes->post('cancel-pelunasan', 'Bendahara\Pinjaman::tolak_pengajuan_lunas');
 
         $routes->add('data_pinjaman', 'Bendahara\Pinjaman::data_pinjaman');
-        $routes->add('data_pinjaman_filter', 'Bendahara\Pinjaman::data_pinjaman_filter');
+        $routes->add('data_pelunasan', 'Bendahara\Pinjaman::data_pelunasan');
         $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
         $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
         $routes->add('lunasi-pinjaman/(:num)', 'Bendahara\Pinjaman::pelunasan_proc/$1', ['as' => 'bendahara_konfirmasi_lunas']);
-        $routes->add('lunasi-pinjaman2/(:num)', 'Bendahara\Pinjaman::pelunasan_proc_tolak/$1', ['as' => 'bendahara_tolak_lunas']);
+        $routes->add('tolak-lunasi-pinjaman/(:num)', 'Bendahara\Pinjaman::tolak_pelunasan_proc/$1', ['as' => 'bendahara_tolak_lunas']);
     });
 
     //GROUP LAPORAN
@@ -270,9 +276,12 @@ $routes->group('anggota', static function ($routes)
 
         $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
         $routes->post('up_form', 'Anggota\Pinjaman::up_form');
+        $routes->post('lunasi_pinjaman', 'Anggota\Pinjaman::lunasi_pinjaman');
         $routes->post('top-up', 'Anggota\Pinjaman::top_up');
 
+        $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
         $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
+        $routes->add('lunasi_proc/(:num)', 'Anggota\Pinjaman::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
         $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);
         $routes->add('upload_form_persetujuan/(:num)', 'Anggota\Pinjaman::upload_form/$1', ['as' => 'an_de_upfrmprstjn']);
         $routes->add('top-up-req/(:num)', 'Anggota\Pinjaman::top_up_proc/$1', ['as' => 'anggota_pinjaman_topup']);

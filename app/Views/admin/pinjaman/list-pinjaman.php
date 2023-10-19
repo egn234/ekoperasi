@@ -89,7 +89,7 @@
 <div id="tolakPinjaman" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-tolakPinjaman"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -97,7 +97,7 @@
 <div id="approvePinjaman" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-approvePinjaman"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -105,15 +105,15 @@
 <div id="detailPinjaman" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-detailPinjaman"></span>
         </div>
     </div>
 </div><!-- /.modal -->
 
-<div id="lunasiPinjaman" class="modal fade" tabindex="-1">
+<div id="lunasiPartial" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-lunasiPartial"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -189,7 +189,9 @@
                         }else if(row.status == 5){
                             otuput = 'Lunas';
                         }else if(row.status == 6){
-                            otuput = 'Konfirmasi Pelunasan';
+                            otuput = 'Pelunasan diproses admin';
+                        }else if(row.status == 7){
+                            otuput = 'Pelunasan diproses bendahara';
                         }
 
                         return otuput;
@@ -206,8 +208,8 @@
                         let btn_a = '<a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Detail</a>';
                         let btn_b = '';
                         let tail = '</div>';
-                        if (row.status == 4 && row.angsuran_bulanan - row.sisa_cicilan < 3 && row.angsuran_bulanan - row.sisa_cicilan != 0){
-                            btn_b = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Lunasi Pinjaman</a>';
+                        if (row.status == 4){
+                            btn_b = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPartial" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Lunasi Sebagian</a>';
                         }
 
                         return head + btn_a + btn_b + tail;
@@ -295,7 +297,7 @@
                 url: '<?= base_url() ?>/admin/pinjaman/approve-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-approvePinjaman').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
@@ -306,7 +308,7 @@
                 url: '<?= base_url() ?>/admin/pinjaman/cancel-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-tolakPinjaman').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
@@ -317,18 +319,18 @@
                 url: '<?= base_url() ?>/admin/pinjaman/detail-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-detailPinjaman').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
-        $('#lunasiPinjaman').on('show.bs.modal', function(e) {
+        $('#lunasiPartial').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({
                 type: 'POST',
-                url: '<?= base_url() ?>/admin/pinjaman/lunasi-pinjaman',
+                url: '<?= base_url() ?>/admin/pinjaman/lunasi-partial',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-lunasiPartial').html(data); //menampilkan data ke dalam modal
                 }
             });
         });

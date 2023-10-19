@@ -4,11 +4,11 @@
 </div>
 <div class="modal-body">
     <div class="mb-3">
-        Approve pengajuan pelunasan untuk <?= $user[0]['username'] ?>?<br>
+        Tolak pengajuan pelunasan untuk <?= $user[0]['username'] ?>?<br>
         <i class="text-danger">*PASTIKAN ANDA MENGECEK KEMBALI KETERSEDIAAN APPROVAL DARI PEMINJAM</i>
     </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-    <a href="<?= url_to('bendahara_konfirmasi_lunas', $idpinjaman)?>" class="btn btn-success">Setujui</a>
+    <a href="<?= url_to('bendahara_tolak_lunas', $idpinjaman)?>" class="btn btn-danger">Tolak</a>
 </div>

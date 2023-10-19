@@ -59,61 +59,7 @@
                                 <?=session()->getFlashdata('notif_bulanan');?>
                                 <?=session()->getFlashdata('notif_gaji');?>
                                 <?=session()->getFlashdata('notif_kontrak');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Tipe</th>
-                                        <th>Nominal</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Status Pinjaman</th>
-                                        <th>Lama Angsuran (bulan)</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($list_pinjaman as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->tipe_permohonan ?></td>
-                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
-                                                <td>
-                                                    <?php if($a->status == 0){?>
-                                                        Ditolak
-                                                    <?php }elseif($a->status == 1){?>
-                                                        Upload Kelengkapan Form
-                                                    <?php }elseif($a->status == 2){?>
-                                                        Menunggu Verifikasi
-                                                    <?php }elseif($a->status == 3){?>
-                                                        Menunggu Approval Sekretariat
-                                                    <?php }elseif($a->status == 4){?>
-                                                        Sedang Berlangsung
-                                                    <?php }elseif($a->status == 5){?>
-                                                        Lunas
-                                                    <?php }?>
-                                                </td>
-                                                <td><?= $a->angsuran_bulanan ?></td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <?php if ($a->status == 4 || $a->status == 5) {?>
-                                                            <a href="<?= url_to('anggota_pin_detail', $a->idpinjaman) ?>" class="btn btn-info btn-sm">
-                                                                <i class="fa fa-file-alt"></i> Detail
-                                                            </a>
-                                                        <?php } ?>
-                                                        <?php if ($a->status == 1) {?>
-                                                            <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$a->idpinjaman?>">
-                                                                <i class="fa fa-upload"></i> Upload form
-                                                            </a>
-                                                            <a href="<?= url_to('anggota_print_form', $a->idpinjaman) ?>" class="btn btn-info btn-sm" target="_blank">
-                                                                <i class="fa fa-file-alt"></i> Print form
-                                                            </a>
-                                                        <?php } ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dataTable" class="table table-sm table-striped nowrap w-100">
                                 </table>
                             </div>
                         </div>
@@ -134,7 +80,15 @@
 <div id="uploadBT" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-uploadBT"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="lunasiPinjaman" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <span id="fetched-data-lunasiPinjaman"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -174,7 +128,7 @@
                     <div class="row mb-3">
                         <label class="form-label" for="angsuran_bulanan">Lama Cicilan Pelunasan</label>
                         <div class="col-6">
-                            <input type="number" class="form-control" id="angsuran_bulanan" name="angsuran_bulanan" value="<?=session()->getFlashdata('angsuran_bulanan')?>" min="1" max="12" required>
+                            <input type="number" class="form-control" id="angsuran_bulanan" name="angsuran_bulanan" value="<?=session()->getFlashdata('angsuran_bulanan')?>" min="1" max="24" required>
                             <div class="invalid-feedback">
                                 Harus Diisi
                             </div>
@@ -226,10 +180,106 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
 <script type="text/javascript">
-    $('.dtable').DataTable({
-        "scrollX": true
-    });
+    function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+        number = parseFloat(number).toFixed(decimals);
+        number = number.replace('.', decimalSeparator);
+        var parts = number.split(decimalSeparator);
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+        return parts.join(decimalSeparator);
+    }
+
     $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>anggota/pinjaman/data_pinjaman",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            serverSide: true,
+            searching: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_created"
+                },
+                {
+                    title: "Tipe",
+                    data: "tipe_permohonan"
+                },
+                {
+                    title: "Nominal",
+                    render: function(data, type, row, meta) {
+                        return 'Rp '+numberFormat(row.nominal, 2);
+                    }
+                },
+                {
+                    title: "Status",
+                    "render": function(data, type, row, meta) {
+                        let otuput;
+                        
+                        if(row.status == 0){
+                            otuput = 'Ditolak';
+                        }else if(row.status == 1){
+                            otuput = 'Upload Kelengkapan Form';
+                        }else if(row.status == 2){
+                            otuput = 'Menunggu Verifikasi';
+                        }else if(row.status == 3){
+                            otuput = 'Menunggu Approval Sekretariat';
+                        }else if(row.status == 4){
+                            otuput = 'Sedang Berlangsung';
+                        }else if(row.status == 5){
+                            otuput = 'Lunas';
+                        }else if(row.status == 6){
+                            otuput = 'Pelunasan diproses admin';
+                        }else if(row.status == 7){
+                            otuput = 'Pelunasan diproses bendahara';
+                        }
+
+                        return otuput;
+                    }
+                },
+                {
+                    title: "Lama Angsuran (bulan)",
+                    data: "angsuran_bulanan"
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let head = '<div class="btn-group d-flex justify-content-center">';
+                        let button_a = '';
+                        let button_b = '';
+                        let button_c = '';
+                        let button_d = '';
+                        let tail = '</div>';
+
+                        if(row.status >= 4){
+                            button_a = '<a href="<?= base_url() ?>anggota/pinjaman/detail/'+row.idpinjaman+'" class="btn btn-info btn-sm"><i class="fa fa-file-alt"></i> Detail</a>';
+                        }
+
+                        if(row.status == 1){
+                            button_b = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="'+row.idpinjaman+'"><i class="fa fa-upload"></i> Upload form</a>';
+                            button_c = '<a href="<?= base_url()?>anggota/pinjaman/generate-form/'+row.idpinjaman+'" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-file-alt"></i> Print form</a>';
+                        }
+
+                        if(row.status == 4){
+                            button_d = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="'+row.idpinjaman+'"> Lunasi Pinjaman</a>';
+                        }
+
+                        return head + button_a + button_b + button_c + button_d + tail;
+                    }
+                }
+            ]
+        });
+
         $('#uploadBT').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({
@@ -237,11 +287,24 @@
                 url: '<?= base_url() ?>/anggota/pinjaman/up_form',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-uploadBT').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+
+        $('#lunasiPinjaman').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/anggota/pinjaman/lunasi_pinjaman',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('#fetched-data-lunasiPinjaman').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
     });
+
     document.addEventListener("DOMContentLoaded", function () {
         var currencyMask = IMask(document.getElementById('nominal'), {
             mask: 'num',

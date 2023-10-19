@@ -50,54 +50,7 @@
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
                                 <?=session()->getFlashdata('notif_tf');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Nama Pemohon</th>
-                                        <th>Tipe</th>
-                                        <th>Nominal</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Lama Angsuran (bulan)</th>
-                                        <th>Form Persetujuan</th>
-                                        <th>Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($list_pinjaman as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_peminjam ?></td>
-                                                <td><?= $a->tipe_permohonan ?></td>
-                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
-                                                <td><?= $a->angsuran_bulanan ?></td>
-                                                <td>
-                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_bukti?>" target="_blank">
-                                                        <i class="fa fa-download"></i> Form SDM
-                                                    </a><br>
-                                                    <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->slip_gaji?>" target="_blank">
-                                                        <i class="fa fa-download"></i> Slip Gaji
-                                                    </a><br>
-                                                    <?php if($a->status_pegawai == 'kontrak'){?>
-                                                        <a href="<?=base_url()?>/uploads/user/<?=$a->username_peminjam?>/pinjaman/<?=$a->form_kontrak?>" target="_blank">
-                                                            <i class="fa fa-download"></i> Bukti Kontrak
-                                                        </a>
-                                                    <?php } ?>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group d-flex justify-content-center">
-                                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> Tolak
-                                                        </a>
-                                                        <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> Setujui
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dt_list_filter" class="table table-sm table-striped nowrap w-100">
                                 </table>
                             </div>
                         </div>
@@ -115,61 +68,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <th width="5%">No</th>
-                                        <th>Peminjam</th>
-                                        <th>Nominal</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Status Pinjaman</th>
-                                        <th width="20%">Aksi</th>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($list_pinjaman2 as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_peminjam ?></td>
-                                                <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
-                                                <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
-                                                <td>
-                                                    <?php if($a->status == 0){?>
-                                                        Ditolak
-                                                    <?php }elseif($a->status == 1){?>
-                                                        Upload Kelengkapan Form
-                                                    <?php }elseif($a->status == 2){?>
-                                                        Menunggu Verifikasi
-                                                    <?php }elseif($a->status == 3){?>
-                                                        Menunggu Approval Sekretariat
-                                                    <?php }elseif($a->status == 4){?>
-                                                        Sedang Berlangsung
-                                                    <?php }elseif($a->status == 5){?>
-                                                        Lunas
-                                                    <?php }elseif($a->status == 6){?>
-                                                        Konfirmasi Pelunasan
-                                                    <?php }?>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                            <i class="fa fa-file-alt"></i> Detail
-                                                        </a>
-                                                        <?php if($a->status == 6){?>
-                                                            <div class="btn-group ms-2">
-                                                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="<?=$a->idpinjaman?>">
-                                                                    <i class="fa fa-file-alt"></i> Approve
-                                                                </a>
-                                                                <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjamanTolak" data-id="<?=$a->idpinjaman?>">
-                                                                    <i class="fa fa-file-alt"></i> Tolak
-                                                                </a>
-                                                            </div>
-                                                        <?php } ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dt_list" class="table table-sm table-striped nowrap w-100">
                                 </table>
                             </div>
                         </div>
@@ -191,7 +90,7 @@
 <div id="tolakPinjaman" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <span class="tolak-data"></span>
+            <span id="tolak-data"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -199,7 +98,7 @@
 <div id="approvePinjaman" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <span class="terima-data"></span>
+            <span id="terima-data"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -207,23 +106,23 @@
 <div id="detailPinjaman" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-detailPinjaman"></span>
         </div>
     </div>
 </div><!-- /.modal -->
 
-<div id="lunasiPinjaman" class="modal fade" tabindex="-1">
+<div id="tolakPelunasan" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-tolakPelunasan"></span>
         </div>
     </div>
 </div><!-- /.modal -->
 
-<div id="lunasiPinjamanTolak" class="modal fade" tabindex="-1">
+<div id="approvePelunasan" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <span class="fetched-data"></span>
+            <span id="fetched-data-approvePelunasan"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -240,8 +139,158 @@
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
 <script type="text/javascript">
-    $('.dtable').DataTable();
+    function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+        number = parseFloat(number).toFixed(decimals);
+        number = number.replace('.', decimalSeparator);
+        var parts = number.split(decimalSeparator);
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+        return parts.join(decimalSeparator);
+    }
+    
     $(document).ready(function() {
+        $('#dt_list_filter').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>bendahara/pinjaman/data_pinjaman",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            serverSide: true,
+            searching: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                {
+                    title: "Username",
+                    data: "username_peminjam"
+                },
+                {
+                    title: "Nama Lengkap",
+                    data: "nama_peminjam"
+                },
+                {
+                    title: "Tipe",
+                    data: "tipe_permohonan"
+                },
+                {
+                    title: "Nominal",
+                    render: function(data, type, row, meta) {
+                        return 'Rp '+numberFormat(row.nominal, 2);
+                    }
+                },
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_created"
+                },
+                {
+                    title: "Lama Angsuran (bulan)",
+                    data: "angsuran_bulanan"
+                },
+                {
+                    title: "Form Persetujuan",
+                    render: function(data, type, row, full) {
+                        let link_a = '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.form_bukti+'" target="_blank"><i class="fa fa-download"></i> Form SDM</a><br>';
+                        let link_b = '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.slip_gaji+'" target="_blank"><i class="fa fa-download"></i> Slip Gaji</a><br>';
+                        let link_c = '';
+
+                        if (row.status_pegawai === 'kontrak') {
+                            link_c = '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.form_kontrak+'" target="_blank"><i class="fa fa-download"></i> Bukti Kontrak</a>';
+                        }
+                                                        
+                        return link_a + link_b + link_c;
+                    }
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let head = '<div class="btn-group d-flex justify-content-center">'
+                        let tolak_btn = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Tolak</a>';
+                        let terima_btn = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePinjaman" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Setujui</a>';
+                        let tail = '</div>';
+
+                        return head + tolak_btn + terima_btn + tail;
+                    }
+                }
+            ]
+        });
+
+        $('#dt_list').DataTable({
+            ajax: {
+                url: "<?= base_url() ?>bendahara/pinjaman/data_pelunasan",
+                type: "POST",
+                data: function (d) {
+                    d.length = d.length || 10; // Use the default if not provided
+                }
+            },
+            autoWidth: false,
+            scrollX: true,
+            serverSide: true,
+            searching: true,
+            columnDefs: [{
+                orderable: false,
+                targets: "_all",
+                defaultContent: "-",
+            }],
+            columns: [
+                {
+                    title: "Username",
+                    data: "username"
+                },
+                {
+                    title: "Nama Lengkap",
+                    data: "nama_lengkap"
+                },
+                {
+                    title: "Nominal",
+                    "render": function(data, type, row, meta) {
+                        return 'Rp '+numberFormat(row.nominal, 2);
+                    }
+                },
+                {
+                    title: "Sisa bayar",
+                    "render": function(data, type, row, meta) {
+                        return 'Rp '+numberFormat(row.sisa_pinjaman, 2);
+                    }
+                },
+                {
+                    title: "Lama cicilan (bln)",
+                    data: "angsuran_bulanan"
+                },
+                {
+                    title: "Sisa cicilan (bln)",
+                    data: "sisa_cicilan"
+                },
+                {
+                    title: "Tanggal Pengajuan",
+                    data: "date_updated"
+                },
+                {
+                    title: "File",
+                    "render": function(data, type, row, meta) {
+                        let html_link = '<a href="<?=base_url()?>/uploads/user/'+row.username+'/pinjaman/'+row.bukti_tf+'" target="_blank"><i class="fa fa-download"></i> Bukti Bayar</a><br>';
+                        return html_link;
+                    }
+                },
+                {
+                    title: "Aksi",
+                    render: function(data, type, row, full) {
+                        let head = '<div class="btn-group d-flex justify-content-center">';
+                        let btn_a = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPelunasan" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Tolak</a>';
+                        let btn_b = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePelunasan" data-id="'+row.idpinjaman+'"><i class="fa fa-file-alt"></i> Approve</a>';
+                        let tail = '</div>';
+
+                        return head + btn_a + btn_b + tail;
+                    }
+                }
+            ]
+        });
+
         $('#tolakPinjaman').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({
@@ -274,26 +323,26 @@
                     $('.fetched-data').html(data); //menampilkan data ke dalam modal
                 }
             });
-        });
-        $('#lunasiPinjaman').on('show.bs.modal', function(e) {
+        });        
+        $('#approvePelunasan').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({
                 type: 'POST',
-                url: '<?= base_url() ?>/bendahara/pinjaman/lunasi-pinjaman',
+                url: '<?= base_url() ?>/bendahara/pinjaman/approve-pelunasan',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-approvePelunasan').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
-        $('#lunasiPinjamanTolak').on('show.bs.modal', function(e) {
+        $('#tolakPelunasan').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');
             $.ajax({
                 type: 'POST',
-                url: '<?= base_url() ?>/bendahara/pinjaman/lunasi-pinjaman-tolak',
+                url: '<?= base_url() ?>/bendahara/pinjaman/cancel-pelunasan',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-tolakPelunasan').html(data); //menampilkan data ke dalam modal
                 }
             });
         });

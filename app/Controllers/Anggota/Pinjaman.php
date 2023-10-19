@@ -473,7 +473,63 @@ class Pinjaman extends Controller
 		}
 		
 		session()->setFlashdata($data_session);
-		return redirect()->back();		
+		return redirect()->back();
+	}
+
+	public function lunasi_proc($idpinjaman)
+	{
+		$file_1 = $this->request->getFile('bukti_bayar');
+
+		if ($file_1->isValid()) {	
+			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
+			
+			if ($cek_bukti) {
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti);
+			}
+
+			$newName = $file_1->getRandomName();
+			$file_1->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
+			
+			$bukti_tf = $file_1->getName();
+
+			$dataset = [
+				'bukti_tf' => $bukti_tf,
+				'status' => 6
+			];
+
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
+
+			$notification_data = [
+				'anggota_id' => $this->account->iduser,
+				'pinjaman_id' => $idpinjaman,
+				'message' => 'Pengajuan pelunasan pinjaman dari anggota '. $this->account->nama_lengkap,
+				'timestamp' => date('Y-m-d H:i:s'),
+				'group_type' => 1
+			];
+
+			$this->m_notification->insert($notification_data);
+
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Berhasil mengajukan pelunasan pinjaman',
+				 	'status' => 'success'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->back();
+		}else{
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Form Persetujuan gagal diunggah: format file tidak sesuai',
+				 	'status' => 'danger'
+				]
+			);
+			$confirmation = false;
+		}
 	}
 
 	public function up_form()
@@ -486,6 +542,19 @@ class Pinjaman extends Controller
 				'duser' => $this->account
 			];
 			echo view('anggota/pinjaman/part-pinj-mod-upload', $data);
+		}
+	}
+
+	public function lunasi_pinjaman()
+	{
+		if ($_POST['rowid']) {
+			$id = $_POST['rowid'];
+			$user = $this->m_pinjaman->getPinjamanById($id)[0];
+			$data = [
+				'a' => $user,
+				'duser' => $this->account
+			];
+			echo view('anggota/pinjaman/part-pinj-mod-lunasin', $data);
 		}
 	}
 
@@ -507,5 +576,39 @@ class Pinjaman extends Controller
 			];
 			echo view('anggota/pinjaman/part-cicil-mod-topup', $data);
 		}
+	}
+
+	public function data_pinjaman()
+	{
+		$request = service('request');
+        $model = new M_pinjaman();
+
+        // Parameters from the DataTable
+        $start = $request->getPost('start') ?? 0;
+        $length = $request->getPost('length') ?? 10;
+        $draw = $request->getPost('draw');
+        $searchValue = $request->getPost('search')['value'];
+
+        // Fetch data from the model using $start and $length
+		$model->where('idanggota', $this->account->iduser);
+        $data = $model->asArray()->findAll($length, $start);
+
+        // Total records (you can also use $model->countAll() for exact total)
+		$model->where('idanggota', $this->account->iduser);
+        $recordsTotal = $model->countAllResults();
+
+        // Records after filtering (if any)
+		$model->where('idanggota', $this->account->iduser);
+        $recordsFiltered = $model->countAllResults();
+
+        // Prepare the response in the DataTable format
+        $response = [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ];
+
+        return $this->response->setJSON($response);
 	}
 }
