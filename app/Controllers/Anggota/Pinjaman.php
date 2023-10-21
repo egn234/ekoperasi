@@ -563,6 +563,7 @@ class Pinjaman extends Controller
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
 			$user = $this->m_pinjaman->getPinjamanById($id)[0];
+			$penalty = $this->m_param->getParamById(6)[0]->nilai;
 			$sum_cicilan = $this->m_cicilan->select("SUM(nominal) as saldo")
 				->where('idpinjaman', $id)
 				->get()
@@ -572,7 +573,8 @@ class Pinjaman extends Controller
 			$data = [
 				'a' => $user,
 				'sisa' => $sisa_pinjaman,
-				'duser' => $this->account
+				'duser' => $this->account,
+				'penalty' => $penalty
 			];
 			echo view('anggota/pinjaman/part-cicil-mod-topup', $data);
 		}

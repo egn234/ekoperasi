@@ -77,7 +77,8 @@
                         <hr>
                         <i class="text-danger">
                             *Pinjaman yang sedang aktif akan otomatis lunas, dan sisa saldo pinjaman akan dipindahkan ke pengajuan yang baru<br>
-                            *Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at
+                            *Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at<br>
+                            <b>*Pelunasan dan top up di bawah 6x angsuran akan dikenakan penalty sebesar (<?=$penalty?>%) dari sisa pinjaman</b>
                         </i>
                     </div>
                 </form>
