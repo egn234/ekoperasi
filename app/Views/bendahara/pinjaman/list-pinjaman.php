@@ -298,7 +298,7 @@
                 url: '<?= base_url() ?>/bendahara/pinjaman/cancel-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.tolak-data').html(data); //menampilkan data ke dalam modal
+                    $('#tolak-data').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
@@ -309,7 +309,7 @@
                 url: '<?= base_url() ?>/bendahara/pinjaman/approve-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.terima-data').html(data); //menampilkan data ke dalam modal
+                    $('#terima-data').html(data); //menampilkan data ke dalam modal
                 }
             });
         });
@@ -320,7 +320,7 @@
                 url: '<?= base_url() ?>/bendahara/pinjaman/detail-pinjaman',
                 data: 'rowid=' + rowid,
                 success: function(data) {
-                    $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                    $('#fetched-data-detailPinjaman').html(data); //menampilkan data ke dalam modal
                 }
             });
         });        
