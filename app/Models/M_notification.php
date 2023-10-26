@@ -19,6 +19,7 @@ class m_notification extends Model
         'anggota_id',
         'parameter_id',
         'pinjaman_id',
+        'closebook',
         'message',
         'timestamp',
         'group_type',

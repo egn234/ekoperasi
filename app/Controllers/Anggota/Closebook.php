@@ -6,6 +6,7 @@ use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_param;
+use App\Models\M_notification;
 
 use App\Controllers\Anggota\Notifications;
 
@@ -18,6 +19,7 @@ class Closebook extends Controller
 		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
+		$this->m_notification = new M_notification();
 		$this->notification = new Notifications();
 	}
 
@@ -49,6 +51,16 @@ class Closebook extends Controller
 		];
 
 		$this->m_user->updateUser($this->account->iduser, $dataset);
+
+		$notification_data = [
+			'anggota_id' => $this->account->iduser,
+			'closebook' => '1',
+			'message' => 'Pengajuan tutup buku dari anggota '. $this->account->nama_lengkap,
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 1
+		];
+
+		$this->m_notification->insert($notification_data);
 		
 		$alert = view(
 			'partials/notification-alert', 

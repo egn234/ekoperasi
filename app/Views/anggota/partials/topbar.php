@@ -69,6 +69,25 @@
                                     </div>
                                 </a>
                             <?php endif ?>
+
+                            <?php if ($a->closebook): ?>
+                                <a href="<?= url_to('anggota/pinjaman/list') ?>" data-id="<?php echo $a->id; ?>" class="update-notification text-reset notification-item">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0 avatar-sm me-3">
+                                            <span class="avatar-title bg-success rounded-circle font-size-16">
+                                                <i class="bx bx-comment-error"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1"><?= $a->message ?></h6>
+                                            <div class="font-size-13 text-muted">
+                                                <p class="mb-1">Pengajuan Tutup Buku</p>
+                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i> <span><?= $a->timestamp ?></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php endif ?>
                             
                             <?php if ($a->deposit_id): ?>
                                 <a href="<?= url_to('anggota/deposit/list') ?>" data-id="<?php echo $a->id; ?>" class="update-notification text-reset notification-item">
@@ -103,6 +122,25 @@
                                             <h6 class="mb-1"><?= $a->message ?></h6>
                                             <div class="font-size-13 text-muted">
                                                 <p class="mb-1">Pinjaman </p> 
+                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i> <span><?= $a->timestamp ?></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php endif ?>
+
+                            <?php if ($a->closebook): ?>
+                                <a href="<?= url_to('anggota/pinjaman/list') ?>" data-id="<?php echo $a->id; ?>" class="update-notification text-reset notification-item">
+                                    <div class="d-flex bg-light">
+                                        <div class="flex-shrink-0 avatar-sm me-3">
+                                            <span class="avatar-title bg-success rounded-circle font-size-16">
+                                                <i class="bx bx-comment-error"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1"><?= $a->message ?></h6>
+                                            <div class="font-size-13 text-muted">
+                                                <p class="mb-1">Pengajuan Tutup Buku </p> 
                                                 <p class="mb-0"><i class="mdi mdi-clock-outline"></i> <span><?= $a->timestamp ?></span></p>
                                             </div>
                                         </div>
