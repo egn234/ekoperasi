@@ -474,15 +474,18 @@ class Pinjaman extends Controller
 		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
 		$model->join('tb_user c', 'c.iduser = tb_pinjaman.idadmin', 'left');
 		$model->join('tb_user d', 'd.iduser = tb_pinjaman.idbendahara', 'left');
+		$model->orderBy('tb_pinjaman.date_updated', 'DESC');
         $data = $model->asArray()->findAll($length, $start);
 
         // Total records (you can also use $model->countAll() for exact total)
+		$model->orderBy('tb_pinjaman.date_updated', 'DESC');
         $recordsTotal = $model->countAllResults();
 
         // Records after filtering (if any)
         $model->like('a.nama_lengkap', $searchValue)
 			->orLike('a.username', $searchValue);
 		$model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
+		$model->orderBy('tb_pinjaman.date_updated', 'DESC');
         $recordsFiltered = $model->countAllResults();
 
         // Prepare the response in the DataTable format

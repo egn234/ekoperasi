@@ -147,13 +147,13 @@
                 {
                     title: "Status Akun",
                     render: function(data, type, row) {
-                        let flag = row.user_flag
+                        let flag = row.flag
                         let statakun
 
-                        if (flag === "1") {
-                            statakun = "Aktif"
+                        if (flag == "1") {
+                            statakun = "<span class='badge bg-success'>Aktif</span>"
                         }else{
-                            statakun = "Nonaktif"
+                            statakun = "<span class='badge bg-danger'>Nonaktif</span>"
                         }
 
                         return statakun;

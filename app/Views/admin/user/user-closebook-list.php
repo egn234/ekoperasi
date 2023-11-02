@@ -63,7 +63,7 @@
                                                 <td><?= $a->instansi ?></td>
                                                 <td><?= $a->email ?></td>
                                                 <td><?= $a->nomor_telepon ?></td>
-                                                <td><?=($a->user_flag == 1)?'Aktif':'Tidak Aktif'?></td>
+                                                <td><?=($a->user_flag == 1)?"<span class='badge bg-success'>Aktif</span>":"<span class='badge bg-danger'>Nonaktif</span>"?></td>
                                                 <td><?= $a->group_type ?></td>
                                                 <td align="center">
                                                     <?php if ($a->iduser == $duser->iduser) { ?>
