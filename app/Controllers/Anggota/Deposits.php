@@ -30,56 +30,14 @@ class Deposits extends Controller
 	{
 		$m_param_manasuka_log = new M_param_manasuka_log();
 
+		$depo_list = $this->m_deposit->getDepositByUserId($this->account->iduser);
+
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
-		$date_now = date('d');
-
-		if($date_now < 25){
-			$depo_list = $this->m_deposit->where('idanggota', $this->account->iduser)
-				->where("DATE_FORMAT(date_updated, '%Y-%m') <", date('Y-m'))
-			    ->orderBy('date_created', 'DESC')
-			    ->get()
-			    ->getResult();
-
-			$depo_list2 = $this->m_deposit_pag->where('idanggota', $this->account->iduser)
-				->where("DATE_FORMAT(date_updated, '%Y-%m') <", date('Y-m'))
-				->orderBy('date_created', 'DESC')
-				->paginate(10, 'grup1');
-
-			$total_saldo_wajib = $this->m_deposit->select('sum(cash_in) - sum(cash_out) as saldo')
-				->where('idanggota', $this->account->iduser)
-				->where('status', 'diterima')
-				->where("DATE_FORMAT(date_updated, '%Y-%m') <", date('Y-m'))
-				->where('jenis_deposit', 'wajib')
-				->get()->getResult()[0]
-				->saldo;
-
-			$total_saldo_pokok = $this->m_deposit->select('sum(cash_in) - sum(cash_out) as saldo')
-				->where('idanggota', $this->account->iduser)
-				->where('status', 'diterima')
-				->where("DATE_FORMAT(date_updated, '%Y-%m') <", date('Y-m'))
-				->where('jenis_deposit', 'pokok')
-				->get()->getResult()[0]
-				->saldo;
-
-			$total_saldo_manasuka = $this->m_deposit->select('sum(cash_in) - sum(cash_out) as saldo')
-				->where('idanggota', $this->account->iduser)
-				->where('status', 'diterima')
-				->where("DATE_FORMAT(date_updated, '%Y-%m') <", date('Y-m'))
-				->like('jenis_deposit', 'manasuka')
-				->get()->getResult()[0]
-				->saldo;
-		}else{
-			$depo_list = $this->m_deposit->getDepositByUserId($this->account->iduser);
-			$depo_list2 = $this->m_deposit_pag->where('idanggota', $this->account->iduser)
-				->orderBy('date_created', 'DESC')
-				->paginate(10, 'grup1');
-
-			$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
-			$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
-			$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;	
-		}
-
+		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
+	
 		$param_manasuka = $this->m_param_manasuka->getParamByUserId($this->account->iduser);
 
 		$mnsk_param_log = $m_param_manasuka_log->select("COUNT(id) as hitung")
@@ -99,7 +57,11 @@ class Deposits extends Controller
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
-			'deposit_list2' => $depo_list2,
+			'deposit_list2' => $this->m_deposit_pag
+				->where('idanggota', $this->account->iduser)
+				->orderBy('date_created', 'DESC')
+				->paginate(10, 'grup1'),
+
 			'pager' => $this->m_deposit_pag->pager,
 			'currentpage' => $currentpage,
 			'deposit_list' => $depo_list,
@@ -158,19 +120,7 @@ class Deposits extends Controller
 			$cash_in = $nominal;
 			$status = 'upload bukti';
 		}else{
-			$date_now = date('d');
-			
-			if ($date_now < 25) {
-				$cek_saldo = $this->m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo_manasuka')
-					->where("DATE_FORMAT(date_updated, '%Y-%m') <", date('Y-m'))
-				    ->where('idanggota', $this->account->iduser)
-				    ->where('status', 'diterima')
-				    ->like('jenis_deposit', 'manasuka', 'after')
-				    ->get()->getResult()[0]
-				    ->saldo_manasuka;
-			}else{
-				$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
-			}
+			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
 
 			if ($cek_saldo < $nominal) {
 				$alert = view(

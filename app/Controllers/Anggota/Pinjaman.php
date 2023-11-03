@@ -46,59 +46,8 @@ class Pinjaman extends Controller
 	function detail($idpinjaman = false)
 	{
 		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
+		$tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
-
-		$date_now = date('d');
-		if ($date_now < 25) {
-			$tagihan_lunas = $this->m_cicilan->select('sum(nominal) as tagihan_lunas')
-				->where('idpinjaman', $idpinjaman)
-				->where("DATE_FORMAT(date_created, '%Y-%m') <", date('Y-m'))
-				->get()->getResult()[0];
-
-			$list_cicilan2 = $this->m_cicilan_pag
-				->select('
-					(
-						SELECT SUM(nominal)
-						FROM tb_cicilan b WHERE b.date_created <= tb_cicilan.date_created
-        				AND idpinjaman = tb_cicilan.idpinjaman
-					) AS saldo,
-					DATE_FORMAT(date_created, "%Y-%m-%d") as date,
-					(
-						SELECT COUNT(idcicilan)
-						FROM tb_cicilan c WHERE c.date_created <= tb_cicilan.date_created
-                        AND idpinjaman = tb_cicilan.idpinjaman
-					) AS counter,
-					tb_cicilan.*,
-					SUM(tb_cicilan.nominal) as total_saldo'
-				)
-				->where("DATE_FORMAT(date_created, '%Y-%m') <", date('Y-m'))
-				->where('idpinjaman', $idpinjaman)
-				->orderBy('date_created', 'DESC')
-				->groupBy('date')
-				->paginate(10, 'grup1');
-		}else{
-			$tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
-			$list_cicilan2 = $this->m_cicilan_pag
-				->select('
-					(
-						SELECT SUM(nominal)
-						FROM tb_cicilan b WHERE b.date_created <= tb_cicilan.date_created
-        				AND idpinjaman = tb_cicilan.idpinjaman
-					) AS saldo,
-					DATE_FORMAT(date_created, "%Y-%m-%d") as date,
-					(
-						SELECT COUNT(idcicilan)
-						FROM tb_cicilan c WHERE c.date_created <= tb_cicilan.date_created
-                        AND idpinjaman = tb_cicilan.idpinjaman
-					) AS counter,
-					tb_cicilan.*,
-					SUM(tb_cicilan.nominal) as total_saldo'
-				)
-				->where('idpinjaman', $idpinjaman)
-				->orderBy('date_created', 'DESC')
-				->groupBy('date')
-				->paginate(10, 'grup1');
-		}
 
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Pinjaman']),
@@ -106,7 +55,27 @@ class Pinjaman extends Controller
 			'notification_list' => $this->notification->index()['notification_list'],
 			'notification_badges' => $this->notification->index()['notification_badges'],
 			'duser' => $this->account,
-			'list_cicilan2' => $list_cicilan2,
+			'list_cicilan2' => $this->m_cicilan_pag
+				->select('
+					(
+						SELECT SUM(nominal)
+						FROM tb_cicilan b WHERE b.date_created <= tb_cicilan.date_created
+        				AND idpinjaman = tb_cicilan.idpinjaman
+					) AS saldo,
+					DATE_FORMAT(date_created, "%Y-%m-%d") as date,
+					(
+						SELECT COUNT(idcicilan)
+						FROM tb_cicilan c WHERE c.date_created <= tb_cicilan.date_created
+                        AND idpinjaman = tb_cicilan.idpinjaman
+					) AS counter,
+					tb_cicilan.*,
+					SUM(tb_cicilan.nominal) as total_saldo'
+				)
+				->where('idpinjaman', $idpinjaman)
+				->orderBy('date_created', 'DESC')
+				->groupBy('date')
+				->paginate(10, 'grup1'),
+
 			'pager' => $this->m_cicilan_pag->pager,
 			'currentpage' => $currentpage,
 			'detail_pinjaman' => $detail_pinjaman,
