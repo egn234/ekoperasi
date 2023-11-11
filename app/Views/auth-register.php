@@ -53,6 +53,13 @@
                                                         Nomor KTP harus 16 digit
                                                     </div>
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="nip_number">NIP</label>
+                                                    <input type="number" class="form-control" id="nip_number" value="<?=session()->getFlashdata('nip')?>" name="nip">
+                                                    <div class="invalid-feedback">
+                                                        Harus berupa angka
+                                                    </div>
+                                                </div>
                                                 <div class="row mb-3">
                                                     <div class="col-6">
                                                         <label class="form-label" for="birthplace">Tempat Lahir <span class="text-danger">*</span></label>
@@ -216,10 +223,11 @@
                         <div class="mb-3">
                             <p>
                                 BERSEDIA MENJADI ANGGOTA KOPERASI GIAT SEJAHTERA BERSAMA DAN SANGGUP MEMATUHI SEGALA PERATURAN YANG BERLAKU DI KOPERASI.
-                                BERSAMA INI SAYA BERSEDIA MEMBAYAR :
+                                BERSAMA INI SAYA BERSEDIA MENAATI PERATURAN BERIKUT:
                                 <ul>
-                                    <li>1.  IURAN POKOK SEBESAR Rp. <?= number_format($simp_pokok->nilai, 0, ',', '.')?></li>
-                                    <li>2.  IURAN WAJIB SEBESAR Rp. <?= number_format($simp_wajib->nilai, 0, ',', '.')?></li>
+                                    <li>1.  MEMBAYAR IURAN POKOK SEBESAR Rp. <?= number_format($simp_pokok->nilai, 0, ',', '.')?></li>
+                                    <li>2.  MEMBAYAR IURAN WAJIB SEBESAR Rp. <?= number_format($simp_wajib->nilai, 0, ',', '.')?></li>
+                                    <li>3.  BUKAN PEGAWAI DENGAN STATUS TENAGA LEPAS HARIAN</li>
                                 </ul>
                                 DEMIKIAN PERMOHONAN INI SAYA BUAT DENGAN SEBENARNYA TANPA PAKSAAN DARI SIAPAPUN.
                             </p>

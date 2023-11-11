@@ -557,7 +557,7 @@ class User extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'NIK Telah Terdaftar',
+						'notif_text' => 'NIP Telah Terdaftar',
 					 	'status' => 'warning'
 					]
 				);

@@ -113,6 +113,37 @@ class register extends Controller
 			return redirect()->to('register');
 		}
 
+		//check duplicate nip
+		$nip = $this->request->getPost('nip');
+
+		if($nip != null || $nip != ''){
+			$cek_nip = $this->m_user->select('count(iduser) as hitung')
+				->where('nip', $nip)
+				->get()
+				->getResult()[0]
+				->hitung;
+
+			if($cek_nip != 0){
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'NIP Telah Terdaftar',
+					 	'status' => 'warning'
+					]
+				);
+				
+				$dataset += [
+					'nip' => $nip,
+					'notif' => $alert
+				];
+				
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+			}else{
+				$dataset += ['nip' => $nip];
+			}
+		}
+
 		$cek_nik = $this->m_user->countNIK($dataset['nik'])[0]->hitung;
 
 		if ($cek_nik != 0) {
