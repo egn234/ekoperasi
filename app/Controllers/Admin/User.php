@@ -360,9 +360,9 @@ class User extends Controller
 									if ($cek_cicilan == 0) {
 
 										$dataset_cicilan = [
-											'nominal' => $nominal_cicilan,
-											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
-											'provisi' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$provisi))/$pinjaman['angsuran_bulanan'],
+											'nominal' => $pinjaman['nominal'],
+											'bunga' => ($pinjaman['nominal']*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
+											'provisi' => ($pinjaman['nominal']*($pinjaman['angsuran_bulanan']*$provisi))/$pinjaman['angsuran_bulanan'],
 											'date_created' => $formattedDate,
 											'idpinjaman' => $idpinjaman
 										];
@@ -372,8 +372,8 @@ class User extends Controller
 									}elseif ($cek_cicilan == ($pinjaman['angsuran_bulanan'] - 1)) {
 
 										$dataset_cicilan = [
-											'nominal' => ($nominal_cicilan/$pinjaman['angsuran_bulanan']),
-											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
+											'nominal' => ($pinjaman['nominal']/$pinjaman['angsuran_bulanan']),
+											'bunga' => ($pinjaman['nominal']*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
 											'date_created' => $formattedDate,
 											'idpinjaman' => $idpinjaman
 										];
@@ -386,8 +386,8 @@ class User extends Controller
 									}elseif ($cek_cicilan != 0 && $cek_cicilan < $pinjaman['angsuran_bulanan']) {
 
 										$dataset_cicilan = [
-											'nominal' => $nominal_cicilan,
-											'bunga' => ($nominal_cicilan*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
+											'nominal' => $pinjaman['nominal'],
+											'bunga' => ($pinjaman['nominal']*($pinjaman['angsuran_bulanan']*$bunga))/$pinjaman['angsuran_bulanan'],
 											'date_created' => $formattedDate,
 											'idpinjaman' => $idpinjaman
 										];
