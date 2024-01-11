@@ -200,9 +200,9 @@
                                 </div>
                                 <?php 
                                     $datecheck = new DateTime($param_manasuka_cek);
-                                    $month = new DateTime('-3 month');
+                                    $month = new DateTime('-1 month');
                                     if($datecheck >= $month){
-                                        echo "<span class='text-xs'>*mohon tunggu beberapa bulan untuk mengatur manasuka bulanan</span>";
+                                        echo "<span class='text-xs'>*mohon tunggu 1 bulan untuk mengatur manasuka bulanan</span>";
                                     }
                                 ?>
                                 <div class="mt-5 d-grid gap-2">

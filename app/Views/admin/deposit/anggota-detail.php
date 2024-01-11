@@ -206,18 +206,11 @@
                                         <?php }?>
                                     </div>
                                 </div>
-                                <?php 
-                                    $datecheck = new DateTime($param_manasuka_cek);
-                                    $month = new DateTime('-3 month');
-                                    if($datecheck >= $month){
-                                        echo "<span class='text-xs'>*mohon tunggu beberapa bulan untuk mengatur manasuka bulanan</span>";
-                                    }
-                                ?>
                                 <div class="mt-5 d-grid gap-2">
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka" <?=($datecheck >= $month)?'disabled':''?>>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">
                                         Pengajuan Manasuka Bulanan
                                     </button>
-                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka" <?=($datecheck >= $month)?'disabled':''?>>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka">
                                         Pembatalan Manasuka Bulanan
                                     </button>
                                 </div>
