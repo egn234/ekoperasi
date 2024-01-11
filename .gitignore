@@ -128,4 +128,5 @@ nb-configuration.xml
 
 
 public/uploads/*
+db_log/*
 
