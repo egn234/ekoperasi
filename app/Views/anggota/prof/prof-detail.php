@@ -39,7 +39,7 @@
                                         <div class="d-flex align-items-start mt-3 mt-sm-0">
                                             <div class="flex-shrink-0">
                                                 <div class="avatar-xl me-3">
-                                                    <img src="<?=base_url()?>/uploads/user/<?=$duser->username?>/profil_pic/<?=$duser->profil_pic?>" alt="" class="img-fluid rounded-circle d-block">
+                                                    <img style="object-fit: cover; object-position: top; width: 100%; height: 100%;" src="<?=base_url()?>/uploads/user/<?=$duser->username?>/profil_pic/<?=$duser->profil_pic?>" alt="" class="img-fluid rounded-circle d-block">
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1">

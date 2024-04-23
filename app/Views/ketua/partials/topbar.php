@@ -112,7 +112,7 @@
 
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item bg-soft-light border-start border-end" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="<?=base_url()?>/uploads/user/<?= $duser->username ?>/profil_pic/<?= $duser->profil_pic ?>" alt="Header Avatar">
+                    <img style="object-fit: cover; object-position: top;" class="rounded-circle header-profile-user" src="<?=base_url()?>/uploads/user/<?= $duser->username ?>/profil_pic/<?= $duser->profil_pic ?>" alt="Header Avatar">
                     <span class="d-none d-xl-inline-block ms-1 fw-medium"><?=$duser->nama_lengkap?></span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
