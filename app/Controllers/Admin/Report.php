@@ -318,9 +318,9 @@ class Report extends Controller
 			'startDate' => $startDate
 		];
 
-		header("Content-type: application/vnd.ms-excel");
-		header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$date_monthly.'.xls"');
-		header('Cache-Control: max-age=0');
+		// header("Content-type: application/vnd.ms-excel");
+		// header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$date_monthly.'.xls"');
+		// header('Cache-Control: max-age=0');
 
 		echo view('admin/report/print-potongan-pinjaman', $report);
 	}

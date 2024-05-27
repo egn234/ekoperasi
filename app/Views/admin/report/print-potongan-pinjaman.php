@@ -28,10 +28,10 @@
         <?php 
             foreach ($usr_list as $a) {
                 $cicilan = $this->m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
-                $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser);
+                $pinjaman = $this->m_monthly_report->getPinjamanAktifByAnggota($a->iduser, $startDate, $endDate);
 
                 if ($pinjaman) {
-                    $count_cicilan = $this->m_monthly_report->countCicilanByPinjaman($pinjaman[0]->idpinjaman)[0]->hitung;
+                    $count_cicilan = $this->m_monthly_report->countCicilanByPinjaman($pinjaman[0]->idpinjaman, $startDate, $endDate)[0]->hitung;
                 }else{
                     $count_cicilan = " - ";
                 }

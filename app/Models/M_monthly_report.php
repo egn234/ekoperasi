@@ -44,7 +44,7 @@ class m_monthly_report extends Model
     function getMonthlyReportById($idreportm)
     {
         $sql = "SELECT * FROM tb_monthly_report WHERE idreportm = $idreportm";
-        return $this->db->query($sql)->getResult();    
+        return $this->db->query($sql)->getResult();
     }
 
     function getMonthlyReportByDate($date)
@@ -53,9 +53,14 @@ class m_monthly_report extends Model
         return $this->db->query($sql)->getResult();
     }
 
-    function getPinjamanAktifByAnggota($iduser)
+    function getPinjamanAktifByAnggota($iduser, $startDate, $endDate)
     {
-        $sql = "SELECT * FROM tb_pinjaman WHERE idanggota = $iduser AND status = 4";
+        $sql = "
+            select p.* from tb_pinjaman p 
+            join tb_cicilan c on p.idpinjaman = c.idpinjaman
+            where c.date_created between '$startDate' and '$endDate'
+            and p.idanggota = $iduser;
+        ";
         return $this->db->query($sql)->getResult();
     }
 
@@ -65,9 +70,20 @@ class m_monthly_report extends Model
         return $this->db->query($sql)->getResult();
     }
 
-    function countCicilanByPinjaman($idpinjaman)
+    function countCicilanByPinjaman($idpinjaman, $startDate, $endDate)
     {
-        $sql = "SELECT count(idcicilan) AS hitung FROM tb_cicilan WHERE idpinjaman = $idpinjaman AND tipe_bayar = 'otomatis'";
+        $sql = "
+            select
+                (
+                    select count(c1.idcicilan) from tb_cicilan c1
+                    where c1.idpinjaman = p.idpinjaman
+                    and date_created between p.date_created and '$endDate'
+                ) as hitung
+            from tb_pinjaman p 
+            join tb_cicilan c on p.idpinjaman = c.idpinjaman
+            where c.date_created between '$startDate' and '$endDate'
+            and p.idpinjaman = $idpinjaman
+        ";
         return $this->db->query($sql)->getResult();        
     }
 
@@ -212,7 +228,7 @@ class m_monthly_report extends Model
     {
         $sql = "
             SELECT 
-                SUM(cash_in)-SUM(cash_out) AS nominal 
+                SUM(cash_in) AS nominal 
                 FROM tb_deposit 
                 WHERE idanggota = $iduser 
                     AND status = 'diterima'
