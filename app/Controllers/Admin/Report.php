@@ -65,9 +65,13 @@ class Report extends Controller
 		$YEAR = date('Y');
 		$MONTH = date('m');
 
-		$setDay = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai+1;
-		$endDate = date('Y-m-').$setDay;
-		$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
+		// $setDay = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai+1;
+		// $endDate = date('Y-m-').$setDay;
+		// $startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
+
+		$startDate = $this->m_monthly_report->orderBy('idreportm', 'DESC')->get(1)->getResult()[0]->created;
+		$endDate = date('Y-m-d H:i:s');
+		// echo "Start: ".$startDate.", End: ".$endDate;
 
 		$list_anggota = $this->m_user->where('flag', '1')
 									 ->where('idgroup', 4)
@@ -190,6 +194,7 @@ class Report extends Controller
 						//CEK VALIDASI CICILAN BULAN INI
 						$validasi_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
 													   		->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+															->where('tipe_bayar', 'otomatis')
 															->countAllResults();
 						if ($validasi_cicilan == 0) {
 							//CEK CICILAN

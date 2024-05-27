@@ -243,6 +243,7 @@ class Pinjaman extends Controller
 					'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
 					'bunga' => 0,
 					'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$provisi))/$pin->angsuran_bulanan,
+					'tipe_bayar' => 'langsung',
 					'date_created' => date('Y-m-d H:i:s'),
 					'idpinjaman' => $idpinjaman
 				];
@@ -255,6 +256,7 @@ class Pinjaman extends Controller
 				$dataset_cicilan = [
 					'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
 					'bunga' => 0,
+					'tipe_bayar' => 'langsung',
 					'date_created' => date('Y-m-d H:i:s'),
 					'idpinjaman' => $idpinjaman
 				];
@@ -270,6 +272,7 @@ class Pinjaman extends Controller
 				$dataset_cicilan = [
 					'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
 					'bunga' => 0,
+					'tipe_bayar' => 'langsung',
 					'date_created' => date('Y-m-d H:i:s'),
 					'idpinjaman' => $idpinjaman
 				];
