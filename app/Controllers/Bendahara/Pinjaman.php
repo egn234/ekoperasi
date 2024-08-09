@@ -91,6 +91,15 @@ class Pinjaman extends Controller
 			'tanggal_bayar' => date('d')
 		];
 
+		$idanggota = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
+						->get()
+						->getResult()[0]
+						->idanggota;
+		$username_anggota = $this->m_user->where('iduser', $idanggota)
+								->get()
+								->getResult()[0]
+								->username;
+
 		$bukti_tf = $this->request->getFile('bukti_tf') ? $this->request->getFile('bukti_tf') : false;
 		$data_session = [];
 		if($bukti_tf){
@@ -98,11 +107,11 @@ class Pinjaman extends Controller
 				$cek_tf = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
 				
 				if ($cek_tf) {
-					unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_tf);
+					unlink(ROOTPATH . 'public/uploads/user/' . $username_anggota . '/pinjaman/' . $cek_tf);
 				}
 	
 				$newName = $bukti_tf->getRandomName();
-				$bukti_tf->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
+				$bukti_tf->move(ROOTPATH . 'public/uploads/user/' . $username_anggota . '/pinjaman/', $newName);
 				
 				$bukti = $bukti_tf->getName();
 				$dataset += ['bukti_tf' => $bukti];
@@ -134,10 +143,7 @@ class Pinjaman extends Controller
 
 		$notification_anggota = [
 			'bendahara_id' => $this->account->iduser,
-			'anggota_id' => $this->m_pinjaman->where('idpinjaman', $idpinjaman)
-											 ->get()
-											 ->getResult()[0]
-											 ->idanggota,
+			'anggota_id' => $idanggota,
 			'pinjaman_id' => $idpinjaman,
 			'message' => 'Pengajuan pinjaman diterima oleh bendahara '. $this->account->nama_lengkap,
 			'timestamp' => date('Y-m-d H:i:s'),
