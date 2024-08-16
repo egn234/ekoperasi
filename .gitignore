@@ -130,3 +130,6 @@ nb-configuration.xml
 public/uploads/*
 db_log/*
 
+.dockerignore
+Dockerfile
+docker-compose.yml
