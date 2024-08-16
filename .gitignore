@@ -133,3 +133,4 @@ db_log/*
 .dockerignore
 Dockerfile
 docker-compose.yml
+custom-php.ini
