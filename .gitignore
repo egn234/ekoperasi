@@ -126,6 +126,10 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
+# Database file
+app/database/ekoperasi.sql
+app/database/import_format_dummy.xlsx
+
 
 public/uploads/*
 db_log/*
