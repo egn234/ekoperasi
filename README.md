@@ -50,7 +50,7 @@ Agar aplikasi ini dapat berjalan dengan baik, berikut adalah kebutuhan sistem ya
 ## Instalasi
 Ikuti langkah-langkah berikut untuk menjalankan proyek ini di lingkungan lokal Anda:
 
-1. Clone repositori ini: `git clone https://github.com/username/ekoperasi.git`
+1. Clone repositori ini: `git clone https://github.com/egn234/ekoperasi.git`
 2. Masuk ke direktori proyek: `cd ekoperasi`
 3. Install dependencies menggunakan Composer: `composer install`
 4. Copy file env menjadi .env: `cp env .env`
