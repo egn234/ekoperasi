@@ -145,5 +145,21 @@ class test_field extends Controller
 
 		echo "success";
 	}
+
+	
+	public function test_db()
+	{
+		try {
+			$db = \Config\Database::connect();
+			$builder = $db->table('tb_user');
+			$query = $builder->get(1);
+			$results = $query->getResult();
+			if ($results) {
+				echo "success";
+			}
+		} catch (\Exception $e) {
+			echo $e->getMessage();
+		}
+	}
 }
 ?>
