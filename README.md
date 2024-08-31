@@ -1,7 +1,5 @@
 # E-Koperasi
 
-![E-Koperasi Logo](./public/assets/images/docs/logo.png)
-
 **E-Koperasi** adalah aplikasi web koperasi online yang dibangun menggunakan CodeIgniter4. Aplikasi ini menyediakan berbagai fitur untuk memudahkan pengelolaan koperasi dengan empat tipe pengguna: Ketua, Bendahara, Admin, dan Anggota. 
 
 ![Halaman Login](./public/assets/images/docs/login-page.png)
