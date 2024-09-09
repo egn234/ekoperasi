@@ -1,5 +1,17 @@
 # E-Koperasi
 
+## Contents
+- [Skema Database](#skema-database)
+- [Fitur Utama](#fitur-utama)
+    - [Admin](#admin)
+    - [Ketua](#ketua)
+    - [Bendahara](#bendahara)
+    - [Anggota](#anggota)
+- [Rekomendasi Kebutuhan Sistem](#rekomendasi-kebutuhan-sistem)
+- [Instalasi](#instalasi)
+- [Troubleshooting: PHP Extension Error](#troubleshooting-php-extension-error)
+- [Import Database](#import-database)
+
 **E-Koperasi** adalah aplikasi web koperasi online yang dibangun menggunakan CodeIgniter4. Aplikasi ini menyediakan berbagai fitur untuk memudahkan pengelolaan koperasi dengan empat tipe pengguna: Ketua, Bendahara, Admin, dan Anggota. 
 
 ![Halaman Login](./public/assets/images/docs/login-page.png)
@@ -57,10 +69,57 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di lingkungan lokal A
 5. Sesuaikan pengaturan database di file `.env` Anda sesuai dengan konfigurasi lokal Anda.
 6. Jalankan server lokal: `php spark serve`
 
+## Troubleshooting: PHP Extension Error
+
+Jika aplikasi tidak berjalan dan muncul error terkait ekstensi PHP yang tidak ditemukan atau gagal, pastikan bahwa ekstensi yang diperlukan telah diaktifkan di dalam file konfigurasi `php.ini`. Ikuti langkah-langkah berikut untuk mengaktifkan ekstensi yang diperlukan:
+
+1. **Buka file konfigurasi PHP (`php.ini`)**:  
+   Lokasi file ini tergantung pada sistem Anda. Untuk sistem Linux, Anda bisa mencarinya di `/etc/php/7.4/apache2/php.ini` atau `/etc/php/7.4/cli/php.ini`. Untuk sistem Windows, biasanya ada di direktori instalasi PHP, seperti `C:\xampp\php\php.ini`.
+
+2. **Aktifkan ekstensi yang diperlukan**:  
+   Cari baris yang berkaitan dengan ekstensi yang dibutuhkan dan pastikan tidak ada tanda `;` (titik koma) di awal baris. Jika ada, hapus tanda tersebut untuk mengaktifkan ekstensi. Berikut adalah beberapa ekstensi umum yang dibutuhkan oleh CodeIgniter 4 dan aplikasi web pada umumnya:
+
+   - `extension=intl`
+   - `extension=mysqli`
+   - `extension=mbstring`
+   - `extension=curl`
+   - `extension=json`
+   - `extension=fileinfo`
+   - `extension=openssl`
+   
+   Contoh:
+   ```ini
+   ;extension=intl
+   ;extension=mysqli
+   ;extension=mbstring
+   ;extension=curl
+   ;extension=json
+   ;extension=fileinfo
+   ;extension=openssl
+   ```
+
+   Setelah itu, hilangkan tanda `;` di awal baris:
+   ```ini
+   extension=intl
+   extension=mysqli
+   extension=mbstring
+   extension=curl
+   extension=json
+   extension=fileinfo
+   extension=openssl
+   ```
+restart server atau jalankan kembali spark untuk menjalankan konfigurasi php nya. Jika Anda masih menghadapi masalah terkait ekstensi, periksa dokumentasi PHP di [php.net](https://www.php.net/manual/en/).
+
 ### Import Database
 Untuk mengimpor skema database, silakan gunakan file SQL yang telah disediakan di direktori berikut:
 
 `app/database/ekoperasi_clean.sql`
+
+inisiasi user untuk admin, ketua, dan bendahara adalah sebagai berikut:
+- username admin: GIAT0001
+- username bendahara: GIAT0002
+- username ketua: GIAT0003
+- password default: 12345678
 
 ---
 
