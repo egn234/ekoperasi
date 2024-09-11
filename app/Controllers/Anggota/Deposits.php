@@ -392,12 +392,17 @@ class Deposits extends BaseController
 
 	public function detail_mutasi()
 	{
+		$m_user = new M_user();
+		$m_deposit = new M_deposit();
+
+		$account = $m_user->getUserById($this->session->get('iduser'))[0];
+
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
-			$user = $this->m_deposit->getDepositById($id)[0];
+			$user = $m_deposit->getDepositById($id)[0];
 			$data = [
 				'a' => $user,
-				'duser' => $this->account
+				'duser' => $account
 			];
 			echo view('anggota/deposit/part-depo-mod-detail', $data);
 		}
@@ -405,9 +410,10 @@ class Deposits extends BaseController
 
 	public function up_mutasi()
 	{
+		$m_deposit = new M_deposit();
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
-			$user = $this->m_deposit->getDepositById($id)[0];
+			$user = $m_deposit->getDepositById($id)[0];
 			$data = ['a' => $user];
 			echo view('anggota/deposit/part-depo-mod-upload', $data);
 		}
