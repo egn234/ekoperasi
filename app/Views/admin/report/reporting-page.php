@@ -123,10 +123,10 @@
                                             <div class="col-sm-5">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="filterBulan">Laporan</label>
-                                                    <select class="form-select" id="filterBulan" name="date_monthly" required>
+                                                    <select class="form-select" id="filterBulan" name="idreportm" required>
                                                         <option value="0">-Pilih Bulan-</option>
                                                         <?php foreach ($list_report as $v) {?>
-                                                            <option value="<?=$v->date_monthly?>"><?= date('F Y',strtotime($v->date_monthly)) ?></option>
+                                                            <option value="<?=$v->idreportm?>"><?= date('F Y',strtotime($v->date_monthly)) ?></option>
                                                         <?php }?>
                                                     </select>
                                                 </div>

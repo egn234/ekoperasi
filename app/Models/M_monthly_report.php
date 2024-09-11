@@ -29,6 +29,15 @@ class m_monthly_report extends Model
     	$this->db = db_connect();
     }
 
+    function getPrevMonth($idreportm){
+        $sql = "SELECT * FROM tb_monthly_report
+            WHERE idreportm < (SELECT idreportm FROM tb_monthly_report where idreportm = $idreportm)
+            ORDER BY created DESC
+            LIMIT 1";
+            
+        return $this->db->query($sql)->getResult();
+    }
+
     function getAllMonthlyReport()
     {
     	$sql = "SELECT * FROM tb_monthly_report ORDER BY date_monthly DESC";

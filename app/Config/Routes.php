@@ -39,11 +39,12 @@ $routes->set404Override();
 $routes->get('/', 'Login::index');
 
 //for testing db only, uncomment this route
-$routes->group('test', static function ($routes){
-    $routes->get('test_cicilan', 'Test_field::insert_cicilan');
-    $routes->get('test_gen_cicilan', 'Test_field::gen_sisa_cicilan');
-    $routes->get('test_db', 'Test_field::test_db');
-});
+// $routes->group('test', static function ($routes){
+//     $routes->get('/', 'Test_field::index');
+//     $routes->get('test_cicilan', 'Test_field::insert_cicilan');
+//     $routes->get('test_gen_cicilan', 'Test_field::gen_sisa_cicilan');
+//     $routes->get('test_db', 'Test_field::test_db');
+// });
 
 $routes->get('registrasi', 'Register::index');
 

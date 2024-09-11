@@ -6,17 +6,51 @@ use App\Models\M_pinjaman;
 use App\Models\M_cicilan;
 use App\Models\M_monthly_report;
 use App\Models\M_param;
+use App\Models\M_param_manasuka;
 
 class test_field extends Controller
 {
 	public function index()
 	{
 		$m_user = new M_user();
-		$datauser = $m_user->where('iduser', 69)
-								 ->get()
-								 ->getResult()[0]
-								 ->status_pegawai;
-		print_r($datauser);
+		$m_param_manasuka = new M_param_manasuka();
+		$m_monthly_report = new M_monthly_report();
+		$list_anggota = $m_user->where('flag', '1')
+									 ->where('idgroup', 4)
+									 ->get()
+									 ->getResult();
+
+		// echo "<pre>";
+		// foreach ($list_anggota as $a){
+		// 	$param_manasuka = $m_param_manasuka->where('idanggota', $a->iduser)->get()->getResult();
+		// 	foreach($param_manasuka as $pm){
+		// 		$data_manasuka = [
+		// 			'jenis_pengajuan' => 'penyimpanan',
+		// 			'jenis_deposit' => 'manasuka',
+		// 			'cash_in' => $pm->nilai,
+		// 			'cash_out' => 0,
+		// 			'deskripsi' => 'Diambil dari potongan gaji bulanan',
+		// 			'status' => 'diterima',
+		// 			'date_created' => date('Y-m-d H:i:s'),
+		// 			'idanggota' => $a->iduser,
+		// 			'idadmin' => $a->iduser
+		// 		];	
+		// 	}
+		// 	print_r($data_manasuka);
+		// }
+		$date_monthly = '2024-09';
+		$getDay = $m_monthly_report->select('DAY(created) AS day')
+				->where('date_monthly', $date_monthly)
+				->get()
+				->getResult()[0]->day;
+
+		$endDate = $date_monthly.'-'.($getDay+1);
+		$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
+
+		echo $endDate;
+		echo $startDate;
+
+		echo "</pre>";
 	}
 
 	public function insert_cicilan()

@@ -35,21 +35,28 @@ class Report extends Controller
 
 	public function index()
 	{
-		$list_report = $this->m_monthly_report->getAllMonthlyReport();
-		$list_tahun = $this->m_monthly_report->select('YEAR(created) AS tahun')
+		$m_monthly_report = new M_monthly_report();
+		$m_param = new M_param();
+		$notification = new Notifications();
+
+		$list_report = $m_monthly_report->orderBy('created', 'DESC')
+										->get()
+										->getResult();
+
+		$list_tahun = $m_monthly_report->select('YEAR(created) AS tahun')
 											 ->groupBy('YEAR(created)', 'DESC')
 											 ->get()
 											 ->getResult();
 		$YEAR = date('Y');
 		$MONTH = date('m');
-		$getDay = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai;
-		$cek_report = $this->m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
+		$getDay = $m_param->where('idparameter', 8)->get()->getResult()[0]->nilai;
+		$cek_report = $m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
 		
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Reporting']),
 			'page_title' => view('admin/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Report']),
-			'notification_list' => $this->notification->index()['notification_list'],
-			'notification_badges' => $this->notification->index()['notification_badges'],
+			'notification_list' => $notification->index()['notification_list'],
+			'notification_badges' => $notification->index()['notification_badges'],
 			'duser' => $this->account,
 			'list_report' => $list_report,
 			'list_tahun' => $list_tahun,
@@ -162,18 +169,20 @@ class Report extends Controller
 				}
 
 				//PEMBUATAN MANASUKA
-				$param_manasuka = $this->m_param_manasuka->where('idanggota', $a->iduser)->get()->getResult()[0];
-				$data_manasuka = [
-					'jenis_pengajuan' => 'penyimpanan',
-					'jenis_deposit' => 'manasuka',
-					'cash_in' => $param_manasuka->nilai,
-					'cash_out' => 0,
-					'deskripsi' => 'Diambil dari potongan gaji bulanan',
-					'status' => 'diterima',
-					'date_created' => date('Y-m-d H:i:s'),
-					'idanggota' => $a->iduser,
-					'idadmin' => $this->account->iduser
-				];
+				$param_manasuka = $this->m_param_manasuka->where('idanggota', $a->iduser)->get()->getResult();
+				foreach($param_manasuka as $pm){
+					$data_manasuka = [
+						'jenis_pengajuan' => 'penyimpanan',
+						'jenis_deposit' => 'manasuka',
+						'cash_in' => $pm->nilai,
+						'cash_out' => 0,
+						'deskripsi' => 'Diambil dari potongan gaji bulanan',
+						'status' => 'diterima',
+						'date_created' => date('Y-m-d H:i:s'),
+						'idanggota' => $a->iduser,
+						'idadmin' => $this->account->iduser
+					];	
+				}
 
 				$this->m_deposit->insertDeposit($data_manasuka);
 
@@ -271,10 +280,10 @@ class Report extends Controller
 
 	public function print_potongan_pinjaman()
 	{
+		$m_monthly_report = new M_monthly_report();
+		$idreportm = $this->request->getPost('idreportm');
 
-		$date_monthly = $this->request->getPost('date_monthly');
-
-		if($date_monthly == 0){
+		if($idreportm == 0){
 			$alert = view(
 				'partials/notification-alert', 
 				[
@@ -288,14 +297,11 @@ class Report extends Controller
 			return redirect()->back();
 		}
 		
-		$getDay = $this->m_monthly_report->select('DAY(created) AS day')
-										  ->where('date_monthly', $date_monthly)
-										  ->get()
-										  ->getResult()[0]->day;
-
-		$endDate = $date_monthly.'-'.($getDay+1);
-		$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
-
+		$report_data = $m_monthly_report->where('idreportm', $idreportm)->get()->getResult()[0];
+		
+		$endDate = $report_data->created;
+		$startDate = $m_monthly_report->getPrevMonth($idreportm)[0]->created;
+		
 		$instansi = $this->request->getPost('instansi');
 
 		if ($instansi == '0') {
@@ -319,7 +325,7 @@ class Report extends Controller
 		];
 
 		header("Content-type: application/vnd.ms-excel");
-		header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$date_monthly.'.xls"');
+		header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$report_data->created.'.xls"');
 		header('Cache-Control: max-age=0');
 
 		echo view('admin/report/print-potongan-pinjaman', $report);
