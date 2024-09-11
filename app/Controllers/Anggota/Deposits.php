@@ -1,7 +1,8 @@
 <?php 
 namespace App\Controllers\Anggota;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_deposit;
@@ -10,15 +11,20 @@ use App\Models\M_param_manasuka;
 use App\Models\M_param_manasuka_log;
 use App\Models\M_notification;
 
-use App\Controllers\Anggota\Notifications;
-
-class Deposits extends Controller
+class Deposits extends BaseController
 {
+	protected $m_user;
+	protected $m_deposit;
+	protected $m_deposit_pag;
+	protected $m_param_manasuka;
+	protected $m_notification;
+	protected $account;
+	protected $notification;
 
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
@@ -88,7 +94,7 @@ class Deposits extends Controller
 			);
 			
 			$dataset = ['notif' => $alert];
-			session()->setFlashdata($dataset);
+			$this->session->setFlashdata($dataset);
 			return redirect()->to('anggota/deposit/list');
 		}
 
@@ -113,7 +119,7 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -132,7 +138,7 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -146,7 +152,7 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -168,7 +174,7 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -218,7 +224,7 @@ class Deposits extends Controller
 			'notif' => $alert
 		];
 
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->to('anggota/deposit/list');
 	}
 
@@ -278,7 +284,7 @@ class Deposits extends Controller
 		$data_session = [
 			'notif' => $alert
 		];
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
@@ -301,7 +307,7 @@ class Deposits extends Controller
 		);
 		
 		$data_session = ['notif' => $alert];
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 
 		return redirect()->back();
 	}
@@ -343,7 +349,7 @@ class Deposits extends Controller
 		}
 		
 		$data_session = ['notif' => $alert];
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 
 		return redirect()->back();
 	}
@@ -372,7 +378,7 @@ class Deposits extends Controller
 			'notif' => $alert
 		];
 
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->back();
 	}
 

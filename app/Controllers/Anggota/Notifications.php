@@ -1,26 +1,32 @@
 <?php
 namespace App\Controllers\Anggota;
 
-use App\Controllers\BaseController;
+use APp\Controllers\BaseController;
 
 use App\Models\M_user;
 use App\Models\M_notification;
 
 class Notifications extends BaseController
 {
+	protected $m_user;
+	protected $account;
+	protected $m_notification;
+	
+	function __construct(){
+		$this->m_user = new M_user();
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->m_notification = new M_notification();
+	}
+
 	public function index()
 	{
-		$m_user = new M_user();
-		$m_notification = new M_notification();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
-		$notification_list = $m_notification->where('anggota_id', $account->iduser)
+		$notification_list = $this->m_notification->where('anggota_id', $this->account->iduser)
 											->orderBy('timestamp', 'DESC')
 											->where('group_type', '4')
 											->get()
 											->getResult();
 
-		$notification_badges = $m_notification->where('anggota_id', $account->iduser)
+		$notification_badges = $this->m_notification->where('anggota_id', $this->account->iduser)
 											->where('group_type', '4')
 											->where('status', 'unread')
 											->get()
@@ -36,11 +42,7 @@ class Notifications extends BaseController
 
 	public function mark_all_read()
 	{
-		$m_user = new M_user();
-		$m_notification = new M_notification();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
-		$m_notification->where('anggota_id', $account->iduser)
+		$this->m_notification->where('anggota_id', $this->account->iduser)
 							 ->where('group_type', '4')
 							 ->where('status', 'unread')
 							 ->set('status', 'read')
@@ -51,11 +53,10 @@ class Notifications extends BaseController
 
 	public function mark_as_read()
 	{
-		$m_notification = new M_notification();
 		if ($_POST['id']) {
-			$m_notification->where('id', $_POST['id'])
-							->set('status', 'read')
-							->update();
+			$this->m_notification->where('id', $_POST['id'])
+								 ->set('status', 'read')
+								 ->update();
 		}
 	}
 }

@@ -1,18 +1,22 @@
 <?php 
-
 namespace App\Controllers\Anggota;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_group;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
 
-use App\Controllers\Anggota\Notifications;
-
-class Profile extends Controller
+class Profile extends BaseController
 {
+	protected $m_user;
+	protected $m_group;
+	protected $m_param;
+	protected $m_param_manasuka;
+	protected $notification;
+	protected $account;
 
 	function __construct()
 	{
@@ -21,7 +25,7 @@ class Profile extends Controller
 		$this->m_param = new M_param();
 		$this->m_param_manasuka = new M_param_manasuka();
 		$this->notification = new Notifications();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
 	}
 
 	public function index()
@@ -79,7 +83,7 @@ class Profile extends Controller
 						'notif' => $alert
 					];
 
-					session()->setFlashdata($data_session);
+					$this->session->setFlashdata($data_session);
 					return redirect()->back();
 				}	
 			}
@@ -109,7 +113,7 @@ class Profile extends Controller
 					'notif' => $alert
 				];
 
-				session()->setFlashdata($data_session);
+				$this->session->setFlashdata($data_session);
 				return redirect()->back();
 			}
 		}
@@ -142,7 +146,7 @@ class Profile extends Controller
 			'notif' => $alert
 		];
 
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->to('anggota/profile');
 	}
 
@@ -165,8 +169,8 @@ class Profile extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
-			session()->setFlashdata($dataset);
+			$dataset = ['notif' => $alert];
+			$this->session->setFlashdata($dataset);
 			return redirect()->to('anggota/profile');
 		}
 
@@ -180,8 +184,8 @@ class Profile extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
-			session()->setFlashdata($dataset);
+			$dataset = ['notif' => $alert];
+			$this->session->setFlashdata($dataset);
 			return redirect()->to('anggota/profile');
 		}
 
@@ -198,7 +202,7 @@ class Profile extends Controller
 		);
 		
 		$dataset += ['notif' => $alert];
-		session()->setFlashdata($dataset);
+		$this->session->setFlashdata($dataset);
 		return redirect()->to('anggota/profile');
 	}
 

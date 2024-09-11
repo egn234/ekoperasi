@@ -2,6 +2,7 @@
 namespace App\Controllers\Anggota;
 
 use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_pinjaman;
@@ -10,27 +11,39 @@ use App\Models\M_cicilan_pag;
 use App\Models\M_param;
 use App\Models\M_notification;
 
-use App\Controllers\Anggota\Notifications;
-
 class Pinjaman extends BaseController
 {
+	protected $m_user;
+	protected $account;
+	protected $m_pinjaman;
+	protected $m_cicilan;
+	protected $m_cicilan_pag;
+	protected $m_param;
+	protected $m_notification;
+	protected $notification;
 
+	function __construct()
+	{
+		$this->m_user = new M_user();
+		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
+		$this->m_pinjaman = new M_pinjaman();
+		$this->m_cicilan = new M_cicilan();
+		$this->m_cicilan_pag = new M_cicilan_pag();
+		$this->m_param = new M_param();
+		$this->m_notification = new M_notification();
+		$this->notification = new Notifications();
+	}
 
 	public function index()
 	{
-		$m_user = new M_user();
-		$m_pinjaman = new M_pinjaman();
-		$notification = new Notifications();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
-		$list_pinjaman = $m_pinjaman->getPinjamanByIdAnggota($account->iduser);
+		$list_pinjaman = $this->m_pinjaman->getPinjamanByIdAnggota($this->account->iduser);
 
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Pinjaman']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
-			'notification_list' => $notification->index()['notification_list'],
-			'notification_badges' => $notification->index()['notification_badges'],
-			'duser' => $account,
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
+			'duser' => $this->account,
 			'list_pinjaman' => $list_pinjaman
 		];
 		
@@ -39,25 +52,17 @@ class Pinjaman extends BaseController
 
 	function detail($idpinjaman = false)
 	{
-		$m_user = new M_user();
-		$m_pinjaman = new M_pinjaman();
-		$m_cicilan = new M_cicilan();
-		$m_cicilan_pag = new M_cicilan_pag();
-		$notification = new Notifications();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
-
-		$detail_pinjaman = $m_pinjaman->getPinjamanById($idpinjaman)[0];
-		$tagihan_lunas = $m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
+		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
+		$tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Pinjaman']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
-			'notification_list' => $notification->index()['notification_list'],
-			'notification_badges' => $notification->index()['notification_badges'],
-			'duser' => $account,
-			'list_cicilan2' => $m_cicilan_pag
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
+			'duser' => $this->account,
+			'list_cicilan2' => $this->m_cicilan_pag
 				->select('
 					(
 						SELECT SUM(nominal)
@@ -78,7 +83,7 @@ class Pinjaman extends BaseController
 				->groupBy('date')
 				->paginate(10, 'grup1'),
 
-			'pager' => $m_cicilan_pag->pager,
+			'pager' => $this->m_cicilan_pag->pager,
 			'currentpage' => $currentpage,
 			'detail_pinjaman' => $detail_pinjaman,
 			'tagihan_lunas' => $tagihan_lunas
@@ -89,19 +94,10 @@ class Pinjaman extends BaseController
 
 	public function add_proc()
 	{
-		$m_user = new M_user();
-		$m_pinjaman = new M_pinjaman();
-		$m_cicilan = new M_cicilan();
-		$m_cicilan_pag = new M_cicilan_pag();
-		$m_param = new M_param();
-		$notification = new Notifications();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
-
-		$cek_cicilan_aktif = $m_pinjaman->countPinjamanAktifByAnggota($account->iduser)[0]->hitung;
+		$cek_cicilan_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser)[0]->hitung;
 		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
 		$satuan_waktu = $this->request->getPost('satuan_waktu');
-		$cek_pegawai = $m_user->where('iduser', $account->iduser)
+		$cek_pegawai = $this->m_user->where('iduser', $this->account->iduser)
 									->get()
 									->getResult()[0]
 									->status_pegawai;
@@ -191,10 +187,10 @@ class Pinjaman extends BaseController
 			$dataset += [
 				'date_created' => date('Y-m-d H:i:s'),
 				'status' => 1,
-				'idanggota' => $account->iduser
+				'idanggota' => $this->account->iduser
 			];
 
-			$m_pinjaman->insertPinjaman($dataset);
+			$this->m_pinjaman->insertPinjaman($dataset);
 
 			$alert = view(
 				'partials/notification-alert', 
@@ -215,14 +211,9 @@ class Pinjaman extends BaseController
 
 	public function top_up_proc($idpinjaman = false)
 	{
-		$m_user = new M_user();
-		$m_pinjaman = new M_pinjaman();
-		$m_cicilan = new M_cicilan();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
 		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
 		$satuan_waktu = $this->request->getPost('satuan_waktu');
-		$cek_pegawai = $m_user->where('iduser', $account->iduser)
+		$cek_pegawai = $this->m_user->where('iduser', $this->account->iduser)
 									->get()
 									->getResult()[0]
 									->status_pegawai;
@@ -301,17 +292,17 @@ class Pinjaman extends BaseController
 			$dataset += [
 				'date_created' => date('Y-m-d H:i:s'),
 				'status' => 1,
-				'idanggota' => $account->iduser
+				'idanggota' => $this->account->iduser
 			];
 
-			$m_pinjaman->insertPinjaman($dataset);
+			$this->m_pinjaman->insertPinjaman($dataset);
 
 			$dataset_pinjaman = [
 				'status' => 5,
 				'date_updated' => date('Y-m-d H:i:s')
 			];
 
-			$m_pinjaman->updatePinjaman($idpinjaman, $dataset_pinjaman);
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset_pinjaman);
 
 			$alert = view(
 				'partials/notification-alert', 
@@ -332,12 +323,9 @@ class Pinjaman extends BaseController
 
 	public function generate_form($idpinjaman)
 	{
-		$m_pinjaman = new M_pinjaman();
-		$m_param = new M_param();
-
-		$detail_pinjaman = $m_pinjaman->getPinjamanById($idpinjaman)[0];
-		$bunga = $m_param->getParamById(9)[0]->nilai/100;
-		$provisi = $m_param->getParamById(5)[0]->nilai/100;
+		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
+		$bunga = $this->m_param->getParamById(9)[0]->nilai/100;
+		$provisi = $this->m_param->getParamById(5)[0]->nilai/100;
 
 		$data = [
 			'detail_pinjaman' => $detail_pinjaman,
@@ -350,14 +338,9 @@ class Pinjaman extends BaseController
 
 	public function upload_form($idpinjaman)
 	{
-		$m_user = new M_user();
-		$m_pinjaman = new M_pinjaman();
-		$m_notification = new M_notification();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
 		$file_1 = $this->request->getFile('form_bukti');
 		$file_2 = $this->request->getFile('slip_gaji');
-		$status_pegawai = $account->status_pegawai;
+		$status_pegawai = $this->account->status_pegawai;
 		$file_3 = ($status_pegawai == 'kontrak')?$this->request->getFile('form_kontrak'): false;
 		
 		$confirmation3 = true;
@@ -365,14 +348,14 @@ class Pinjaman extends BaseController
 		$data_session = [];
 
 		if ($file_1->isValid()) {	
-			$cek_bukti = $m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
+			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
 			
 			if ($cek_bukti) {
-				unlink(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/' . $cek_bukti);
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti);
 			}
 
 			$newName = $file_1->getRandomName();
-			$file_1->move(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/', $newName);
+			$file_1->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
 			
 			$form_bukti = $file_1->getName();
 			
@@ -397,14 +380,14 @@ class Pinjaman extends BaseController
 		}
 
 		if ($file_2->isValid()) {	
-			$cek_gaji = $m_pinjaman->getPinjamanById($idpinjaman)[0]->slip_gaji;
+			$cek_gaji = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->slip_gaji;
 			
 			if ($cek_gaji) {
-				unlink(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/' . $cek_gaji);
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_gaji);
 			}
 
 			$newName = $file_2->getRandomName();
-			$file_2->move(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/', $newName);
+			$file_2->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
 			
 			$slip_gaji = $file_2->getName();
 			
@@ -430,14 +413,14 @@ class Pinjaman extends BaseController
 		
 		if ($file_3){
 			if ($file_3->isValid()) {	
-				$cek_kontrak = $m_pinjaman->getPinjamanById($idpinjaman)[0]->form_kontrak;
+				$cek_kontrak = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_kontrak;
 				
 				if ($cek_kontrak) {
-					unlink(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/' . $cek_kontrak);
+					unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_kontrak);
 				}
 	
 				$newName = $file_3->getRandomName();
-				$file_3->move(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/', $newName);
+				$file_3->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
 				
 				$form_kontrak = $file_3->getName();
 				$data += ['form_kontrak' => $form_kontrak];
@@ -469,7 +452,6 @@ class Pinjaman extends BaseController
 				'notif' => $alert,
 				'notif_gaji' => $alert2
 			];
-
 		}else{
 			$date_updated = date('Y-m-d H:i:s');
 
@@ -480,17 +462,17 @@ class Pinjaman extends BaseController
 				'date_updated' => $date_updated
 			];
 
-			$m_pinjaman->updatePinjaman($idpinjaman, $data);
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $data);
 
 			$notification_data = [
-				'anggota_id' => $account->iduser,
+				'anggota_id' => $this->account->iduser,
 				'pinjaman_id' => $idpinjaman,
-				'message' => 'Pengajuan pinjaman dari anggota '. $account->nama_lengkap,
+				'message' => 'Pengajuan pinjaman dari anggota '. $this->account->nama_lengkap,
 				'timestamp' => date('Y-m-d H:i:s'),
 				'group_type' => 1
 			];
 
-			$m_notification->insert($notification_data);
+			$this->m_notification->insert($notification_data);
 			
 			$data_session += [
 				'notif' => $alert,
@@ -504,22 +486,17 @@ class Pinjaman extends BaseController
 
 	public function lunasi_proc($idpinjaman)
 	{
-		$m_user = new M_user();
-		$m_pinjaman = new M_pinjaman();
-		$m_notification = new M_notification();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
 		$file_1 = $this->request->getFile('bukti_bayar');
 
 		if ($file_1->isValid()) {	
-			$cek_bukti = $m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
+			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
 			
 			if ($cek_bukti) {
-				unlink(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/' . $cek_bukti);
+				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti);
 			}
 
 			$newName = $file_1->getRandomName();
-			$file_1->move(ROOTPATH . 'public/uploads/user/' . $account->username . '/pinjaman/', $newName);
+			$file_1->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
 			
 			$bukti_tf = $file_1->getName();
 
@@ -528,17 +505,17 @@ class Pinjaman extends BaseController
 				'status' => 6
 			];
 
-			$m_pinjaman->updatePinjaman($idpinjaman, $dataset);
+			$this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 
 			$notification_data = [
-				'anggota_id' => $account->iduser,
+				'anggota_id' => $this->account->iduser,
 				'pinjaman_id' => $idpinjaman,
-				'message' => 'Pengajuan pelunasan pinjaman dari anggota '. $account->nama_lengkap,
+				'message' => 'Pengajuan pelunasan pinjaman dari anggota '. $this->account->nama_lengkap,
 				'timestamp' => date('Y-m-d H:i:s'),
 				'group_type' => 1
 			];
 
-			$m_notification->insert($notification_data);
+			$this->m_notification->insert($notification_data);
 
 			$alert = view(
 				'partials/notification-alert', 
@@ -559,24 +536,18 @@ class Pinjaman extends BaseController
 				 	'status' => 'danger'
 				]
 			);
-			$dataset = ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
-			return redirect()->back();
+			$confirmation = false;
 		}
 	}
 
 	public function up_form()
 	{
-		$m_pinjaman = new M_pinjaman();
-		$m_user = new M_user();
-
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
-			$user = $m_pinjaman->getPinjamanById($id)[0];
+			$user = $this->m_pinjaman->getPinjamanById($id)[0];
 			$data = [
 				'a' => $user,
-				'duser' => $account
+				'duser' => $this->account
 			];
 			echo view('anggota/pinjaman/part-pinj-mod-upload', $data);
 		}

@@ -1,21 +1,25 @@
 <?php 
 namespace App\Controllers\Anggota;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_param;
 
-use App\Controllers\Anggota\Notifications;
-
-class Dashboard extends Controller
+class Dashboard extends BaseController
 {
+	protected $m_user;
+	protected $m_deposit;
+	protected $m_param;
+	protected $account;
+	protected $notification;
 
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
 		$this->notification = new Notifications();
@@ -29,37 +33,6 @@ class Dashboard extends Controller
 		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
 		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
-		
-		// if ($count_initial != 0) {	
-		// 	$cek_initial = $this->m_deposit->getInitialDeposit($this->account->iduser);
-		// 	if ($cek_initial[0]->status == 'diproses') {
-		// 		if (($parameter_cutoff - 3) >= date('d') && date('d') <= $parameter_cutoff) {
-		// 			$alert = view(
-		// 				'partials/notification-alert', 
-		// 				[
-		// 					'notif_text' => 'Segera konfirmasi bukti bayar untuk penyimpanan pokok sebelum tanggal '. $parameter_cutoff,
-		// 				 	'status' => 'warning'
-		// 				]
-		// 			);
-					
-		// 			session()->setFlashdata('notif_pokok', $alert);
-		// 		}
-		// 	}
-
-		// 	if ($cek_initial[1]->status == 'diproses') {
-		// 		if (($parameter_cutoff - 3) >= date('d') && date('d') <= $parameter_cutoff) {
-		// 			$alert = view(
-		// 				'partials/notification-alert', 
-		// 				[
-		// 					'notif_text' => 'Segera konfirmasi bukti bayar untuk penyimpanan wajib sebelum tanggal '. $parameter_cutoff,
-		// 				 	'status' => 'warning'
-		// 				]
-		// 			);
-					
-		// 			session()->setFlashdata('notif_wajib', $alert);
-		// 		}
-		// 	}
-		// }
 
 		if ($this->account->closebook_request == 'closebook') {
 			$alert = view(
@@ -70,7 +43,7 @@ class Dashboard extends Controller
 				]
 			);
 			
-			session()->setFlashdata('notif_cb', $alert);
+			$this->session->setFlashdata('notif_cb', $alert);
 		}
 
 		$data = [
