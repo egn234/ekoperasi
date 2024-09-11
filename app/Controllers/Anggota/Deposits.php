@@ -1,7 +1,8 @@
 <?php 
 namespace App\Controllers\Anggota;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_deposit;
@@ -10,35 +11,29 @@ use App\Models\M_param_manasuka;
 use App\Models\M_param_manasuka_log;
 use App\Models\M_notification;
 
-use App\Controllers\Anggota\Notifications;
-
-class Deposits extends Controller
+class Deposits extends BaseController
 {
-
-	function __construct()
-	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_deposit = new M_deposit();
-		$this->m_deposit_pag = new M_deposit_pag();
-		$this->m_param_manasuka = new M_param_manasuka();
-		$this->m_notification = new M_notification();
-		$this->notification = new Notifications();
-	}
-
 	public function index()
 	{
+		$m_user = new M_user();
+		$m_deposit = new M_deposit();
+		$m_param_manasuka = new M_param_manasuka();
+		$m_deposit_pag = new M_deposit_pag();
+		$notification = new Notifications();
+
+		$account = $m_user->getUserById($this->session->get('iduser'))[0];
+	
 		$m_param_manasuka_log = new M_param_manasuka_log();
 
-		$depo_list = $this->m_deposit->getDepositByUserId($this->account->iduser);
+		$depo_list = $m_deposit->getDepositByUserId($account->iduser);
 
 		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
-		$total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
-		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
-		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
+		$total_saldo_wajib = $m_deposit->getSaldoWajibByUserId($account->iduser)[0]->saldo;
+		$total_saldo_pokok = $m_deposit->getSaldoPokokByUserId($account->iduser)[0]->saldo;
+		$total_saldo_manasuka = $m_deposit->getSaldoManasukaByUserId($account->iduser)[0]->saldo;
 	
-		$param_manasuka = $this->m_param_manasuka->getParamByUserId($this->account->iduser);
+		$param_manasuka = $m_param_manasuka->getParamByUserId($account->iduser);
 
 		$mnsk_param_log = $m_param_manasuka_log->select("COUNT(id) as hitung")
 			->where('idmnskparam', $param_manasuka[0]->idmnskparam)
@@ -54,15 +49,15 @@ class Deposits extends Controller
 		$data = [
 			'title_meta' => view('anggota/partials/title-meta', ['title' => 'Simpanan']),
 			'page_title' => view('anggota/partials/page-title', ['title' => 'Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Simpanan']),
-			'notification_list' => $this->notification->index()['notification_list'],
-			'notification_badges' => $this->notification->index()['notification_badges'],
-			'duser' => $this->account,
-			'deposit_list2' => $this->m_deposit_pag
-				->where('idanggota', $this->account->iduser)
+			'notification_list' => $notification->index()['notification_list'],
+			'notification_badges' => $notification->index()['notification_badges'],
+			'duser' => $account,
+			'deposit_list2' => $m_deposit_pag
+				->where('idanggota', $account->iduser)
 				->orderBy('date_created', 'DESC')
 				->paginate(10, 'grup1'),
 
-			'pager' => $this->m_deposit_pag->pager,
+			'pager' => $m_deposit_pag->pager,
 			'currentpage' => $currentpage,
 			'deposit_list' => $depo_list,
 			'total_saldo_wajib' => $total_saldo_wajib,
@@ -77,6 +72,12 @@ class Deposits extends Controller
 
 	public function add_proc()
 	{
+		$m_user = new M_user();
+		$m_deposit = new M_deposit();
+		$m_notification = new M_notification();
+
+		$account = $m_user->getUserById($this->session->get('iduser'))[0];
+
 		$jenis_pengajuan = $this->request->getPost('jenis_pengajuan');
 		if ($jenis_pengajuan == "") {
 			$alert = view(
@@ -88,7 +89,7 @@ class Deposits extends Controller
 			);
 			
 			$dataset = ['notif' => $alert];
-			session()->setFlashdata($dataset);
+			$this->session->setFlashdata($dataset);
 			return redirect()->to('anggota/deposit/list');
 		}
 
@@ -113,14 +114,14 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
 			$cash_in = $nominal;
 			$status = 'upload bukti';
 		}else{
-			$cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
+			$cek_saldo = $m_deposit->cekSaldoManasukaByUser($account->iduser)[0]->saldo_manasuka;
 
 			if ($cek_saldo < $nominal) {
 				$alert = view(
@@ -132,7 +133,7 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -146,14 +147,14 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
-			$cek_status_penarikan = $this->m_deposit->select('COUNT(iddeposit) AS hitung')
+			$cek_status_penarikan = $m_deposit->select('COUNT(iddeposit) AS hitung')
 				->where('status LIKE "diproses%"')
 				->where('jenis_pengajuan', 'penarikan')
-				->where('idanggota', $this->account->iduser)
+				->where('idanggota', $account->iduser)
 				->where('jenis_deposit LIKE "manasuka%"')
 				->get()->getResult()[0]
 				->hitung;
@@ -168,7 +169,7 @@ class Deposits extends Controller
 				);
 				
 				$dataset = ['notif' => $alert];
-				session()->setFlashdata($dataset);
+				$this->session->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -184,26 +185,26 @@ class Deposits extends Controller
 			'deskripsi' => $deskripsi,
 			'status' => $status,
 			'date_created' => date('Y-m-d H:i:s'),
-			'idanggota' => $this->account->iduser
+			'idanggota' => $account->iduser
 		];
 
-		$this->m_deposit->insertDeposit($dataset);
+		$m_deposit->insertDeposit($dataset);
 
-		$new_deposit = $this->m_deposit->orderBy('date_created', 'DESC')
+		$new_deposit = $m_deposit->orderBy('date_created', 'DESC')
 									   ->limit(1)
 									   ->get()
 									   ->getResult()[0];
 
 		if ($new_deposit->status == 'diproses admin') {
 			$notification_data = [
-				'anggota_id' => $this->account->iduser,
+				'anggota_id' => $account->iduser,
 				'deposit_id' => $new_deposit->iddeposit,
-				'message' => 'Pengajuan penarikan manasuka dari anggota '. $this->account->nama_lengkap,
+				'message' => 'Pengajuan penarikan manasuka dari anggota '. $account->nama_lengkap,
 				'timestamp' => date('Y-m-d H:i:s'),
 				'group_type' => 1
 			];
 
-			$this->m_notification->insert($notification_data);
+			$m_notification->insert($notification_data);
 		}
 
 		$alert = view(
@@ -218,24 +219,30 @@ class Deposits extends Controller
 			'notif' => $alert
 		];
 
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->to('anggota/deposit/list');
 	}
 
 	public function upload_bukti_transfer($iddeposit = false)
 	{
+		$m_user = new M_user();
+		$m_deposit = new M_deposit();
+		$m_notification = new M_notification();
+
+		$account = $m_user->getUserById($this->session->get('iduser'))[0];
+
 		$img = $this->request->getFile('bukti_transfer');
 
 		if ($img->isValid()) {
 			
-			$cek_bukti = $this->m_deposit->getDepositById($iddeposit)[0]->bukti_transfer;
+			$cek_bukti = $m_deposit->getDepositById($iddeposit)[0]->bukti_transfer;
 			
 			if ($cek_bukti) {
-				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/tf/', $cek_bukti);
+				unlink(ROOTPATH . 'public/uploads/user/' . $account->username . '/tf/', $cek_bukti);
 			}
 
 			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/tf/', $newName);
+			$img->move(ROOTPATH . 'public/uploads/user/' . $account->username . '/tf/', $newName);
 			$bukti_transfer = $img->getName();
 
 			$insertData = [
@@ -244,17 +251,17 @@ class Deposits extends Controller
 				'date_updated' => date('Y-m-d H:i:s')
 			];
 
-			$this->m_deposit->updateBuktiTransfer($iddeposit, $insertData);
+			$m_deposit->updateBuktiTransfer($iddeposit, $insertData);
 
 			$notification_data = [
-				'anggota_id' => $this->account->iduser,
+				'anggota_id' => $account->iduser,
 				'deposit_id' => $iddeposit,
-				'message' => 'Pengajuan penyimpanan manasuka dari anggota '. $this->account->nama_lengkap,
+				'message' => 'Pengajuan penyimpanan manasuka dari anggota '. $account->nama_lengkap,
 				'timestamp' => date('Y-m-d H:i:s'),
 				'group_type' => 1
 			];
 
-			$this->m_notification->insert($notification_data);
+			$m_notification->insert($notification_data);
 			
 			$alert = view(
 				'partials/notification-alert', 
@@ -278,19 +285,24 @@ class Deposits extends Controller
 		$data_session = [
 			'notif' => $alert
 		];
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
 	public function create_param_manasuka()
 	{
+		$m_user = new M_user();
+		$m_param_manasuka = new M_param_manasuka();
+
+		$account = $m_user->getUserById($this->session->get('iduser'))[0];
+		
 		$dataset = [
-			'idanggota' => $this->account->iduser,
+			'idanggota' => $account->iduser,
 			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'created' => date('Y-m-d H:i:s')
 		];
 
-		$this->m_param_manasuka->insertParamManasuka($dataset);
+		$m_param_manasuka->insertParamManasuka($dataset);
 		
 		$alert = view(
 			'partials/notification-alert', 
@@ -301,21 +313,23 @@ class Deposits extends Controller
 		);
 		
 		$data_session = ['notif' => $alert];
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 
 		return redirect()->back();
 	}
 
 	public function set_param_manasuka($idmnskparam = false)
 	{
+		$m_param_manasuka = new M_param_manasuka();
 		$m_param_manasuka_log = new M_param_manasuka_log();
+
 		$dataset = [
 			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'updated' => date('Y-m-d H:i:s')
 		];
 
 		if ($dataset['nilai'] > 50000) {
-			$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+			$m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
 			
 			$temp_log = [
 				'nominal' => $dataset['nilai'],
@@ -343,21 +357,21 @@ class Deposits extends Controller
 		}
 		
 		$data_session = ['notif' => $alert];
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 
 		return redirect()->back();
 	}
 
 	public function cancel_param_manasuka($idmnskparam = false)
 	{
-		$iduser = $this->account->iduser;
+		$m_param_manasuka = new M_param_manasuka();
 
 		$dataset = [
 			'nilai' => 0,
 			'updated' => date('Y-m-d H:i:s')
 		];
 		
-		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
+		$m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
 
 
 		$alert = view(
@@ -372,7 +386,7 @@ class Deposits extends Controller
 			'notif' => $alert
 		];
 
-		session()->setFlashdata($data_session);
+		$this->session->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
