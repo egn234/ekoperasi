@@ -60,10 +60,10 @@ class Report extends Controller
 
 	public function print_potongan_pinjaman()
 	{
+		$m_monthly_report = new M_monthly_report();
+		$idreportm = $this->request->getPost('idreportm');
 
-		$date_monthly = $this->request->getPost('date_monthly');
-
-		if($date_monthly == 0){
+		if($idreportm == 0){
 			$alert = view(
 				'partials/notification-alert', 
 				[
@@ -77,14 +77,11 @@ class Report extends Controller
 			return redirect()->back();
 		}
 		
-		$getDay = $this->m_monthly_report->select('DAY(created) AS day')
-										  ->where('date_monthly', $date_monthly)
-										  ->get()
-										  ->getResult()[0]->day;
-
-		$endDate = $date_monthly.'-'.($getDay+1);
-		$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
-
+		$report_data = $m_monthly_report->where('idreportm', $idreportm)->get()->getResult()[0];
+		
+		$endDate = $report_data->created;
+		$startDate = $m_monthly_report->getPrevMonth($idreportm)[0]->created;
+		
 		$instansi = $this->request->getPost('instansi');
 
 		if ($instansi == '0') {
@@ -108,7 +105,7 @@ class Report extends Controller
 		];
 
 		header("Content-type: application/vnd.ms-excel");
-		header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$date_monthly.'.xls"');
+		header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$report_data->created.'.xls"');
 		header('Cache-Control: max-age=0');
 
 		echo view('bendahara/report/print-potongan-pinjaman', $report);
