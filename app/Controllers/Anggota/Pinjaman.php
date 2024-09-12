@@ -25,7 +25,7 @@ class Pinjaman extends BaseController
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_pinjaman = new M_pinjaman();
 		$this->m_cicilan = new M_cicilan();
 		$this->m_cicilan_pag = new M_cicilan_pag();
@@ -120,7 +120,7 @@ class Pinjaman extends BaseController
 			);
 			
 			$dataset += ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->back();
 		}
 
@@ -180,7 +180,7 @@ class Pinjaman extends BaseController
 				);
 				
 				$dataset += ['notif' => $alert];
-				$this->session->setFlashdata($dataset);
+				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -201,10 +201,10 @@ class Pinjaman extends BaseController
 			);
 			
 			$dataset += ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->back();
 		}else{
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->back();
 		}
 	}
@@ -285,7 +285,7 @@ class Pinjaman extends BaseController
 				);
 				
 				$dataset += ['notif' => $alert];
-				$this->session->setFlashdata($dataset);
+				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -313,10 +313,10 @@ class Pinjaman extends BaseController
 			);
 			
 			$dataset += ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->to('anggota/pinjaman/list');
 		}else{
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->back();
 		}
 	}
@@ -480,7 +480,7 @@ class Pinjaman extends BaseController
 			];
 		}
 		
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
@@ -526,7 +526,7 @@ class Pinjaman extends BaseController
 			);
 			
 			$dataset += ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->back();
 		}else{
 			$alert = view(

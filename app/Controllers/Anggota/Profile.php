@@ -25,7 +25,7 @@ class Profile extends BaseController
 		$this->m_param = new M_param();
 		$this->m_param_manasuka = new M_param_manasuka();
 		$this->notification = new Notifications();
-		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 	}
 
 	public function index()
@@ -83,7 +83,7 @@ class Profile extends BaseController
 						'notif' => $alert
 					];
 
-					$this->session->setFlashdata($data_session);
+					session()->setFlashdata($data_session);
 					return redirect()->back();
 				}	
 			}
@@ -113,7 +113,7 @@ class Profile extends BaseController
 					'notif' => $alert
 				];
 
-				$this->session->setFlashdata($data_session);
+				session()->setFlashdata($data_session);
 				return redirect()->back();
 			}
 		}
@@ -146,7 +146,7 @@ class Profile extends BaseController
 			'notif' => $alert
 		];
 
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 		return redirect()->to('anggota/profile');
 	}
 
@@ -170,7 +170,7 @@ class Profile extends BaseController
 			);
 			
 			$dataset = ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->to('anggota/profile');
 		}
 
@@ -185,7 +185,7 @@ class Profile extends BaseController
 			);
 			
 			$dataset = ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->to('anggota/profile');
 		}
 
@@ -202,7 +202,7 @@ class Profile extends BaseController
 		);
 		
 		$dataset += ['notif' => $alert];
-		$this->session->setFlashdata($dataset);
+		session()->setFlashdata($dataset);
 		return redirect()->to('anggota/profile');
 	}
 

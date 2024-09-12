@@ -24,7 +24,7 @@ class Deposits extends BaseController
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_deposit_pag = new M_deposit_pag();
 		$this->m_param_manasuka = new M_param_manasuka();
@@ -94,7 +94,7 @@ class Deposits extends BaseController
 			);
 			
 			$dataset = ['notif' => $alert];
-			$this->session->setFlashdata($dataset);
+			session()->setFlashdata($dataset);
 			return redirect()->to('anggota/deposit/list');
 		}
 
@@ -119,7 +119,7 @@ class Deposits extends BaseController
 				);
 				
 				$dataset = ['notif' => $alert];
-				$this->session->setFlashdata($dataset);
+				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -138,7 +138,7 @@ class Deposits extends BaseController
 				);
 				
 				$dataset = ['notif' => $alert];
-				$this->session->setFlashdata($dataset);
+				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -152,7 +152,7 @@ class Deposits extends BaseController
 				);
 				
 				$dataset = ['notif' => $alert];
-				$this->session->setFlashdata($dataset);
+				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -174,7 +174,7 @@ class Deposits extends BaseController
 				);
 				
 				$dataset = ['notif' => $alert];
-				$this->session->setFlashdata($dataset);
+				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}
 
@@ -224,7 +224,7 @@ class Deposits extends BaseController
 			'notif' => $alert
 		];
 
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 		return redirect()->to('anggota/deposit/list');
 	}
 
@@ -284,7 +284,7 @@ class Deposits extends BaseController
 		$data_session = [
 			'notif' => $alert
 		];
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
@@ -307,7 +307,7 @@ class Deposits extends BaseController
 		);
 		
 		$data_session = ['notif' => $alert];
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 
 		return redirect()->back();
 	}
@@ -349,7 +349,7 @@ class Deposits extends BaseController
 		}
 		
 		$data_session = ['notif' => $alert];
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 
 		return redirect()->back();
 	}
@@ -378,7 +378,7 @@ class Deposits extends BaseController
 			'notif' => $alert
 		];
 
-		$this->session->setFlashdata($data_session);
+		session()->setFlashdata($data_session);
 		return redirect()->back();
 	}
 
@@ -387,7 +387,7 @@ class Deposits extends BaseController
 		$m_user = new M_user();
 		$m_deposit = new M_deposit();
 
-		$account = $m_user->getUserById($this->session->get('iduser'))[0];
+		$account = $m_user->getUserById(session()->get('iduser'))[0];
 
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];

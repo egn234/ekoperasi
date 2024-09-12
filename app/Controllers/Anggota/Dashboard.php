@@ -19,7 +19,7 @@ class Dashboard extends BaseController
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
 		$this->notification = new Notifications();
@@ -43,7 +43,7 @@ class Dashboard extends BaseController
 				]
 			);
 			
-			$this->session->setFlashdata('notif_cb', $alert);
+			session()->setFlashdata('notif_cb', $alert);
 		}
 
 		$data = [

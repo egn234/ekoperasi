@@ -21,7 +21,7 @@ class Closebook extends BaseController
 	function __construct()
 	{
 		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById($this->session->get('iduser'))[0];
+		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->m_deposit = new M_deposit();
 		$this->m_param = new M_param();
 		$this->m_notification = new M_notification();
@@ -75,7 +75,7 @@ class Closebook extends BaseController
 			]
 		);
 		
-		$this->session->setFlashdata('notif', $alert);
+		session()->setFlashdata('notif', $alert);
 		return redirect()->back();
 	}
 
@@ -95,7 +95,7 @@ class Closebook extends BaseController
 			]
 		);
 		
-		$this->session->setFlashdata('notif', $alert);
+		session()->setFlashdata('notif', $alert);
 		return redirect()->back();
 	}
 }
