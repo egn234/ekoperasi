@@ -1,15 +1,18 @@
 <?php 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_param_manasuka;
 
-class login extends Controller
+class login extends BaseController
 {
+	protected $m_user;
+	protected $m_param_manasuka;
+	
 	function __construct()
 	{
-		$this->m_user = new M_user();
+		$this->m_user = model(M_user::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
 	}
 
 	public function index()

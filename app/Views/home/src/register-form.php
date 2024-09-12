@@ -7,9 +7,12 @@
             Harus Diisi
         </div>
     </div>
-    <div class="mb-3">
+    <div class="mb-3"> 
         <label class="form-label" for="nik_number">Nomor KTP/NIK <span class="text-danger">*</span></label>
-        <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
+        <input type="number" class="form-control" id="nik_number" value="<?=session()->getFlashdata('nik')?>" name="nik" required 
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
+            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+            onblur="validateNik(this)">
         <div class="invalid-feedback">
             Nomor KTP harus 16 digit
         </div>

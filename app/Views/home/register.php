@@ -10,8 +10,8 @@
     <link rel="shortcut icon" href="assets/images/favicon.ico">
     <?= $this->include('partials/head-css') ?>
 </head>
-<body>
-    
+
+<body>    
     <div class="auth-page">
         <div class="container-fluid p-0">
             <div class="row g-0">
@@ -52,7 +52,6 @@
                     <!-- end auth full page content -->
                 </div>
                 <!-- end col -->
-
             </div>
             <!-- end row -->
         </div>

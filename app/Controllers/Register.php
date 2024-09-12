@@ -1,22 +1,24 @@
 <?php 
-
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
 use App\Models\M_user;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
 use App\Models\M_deposit;
 
-class register extends Controller
+class register extends BaseController
 {
+	protected $m_user;
+	protected $m_param;
+	protected $m_deposit;
+	protected $m_param_manasuka;
 
 	function __construct()
 	{
-		$this->m_user = new M_User();	
-		$this->m_param = new M_param();	
-		$this->m_deposit = new M_deposit();	
-		$this->m_param_manasuka = new M_param_manasuka();	
+		$this->m_user = model(M_user::class);	
+		$this->m_param = model(M_param::class);	
+		$this->m_deposit = model(M_deposit::class);	
+		$this->m_param_manasuka = model(M_param_manasuka::class);	
 	}
 
 	public function index()
