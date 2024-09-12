@@ -1,5 +1,7 @@
-<?php 
+<?php
 namespace App\Controllers;
+
+use App\Controllers\BaseController;
 
 use App\Models\M_user;
 use App\Models\M_param;

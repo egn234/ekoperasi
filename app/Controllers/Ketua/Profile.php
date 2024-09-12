@@ -11,13 +11,20 @@ use App\Controllers\Ketua\Notifications;
 
 class Profile extends Controller
 {
+	protected $m_user;
+	protected $m_group;
+	protected $account;
+	protected $notification;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->m_group = new M_group();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		$this->m_user = model(M_user::class);
+		$this->m_group = model(M_group::class);
+
 		$this->notification = new Notifications();
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		$this->account = !empty($user) ? $user[0] : null;
 	}
 
 	public function index()

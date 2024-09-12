@@ -24,14 +24,17 @@ class Pinjaman extends BaseController
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_pinjaman = new M_pinjaman();
-		$this->m_cicilan = new M_cicilan();
-		$this->m_cicilan_pag = new M_cicilan_pag();
-		$this->m_param = new M_param();
-		$this->m_notification = new M_notification();
+		$this->m_user = model(M_user::class);
+		$this->m_pinjaman = model(M_pinjaman::class);
+		$this->m_cicilan = model(M_cicilan::class);
+		$this->m_cicilan_pag = model(M_cicilan_pag::class);
+		$this->m_param = model(M_param::class);
+		$this->m_notification = model(M_notification::class);
+		
 		$this->notification = new Notifications();
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		$this->account = !empty($user) ? $user[0] : null;
 	}
 
 	public function index()

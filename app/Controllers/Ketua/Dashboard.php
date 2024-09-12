@@ -1,7 +1,7 @@
 <?php 
 namespace App\Controllers\Ketua;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
 
 use App\Models\M_user;
 use App\Models\M_deposit;
@@ -10,17 +10,26 @@ use App\Models\M_pinjaman;
 
 use App\Controllers\Ketua\Notifications;
 
-class Dashboard extends Controller
+class Dashboard extends BaseController
 {
-
+	protected $m_user;
+	protected $m_deposit;
+	protected $m_monthly_report;
+	protected $m_pinjaman;
+	protected $notification;
+	protected $account;
+	
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->m_deposit = new M_deposit();
-		$this->m_monthly_report = new M_monthly_report();
-		$this->m_pinjaman = new M_pinjaman();
+		$this->m_user = model(M_user::class);
+		$this->m_deposit = model(M_deposit::class);
+		$this->m_monthly_report = model(M_monthly_report::class);
+		$this->m_pinjaman = model(M_pinjaman::class);
+
 		$this->notification = new Notifications();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		$this->account = !empty($user) ? $user[0] : null;
 	}
 
 	public function index()

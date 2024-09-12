@@ -1,6 +1,8 @@
 <?php 
 namespace App\Controllers;
 
+use App\Controllers\BaseController;
+
 use App\Models\M_user;
 use App\Models\M_param_manasuka;
 
@@ -8,7 +10,7 @@ class login extends BaseController
 {
 	protected $m_user;
 	protected $m_param_manasuka;
-	
+
 	function __construct()
 	{
 		$this->m_user = model(M_user::class);
@@ -56,7 +58,6 @@ class login extends BaseController
 						return redirect()->to('ketua/dashboard');
 					}
 					elseif($user->idgroup == 4){
-						$this->m_param_manasuka = new M_param_manasuka();
 						$cek_new_user = $this->m_param_manasuka->where('idanggota', $userdata['iduser'])->get()->getResult();
 
 						if ($cek_new_user != null) {

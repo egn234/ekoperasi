@@ -1,7 +1,7 @@
 <?php 
 namespace App\Controllers\Ketua;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
 
 use App\Models\M_user;
 use App\Models\M_pinjaman;
@@ -9,9 +9,14 @@ use App\Models\M_notification;
 
 use App\Controllers\Ketua\Notifications;
 
-class Pinjaman extends Controller
+class Pinjaman extends BaseController
 {
-
+	protected $m_user;
+	protected $account;
+	protected $m_pinjaman;
+	protected $m_notification;
+	protected $notification;
+	
 	function __construct()
 	{
 		$this->m_user = new M_user();

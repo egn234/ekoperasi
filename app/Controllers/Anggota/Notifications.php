@@ -13,9 +13,11 @@ class Notifications extends BaseController
 	protected $m_notification;
 	
 	function __construct(){
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_notification = new M_notification();
+		$this->m_user = model(M_user::class);
+		$this->m_notification = model(M_notification::class);
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		$this->account = !empty($user) ? $user[0] : null;
 	}
 
 	public function index()

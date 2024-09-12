@@ -1,5 +1,7 @@
 <?php namespace App\Controllers;
 
+use App\Controllers\BaseController;
+
 use App\Models\M_user;
 use App\Models\M_pinjaman;
 use App\Models\M_cicilan;
@@ -18,13 +20,14 @@ class test_field extends BaseController
 
 	function __construct()
 	{
-		$this->m_user = model(M_user::class);
-		$this->m_pinjaman = model(M_pinjaman::class);
-		$this->m_cicilan = model(M_cicilan::class);
-		$this->m_monthly_report = model(M_monthly_report::class);
-		$this->m_param = model(M_param::class);
-		$this->m_param_manasuka = model(M_param_manasuka::class);
+		$this->m_user = new M_user();
+		$this->m_pinjaman = new M_pinjaman();
+		$this->m_cicilan = new M_cicilan();
+		$this->m_monthly_report = new M_monthly_report();
+		$this->m_param = new M_param();
+		$this->m_param_manasuka = new M_param_manasuka();
 	}
+
 	public function index()
 	{
 		$list_anggota = $this->m_user->where('flag', '1')
@@ -50,6 +53,7 @@ class test_field extends BaseController
 			}
 			print_r($data_manasuka);
 		}
+
 		$date_monthly = '2024-09';
 		$getDay = $this->m_monthly_report->select('DAY(created) AS day')
 				->where('date_monthly', $date_monthly)

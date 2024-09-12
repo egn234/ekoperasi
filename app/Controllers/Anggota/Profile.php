@@ -20,12 +20,15 @@ class Profile extends BaseController
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->m_group = new M_group();
-		$this->m_param = new M_param();
-		$this->m_param_manasuka = new M_param_manasuka();
+		$this->m_user = model(M_user::class);
+		$this->m_group = model(M_group::class);
+		$this->m_param = model(M_param::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
+
 		$this->notification = new Notifications();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
+		
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		$this->account = !empty($user) ? $user[0] : null;
 	}
 
 	public function index()
