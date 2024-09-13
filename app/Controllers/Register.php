@@ -10,7 +10,6 @@ use App\Models\M_deposit;
 
 class register extends Controller
 {
-
 	function __construct()
 	{
 		$this->m_user = new M_User();	
@@ -50,24 +49,24 @@ class register extends Controller
 	public function register_proc()
 	{
 		$dataset = [
-			'nama_lengkap' => strtoupper($this->request->getPost('nama_lengkap')),
-			'nik' => $this->request->getPost('nik'),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'instansi' => $this->request->getPost('instansi'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nama_bank' => strtoupper($this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'email' => $this->request->getPost('email'),
-			'username' => $this->request->getPost('username'),
-			'pass' => md5($this->request->getPost('pass')),
+			'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
+			'nik' => request()->getPost('nik'),
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'instansi' => request()->getPost('instansi'),
+			'unit_kerja' => request()->getPost('unit_kerja'),
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'alamat' => request()->getPost('alamat'),
+			'nama_bank' => strtoupper(request()->getPost('nama_bank')),
+			'no_rek' => request()->getPost('no_rek'),
+			'nomor_telepon' => request()->getPost('nomor_telepon'),
+			'email' => request()->getPost('email'),
+			'username' => request()->getPost('username'),
+			'pass' => md5(request()->getPost('pass')),
 			'idgroup' => 4
 		];
 
-		$pass2 = md5($this->request->getPost('pass2'));
+		$pass2 = md5(request()->getPost('pass2'));
 
 		if ($dataset['instansi'] == "") {
 			$alert = view(
@@ -80,7 +79,7 @@ class register extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		if ($dataset['status_pegawai'] == "") {
@@ -94,7 +93,7 @@ class register extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		$cek_username = $this->m_user->countUser($dataset['username'])[0]->hitung;
@@ -110,11 +109,11 @@ class register extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		//check duplicate nip
-		$nip = $this->request->getPost('nip');
+		$nip = request()->getPost('nip');
 
 		if($nip != null || $nip != ''){
 			$cek_nip = $this->m_user->select('count(iduser) as hitung')
@@ -157,7 +156,7 @@ class register extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		if ($dataset['pass'] != $pass2) {
@@ -171,10 +170,10 @@ class register extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');			
+			return redirect()->to('registrasi');			
 		}
 
-		$img = $this->request->getFile('profil_pic');
+		$img = request()->getFile('profil_pic');
 		
 		if ($img->isValid()) {
 			$newName = $img->getRandomName();
@@ -224,7 +223,7 @@ class register extends Controller
 		);
 		
 		$data_session = [
-			'username' => $this->request->getPost('username'),
+			'username' => request()->getPost('username'),
 			'notif_login' => $alert
 		];
 

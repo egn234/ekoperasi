@@ -48,10 +48,7 @@
                                                 </div>
                                                 <div class="mb-3"> 
                                                     <label class="form-label" for="nik_number">Nomor KTP/NIK <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="nik_number" value="<?=session()->getFlashdata('nik')?>" name="nik" required 
-                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
-                                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                                        onblur="validateNik(this)">
+                                                    <input type="number" class="form-control" id="nik_number" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
                                                     <div class="invalid-feedback">
                                                         Nomor KTP harus 16 digit
                                                     </div>
@@ -82,7 +79,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="institution">Instansi <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="institution" name="instansi" required>
-                                                        <option value="" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Instansi...</option>
+                                                        <option value="default" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Instansi...</option>
                                                         <option value="YPT" <?=(session()->getFlashdata('instansi') == 'YPT')?'selected':''?> >YPT</option>
                                                         <option value="Universitas Telkom" <?=(session()->getFlashdata('instansi') == 'Universitas Telkom')?'selected':''?> >Universitas Telkom</option>
                                                         <option value="Trengginas Jaya" <?=(session()->getFlashdata('instansi') == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
@@ -104,7 +101,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="staffing">Jenis Kepegawaian <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="staffing" name="status_pegawai" required>
-                                                        <option value="" <?=(session()->getFlashdata('status_pegawai'))?'':'selected'?> disabled>Pilih...</option>
+                                                        <option value="default" <?=(session()->getFlashdata('status_pegawai'))?'':'selected'?> disabled>Pilih...</option>
                                                         <option value="tetap" <?=(session()->getFlashdata('status_pegawai') == 'tetap')?'selected':''?> >Tetap</option>
                                                         <option value="kontrak" <?=(session()->getFlashdata('status_pegawai') == 'kontrak')?'selected':''?> >Kontrak</option>
                                                     </select>
@@ -162,20 +159,16 @@
                                                         <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
                                                         <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
                                                 </div>
+
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
+                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password <span class="text-danger">*</span></label>
                                                     <div class="input-group auth-pass-inputgroup">
                                                         <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
                                                         <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
                                                 </div>
+                                                
                                                 <div class="mb-3">
                                                     <label class="form-label" for="profile_pic">Foto Profil <span class="text-danger">*</span></label>
                                                     <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
@@ -184,7 +177,7 @@
                                                   *Tidak boleh dikosongkan
                                                 </span>
 
-                                                <a class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#konfirmasi">
+                                                <a class="btn btn-primary float-end" id="btnRegister">
                                                     Registrasi
                                                 </a>
 
@@ -215,6 +208,7 @@
             <!-- end container fluid -->
         </div>
 
+        <!-- Modal Konfirmasi -->
         <div id="konfirmasi" class="modal fade" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -236,9 +230,9 @@
                             </p>
                             <div class="mb-4">
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="konfirmasi_check" form="register_form" required>
+                                    <input type="checkbox" class="form-check-input" id="konfirmasi_check" required>
                                     <label class="form-check-label" for="konfirmasi_check">
-                                        <p class="mb-0">Bersedia dengan peraturan yang tertera </p>
+                                        <p class="mb-0">Bersedia dengan peraturan yang tertera</p>
                                     </label>
                                 </div>
                             </div>
@@ -248,7 +242,6 @@
                         <a class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</a>
                         <button type="submit" id="confirm_button" form="register_form" class="btn btn-primary" disabled>Registrasi</button>
                     </div>
-
                 </div>
             </div>
         </div><!-- /.modal -->
@@ -258,51 +251,7 @@
 
         <!-- validation init -->
         <script src="assets/js/pages/validation.init.js"></script>
-
-        <script type="text/javascript">
-            $('#konfirmasi_check').click(function(){
-                //If the checkbox is checked.
-                if($(this).is(':checked')){
-                    //Enable the submit button.
-                    $('#confirm_button').attr("disabled", false);
-                } else{
-                    //If it is not checked, disable the button.
-                    $('#confirm_button').attr("disabled", true);
-                }
-            });
-
-            document.addEventListener("DOMContentLoaded", function () {
-                const passwordToggles = document.querySelectorAll(".password-toggle");
-
-                passwordToggles.forEach(function (toggle) {
-                    toggle.addEventListener("click", function () {
-                        const targetId = toggle.getAttribute("data-target");
-                        const passwordInput = document.getElementById(targetId);
-
-                        if (passwordInput.type === "password") {
-                            passwordInput.type = "text";
-                            toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
-                        } else {
-                            passwordInput.type = "password";
-                            toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
-                        }
-                    });
-                });
-            });
-     
-            function validateNik(input) {
-                const nik = input.value;
-                
-                // Check if the NIK has exactly 16 digits
-                if (nik.length !== 16) {
-                    input.classList.add('is-invalid');
-                    input.classList.remove('is-valid');
-                } else {
-                    input.classList.remove('is-invalid');
-                    input.classList.add('is-valid');
-                }
-            }
-        </script>
+        <script src="assets/js/pages/register.js"></script>
 
     </body>
 
