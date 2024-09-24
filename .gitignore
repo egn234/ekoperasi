@@ -135,7 +135,4 @@ public/uploads/*
 db_log/*
 
 # Docker
-.dockerignore
-Dockerfile
 docker-compose.yml
-custom-php.ini
