@@ -494,7 +494,7 @@ class Pinjaman extends BaseController
 		if ($file_1->isValid()) {	
 			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
 			
-			if ($cek_bukti) {
+			if ($cek_bukti && file_exists(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti)) {
 				unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti);
 			}
 
