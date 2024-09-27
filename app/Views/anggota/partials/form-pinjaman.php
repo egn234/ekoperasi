@@ -140,7 +140,7 @@
 			</td>
 			<td align="right" style="border: 1px solid black;padding: 10px;">
 				Disetujui/Ditolak* oleh pengurus,<br>
-				SDM Universitas Telkom,
+				SDM .........................................,
 				<br>
 				<br>
 				<br>
