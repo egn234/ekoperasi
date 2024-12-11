@@ -13,5 +13,3 @@ class M_cicilan_pag extends Model
     protected $updatedField  = 'date_updated';
 
 }
-
-?>

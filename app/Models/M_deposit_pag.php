@@ -13,5 +13,3 @@ class M_deposit_pag extends Model
     protected $updatedField  = 'date_updated';
 
 }
-
-?>
