@@ -14,8 +14,8 @@ class LoginFilter implements FilterInterface
 	    	$idgroup = session()->get('idgroup');
 
 	    	if ($flag == 0) {
-					session()->destroy();
-					return redirect()->to('/');
+				session()->destroy();
+				return redirect()->to('/');
 	    	}
 
 	    	if ($idgroup == 1) {
