@@ -236,6 +236,21 @@ CREATE TABLE `tb_user` (
   `idgroup` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ci_sessions`
+--
+
+CREATE TABLE `ci_sessions` (
+    `id` VARCHAR(128) NOT NULL PRIMARY KEY,
+    `ip_address` VARCHAR(45) NOT NULL,
+    timestamp INT(10) UNSIGNED DEFAULT 0 NOT NULL,
+    data BLOB NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `ci_sessions_timestamp` (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Dumping data for table `tb_user`
 --

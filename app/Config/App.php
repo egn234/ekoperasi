@@ -154,8 +154,8 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $sessionDriver = FileHandler::class;
-
+    public $sessionDriver = \CodeIgniter\Session\Handlers\DatabaseHandler::class; // Use DatabaseHandler
+    
     /**
      * --------------------------------------------------------------------------
      * Session Cookie Name
@@ -196,7 +196,7 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $sessionSavePath = WRITEPATH . 'session';
+    public $sessionSavePath = 'ci_sessions'; // Use your table name (default: 'ci_sessions')
 
     /**
      * --------------------------------------------------------------------------
