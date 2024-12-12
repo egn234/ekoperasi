@@ -11,6 +11,10 @@ use App\Controllers\Admin\Notifications;
 
 class Profile extends Controller
 {
+	protected $m_user;
+	protected $m_group;
+	protected $account;
+	protected $notification;
 
 	function __construct()
 	{
@@ -36,21 +40,21 @@ class Profile extends Controller
 	public function update_proc()
 	{
 		$dataset = [
-			'nama_lengkap' => strtoupper($this->request->getPost('nama_lengkap')),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'instansi' => $this->request->getPost('instansi'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nama_bank' => strtoupper($this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja')
+			'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'instansi' => request()->getPost('instansi'),
+			'alamat' => request()->getPost('alamat'),
+			'nama_bank' => strtoupper(request()->getPost('nama_bank')),
+			'no_rek' => request()->getPost('no_rek'),
+			'nomor_telepon' => request()->getPost('nomor_telepon'),
+			'email' => request()->getPost('email'),
+			'unit_kerja' => request()->getPost('unit_kerja')
 		];
 
 		//check duplicate nip
-		$nip_baru = $this->request->getPost('nip');
+		$nip_baru = request()->getPost('nip');
 
 		if($nip_baru != null || $nip_baru != ''){
 			$nip_awal = $this->account->nip;
@@ -82,7 +86,7 @@ class Profile extends Controller
 		}
 
 		//check duplicate nik
-		$nik_baru = $this->request->getPost('nik');
+		$nik_baru = request()->getPost('nik');
 		$nik_awal = $this->account->nik;
 
 		if ($nik_baru != $nik_awal) {
@@ -110,7 +114,7 @@ class Profile extends Controller
 			}
 		}
 
-		$img = $this->request->getFile('profil_pic');
+		$img = request()->getFile('profil_pic');
 
 		if ($img->isValid()) {
 			unlink(ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic );
@@ -144,10 +148,12 @@ class Profile extends Controller
 
 	public function update_pass()
 	{
-		$old_pass = md5($this->request->getPost('old_pass'));
+		$old_pass = md5(request()->getPost('old_pass'));
 
-		$pass = md5($this->request->getPost('pass'));
-		$pass2 = md5($this->request->getPost('pass2'));
+		$pass = md5(request()->getPost('pass'));
+		$pass2 = md5(request()->getPost('pass2'));
+
+		$dataset = [];
 
 		$cek_pass = $this->m_user->getPassword($this->account->iduser)[0]->pass;
 

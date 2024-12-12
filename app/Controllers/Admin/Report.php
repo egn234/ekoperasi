@@ -19,6 +19,15 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Report extends Controller
 {
+	protected $m_user;
+	protected $account;
+	protected $m_deposit;
+	protected $m_monthly_report;
+	protected $m_param;
+	protected $m_param_manasuka;
+	protected $m_cicilan;
+	protected $m_pinjaman;
+	protected $notification;
 
 	function __construct()
 	{
@@ -281,7 +290,7 @@ class Report extends Controller
 	public function print_potongan_pinjaman()
 	{
 		$m_monthly_report = new M_monthly_report();
-		$idreportm = $this->request->getPost('idreportm');
+		$idreportm = request()->getPost('idreportm');
 
 		if($idreportm == 0){
 			$alert = view(
@@ -302,7 +311,7 @@ class Report extends Controller
 		$endDate = $report_data->created;
 		$startDate = $m_monthly_report->getPrevMonth($idreportm)[0]->created;
 		
-		$instansi = $this->request->getPost('instansi');
+		$instansi = request()->getPost('instansi');
 
 		if ($instansi == '0') {
 			$user_list = $this->m_user->where('flag', 1)
@@ -333,7 +342,7 @@ class Report extends Controller
 
 	public function print_rekap_tahunan()
 	{
-		$tahun = $this->request->getPost('tahun');
+		$tahun = request()->getPost('tahun');
 		
 		if ($tahun == '0') {
 			$alert = view(
@@ -406,7 +415,7 @@ class Report extends Controller
 	public function print_rekening_koran()
 	{
 
-		$tahun = $this->request->getPost('tahun');
+		$tahun = request()->getPost('tahun');
 		
 		if ($tahun == '0') {
 			$alert = view(

@@ -14,6 +14,13 @@ use App\Controllers\Admin\Notifications;
 
 class Deposits extends Controller
 {
+	protected $m_user;
+	protected $m_deposit;
+	protected $m_deposit_pag;
+	protected $m_param_manasuka;
+	protected $m_notification;
+	protected $notification;
+	protected $account;
 
 	function __construct()
 	{
@@ -62,7 +69,7 @@ class Deposits extends Controller
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo;
 		$detail_user = $this->m_user->getUserById($iduser)[0];
 		$param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser);
-		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
+		$currentpage = request()->getVar('page_grup1') ? request()->getVar('page_grup1') : 1;
 
 		$mnsk_param_log = $m_param_manasuka_log->select("COUNT(id) as hitung")
 			->where('idmnskparam', $param_manasuka[0]->idmnskparam)
@@ -102,8 +109,8 @@ class Deposits extends Controller
 
 	public function add_proc()
 	{
-		$iduser = $this->request->getPost('iduser');
-		$jenis_pengajuan = $this->request->getPost('jenis_pengajuan');
+		$iduser = request()->getPost('iduser');
+		$jenis_pengajuan = request()->getPost('jenis_pengajuan');
 		if ($jenis_pengajuan == "") {
 			$alert = view(
 				'partials/notification-alert', 
@@ -120,8 +127,8 @@ class Deposits extends Controller
 
 		$jenis_deposit = 'manasuka free';
 
-		$nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
-		$deskripsi = $this->request->getPost('description');
+		$nominal = filter_var(request()->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
+		$deskripsi = request()->getPost('description');
 
 
 		$cash_in = 0;
@@ -197,8 +204,8 @@ class Deposits extends Controller
 	public function create_param_manasuka()
 	{
 		$dataset = [
-			'idanggota' => $this->request->getPost('iduser'),
-			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
+			'idanggota' => request()->getPost('iduser'),
+			'nilai' => filter_var(request()->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'created' => date('Y-m-d H:i:s')
 		];
 
@@ -222,7 +229,7 @@ class Deposits extends Controller
 	{
 		$m_param_manasuka_log = new M_param_manasuka_log();
 		$dataset = [
-			'nilai' => filter_var($this->request->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
+			'nilai' => filter_var(request()->getPost('nilai'), FILTER_SANITIZE_NUMBER_INT),
 			'updated' => date('Y-m-d H:i:s')
 		];
 
@@ -349,7 +356,7 @@ class Deposits extends Controller
 	{
 		$dataset = [
 			'idadmin' => $this->account->iduser,
-			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
+			'alasan_tolak' => request()->getPost('alasan_tolak'),
 			'status' => 'ditolak',
 			'date_updated' => date('Y-m-d H:i:s')
 		];

@@ -12,7 +12,13 @@ use App\Controllers\Admin\Notifications;
 
 class Dashboard extends Controller
 {
-
+	protected $m_user;
+	protected $m_deposit;
+	protected $m_monthly_report;
+	protected $m_pinjaman;
+	protected $notification;
+	protected $account;
+	
 	function __construct()
 	{
 		$this->m_user = new M_user();

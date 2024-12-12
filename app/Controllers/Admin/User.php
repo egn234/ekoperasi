@@ -18,6 +18,15 @@ use App\Controllers\Admin\Notifications;
 
 class User extends Controller
 {
+	protected $m_user;
+	protected $m_group;
+	protected $m_deposit;
+	protected $m_param;
+	protected $m_param_manasuka;
+	protected $m_pinjaman;
+	protected $m_cicilan;
+	protected $notification;
+	protected $account;
 
 	function __construct()
 	{
@@ -130,7 +139,7 @@ class User extends Controller
 
 	public function get_table_upload()
 	{
-		$table_file = $this->request->getFile('file_import');
+		$table_file = request()->getFile('file_import');
 		
 		if ($table_file->isValid()) 
 		{
@@ -494,24 +503,24 @@ class User extends Controller
 	public function add_user_proc()
 	{
 		$dataset = [
-			'nama_lengkap' => strtoupper((string) $this->request->getPost('nama_lengkap')),
-			'nik' => $this->request->getPost('nik'),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'instansi' => $this->request->getPost('instansi'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
-			'username' => $this->request->getPost('username'),
-			'pass' => md5($this->request->getPost('pass')),
-			'idgroup' => $this->request->getPost('idgroup'),
-			'nama_bank' => strtoupper((string) $this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
+			'nama_lengkap' => strtoupper((string) request()->getPost('nama_lengkap')),
+			'nik' => request()->getPost('nik'),
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'instansi' => request()->getPost('instansi'),
+			'alamat' => request()->getPost('alamat'),
+			'nomor_telepon' => request()->getPost('nomor_telepon'),
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'email' => request()->getPost('email'),
+			'unit_kerja' => request()->getPost('unit_kerja'),
+			'username' => request()->getPost('username'),
+			'pass' => md5(request()->getPost('pass')),
+			'idgroup' => request()->getPost('idgroup'),
+			'nama_bank' => strtoupper((string) request()->getPost('nama_bank')),
+			'no_rek' => request()->getPost('no_rek'),
 		];
 
-		$pass2 = md5($this->request->getPost('pass2'));
+		$pass2 = md5(request()->getPost('pass2'));
 
 		if ($dataset['instansi'] == "") {
 			$alert = view(
@@ -544,7 +553,7 @@ class User extends Controller
 		}
 		
 		//check duplicate nip
-		$nip = $this->request->getPost('nip');
+		$nip = request()->getPost('nip');
 
 		if($nip != null || $nip != ''){
 			$cek_nip = $this->m_user->select('count(iduser) as hitung')
@@ -619,7 +628,7 @@ class User extends Controller
 			return redirect()->to('admin/user/add');
 		}
 
-		$img = $this->request->getFile('profil_pic');
+		$img = request()->getFile('profil_pic');
 		
 		if ($img->isValid()) {
 			$newName = $img->getRandomName();
@@ -710,24 +719,24 @@ class User extends Controller
 		$old_user = $this->m_user->getUserById($iduser)[0];
 
 		$dataset = [
-			'nama_lengkap' => strtoupper((string) $this->request->getPost('nama_lengkap')),
-			'nik' => $this->request->getPost('nik'),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'instansi' => $this->request->getPost('instansi'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
-			'pass' => md5($this->request->getPost('pass')),
-			'idgroup' => $this->request->getPost('idgroup'),
-			'nama_bank' => strtoupper((string) $this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
+			'nama_lengkap' => strtoupper((string) request()->getPost('nama_lengkap')),
+			'nik' => request()->getPost('nik'),
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'instansi' => request()->getPost('instansi'),
+			'alamat' => request()->getPost('alamat'),
+			'nomor_telepon' => request()->getPost('nomor_telepon'),
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'email' => request()->getPost('email'),
+			'unit_kerja' => request()->getPost('unit_kerja'),
+			'pass' => md5(request()->getPost('pass')),
+			'idgroup' => request()->getPost('idgroup'),
+			'nama_bank' => strtoupper((string) request()->getPost('nama_bank')),
+			'no_rek' => request()->getPost('no_rek'),
 		];
 		
 		//check duplicate nip
-		$nip_baru = $this->request->getPost('nip');
+		$nip_baru = request()->getPost('nip');
 
 		if($nip_baru != null || $nip_baru != ''){
 			$nip_awal = $this->account->nip;
@@ -759,7 +768,7 @@ class User extends Controller
 		}
 
 		//check duplicate nik
-		$nik_baru = $this->request->getPost('nik');
+		$nik_baru = request()->getPost('nik');
 		$nik_awal = $this->account->nik;
 
 		if ($nik_baru != $nik_awal) {
@@ -787,8 +796,8 @@ class User extends Controller
 			}
 		}
 
-		$new_pass = $this->request->getPost('pass');
-		$cek_pass = $this->request->getPost('pass2');
+		$new_pass = request()->getPost('pass');
+		$cek_pass = request()->getPost('pass2');
 
 		if ($new_pass != "" || !is_null($new_pass) )
 		{
@@ -815,7 +824,7 @@ class User extends Controller
 			}
 		}
 
-		$img = $this->request->getFile('profil_pic');
+		$img = request()->getFile('profil_pic');
 
 		if ($img->isValid())
 		{

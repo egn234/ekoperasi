@@ -13,6 +13,13 @@ use App\Controllers\Admin\Notifications;
 
 class Pinjaman extends Controller
 {
+	protected $m_user;
+	protected $m_pinjaman;
+	protected $m_cicilan;
+	protected $m_param;
+	protected $m_notification;
+	protected $notification;
+	protected $account;
 
 	function __construct()
 	{
@@ -55,7 +62,7 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idadmin' => $this->account->iduser,
-			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
+			'alasan_tolak' => request()->getPost('alasan_tolak'),
 			'status' => 0,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -228,7 +235,7 @@ class Pinjaman extends Controller
 
 	public function pelunasan_partial_proc($idpinjaman)
 	{
-		$bulan_bayar = $this->request->getPost('bulan_bayar');
+		$bulan_bayar = request()->getPost('bulan_bayar');
 		$pin = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
 
 		for ($i = 0; $i < $bulan_bayar; ++$i) {
@@ -561,8 +568,8 @@ class Pinjaman extends Controller
 	public function data_pelunasan()
 	{
 		$request = service('request');
-		$this->db = \Config\Database::connect();
-		$model = $this->db->table('tb_pinjaman a');
+		$db = \Config\Database::connect();
+		$model = $db->table('tb_pinjaman a');
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;

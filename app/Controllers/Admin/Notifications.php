@@ -8,6 +8,9 @@ use App\Models\M_notification;
 
 class Notifications extends Controller
 {
+	protected $m_user;
+	protected $account;
+	protected $m_notification;
 
 	function __construct(){
 		$this->m_user = new M_user();
