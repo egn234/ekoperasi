@@ -236,6 +236,25 @@ class Deposits extends BaseController
 		$img = $this->request->getFile('bukti_transfer');
 
 		if ($img->isValid()) {
+
+			$allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
+
+			if (!in_array($img->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 			
 			$cek_bukti = $this->m_deposit->getDepositById($iddeposit)[0]->bukti_transfer;
 			

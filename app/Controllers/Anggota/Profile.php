@@ -123,8 +123,47 @@ class Profile extends BaseController
 
 		$img = $this->request->getFile('profil_pic');
 
-		if ($img->isValid()) {
-			unlink(ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic );
+		if ($img->isValid() && !$img->hasMoved()) {
+			// cek tipe
+			$allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
+			if (!in_array($img->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'format gambar tidak sesuai', 
+					 	'status' => 'danger'
+					]
+				);
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+			
+			// cek ukuran
+			if ($img->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'ukuran gambar tidak sesuai', 
+					 	'status' => 'danger'
+					]
+				);
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			$oldFile = ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic;
+			if (file_exists($oldFile)) {
+				unlink($oldFile);
+			}
+			
 			$newName = $img->getRandomName();
 			$img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
 			$profile_pic = $img->getName();

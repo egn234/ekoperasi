@@ -344,13 +344,69 @@ class Pinjaman extends BaseController
 		$file_1 = $this->request->getFile('form_bukti');
 		$file_2 = $this->request->getFile('slip_gaji');
 		$status_pegawai = $this->account->status_pegawai;
-		$file_3 = ($status_pegawai == 'kontrak')?$this->request->getFile('form_kontrak'): false;
+		$file_3 = ($status_pegawai == 'kontrak')? $this->request->getFile('form_kontrak'): false;
 		
 		$confirmation3 = true;
 		$data = [];
 		$data_session = [];
 
-		if ($file_1->isValid()) {	
+		if ($file_1->isValid()) {
+
+			//cek tipe
+			$allowed_types = ['application/pdf'];
+			if (!in_array($file_1->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ukuran
+			if ($file_1->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ukuran file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ekstensi
+			if ($file_1->getExtension() !== 'pdf') {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ekstensi file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+			
 			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
 			
 			if ($cek_bukti) {
@@ -383,6 +439,62 @@ class Pinjaman extends BaseController
 		}
 
 		if ($file_2->isValid()) {	
+
+			//cek tipe
+			$allowed_types = ['application/pdf'];
+			if (!in_array($file_2->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ukuran
+			if ($file_2->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ukuran file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ekstensi
+			if ($file_2->getExtension() !== 'pdf') {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ekstensi file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
 			$cek_gaji = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->slip_gaji;
 			
 			if ($cek_gaji) {
@@ -416,6 +528,61 @@ class Pinjaman extends BaseController
 		
 		if ($file_3){
 			if ($file_3->isValid()) {	
+				//cek tipe
+				$allowed_types = ['application/pdf'];
+				if (!in_array($file_3->getMimeType(), $allowed_types)) {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Tipe file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
+				//cek ukuran
+				if ($file_3->getSize() > 1000000) {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Ukuran file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
+				//cek ekstensi
+				if ($file_3->getExtension() !== 'pdf') {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Ekstensi file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
 				$cek_kontrak = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_kontrak;
 				
 				if ($cek_kontrak) {
@@ -491,7 +658,63 @@ class Pinjaman extends BaseController
 	{
 		$file_1 = $this->request->getFile('bukti_bayar');
 
-		if ($file_1->isValid()) {	
+		if ($file_1->isValid() && !$file_1->hasMoved()) {
+			
+			//cek tipe
+			$allowed_types = ['application/pdf'];
+			if (!in_array($file_1->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ukuran
+			if ($file_1->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ukuran file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ekstensi
+			if ($file_1->getExtension() !== 'pdf') {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ekstensi file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
 			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
 			
 			if ($cek_bukti && file_exists(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti)) {
@@ -539,7 +762,10 @@ class Pinjaman extends BaseController
 				 	'status' => 'danger'
 				]
 			);
-			$confirmation = false;
+			
+			$dataset = ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->back();
 		}
 	}
 

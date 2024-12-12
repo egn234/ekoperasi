@@ -630,11 +630,31 @@ class User extends Controller
 
 		$img = request()->getFile('profil_pic');
 		
-		if ($img->isValid()) {
-			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
-			$profile_pic = $img->getName();
-			$dataset += ['profil_pic' => $profile_pic];
+		if ($img->isValid() && !$img->hasMoved()) {
+			$allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+
+			if (in_array($img->getMimeType(), $allowedTypes)) {
+				$newName = $img->getRandomName();
+				$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
+				$profile_pic = $img->getName();
+				$dataset += ['profil_pic' => $profile_pic];	
+			}
+			else {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 		}
 
 		$dataset += [
@@ -826,13 +846,31 @@ class User extends Controller
 
 		$img = request()->getFile('profil_pic');
 
-		if ($img->isValid())
-		{
-			unlink(ROOTPATH . "public/uploads/user/" . $old_user->username . "/profil_pic/" . $old_user->profil_pic );
-			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/' . $old_user->username . '/profil_pic/', $newName);
-			$profile_pic = $img->getName();
-			$dataset += ['profil_pic' => $profile_pic];
+		if ($img->isValid() && !$img->hasMoved()) {
+			$allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+
+			if (in_array($img->getMimeType(), $allowedTypes)) {
+				$newName = $img->getRandomName();
+				$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
+				$profile_pic = $img->getName();
+				$dataset += ['profil_pic' => $profile_pic];	
+			}
+			else {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 		}
 
 		$dataset += ['updated' => date('Y-m-d H:i:s')];

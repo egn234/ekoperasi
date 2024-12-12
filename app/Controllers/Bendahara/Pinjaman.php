@@ -13,6 +13,13 @@ use App\Controllers\Bendahara\Notifications;
 
 class Pinjaman extends Controller
 {
+	protected $m_user;
+	protected $account;
+	protected $m_pinjaman;
+	protected $m_cicilan;
+	protected $m_param;
+	protected $m_notification;
+	protected $notification;
 
 	function __construct()
 	{
@@ -42,7 +49,7 @@ class Pinjaman extends Controller
 	{
 		$dataset = [
 			'idbendahara' => $this->account->iduser,
-			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
+			'alasan_tolak' => request()->getPost('alasan_tolak'),
 			'status' => 0,
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -100,10 +107,66 @@ class Pinjaman extends Controller
 								->getResult()[0]
 								->username;
 
-		$bukti_tf = $this->request->getFile('bukti_tf') ? $this->request->getFile('bukti_tf') : false;
+		$bukti_tf = request()->getFile('bukti_tf') ? request()->getFile('bukti_tf') : false;
 		$data_session = [];
 		if($bukti_tf){
 			if ($bukti_tf->isValid()) {	
+
+				//cek tipe
+				$allowed_types = ['application/pdf'];
+				if (!in_array($bukti_tf->getMimeType(), $allowed_types)) {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Tipe file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
+				//cek ukuran
+				if ($bukti_tf->getSize() > 1000000) {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Ukuran file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
+				//cek ekstensi
+				if ($bukti_tf->getExtension() !== 'pdf') {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Ekstensi file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
 				$cek_tf = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
 				
 				if ($cek_tf) {
@@ -123,7 +186,7 @@ class Pinjaman extends Controller
 					]
 				);
 				$data_session += ['notif_tf' => $alert3];
-				$confirmation3 = true;
+				// $confirmation3 = true;
 	
 			}else{
 				$alert3 = view(
@@ -454,8 +517,8 @@ class Pinjaman extends Controller
 	public function data_pelunasan()
 	{
 		$request = service('request');
-		$this->db = \Config\Database::connect();
-		$model = $this->db->table('tb_pinjaman a');
+		$db = \Config\Database::connect();
+		$model = $db->table('tb_pinjaman a');
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;

@@ -116,12 +116,35 @@ class Profile extends Controller
 
 		$img = request()->getFile('profil_pic');
 
-		if ($img->isValid()) {
-			unlink(ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic );
-			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
-			$profile_pic = $img->getName();
-			$dataset += ['profil_pic' => $profile_pic];
+		if ($img->isValid() && $img->hasMoved()) {
+			$allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+			if (in_array($img->getClientMimeType(), $allowedTypes)) {
+
+				$oldFilePath = ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic;
+				if(is_file($oldFilePath)) {
+					unlink($oldFilePath);
+				}
+
+				$newName = $img->getRandomName();
+				$img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
+				$profile_pic = $img->getName();
+				$dataset += ['profil_pic' => $profile_pic];
+			} else {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 		}
 
 		$dataset += [
