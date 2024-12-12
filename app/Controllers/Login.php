@@ -104,7 +104,6 @@ class login extends Controller
 	public function logout()
 	{
 		session()->destroy();
-		session()->close();
 		return redirect()->to('/');
 	}
 
