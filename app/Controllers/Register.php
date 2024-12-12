@@ -216,17 +216,47 @@ class register extends BaseController
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
 			return redirect()->to('register');			
-		}
+		};
 
-		$img = $this->request->getFile('profil_pic');
-		
+		$img = request()->getFile('profil_pic');
+
 		if ($img->isValid()) {
+			// Validation rules
+			$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+			$maxSize = 2048; // Max size in KB (e.g., 2MB)
+
+			// Validate MIME Type
+			if (!in_array($img->getMimeType(), $allowedTypes)) {
+				return redirect()->back()->with('error', 'Invalid file type. Only JPG, PNG, and GIF are allowed.');
+			}
+
+			// Validate File Size
+			if ($img->getSizeByUnit('kb') > $maxSize) {
+				return redirect()->back()->with('error', 'File is too large. Maximum size is 2MB.');
+			}
+
+			// Optional: Validate Image Dimensions
+			$imageInfo = getimagesize($img->getTempName());
+			if ($imageInfo) {
+				$width = $imageInfo[0];
+				$height = $imageInfo[1];
+
+				if ($width > 2000 || $height > 2000) { // Example dimensions limit
+					return redirect()->back()->with('error', 'Image dimensions are too large. Maximum is 2000x2000 pixels.');
+				}
+			} else {
+				return redirect()->back()->with('error', 'Uploaded file is not a valid image.');
+			}
+
+			// Move file to its destination if all validations pass
 			$newName = $img->getRandomName();
 			$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
 			$profile_pic = $img->getName();
 			$dataset += ['profil_pic' => $profile_pic];
+		} else {
+			return redirect()->back()->with('error', $img->getErrorString());
 		}
-
+		
 		$dataset += [
 			'created' => date('Y-m-d H:i:s'),
 			'closebook_param_count' => 0,
