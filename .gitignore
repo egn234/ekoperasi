@@ -128,6 +128,7 @@ nb-configuration.xml
 
 # Database file
 app/database/ekoperasi.sql
+app/database/ekoperasi_backup.sql
 app/database/import_format_dummy.xlsx
 
 

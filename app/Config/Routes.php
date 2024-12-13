@@ -53,6 +53,8 @@ $routes->post('reg_proc', 'Register::register_proc');
 
 $routes->add('logout', 'Login::logout');
 
+$routes->add('maintenance', 'Maintenance::index');
+
 //GROUP ADMIN
 $routes->group('admin', static function ($routes)
 {

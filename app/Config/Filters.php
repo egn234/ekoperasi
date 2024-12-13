@@ -27,7 +27,8 @@ class Filters extends BaseConfig
         'bendahara_auth' => \App\Filters\BendaharaFilter::class,
         'ketua_auth' => \App\Filters\KetuaFilter::class,
         'anggota_auth' => \App\Filters\AnggotaFilter::class,
-        'login_auth' => \App\Filters\LoginFilter::class
+        'login_auth' => \App\Filters\LoginFilter::class,
+        'maintenance' => \App\Filters\MaintenanceFilter::class
     ];
 
     /**
@@ -41,6 +42,7 @@ class Filters extends BaseConfig
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
+            'maintenance',
         ],
         'after' => [
             'toolbar',
