@@ -11,7 +11,7 @@
 
         <?= $this->include('partials/head-css') ?>
 
-        <script async src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+        <script async defer src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
     </head>
 
 <?= $this->include('partials/body') ?>
@@ -56,8 +56,7 @@
 
                                             </div>
                                             <!-- reCAPTCHA Widget -->
-                                            <div id="recaptcha-container"></div>
-                                            <input type="hidden" name="g-recaptcha-response"> 
+                                            <div class="g-recaptcha mt-2 mb-2" data-sitekey="<?= getenv('RECAPTCHA_SITE_KEY') ?>"></div>
 
                                             <div class="mb-3">
                                                 <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Log In</button>
@@ -107,12 +106,6 @@
         </div>
         
         <script>
-            grecaptcha.ready(function() {
-                grecaptcha.execute('<?= getenv('RECAPTCHA_SITE_KEY') ?>', {action: 'login'}).then(function(token) {
-                    // Add token to form.
-                    document.getElementById('recaptcha-container').value = token;
-                });
-            });
             document.addEventListener("DOMContentLoaded", function () {
                 const passwordInput = document.getElementById("password");
                 const passwordToggle = document.getElementById("password-toggle");

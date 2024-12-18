@@ -22,14 +22,18 @@ class login extends Controller
 
 	public function login_proc()
 	{
-		// Verifikasi reCAPTCHA
-		$recaptcha_response = request()->getPost('g-recaptcha-response');
+		// Ambil data reCAPTCHA response
+		$recaptchaResponse = request()->getPost('g-recaptcha-response');
+		$recaptchaSecret = 'your-secret-key'; // Ganti dengan Secret Key Anda
+
+		// Validasi reCAPTCHA ke Google
 		$url = 'https://www.google.com/recaptcha/api/siteverify';
-		$secret_key = getenv('RECAPTCHA_SECRET_KEY');
 		$data = [
-			'secret' => $secret_key,
-			'response' => $recaptcha_response
+			'secret'   => $recaptchaSecret,
+			'response' => $recaptchaResponse,
+			'remoteip' => request()->getIPAddress()
 		];
+
 		$options = [
 			'http' => [
 				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
