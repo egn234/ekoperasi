@@ -183,6 +183,8 @@
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
                                                 </span>
+                                                <!-- reCAPTCHA Widget -->
+                                                <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
 
                                                 <a class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#konfirmasi">
                                                     Registrasi
@@ -304,6 +306,16 @@
             }
         </script>
 
+        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+        <script>
+            grecaptcha.ready(function() {
+                grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'})
+                    .then(function(token) {
+                        // Simpan token dalam input tersembunyi
+                        document.getElementById('g-recaptcha-response').value = token;
+                    });
+            });
+        </script>
     </body>
 
 </html>
