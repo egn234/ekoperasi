@@ -12,7 +12,8 @@
 
         <?= $this->include('partials/head-css') ?>
 
-</head>
+        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+    </head>
 
 <?= $this->include('partials/body') ?>
 
@@ -111,11 +112,17 @@
        <?= $this->include('partials/vendor-scripts') ?>
         <!-- password addon init -->
     </body>
-    <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             
+            grecaptcha.ready(function() {
+                grecaptcha.execute(<?= getenv('RECAPTCHA_SITE_KEY') ?>, {action: 'login'}).then(function(token) {
+                    // Add token to form.
+                    document.getElementById('recaptchaResponse').value = token;
+                });
+            });
+
             const passwordInput = document.getElementById("password");
             const passwordToggle = document.getElementById("password-toggle");
 
@@ -127,12 +134,6 @@
                     passwordInput.type = "password";
                     passwordToggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
                 }
-            });
-        });
-        grecaptcha.ready(function() {
-            grecaptcha.execute(<?= getenv('RECAPTCHA_SITE_KEY') ?>, {action: 'login'}).then(function(token) {
-                // Add token to form.
-                document.getElementById('recaptchaResponse').value = token;
             });
         });
     </script>

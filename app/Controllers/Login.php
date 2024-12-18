@@ -51,7 +51,7 @@ class login extends Controller
 				]
 			);
 			
-			$error = ['notif' => $alert];
+			$error = ['notif_login' => $alert];
 			session()->setFlashdata($error);
 			return redirect()->to('/');
         }
