@@ -25,8 +25,9 @@ class login extends Controller
 		// Verifikasi reCAPTCHA
 		$recaptcha_response = request()->getPost('g-recaptcha-response');
 		$url = 'https://www.google.com/recaptcha/api/siteverify';
+		$secret_key = getenv('RECAPTCHA_SECRET_KEY');
 		$data = [
-			'secret' => getenv('RECAPTCHA_SECRET_KEY'),
+			'secret' => $secret_key,
 			'response' => $recaptcha_response
 		];
 		$options = [
