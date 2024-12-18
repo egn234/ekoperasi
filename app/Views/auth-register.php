@@ -9,6 +9,7 @@
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
             <?= $this->include('partials/head-css') ?>
 
@@ -176,6 +177,8 @@
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
                                                 </span>
+                                                <!-- reCAPTCHA Widget -->
+                                                <div class="g-recaptcha" data-sitekey="<?= getenv('RECAPTCHA_SITE_KEY') ?>"></div>
 
                                                 <a class="btn btn-primary float-end" id="btnRegister">
                                                     Registrasi

@@ -9,8 +9,9 @@
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="<?=base_url()?>/favicon.ico">
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-            <?= $this->include('partials/head-css') ?>
+        <?= $this->include('partials/head-css') ?>
 
 </head>
 
@@ -53,6 +54,8 @@
                                                     <input type="password" class="form-control" placeholder="Masukkan password" aria-label="Password" name="password" id="password" aria-describedby="password-addon">
                                                     <button class="btn btn-light ms-0" type="button" id="password-toggle"><i class="mdi mdi-eye-outline"></i></button>
                                                 </div>
+                                                <!-- reCAPTCHA Widget -->
+                                                <div class="pt-3 text-center g-recaptcha" data-sitekey="<?= getenv('RECAPTCHA_SITE_KEY') ?>"></div>
                                             </div>
 
                                             <div class="mb-3">
