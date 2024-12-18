@@ -11,6 +11,7 @@
         <link rel="shortcut icon" href="<?=base_url()?>/favicon.ico">
 
         <?= $this->include('partials/head-css') ?>
+        
         <style type="text/css">
             .grecaptcha-badge {
                 visibility: hidden;
