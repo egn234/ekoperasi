@@ -9,11 +9,11 @@
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-            <?= $this->include('partials/head-css') ?>
+        <?= $this->include('partials/head-css') ?>
+        <script src="https://www.google.com/recaptcha/api.js?render=<?=env('RECAPTCHA_SITE_KEY')?>"></script>
 
-</head>
+    </head>
 
 <?= $this->include('partials/body') ?>
 
@@ -257,7 +257,6 @@
         <script src="assets/js/pages/validation.init.js"></script>
         <script src="assets/js/pages/register.js"></script>
 
-        <script src="https://www.google.com/recaptcha/api.js?render=<?=env('RECAPTCHA_SITE_KEY')?>"></script>
         <script>
             grecaptcha.ready(function() {
                 grecaptcha.execute('<?=env('RECAPTCHA_SITE_KEY')?>', {action: 'register'}).then(function(token) {

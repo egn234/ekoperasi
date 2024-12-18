@@ -117,7 +117,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             
             grecaptcha.ready(function() {
-                grecaptcha.execute(<?= getenv('RECAPTCHA_SITE_KEY') ?>, {action: 'login'}).then(function(token) {
+                grecaptcha.execute('<?= getenv('RECAPTCHA_SITE_KEY') ?>', {action: 'login'}).then(function(token) {
                     // Add token to form.
                     document.getElementById('recaptchaResponse').value = token;
                 });
