@@ -9,7 +9,6 @@
         <meta content="Themesbrand" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="<?=base_url()?>/favicon.ico">
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
         <?= $this->include('partials/head-css') ?>
 
@@ -55,7 +54,7 @@
                                                     <button class="btn btn-light ms-0" type="button" id="password-toggle"><i class="mdi mdi-eye-outline"></i></button>
                                                 </div>
                                                 <!-- reCAPTCHA Widget -->
-                                                <div class="pt-3 text-center g-recaptcha" data-sitekey="<?= getenv('RECAPTCHA_SITE_KEY') ?>"></div>
+                                                <div id="recaptcha-container"></div>
                                             </div>
 
                                             <div class="mb-3">
@@ -110,9 +109,11 @@
        <?= $this->include('partials/vendor-scripts') ?>
         <!-- password addon init -->
     </body>
+    <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            
             const passwordInput = document.getElementById("password");
             const passwordToggle = document.getElementById("password-toggle");
 
@@ -124,6 +125,12 @@
                     passwordInput.type = "password";
                     passwordToggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
                 }
+            });
+        });
+        grecaptcha.ready(function() {
+            grecaptcha.execute(<?= getenv('RECAPTCHA_SITE_KEY') ?>, {action: 'homepage'}).then(function(token) {
+                // Add token to form.
+                document.getElementById('recaptchaResponse').value = token;
             });
         });
     </script>
