@@ -259,8 +259,9 @@
 
         <script>
             grecaptcha.ready(function() {
-                grecaptcha.execute('<?=env('RECAPTCHA_SITE_KEY')?>', {action: 'register'}).then(function(token) {
-                    document.querySelector('input[name="g-recaptcha-response"]').value = token;
+                grecaptcha.execute('<?= getenv('RECAPTCHA_SITE_KEY') ?>', {action: 'registration'}).then(function(token) {
+                    // Add token to form.
+                    document.getElementById('recaptcha-container').value = token;
                 });
             });
         </script>
