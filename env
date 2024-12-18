@@ -15,7 +15,12 @@
 #--------------------------------------------------------------------
 
 # CI_ENVIRONMENT = production
+# MAINTENANCE = false
 
+# ENCRYPTION_KEY= some_key
+# RECAPTCHA_SECRET_KEY= some_key 
+# RECAPTCHA_SITE_KEY= some_key
+ 
 #--------------------------------------------------------------------
 # APP
 #--------------------------------------------------------------------
