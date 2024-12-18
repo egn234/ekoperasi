@@ -109,26 +109,25 @@
 
 
         <!-- JAVASCRIPT -->
-       <?= $this->include('partials/vendor-scripts') ?>
+        <?= $this->include('partials/vendor-scripts') ?>
+        
         <!-- password addon init -->
-    </body>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const passwordInput = document.getElementById("password");
+                const passwordToggle = document.getElementById("password-toggle");
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const passwordInput = document.getElementById("password");
-            const passwordToggle = document.getElementById("password-toggle");
-
-            passwordToggle.addEventListener("click", function () {
-                if (passwordInput.type === "password") {
-                    passwordInput.type = "text";
-                    passwordToggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
-                } else {
-                    passwordInput.type = "password";
-                    passwordToggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
-                }
+                passwordToggle.addEventListener("click", function () {
+                    if (passwordInput.type === "password") {
+                        passwordInput.type = "text";
+                        passwordToggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
+                    } else {
+                        passwordInput.type = "password";
+                        passwordToggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
+                    }
+                });
             });
-        });
-    </script>
-
+        </script>
+    </body>
 
 </html>
