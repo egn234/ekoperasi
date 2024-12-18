@@ -53,9 +53,11 @@
                                                     <input type="password" class="form-control" placeholder="Masukkan password" aria-label="Password" name="password" id="password" aria-describedby="password-addon">
                                                     <button class="btn btn-light ms-0" type="button" id="password-toggle"><i class="mdi mdi-eye-outline"></i></button>
                                                 </div>
-                                                <!-- reCAPTCHA Widget -->
-                                                <div id="recaptcha-container"></div>
+
                                             </div>
+                                            <!-- reCAPTCHA Widget -->
+                                            <div id="recaptcha-container"></div>
+                                            <input type="hidden" name="g-recaptcha-response"> 
 
                                             <div class="mb-3">
                                                 <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Log In</button>
@@ -128,7 +130,7 @@
             });
         });
         grecaptcha.ready(function() {
-            grecaptcha.execute(<?= getenv('RECAPTCHA_SITE_KEY') ?>, {action: 'homepage'}).then(function(token) {
+            grecaptcha.execute(<?= getenv('RECAPTCHA_SITE_KEY') ?>, {action: 'login'}).then(function(token) {
                 // Add token to form.
                 document.getElementById('recaptchaResponse').value = token;
             });

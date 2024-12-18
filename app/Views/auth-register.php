@@ -178,7 +178,8 @@
                                                   *Tidak boleh dikosongkan
                                                 </span>
                                                 <!-- reCAPTCHA Widget -->
-                                                <div class="g-recaptcha" data-sitekey="<?= getenv('RECAPTCHA_SITE_KEY') ?>"></div>
+                                                <div id="recaptcha-container"></div>
+                                                <input type="hidden" name="g-recaptcha-response"> 
 
                                                 <a class="btn btn-primary float-end" id="btnRegister">
                                                     Registrasi
@@ -255,6 +256,15 @@
         <!-- validation init -->
         <script src="assets/js/pages/validation.init.js"></script>
         <script src="assets/js/pages/register.js"></script>
+
+        <script src="https://www.google.com/recaptcha/api.js?render=<?=env('RECAPTCHA_SITE_KEY')?>"></script>
+        <script>
+            grecaptcha.ready(function() {
+                grecaptcha.execute('<?=env('RECAPTCHA_SITE_KEY')?>', {action: 'register'}).then(function(token) {
+                    document.querySelector('input[name="g-recaptcha-response"]').value = token;
+                });
+            });
+        </script>
 
     </body>
 

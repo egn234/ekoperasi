@@ -66,29 +66,24 @@ class register extends Controller
 			'idgroup' => 4
 		];
 
-        // Ambil data reCAPTCHA response
-        $recaptchaResponse = request()->getPost('g-recaptcha-response');
-        $recaptchaSecret = getenv('RECAPTCHA_SECRET_KEY'); // Ganti dengan Secret Key Anda
+        // Verifikasi reCAPTCHA
+		$recaptcha_response = request()->getPost('g-recaptcha-response');
+		$url = 'https://www.google.com/recaptcha/api/siteverify';
+		$data = [
+			'secret' => getenv('RECAPTCHA_SECRET_KEY'),
+			'response' => $recaptcha_response
+		];
+		$options = [
+			'http' => [
+				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+				'method'  => 'POST',
+				'content' => http_build_query($data)
+			]
+		];
 
-        // Validasi reCAPTCHA ke Google
-        $url = 'https://www.google.com/recaptcha/api/siteverify';
-        $data = [
-            'secret'   => $recaptchaSecret,
-            'response' => $recaptchaResponse,
-            'remoteip' => request()->getIPAddress()
-        ];
-
-        $options = [
-            'http' => [
-                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($data)
-            ]
-        ];
-
-        $context  = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        $response = json_decode($result);
+		$context  = stream_context_create($options);
+		$result = file_get_contents($url, false, $context);
+		$response = json_decode($result);
 
         // Periksa hasil validasi
         if (!$response->success) {

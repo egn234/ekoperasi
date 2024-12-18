@@ -53,7 +53,7 @@ class login extends Controller
 			
 			$error = ['notif' => $alert];
 			session()->setFlashdata($error);
-			return redirect()->to('registrasi');
+			return redirect()->to('/');
         }
 
 		$username = $this->request->getPost('username');
