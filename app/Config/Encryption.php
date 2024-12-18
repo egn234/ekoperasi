@@ -23,7 +23,7 @@ class Encryption extends BaseConfig
      *
      * @var string
      */
-    public $key = '';
+    public $key = 'ngorok';
 
     /**
      * --------------------------------------------------------------------------
@@ -64,4 +64,11 @@ class Encryption extends BaseConfig
      * @var string
      */
     public $digest = 'SHA512';
+
+    // public function __construct()
+    // {
+    //     parent::__construct();
+
+    //     $this->key = getenv('ENCRYPTION_KEY');
+    // }
 }

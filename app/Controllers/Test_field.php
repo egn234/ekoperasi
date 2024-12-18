@@ -8,10 +8,11 @@ use App\Models\M_cicilan;
 use App\Models\M_monthly_report;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
+use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
 class test_field extends BaseController
 {
-	protected $m_user;
+	private $m_user;
 	protected $m_pinjaman;
 	protected $m_cicilan;
 	protected $m_monthly_report;
@@ -185,7 +186,6 @@ class test_field extends BaseController
 
 		echo "success";
 	}
-
 	
 	public function test_db()
 	{
@@ -199,6 +199,133 @@ class test_field extends BaseController
 			}
 		} catch (\Exception $e) {
 			echo $e->getMessage();
+		}
+	}
+
+	public function encryption_meth()
+	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+		
+		$users = $this->m_user->getAllUser();
+
+		foreach ($users as $user) {
+			// echo "<pre>";
+			// echo $user->nip . "<br>";
+			// echo $user->nik . "<br>";
+			// echo $user->no_rek . "<br>";
+			// echo "</pre>";
+			// Increase execution time and memory limit
+			ini_set('max_execution_time', 600); // 10 minutes
+			ini_set('memory_limit', '512M'); // 512MB
+
+			if ($user->nip != null) {
+				$decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
+			} else {
+				$decrypted_nip = null;
+			}
+	
+			if ($user->nik != null) {
+				$decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
+			} else {	
+				$decrypted_nik = null;
+			}
+	
+			if ($user->no_rek != null) {
+				$decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
+			} else {
+				$decrypted_no_rek = null;
+			}
+	
+			if ($user->alamat != null) {
+				$decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
+			} else {
+				$decrypted_alamat = null;
+			}
+	
+			if ($user->nomor_telepon != null) {
+				$decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
+			} else {
+				$decrypted_nomor_telepon = null;
+			}
+
+			if (password_verify(md5('admingiat123'), $user->pass)) {
+				echo "success";
+			} else{
+				echo "failed";
+			}
+			
+			echo "<br>";
+			echo $decrypted_nip. "<br>";
+			echo $decrypted_nik. "<br>";
+			echo $decrypted_no_rek . "<br>";
+			echo $decrypted_alamat . "<br>";
+			echo $decrypted_nomor_telepon . "<br>";
+			echo $user->pass;
+		}
+	}
+
+	public function password_hashing()
+	{
+		$data = (string) "some data";
+		$hash = password_hash($data, PASSWORD_DEFAULT);
+		echo $hash;
+	}
+
+	public function convert_sensitive_data()
+	{
+		// Increase execution time and memory limit
+		ini_set('max_execution_time', 600); // 10 minutes
+		ini_set('memory_limit', '512M'); // 512MB
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+		$users = $this->m_user->getAllUser();
+
+		foreach ($users as $user) {
+			if ($user->nip != null) {
+				$encrypted_nip = base64_encode($encrypter->encrypt($user->nip));
+			} else {
+				$encrypted_nip = null;
+			}
+
+			if ($user->nik != null) {
+				$encrypted_nik = base64_encode($encrypter->encrypt($user->nik));
+			} else {
+				$encrypted_nik = null;
+			}
+
+			if ($user->no_rek != null){
+				$encrypted_no_rek = base64_encode($encrypter->encrypt($user->no_rek));
+			} else {
+				$encrypted_no_rek = null;
+			}
+
+			if ($user->nomor_telepon != null) {
+				$encrypted_nomor_telepon = base64_encode($encrypter->encrypt($user->nomor_telepon));
+			} else {
+				$encrypted_nomor_telepon = null;
+			}
+
+			if ($user->alamat != null) {
+				$encrypted_alamat = base64_encode($encrypter->encrypt($user->alamat));
+			} else {
+				$encrypted_alamat = null;
+			}
+
+			# THIS IS FROM MD5 ALGORITHM FIRST!! MAKE SURE TO USE MD5 BEFORE HASH CHECK!!
+			$hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
+			
+			$dataset = [
+				'nip' => $encrypted_nip,
+				'nik' => $encrypted_nik,
+				'no_rek' => $encrypted_no_rek,
+				'nomor_telepon' => $encrypted_nomor_telepon,
+				'alamat' => $encrypted_alamat,
+				'pass' => $hashed_password
+			];
+
+			$this->m_user->updateUser($user->iduser, $dataset);
 		}
 	}
 }
