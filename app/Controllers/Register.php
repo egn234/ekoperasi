@@ -66,13 +66,18 @@ class register extends Controller
 			'idgroup' => 4
 		];
 
-        // Verifikasi reCAPTCHA
-		$recaptcha_response = request()->getPost('g-recaptcha-response');
+		// Ambil data reCAPTCHA response
+		$recaptchaResponse = request()->getPost('recaptcha_token');
+		$recaptchaSecret = getenv('RECAPTCHA_SECRET_KEY'); // Ganti dengan Secret Key Anda
+
+		// Validasi reCAPTCHA ke Google
 		$url = 'https://www.google.com/recaptcha/api/siteverify';
 		$data = [
-			'secret' => getenv('RECAPTCHA_SECRET_KEY'),
-			'response' => $recaptcha_response
+			'secret'   => $recaptchaSecret,
+			'response' => $recaptchaResponse,
+			'remoteip' => request()->getIPAddress()
 		];
+
 		$options = [
 			'http' => [
 				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

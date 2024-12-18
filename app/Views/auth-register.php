@@ -178,8 +178,7 @@
                                                   *Tidak boleh dikosongkan
                                                 </span>
                                                 <!-- reCAPTCHA Widget -->
-                                                <div id="recaptcha-container"></div>
-                                                <input type="hidden" name="g-recaptcha-response"> 
+                                                <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
 
                                                 <a class="btn btn-primary float-end" id="btnRegister">
                                                     Registrasi
@@ -257,15 +256,16 @@
         <script src="assets/js/pages/validation.init.js"></script>
         <script src="assets/js/pages/register.js"></script>
 
+        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
         <script>
             grecaptcha.ready(function() {
-                grecaptcha.execute('<?= getenv('RECAPTCHA_SITE_KEY') ?>', {action: 'registration'}).then(function(token) {
-                    // Add token to form.
-                    document.getElementById('recaptcha-container').value = token;
-                });
+                grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'})
+                    .then(function(token) {
+                        // Simpan token dalam input tersembunyi
+                        document.getElementById('g-recaptcha-response').value = token;
+                    });
             });
         </script>
-
     </body>
 
 </html>
