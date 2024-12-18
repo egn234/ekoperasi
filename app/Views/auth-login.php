@@ -10,8 +10,6 @@
         <link rel="shortcut icon" href="<?=base_url()?>/favicon.ico">
 
         <?= $this->include('partials/head-css') ?>
-
-        <script async defer src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
     </head>
 
 <?= $this->include('partials/body') ?>
@@ -56,7 +54,7 @@
 
                                             </div>
                                             <!-- reCAPTCHA Widget -->
-                                            <div class="g-recaptcha mt-2 mb-2" data-sitekey="<?= getenv('RECAPTCHA_SITE_KEY') ?>"></div>
+                                            <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
 
                                             <div class="mb-3">
                                                 <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Log In</button>
@@ -104,7 +102,16 @@
             </div>
             <!-- end container fluid -->
         </div>
-        
+        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+        <script>
+            grecaptcha.ready(function() {
+                grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'login'})
+                    .then(function(token) {
+                        // Simpan token dalam input tersembunyi
+                        document.getElementById('g-recaptcha-response').value = token;
+                    });
+            });
+        </script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const passwordInput = document.getElementById("password");

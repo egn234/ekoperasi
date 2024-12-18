@@ -23,8 +23,8 @@ class login extends Controller
 	public function login_proc()
 	{
 		// Ambil data reCAPTCHA response
-		$recaptchaResponse = request()->getPost('g-recaptcha-response');
-		$recaptchaSecret = 'your-secret-key'; // Ganti dengan Secret Key Anda
+		$recaptchaResponse = request()->getPost('recaptcha_token');
+		$recaptchaSecret = getenv('RECAPTCHA_SECRET_KEY'); // Ganti dengan Secret Key Anda
 
 		// Validasi reCAPTCHA ke Google
 		$url = 'https://www.google.com/recaptcha/api/siteverify';
