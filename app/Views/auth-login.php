@@ -126,6 +126,4 @@
        <?= $this->include('partials/vendor-scripts') ?>
         <!-- password addon init -->
     </body>
-
-    
 </html>
