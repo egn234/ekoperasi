@@ -1,14 +1,14 @@
 <?php
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
 use App\Models\M_deposit;
 
-class register extends BaseController
+class register extends Controller
 {
 	protected $m_user;
 	protected $m_param;
@@ -53,26 +53,32 @@ class register extends BaseController
 
 	public function register_proc()
 	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$nik = request()->getPost('nik');
+		$alamat = request()->getPost('alamat');
+		$nomor_telepon = request()->getPost('nomor_telepon');
+		$no_rek = request()->getPost('no_rek');
+		$pass = md5(request()->getPost('pass'));
+		$pass2 = md5(request()->getPost('pass2'));
+		
 		$dataset = [
-			'nama_lengkap' => strtoupper($this->request->getPost('nama_lengkap')),
-			'nik' => $this->request->getPost('nik'),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'instansi' => $this->request->getPost('instansi'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nama_bank' => strtoupper($this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'email' => $this->request->getPost('email'),
-			'username' => $this->request->getPost('username'),
-			'pass' => md5($this->request->getPost('pass')),
+			'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
+			'nik' => ($nik != null || $nik != '') ? base64_encode($encrypter->encrypt($nik)) : null,
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'instansi' => request()->getPost('instansi'),
+			'unit_kerja' => request()->getPost('unit_kerja'),
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : null,
+			'nama_bank' => strtoupper(request()->getPost('nama_bank')),
+			'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : null,
+			'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : null,
+			'email' => request()->getPost('email'),
+			'username' => request()->getPost('username'),
 			'idgroup' => 4
 		];
-
-		$pass2 = md5(request()->getPost('pass2'));
-		$pass2 = md5($this->request->getPost('pass2'));
 
 		if ($dataset['instansi'] == "") {
 			$alert = view(
@@ -119,11 +125,11 @@ class register extends BaseController
 		}
 
 		//check duplicate nip
-		$nip = $this->request->getPost('nip');
+		$nip = request()->getPost('nip');
 
 		if($nip != null || $nip != ''){
 			$cek_nip = $this->m_user->select('count(iduser) as hitung')
-				->where('nip', $nip)
+				->where('nip', base64_encode($encrypter->encrypt($nip)))
 				->get()
 				->getResult()[0]
 				->hitung;
@@ -145,7 +151,7 @@ class register extends BaseController
 				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}else{
-				$dataset += ['nip' => $nip];
+				$dataset += ['nip' => base64_encode($encrypter->encrypt($nip))];
 			}
 		}
 
@@ -165,7 +171,7 @@ class register extends BaseController
 			return redirect()->to('register');
 		}
 
-		if ($dataset['pass'] != $pass2) {
+		if ($pass != $pass2) {
 			$alert = view(
 				'partials/notification-alert', 
 				[
@@ -177,7 +183,9 @@ class register extends BaseController
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
 			return redirect()->to('register');			
-		};
+		} else {
+			$dataset += ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
+		}
 
 		$img = request()->getFile('profil_pic');
 
@@ -259,7 +267,7 @@ class register extends BaseController
 		);
 		
 		$data_session = [
-			'username' => $this->request->getPost('username'),
+			'username' => request()->getPost('username'),
 			'notif_login' => $alert
 		];
 

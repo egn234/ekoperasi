@@ -1,12 +1,12 @@
 <?php 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_param_manasuka;
 
-class login extends BaseController
+class login extends Controller
 {
 	protected $m_user;
 	protected $m_param_manasuka;
@@ -27,14 +27,14 @@ class login extends BaseController
 
 	public function login_proc()
 	{
-		$username = $this->request->getPost('username');
-		$pass = md5($this->request->getPost('password'));
+		$username = request()->getPost('username');
+		$pass = md5(request()->getPost('password'));
 		$status = $this->m_user->countUsername($username)[0]->hitung;
 
 		if ($status != 0) {
 			$user = $this->m_user->getUser($username)[0];
 			
-			if ($user->pass == $pass) {	
+			if (password_verify($pass, $user->pass)) {
 				$flag = $user->flag;
 				
 				if ($flag != 0) {
@@ -46,6 +46,11 @@ class login extends BaseController
 						'logged_in' => TRUE
 					];
 					session()->set($userdata);
+
+					if(password_needs_rehash($user->pass, PASSWORD_DEFAULT)){
+						$newHash = password_hash($pass, PASSWORD_DEFAULT);
+						$this->m_user->updateUser($user->iduser, $newHash);
+					}
 					
 					if($user->idgroup == 1){
 						return redirect()->to('admin/dashboard');

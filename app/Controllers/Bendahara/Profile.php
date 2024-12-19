@@ -20,8 +20,53 @@ class Profile extends Controller
 	{
 		$this->m_user = new M_user();
 		$this->m_group = new M_group();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
 		$this->notification = new Notifications();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		if (empty($user)) {
+			$user = null;
+		} else {
+			$data = $user[0];
+			
+			$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+			$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+			$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+			$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+			$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+			$this->account = (object) [
+				'iduser' => $data->iduser,
+				'username' => $data->username,
+				'nik' => $nik,
+				'nip' => $nip,
+				'nama_lengkap' => $data->nama_lengkap,
+				'tempat_lahir' => $data->tempat_lahir,
+				'tanggal_lahir' => $data->tanggal_lahir,
+				'status_pegawai' => $data->status_pegawai,
+				'nama_bank' => $data->nama_bank,
+				'no_rek' => $no_rek,
+				'alamat' => $alamat,
+				'instansi' => $data->instansi,
+				'unit_kerja' => $data->unit_kerja,
+				'nomor_telepon' => $nomor_telepon,
+				'email' => $data->email,
+				'profil_pic' => $data->profil_pic,
+				'user_created' => $data->user_created,
+				'user_updated' => $data->user_updated,
+				'closebook_request' => $data->closebook_request,
+				'closebook_request_date' => $data->closebook_request_date,
+				'closebook_last_updated' => $data->closebook_last_updated,
+				'closebook_param_count' => $data->closebook_param_count,
+				'user_flag' => $data->user_flag,
+				'idgroup' => $data->idgroup,
+				'group_type' => $data->group_type,
+				'group_assigned' => $data->group_assigned,
+				'group_flag' => $data->group_flag
+			];
+		}
 	}
 
 	public function index()
@@ -39,13 +84,19 @@ class Profile extends Controller
 
 	public function update_proc()
 	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$alamat = request()->getPost('alamat');
+		$nomor_telepon = request()->getPost('nomor_telepon');
+
 		$dataset = [
 			'nama_lengkap' => request()->getPost('nama_lengkap'),
 			'tempat_lahir' => request()->getPost('tempat_lahir'),
 			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
 			'instansi' => request()->getPost('instansi'),
-			'alamat' => request()->getPost('alamat'),
-			'nomor_telepon' => request()->getPost('nomor_telepon'),
+			'alamat' => base64_encode($encrypter->encrypt($alamat)),
+			'nomor_telepon' => base64_encode($encrypter->encrypt($nomor_telepon)),
 			'email' => request()->getPost('email'),
 			'unit_kerja' => request()->getPost('unit_kerja')
 		];
@@ -54,15 +105,16 @@ class Profile extends Controller
 		$nip_baru = request()->getPost('nip');
 
 		if($nip_baru != null || $nip_baru != ''){
+			$nip_baru_enc = base64_encode($encrypter->encrypt($nip_baru));
 			$nip_awal = $this->account->nip;
 
-			if($nip_awal != $nip_baru){
+			if($nip_awal != $nip_baru_enc){
 				$cek_nip = $this->m_user->select('count(iduser) as hitung')
-					->where("nip = '".$nip_baru."' AND iduser != ".$this->account->iduser)
+					->where("nip = '".$nip_baru_enc."' AND iduser != ".$this->account->iduser)
 					->get()->getResult()[0]->hitung;
 
 				if ($cek_nip == 0) {
-					$dataset += ['nip' => $nip_baru];
+					$dataset += ['nip' => $nip_baru_enc];
 				}else{
 					$alert = view(
 						'partials/notification-alert', 
@@ -84,6 +136,7 @@ class Profile extends Controller
 
 		//check duplicate nik
 		$nik_baru = request()->getPost('nik');
+		$nik_baru_enc = base64_encode($encrypter->encrypt($nik_baru));
 		$nik_awal = $this->account->nik;
 
 		if ($nik_baru != $nik_awal) {
@@ -92,7 +145,7 @@ class Profile extends Controller
 				->get()->getResult()[0]->hitung;
 
 			if ($cek_nik == 0) {
-				$dataset += ['nik' => $nik_baru];
+				$dataset += ['nik' => $nik_baru_enc];
 			}else{
 				$alert = view(
 					'partials/notification-alert', 
@@ -193,7 +246,7 @@ class Profile extends Controller
 
 		$cek_pass = $this->m_user->getPassword($this->account->iduser)[0]->pass;
 
-		if ($old_pass != $cek_pass)
+		if (!password_verify($old_pass, $cek_pass))
 		{
 			$alert = view(
 				'partials/notification-alert', 
@@ -223,7 +276,7 @@ class Profile extends Controller
 			return redirect()->to('bendahara/profile');
 		}
 
-		$dataset = ['pass' => $pass];
+		$dataset = ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
 
 		$this->m_user->updateUser($this->account->iduser, $dataset);
 
