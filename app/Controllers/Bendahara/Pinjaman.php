@@ -13,23 +13,60 @@ use App\Controllers\Bendahara\Notifications;
 
 class Pinjaman extends Controller
 {
-	protected $m_user;
+	protected $m_user, $m_pinjaman, $m_cicilan, $m_param, $m_notification;
 	protected $account;
-	protected $m_pinjaman;
-	protected $m_cicilan;
-	protected $m_param;
-	protected $m_notification;
 	protected $notification;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_pinjaman = new M_pinjaman();
-		$this->m_cicilan = new M_cicilan();
-		$this->m_param = new M_param();
-		$this->m_notification = new M_notification();
+		$this->m_user = model(M_user::class);
+		$this->m_pinjaman = model(M_pinjaman::class);
+		$this->m_cicilan = model(M_cicilan::class);
+		$this->m_param = model(M_param::class);
+		$this->m_notification = model(M_notification::class);
+
 		$this->notification = new Notifications();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$data = $this->m_user->getUserById(session()->get('iduser'))[0];
+		
+		$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+		$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+		$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+		$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+		$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+		$this->account = (object) [
+			'iduser' => $data->iduser,
+			'username' => $data->username,
+			'nik' => $nik,
+			'nip' => $nip,
+			'nama_lengkap' => $data->nama_lengkap,
+			'tempat_lahir' => $data->tempat_lahir,
+			'tanggal_lahir' => $data->tanggal_lahir,
+			'status_pegawai' => $data->status_pegawai,
+			'nama_bank' => $data->nama_bank,
+			'no_rek' => $no_rek,
+			'alamat' => $alamat,
+			'instansi' => $data->instansi,
+			'unit_kerja' => $data->unit_kerja,
+			'nomor_telepon' => $nomor_telepon,
+			'email' => $data->email,
+			'profil_pic' => $data->profil_pic,
+			'user_created' => $data->user_created,
+			'user_updated' => $data->user_updated,
+			'closebook_request' => $data->closebook_request,
+			'closebook_request_date' => $data->closebook_request_date,
+			'closebook_last_updated' => $data->closebook_last_updated,
+			'closebook_param_count' => $data->closebook_param_count,
+			'user_flag' => $data->user_flag,
+			'idgroup' => $data->idgroup,
+			'group_type' => $data->group_type,
+			'group_assigned' => $data->group_assigned,
+			'group_flag' => $data->group_flag
+		];
 	}
 
 	public function index()
@@ -461,7 +498,7 @@ class Pinjaman extends Controller
 	public function data_pinjaman()
 	{
 		$request = service('request');
-        $model = new M_pinjaman();
+        $model = $this->m_pinjaman;
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;

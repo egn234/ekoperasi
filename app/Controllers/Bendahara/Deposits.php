@@ -13,16 +13,64 @@ use App\Controllers\Bendahara\Notifications;
 
 class Deposits extends Controller
 {
+	protected $m_user, $m_deposit, $m_deposit_pag, $m_param_manasuka, $m_notification;
+	protected $account, $notification;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_deposit = new M_deposit();
-		$this->m_deposit_pag = new M_deposit_pag();
-		$this->m_param_manasuka = new M_param_manasuka();
-		$this->m_notification = new M_notification();
+		$this->m_user = model(M_user::class);
+		$this->m_deposit = model(M_deposit::class);
+		$this->m_deposit_pag = model(M_deposit_pag::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
+		$this->m_notification = model(M_notification::class);
+
 		$this->notification = new Notifications();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		if (empty($user)) {
+			$user = null;
+		} else {
+			$data = $user[0];
+			
+			$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+			$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+			$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+			$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+			$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+			$this->account = (object) [
+				'iduser' => $data->iduser,
+				'username' => $data->username,
+				'nik' => $nik,
+				'nip' => $nip,
+				'nama_lengkap' => $data->nama_lengkap,
+				'tempat_lahir' => $data->tempat_lahir,
+				'tanggal_lahir' => $data->tanggal_lahir,
+				'status_pegawai' => $data->status_pegawai,
+				'nama_bank' => $data->nama_bank,
+				'no_rek' => $no_rek,
+				'alamat' => $alamat,
+				'instansi' => $data->instansi,
+				'unit_kerja' => $data->unit_kerja,
+				'nomor_telepon' => $nomor_telepon,
+				'email' => $data->email,
+				'profil_pic' => $data->profil_pic,
+				'user_created' => $data->user_created,
+				'user_updated' => $data->user_updated,
+				'closebook_request' => $data->closebook_request,
+				'closebook_request_date' => $data->closebook_request_date,
+				'closebook_last_updated' => $data->closebook_last_updated,
+				'closebook_param_count' => $data->closebook_param_count,
+				'user_flag' => $data->user_flag,
+				'idgroup' => $data->idgroup,
+				'group_type' => $data->group_type,
+				'group_assigned' => $data->group_assigned,
+				'group_flag' => $data->group_flag
+			];
+		}
 	}
 
 	public function index()
@@ -59,7 +107,7 @@ class Deposits extends Controller
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo;
 		$detail_user = $this->m_user->getUserById($iduser)[0];
 		$param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser);
-		$currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
+		$currentpage = request()->getVar('page_grup1') ? request()->getVar('page_grup1') : 1;
 
 		$data = [
 			'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Detail Simpanan']),
@@ -133,7 +181,7 @@ class Deposits extends Controller
 	{
 		$dataset = [
 			'idbendahara' => $this->account->iduser,
-			'alasan_tolak' => $this->request->getPost('alasan_tolak'),
+			'alasan_tolak' => request()->getPost('alasan_tolak'),
 			'status' => 'ditolak',
 			'date_updated' => date('Y-m-d H:i:s')
 		];
@@ -261,7 +309,7 @@ class Deposits extends Controller
 	public function data_transaksi()
 	{
 		$request = service('request');
-        $model = new M_deposit();
+        $model = $this->m_deposit;
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;
@@ -270,10 +318,9 @@ class Deposits extends Controller
         $searchValue = $request->getPost('search')['value'];
 
         // Fetch data from the model using $start and $length
-		$model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.nik, tb_user.email');
+		$model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.email');
 		$model->like('nama_lengkap', $searchValue);
 		$model->orLike('username', $searchValue);
-		$model->orLike('nik', $searchValue);
 		$model->orLike('email', $searchValue);
 		$model->orLike('status', $searchValue);
 		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
@@ -286,7 +333,6 @@ class Deposits extends Controller
         // Records after filtering (if any)
 		$model->like('nama_lengkap', $searchValue);
 		$model->orLike('username', $searchValue);
-		$model->orLike('nik', $searchValue);
 		$model->orLike('email', $searchValue);
 		$model->orLike('status', $searchValue);
 		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
@@ -306,7 +352,7 @@ class Deposits extends Controller
 	public function data_transaksi_filter()
 	{
 		$request = service('request');
-        $model = new M_deposit();
+        $model = $this->m_deposit;
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;
@@ -320,7 +366,6 @@ class Deposits extends Controller
 	    $model->groupStart()
 			->like('nama_lengkap', $searchValue)
 			->orLike('username', $searchValue)
-			->orLike('nik', $searchValue)
 			->orLike('email', $searchValue)
 			->orLike('status', $searchValue);
 		$model->groupEnd();
@@ -338,7 +383,6 @@ class Deposits extends Controller
 	    $model->groupStart()
 			->like('nama_lengkap', $searchValue)
 			->orLike('username', $searchValue)
-			->orLike('nik', $searchValue)
 			->orLike('email', $searchValue)
 			->orLike('status', $searchValue);
 		$model->groupEnd();
@@ -358,8 +402,11 @@ class Deposits extends Controller
 
 	public function data_user()
 	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
         $request = service('request');
-        $model = new M_user(); // Replace with your actual model name
+        $model = $this->m_user; // Replace with your actual model name
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;
@@ -368,17 +415,23 @@ class Deposits extends Controller
         $searchValue = $request->getPost('search')['value'];
 
         // Start building the query for filtering
-	    $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag')
+	    $model->select('iduser, username, nama_lengkap, instansi, nomor_telepon, email, flag')
 	    ->where('idgroup', 4)
 	    ->groupStart()
 	    	->like('username', $searchValue)
 	        ->orLike('nama_lengkap', $searchValue)
-	        ->orLike('nomor_telepon', $searchValue)
+			->orLike('email')
 	    ->groupEnd();
 
         // Fetch data from the model using $start and $length
         $data = $model->asArray()->findAll($length, $start);
         
+		// Decrypt `nomor_telepon` for each user
+		foreach ($data as &$row) {
+			if (!empty($row['nomor_telepon'])) {
+				$row['nomor_telepon'] = $encrypter->decrypt(base64_decode($row['nomor_telepon']));
+			}
+		}
 
         // Total records (you can also use $model->countAll() for exact total)
 	    $model->select('iduser')->where('idgroup', 4);

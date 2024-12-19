@@ -190,7 +190,7 @@
                             button = '<a href="'+ url_to_detail +'" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>'
                         }
 
-                        if (row.user_flag === "0") {
+                        if (row.flag === "0") {
                             button_status = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="'+row.iduser+'">Aktifkan</a>'
                         }else{
                             button_status = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="'+row.iduser+'">Nonaktifkan</a>'
