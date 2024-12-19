@@ -66,16 +66,16 @@ class register extends Controller
 		
 		$dataset = [
 			'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
-			'nik' => ($nik != null || $nik != '') ? base64_encode($encrypter->encrypt($nik)) : null,
+			'nik' => ($nik != null || $nik != '') ? base64_encode($encrypter->encrypt($nik)) : '',
 			'tempat_lahir' => request()->getPost('tempat_lahir'),
 			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
 			'instansi' => request()->getPost('instansi'),
 			'unit_kerja' => request()->getPost('unit_kerja'),
 			'status_pegawai' => request()->getPost('status_pegawai'),
-			'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : null,
+			'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
 			'nama_bank' => strtoupper(request()->getPost('nama_bank')),
-			'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : null,
-			'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : null,
+			'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
+			'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
 			'email' => request()->getPost('email'),
 			'username' => request()->getPost('username'),
 			'idgroup' => 4
