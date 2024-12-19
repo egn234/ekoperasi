@@ -66,8 +66,8 @@ class login extends Controller
 			return redirect()->to('/');
         }
 
-		$username = $this->request->getPost('username');
-		$pass = md5($this->request->getPost('password'));
+		$username = request()->getPost('username');
+		$pass = md5(request()->getPost('password'));
 		$status = $this->m_user->countUsername($username)[0]->hitung;
 
 		if ($status != 0) {
