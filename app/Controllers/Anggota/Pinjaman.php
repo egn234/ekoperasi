@@ -1,7 +1,8 @@
 <?php 
 namespace App\Controllers\Anggota;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_pinjaman;
@@ -10,21 +11,73 @@ use App\Models\M_cicilan_pag;
 use App\Models\M_param;
 use App\Models\M_notification;
 
-use App\Controllers\Anggota\Notifications;
-
-class Pinjaman extends Controller
+class Pinjaman extends BaseController
 {
+	protected $m_user;
+	protected $account;
+	protected $m_pinjaman;
+	protected $m_cicilan;
+	protected $m_cicilan_pag;
+	protected $m_param;
+	protected $m_notification;
+	protected $notification;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_pinjaman = new M_pinjaman();
-		$this->m_cicilan = new M_cicilan();
-		$this->m_cicilan_pag = new M_cicilan_pag();
-		$this->m_param = new M_param();
-		$this->m_notification = new M_notification();
+		$this->m_user = model(M_user::class);
+		$this->m_pinjaman = model(M_pinjaman::class);
+		$this->m_cicilan = model(M_cicilan::class);
+		$this->m_cicilan_pag = model(M_cicilan_pag::class);
+		$this->m_param = model(M_param::class);
+		$this->m_notification = model(M_notification::class);
+		
 		$this->notification = new Notifications();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		if (empty($user)) {
+			$user = null;
+		} else {
+			$data = $user[0];
+			
+			$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+			$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+			$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+			$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+			$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+			$this->account = (object) [
+				'iduser' => $data->iduser,
+				'username' => $data->username,
+				'nik' => $nik,
+				'nip' => $nip,
+				'nama_lengkap' => $data->nama_lengkap,
+				'tempat_lahir' => $data->tempat_lahir,
+				'tanggal_lahir' => $data->tanggal_lahir,
+				'status_pegawai' => $data->status_pegawai,
+				'nama_bank' => $data->nama_bank,
+				'no_rek' => $no_rek,
+				'alamat' => $alamat,
+				'instansi' => $data->instansi,
+				'unit_kerja' => $data->unit_kerja,
+				'nomor_telepon' => $nomor_telepon,
+				'email' => $data->email,
+				'profil_pic' => $data->profil_pic,
+				'user_created' => $data->user_created,
+				'user_updated' => $data->user_updated,
+				'closebook_request' => $data->closebook_request,
+				'closebook_request_date' => $data->closebook_request_date,
+				'closebook_last_updated' => $data->closebook_last_updated,
+				'closebook_param_count' => $data->closebook_param_count,
+				'user_flag' => $data->user_flag,
+				'idgroup' => $data->idgroup,
+				'group_type' => $data->group_type,
+				'group_assigned' => $data->group_assigned,
+				'group_flag' => $data->group_flag
+			];
+		}
 	}
 
 	public function index()
@@ -102,6 +155,7 @@ class Pinjaman extends Controller
 			$batas_nominal = 15000000;
 		}
 
+		$dataset = [];
 		if ($cek_cicilan_aktif != 0) {
 			$alert = view(
 				'partials/notification-alert', 
@@ -333,13 +387,69 @@ class Pinjaman extends Controller
 		$file_1 = $this->request->getFile('form_bukti');
 		$file_2 = $this->request->getFile('slip_gaji');
 		$status_pegawai = $this->account->status_pegawai;
-		$file_3 = ($status_pegawai == 'kontrak')?$this->request->getFile('form_kontrak'): false;
+		$file_3 = ($status_pegawai == 'kontrak')? $this->request->getFile('form_kontrak'): false;
 		
 		$confirmation3 = true;
 		$data = [];
 		$data_session = [];
 
-		if ($file_1->isValid()) {	
+		if ($file_1->isValid()) {
+
+			//cek tipe
+			$allowed_types = ['application/pdf'];
+			if (!in_array($file_1->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ukuran
+			if ($file_1->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ukuran file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ekstensi
+			if ($file_1->getExtension() !== 'pdf') {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ekstensi file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+			
 			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
 			
 			if ($cek_bukti) {
@@ -372,6 +482,62 @@ class Pinjaman extends Controller
 		}
 
 		if ($file_2->isValid()) {	
+
+			//cek tipe
+			$allowed_types = ['application/pdf'];
+			if (!in_array($file_2->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ukuran
+			if ($file_2->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ukuran file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ekstensi
+			if ($file_2->getExtension() !== 'pdf') {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ekstensi file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
 			$cek_gaji = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->slip_gaji;
 			
 			if ($cek_gaji) {
@@ -405,6 +571,61 @@ class Pinjaman extends Controller
 		
 		if ($file_3){
 			if ($file_3->isValid()) {	
+				//cek tipe
+				$allowed_types = ['application/pdf'];
+				if (!in_array($file_3->getMimeType(), $allowed_types)) {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Tipe file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
+				//cek ukuran
+				if ($file_3->getSize() > 1000000) {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Ukuran file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+					
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
+				//cek ekstensi
+				if ($file_3->getExtension() !== 'pdf') {
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Ekstensi file tidak diizinkan', 
+							'status' => 'danger'
+						]
+					);
+
+					$data_session = [
+						'notif' => $alert
+					];
+
+					session()->setFlashdata($data_session);
+					return redirect()->back();
+				}
+
 				$cek_kontrak = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_kontrak;
 				
 				if ($cek_kontrak) {
@@ -480,7 +701,63 @@ class Pinjaman extends Controller
 	{
 		$file_1 = $this->request->getFile('bukti_bayar');
 
-		if ($file_1->isValid()) {	
+		if ($file_1->isValid() && !$file_1->hasMoved()) {
+			
+			//cek tipe
+			$allowed_types = ['application/pdf'];
+			if (!in_array($file_1->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ukuran
+			if ($file_1->getSize() > 1000000) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ukuran file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
+			//cek ekstensi
+			if ($file_1->getExtension() !== 'pdf') {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Ekstensi file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
+
 			$cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
 			
 			if ($cek_bukti && file_exists(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti)) {
@@ -528,7 +805,10 @@ class Pinjaman extends Controller
 				 	'status' => 'danger'
 				]
 			);
-			$confirmation = false;
+			
+			$dataset = ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->back();
 		}
 	}
 

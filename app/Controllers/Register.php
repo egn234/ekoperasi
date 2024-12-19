@@ -1,8 +1,8 @@
-<?php 
-
+<?php
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
@@ -10,12 +10,17 @@ use App\Models\M_deposit;
 
 class register extends Controller
 {
+	protected $m_user;
+	protected $m_param;
+	protected $m_deposit;
+	protected $m_param_manasuka;
+
 	function __construct()
 	{
-		$this->m_user = new M_User();	
-		$this->m_param = new M_param();	
-		$this->m_deposit = new M_deposit();	
-		$this->m_param_manasuka = new M_param_manasuka();	
+		$this->m_user = model(M_user::class);	
+		$this->m_param = model(M_param::class);	
+		$this->m_deposit = model(M_deposit::class);	
+		$this->m_param_manasuka = model(M_param_manasuka::class);	
 	}
 
 	public function index()
@@ -48,21 +53,31 @@ class register extends Controller
 
 	public function register_proc()
 	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$nik = request()->getPost('nik');
+		$alamat = request()->getPost('alamat');
+		$nomor_telepon = request()->getPost('nomor_telepon');
+		$no_rek = request()->getPost('no_rek');
+		
+		$pass = md5(request()->getPost('pass'));
+		$pass2 = md5(request()->getPost('pass2'));
+		
 		$dataset = [
 			'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
-			'nik' => request()->getPost('nik'),
+			'nik' => ($nik != null || $nik != '') ? base64_encode($encrypter->encrypt($nik)) : null,
 			'tempat_lahir' => request()->getPost('tempat_lahir'),
 			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
 			'instansi' => request()->getPost('instansi'),
 			'unit_kerja' => request()->getPost('unit_kerja'),
 			'status_pegawai' => request()->getPost('status_pegawai'),
-			'alamat' => request()->getPost('alamat'),
+			'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : null,
 			'nama_bank' => strtoupper(request()->getPost('nama_bank')),
-			'no_rek' => request()->getPost('no_rek'),
-			'nomor_telepon' => request()->getPost('nomor_telepon'),
+			'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : null,
+			'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : null,
 			'email' => request()->getPost('email'),
 			'username' => request()->getPost('username'),
-			'pass' => md5(request()->getPost('pass')),
 			'idgroup' => 4
 		];
 
@@ -104,8 +119,6 @@ class register extends Controller
 			session()->setFlashdata($dataset);
 			return redirect()->to('registrasi');
         }
-
-		$pass2 = md5(request()->getPost('pass2'));
 
 		if ($dataset['instansi'] == "") {
 			$alert = view(
@@ -156,7 +169,7 @@ class register extends Controller
 
 		if($nip != null || $nip != ''){
 			$cek_nip = $this->m_user->select('count(iduser) as hitung')
-				->where('nip', $nip)
+				->where('nip', base64_encode($encrypter->encrypt($nip)))
 				->get()
 				->getResult()[0]
 				->hitung;
@@ -178,7 +191,7 @@ class register extends Controller
 				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}else{
-				$dataset += ['nip' => $nip];
+				$dataset += ['nip' => base64_encode($encrypter->encrypt($nip))];
 			}
 		}
 
@@ -198,7 +211,7 @@ class register extends Controller
 			return redirect()->to('registrasi');
 		}
 
-		if ($dataset['pass'] != $pass2) {
+		if ($pass != $pass2) {
 			$alert = view(
 				'partials/notification-alert', 
 				[
@@ -209,7 +222,9 @@ class register extends Controller
 			
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
-			return redirect()->to('registrasi');			
+			return redirect()->to('register');			
+		} else {
+			$dataset += ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
 		}
 
 		$img = request()->getFile('profil_pic');

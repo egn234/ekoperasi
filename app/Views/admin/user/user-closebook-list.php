@@ -41,60 +41,9 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table class="table table-sm table-bordered table-striped dt-responsive dtable nowrap w-100">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">No</th>
-                                            <th>Nama</th>
-                                            <th>Instansi</th>
-                                            <th>Alamat Email</th>
-                                            <th>No. Telpon</th>
-                                            <th>Status Akun</th>
-                                            <th>Grup Pengguna</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php $c = 1?>
-                                        <?php foreach ($usr_list as $a) {?>
-                                            <tr>
-                                                <td><?= $c ?></td>
-                                                <td><?= $a->nama_lengkap ?></td>
-                                                <td><?= $a->instansi ?></td>
-                                                <td><?= $a->email ?></td>
-                                                <td><?= $a->nomor_telepon ?></td>
-                                                <td><?=($a->user_flag == 1)?"<span class='badge bg-success'>Aktif</span>":"<span class='badge bg-danger'>Nonaktif</span>"?></td>
-                                                <td><?= $a->group_type ?></td>
-                                                <td align="center">
-                                                    <?php if ($a->iduser == $duser->iduser) { ?>
-                                                        <div class="row">
-                                                            <div class="btn-group d-flex justify-content-center">
-                                                                <a href="<?= url_to('admin/profile') ?>" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
-                                                            </div>
-                                                        </div>                                                        
-                                                    <?php }else{?>
-                                                        <div class="row">
-                                                            <div class="btn-group d-flex justify-content-center">
-                                                                <a href="<?= url_to('user_detail', $a->iduser) ?>" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>
-                                                                <?php if($a->user_flag == 1){?>
-                                                                    <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
-                                                                        Nonaktifkan
-                                                                    </a>
-                                                                <?php }else{?>
-                                                                    <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="<?=$a->iduser?>">
-                                                                        Aktifkan
-                                                                    </a>
-                                                                <?php }?>
-                                                            </div>
-                                                        </div>
-                                                    <?php }?>
-                                                </td>
-                                            </tr>
-                                        <?php $c++; ?>
-                                        <?php }?>
-                                    </tbody>
+                                <table id="dataTable" class="table table-sm table-striped nowrap w-100">
+                                    <!-- Load From ajax -->
                                 </table>
-
                             </div>
                         </div>
                     </div> <!-- end col -->
@@ -121,29 +70,6 @@
     </div>
 </div><!-- /.modal -->
 
-<div id="upload_sheet" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Import User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="<?=url_to('admin/user/tab_upload')?>" id="formSheet" method="post" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="sheet_upload">File Spreadsheet (.xls .xlsx .csv) <i>*<a href="<?=base_url()?>/assets/import_format.xlsx" target="_blank">Klik disini untuk mengunduh format template</a></i></label>
-                        <input type="file" class="form-control" name="file_import" accept=".csv, .xls, .xlsx" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" form="formSheet" class="btn btn-success">Import</button>
-            </div>
-        </div>
-    </div>
-</div><!-- /.modal -->
-
 <?= $this->include('admin/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->
@@ -155,7 +81,89 @@
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 <script type="text/javascript">
-    $('.dtable').DataTable();
+    $('#dataTable').DataTable({
+        ajax: {
+            url: "<?= base_url() ?>admin/user/data_user?closebook=true",
+            type: "POST"
+        },
+        "autoWidth": false,
+        "scrollX": true,
+        serverSide: true,
+        columnDefs: [{
+            orderable: false,
+            targets: "_all",
+            defaultContent: "-",
+        }],
+        columns: [
+            { 
+                title: "No",
+                "render": function(data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {
+                title: "Username",
+                data: "username"
+            },
+            {
+                title: "Nama",
+                data: "nama_lengkap"
+            },
+            {
+                title: "instansi",
+                data: "instansi"
+            },
+            {
+                title: "Alamat Email",
+                data: "email"
+            },
+            {
+                title: "No. Telpon",
+                data: "nomor_telepon"
+            },
+            {
+                title: "Status Akun",
+                render: function(data, type, row) {
+                    let flag = row.flag
+                    let statakun
+
+                    if (flag == "1") {
+                        statakun = "<span class='badge bg-success'>Aktif</span>"
+                    }else{
+                        statakun = "<span class='badge bg-danger'>Nonaktif</span>"
+                    }
+
+                    return statakun;
+                }
+            },
+            {
+                title: "Aksi",
+                render: function(data, type, row, full) {
+                    let admin_user = "<?=$duser->iduser?>"
+                    let rowdiv = '<div class="row">'
+                    let justify_content = '<div class="btn-group d-flex justify-content-center">'
+                    let close = '</div>'
+                    let url_to_prof = "<?= url_to('admin/profile') ?>"
+                    let url_to_detail = "<?=base_url()?>admin/user/" + row.iduser
+                    let button
+                    let button_status = ''
+                    if (row.iduser === admin_user) {
+                        button = '<a href="'+ url_to_prof +'" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>'
+                    }else{
+                        button = '<a href="'+ url_to_detail +'" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detail</a>'
+                    }
+
+                    if (row.flag === "0") {
+                        button_status = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="'+row.iduser+'">Aktifkan</a>'
+                    }else{
+                        button_status = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="'+row.iduser+'">Nonaktifkan</a>'
+                    }
+
+                    return rowdiv + justify_content + button + button_status + close + close
+                }
+            }
+        ]
+    });
     $(document).ready(function() {
         $('#switchUser').on('show.bs.modal', function(e) {
             var rowid = $(e.relatedTarget).data('id');

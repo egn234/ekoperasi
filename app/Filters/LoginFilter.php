@@ -9,31 +9,28 @@ class LoginFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (session()->has('logged_in') && session()->get('logged_in')) {
-            $flag = session()->get('flag');
-            $idgroup = session()->get('idgroup');
+        if (session()->has('logged_in') && session('logged_in')) {
+            $flag = session('flag');
+            $idgroup = session('idgroup');
 
             if ($flag === 0) {
-                session()->destroy();
+                session_destroy();
                 return redirect()->to('/');
             }
 
-            switch ($idgroup) {
-                case 1:
-                    return redirect()->to('admin/dashboard');
-                    break;
-                case 2:
-                    return redirect()->to('bendahara/dashboard');
-                    break;
-                case 3:
-                    return redirect()->to('ketua/dashboard');
-                    break;
-                case 4:
-                    return redirect()->to('anggota/dashboard');
-                    break;
-                default:
-                    session()->destroy();
-                    return redirect()->to('/');
+            if (isset($idgroup)) {
+                switch ($idgroup) {
+                    case 1:
+                        return redirect()->to('admin/dashboard');
+                    case 2:
+                        return redirect()->to('bendahara/dashboard');
+                    case 3:
+                        return redirect()->to('ketua/dashboard');
+                    case 4:
+                        return redirect()->to('anggota/dashboard');
+                    default:
+                        break;
+                }
             }
         }
     }

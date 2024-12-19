@@ -2,14 +2,19 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+
 use App\Models\M_user;
 use App\Models\M_param_manasuka;
 
 class login extends Controller
 {
+	protected $m_user;
+	protected $m_param_manasuka;
+
 	function __construct()
 	{
-		$this->m_user = new M_user();
+		$this->m_user = model(M_user::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
 	}
 
 	public function index()
@@ -68,7 +73,7 @@ class login extends Controller
 		if ($status != 0) {
 			$user = $this->m_user->getUser($username)[0];
 			
-			if ($user->pass == $pass) {	
+			if (password_verify($pass, $user->pass)) {
 				$flag = $user->flag;
 				
 				if ($flag != 0) {
@@ -80,6 +85,11 @@ class login extends Controller
 						'logged_in' => TRUE
 					];
 					session()->set($userdata);
+
+					if(password_needs_rehash($user->pass, PASSWORD_DEFAULT)){
+						$newHash = password_hash($pass, PASSWORD_DEFAULT);
+						$this->m_user->updateUser($user->iduser, $newHash);
+					}
 					
 					if($user->idgroup == 1){
 						return redirect()->to('admin/dashboard');
@@ -92,7 +102,6 @@ class login extends Controller
 						return redirect()->to('ketua/dashboard');
 					}
 					elseif($user->idgroup == 4){
-						$this->m_param_manasuka = new M_param_manasuka();
 						$cek_new_user = $this->m_param_manasuka->where('idanggota', $userdata['iduser'])->get()->getResult();
 
 						if ($cek_new_user != null) {

@@ -18,18 +18,68 @@ use App\Controllers\Admin\Notifications;
 
 class User extends Controller
 {
+	protected $m_user;
+	protected $m_group;
+	protected $m_deposit;
+	protected $m_param;
+	protected $m_param_manasuka;
+	protected $m_pinjaman;
+	protected $m_cicilan;
+	protected $notification;
+	protected $account;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_group = new M_group();
-		$this->m_deposit = new M_deposit();
-		$this->m_param = new M_param();
-		$this->m_param_manasuka = new M_param_manasuka();
-		$this->m_pinjaman = new M_pinjaman();
-		$this->m_cicilan = new M_cicilan();
+		$this->m_user = model(M_user::class);
+		$this->m_group = model(M_group::class);
+		$this->m_deposit = model(M_deposit::class);
+		$this->m_param = model(M_param::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
+		$this->m_pinjaman = model(M_pinjaman::class);
+		$this->m_cicilan = model(M_cicilan::class);
+
 		$this->notification = new Notifications();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$data = $this->m_user->getUserById(session()->get('iduser'))[0];
+		
+		$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+		$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+		$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+		$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+		$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+		$this->account = (object) [
+			'iduser' => $data->iduser,
+			'username' => $data->username,
+			'nik' => $nik,
+			'nip' => $nip,
+			'nama_lengkap' => $data->nama_lengkap,
+			'tempat_lahir' => $data->tempat_lahir,
+			'tanggal_lahir' => $data->tanggal_lahir,
+			'status_pegawai' => $data->status_pegawai,
+			'nama_bank' => $data->nama_bank,
+			'no_rek' => $no_rek,
+			'alamat' => $alamat,
+			'instansi' => $data->instansi,
+			'unit_kerja' => $data->unit_kerja,
+			'nomor_telepon' => $nomor_telepon,
+			'email' => $data->email,
+			'profil_pic' => $data->profil_pic,
+			'user_created' => $data->user_created,
+			'user_updated' => $data->user_updated,
+			'closebook_request' => $data->closebook_request,
+			'closebook_request_date' => $data->closebook_request_date,
+			'closebook_last_updated' => $data->closebook_last_updated,
+			'closebook_param_count' => $data->closebook_param_count,
+			'user_flag' => $data->user_flag,
+			'idgroup' => $data->idgroup,
+			'group_type' => $data->group_type,
+			'group_assigned' => $data->group_assigned,
+			'group_flag' => $data->group_flag
+		];
 	}
 
 	public function list()
@@ -46,9 +96,12 @@ class User extends Controller
 	}
 
 	public function data_user()
-	{
+	{	
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+		
         $request = service('request');
-        $model = new M_user(); // Replace with your actual model name
+        $model = $this->m_user; // Replace with your actual model name
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;
@@ -56,10 +109,20 @@ class User extends Controller
         $draw = $request->getPost('draw');
         $searchValue = $request->getPost('search')['value'];
 
+		$model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, closebook_request');
+
         // Start building the query for filtering
-	    $model->like('username', $searchValue)
-	          ->orLike('nama_lengkap', $searchValue)
-	          ->orLike('nomor_telepon', $searchValue);
+	    $model->groupStart()
+			->like('username', $searchValue)
+	        ->orLike('nama_lengkap', $searchValue)
+			->groupEnd();
+
+		// for filtering closebook request
+		if(isset($_GET['closebook'])) {
+			$model->where('closebook_request', 'closebook');
+		}
+
+		$recordsFiltered = $model->countAllResults(false);
 
         // Fetch data from the model using $start and $length
         $data = $model->asArray()->findAll($length, $start);
@@ -69,6 +132,13 @@ class User extends Controller
 
         // Records after filtering (if any)
         $recordsFiltered = $recordsTotal;
+
+		// Decrypt `nomor_telepon` for each user
+		foreach ($data as &$row) {
+			if (!empty($row['nomor_telepon'])) {
+				$row['nomor_telepon'] = $encrypter->decrypt(base64_decode($row['nomor_telepon']));
+			}
+		}
 
         // Prepare the response in the DataTable format
         $response = [
@@ -130,7 +200,10 @@ class User extends Controller
 
 	public function get_table_upload()
 	{
-		$table_file = $this->request->getFile('file_import');
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$table_file = request()->getFile('file_import');
 		
 		if ($table_file->isValid()) 
 		{
@@ -172,27 +245,32 @@ class User extends Controller
 						$username = 'GIAT000'.($clean_int+1);
 					}
 
+					$nik = $cell->getCell('C'.$i)->getValue();
+					$alamat = $cell->getCell('G'.$i)->getValue();
+					$pass = md5($cell->getCell('B'.$i)->getValue());
+					$no_rek = $cell->getCell('N'.$i)->getValue();
+
 					$dataset = [
 						'username' => $username,
-						'pass' => md5($cell->getCellByColumnAndRow(2, $i)->getValue()),
-						'nik' => $cell->getCellByColumnAndRow(3, $i)->getValue(),
-						'nama_lengkap' => strtoupper($cell->getCellByColumnAndRow(4, $i)->getValue()),
-						'tempat_lahir' => $cell->getCellByColumnAndRow(5, $i)->getValue(),
-						'tanggal_lahir' => date('Y-m-d', strtotime($cell->getCellByColumnAndRow(6, $i)->getValue())),
-						'alamat' => $cell->getCellByColumnAndRow(7, $i)->getValue(),
-						'instansi' => $cell->getCellByColumnAndRow(8, $i)->getValue(),
-						'unit_kerja' => $cell->getCellByColumnAndRow(9, $i)->getValue(),
-						'status_pegawai' => $cell->getCellByColumnAndRow(10, $i)->getValue(),
-						'nomor_telepon' => $cell->getCellByColumnAndRow(11, $i)->getValue(),
-						'email' => $cell->getCellByColumnAndRow(12, $i)->getValue(),
-						'nama_bank' => strtoupper($cell->getCellByColumnAndRow(13, $i)->getValue()),
-						'no_rek' => $cell->getCellByColumnAndRow(14, $i)->getValue(),
+						'pass' => password_hash($pass, PASSWORD_DEFAULT),
+						'nik' => base64_encode($encrypter->encrypt($nik)),
+						'nama_lengkap' => strtoupper($cell->getCell('D'.$i)->getValue()),
+						'tempat_lahir' => $cell->getCell('E'.$i)->getValue(),
+						'tanggal_lahir' => date('Y-m-d', strtotime($cell->getCell('F'.$i)->getValue())),
+						'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
+						'instansi' => $cell->getCell('H'.$i)->getValue(),
+						'unit_kerja' => $cell->getCell('I'.$i)->getValue(),
+						'status_pegawai' => $cell->getCell('J'.$i)->getValue(),
+						'nomor_telepon' => $cell->getCell('K'.$i)->getValue(),
+						'email' => $cell->getCell('L'.$i)->getValue(),
+						'nama_bank' => strtoupper($cell->getCell('M'.$i)->getValue()),
+						'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
 					];
 
 					$saldo = [
-						'saldo_pokok' => $cell->getCellByColumnAndRow(15, $i)->getValue(),
-						'saldo_wajib' => $cell->getCellByColumnAndRow(16, $i)->getValue(),
-						'saldo_manasuka' => $cell->getCellByColumnAndRow(17, $i)->getValue()
+						'saldo_pokok' => $cell->getCell('O'.$i)->getValue(),
+						'saldo_wajib' => $cell->getCell('P'.$i)->getValue(),
+						'saldo_manasuka' => $cell->getCell('Q'.$i)->getValue()
 					];
 
 					$cek_username = $this->m_user->countUsername($dataset['username'])[0]->hitung;
@@ -305,7 +383,7 @@ class User extends Controller
 								'created' => date('Y-m-d H:i:s')
 							];
 
-							$param_mnsk = $cell->getCellByColumnAndRow(21, $i)->getValue();
+							$param_mnsk = $cell->getCell('U'.$i)->getValue();
 
 							if ($param_mnsk != "" || $param_mnsk != null) {
 								$param_r += ['nilai' => $param_mnsk];
@@ -316,11 +394,11 @@ class User extends Controller
 							$this->m_param_manasuka->insertParamManasuka($param_r);
 
 							$pinjaman = [
-								'nominal' => (int) $cell->getCellByColumnAndRow(18, $i)->getValue(),
-								'angsuran_bulanan' => (int) $cell->getCellByColumnAndRow(19, $i)->getValue(),
+								'nominal' => (int) $cell->getCell('R'.$i)->getValue(),
+								'angsuran_bulanan' => (int) $cell->getCell('S'.$i)->getValue(),
 							];
 
-							$cicilan_ke = (int) $cell->getCellByColumnAndRow(20, $i)->getValue();
+							$cicilan_ke = (int) $cell->getCell('T'.$i)->getValue();
 
 							if($pinjaman['nominal'] != 0 || $pinjaman['angsuran_bulanan'] != 0 || $cicilan_ke != 0){
 								
@@ -493,25 +571,32 @@ class User extends Controller
 
 	public function add_user_proc()
 	{
-		$dataset = [
-			'nama_lengkap' => strtoupper((string) $this->request->getPost('nama_lengkap')),
-			'nik' => $this->request->getPost('nik'),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'instansi' => $this->request->getPost('instansi'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
-			'username' => $this->request->getPost('username'),
-			'pass' => md5($this->request->getPost('pass')),
-			'idgroup' => $this->request->getPost('idgroup'),
-			'nama_bank' => strtoupper((string) $this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
-		];
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
 
-		$pass2 = md5($this->request->getPost('pass2'));
+		$nik = request()->getPost('nik');
+		$alamat = request()->getPost('alamat');
+		$no_rek = request()->getPost('no_rek');
+		$nomor_telepon = request()->getPost('nomor_telepon');
+
+		$pass = md5(request()->getPost('pass'));
+		$pass2 = md5(request()->getPost('pass2'));
+
+		$dataset = [
+			'nama_lengkap' => strtoupper((string) request()->getPost('nama_lengkap')),
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'instansi' => request()->getPost('instansi'),
+			'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
+			'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'email' => request()->getPost('email'),
+			'unit_kerja' => request()->getPost('unit_kerja'),
+			'username' => request()->getPost('username'),
+			'idgroup' => request()->getPost('idgroup'),
+			'nama_bank' => strtoupper((string) request()->getPost('nama_bank')),
+			'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
+		];
 
 		if ($dataset['instansi'] == "") {
 			$alert = view(
@@ -544,11 +629,11 @@ class User extends Controller
 		}
 		
 		//check duplicate nip
-		$nip = $this->request->getPost('nip');
+		$nip = request()->getPost('nip');
 
 		if($nip != null || $nip != ''){
 			$cek_nip = $this->m_user->select('count(iduser) as hitung')
-				->where('nip', $nip)
+				->where('nip', base64_encode($encrypter->encrypt($nip)))
 				->get()
 				->getResult()[0]
 				->hitung;
@@ -570,18 +655,36 @@ class User extends Controller
 				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}else{
-				$dataset += ['nip' => $nip];
+				$dataset += ['nip' => base64_encode($encrypter->encrypt($nip))];
 			}
 		}
 
 		//check duplicate nik
-		$cek_nik = $this->m_user->countNIK($dataset['nik'])[0]->hitung;
+		$nik = request()->getPost('nik');
+		if($nik != null || $nik != ''){
+			$nik_enc = base64_encode($encrypter->encrypt($nik));
+			$cek_nik = $this->m_user->countNIK($nik_enc)[0]->hitung;
 
-		if ($cek_nik != 0) {
+			if ($cek_nik != 0) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'NIK Telah Terdaftar',
+						'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('admin/user/add');
+			} else {
+				$dataset += ['nik' => $nik_enc];
+			}
+		} else {
 			$alert = view(
 				'partials/notification-alert', 
 				[
-					'notif_text' => 'NIK Telah Terdaftar',
+					'notif_text' => 'NIK tidak boleh kosong',
 				 	'status' => 'warning'
 				]
 			);
@@ -591,7 +694,7 @@ class User extends Controller
 			return redirect()->to('admin/user/add');
 		}
 
-		if ($dataset['pass'] != $pass2) {
+		if ($pass != $pass2) {
 			$alert = view(
 				'partials/notification-alert', 
 				[
@@ -603,6 +706,8 @@ class User extends Controller
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
 			return redirect()->to('admin/user/add');			
+		} else {
+			$dataset += ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
 		}
 
 		if ($dataset['idgroup'] == "") {
@@ -619,13 +724,33 @@ class User extends Controller
 			return redirect()->to('admin/user/add');
 		}
 
-		$img = $this->request->getFile('profil_pic');
+		$img = request()->getFile('profil_pic');
 		
-		if ($img->isValid()) {
-			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
-			$profile_pic = $img->getName();
-			$dataset += ['profil_pic' => $profile_pic];
+		if ($img->isValid() && !$img->hasMoved()) {
+			$allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+
+			if (in_array($img->getMimeType(), $allowedTypes)) {
+				$newName = $img->getRandomName();
+				$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
+				$profile_pic = $img->getName();
+				$dataset += ['profil_pic' => $profile_pic];	
+			}
+			else {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 		}
 
 		$dataset += [
@@ -689,8 +814,48 @@ class User extends Controller
 
 	public function detail_user($iduser = false)
 	{
-		$detail_user = $this->m_user->getUserById($iduser)[0];
 		$group_list = $this->m_group->getAllGroup();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$data = $this->m_user->getUserById($iduser)[0];
+
+		$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+		$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+		$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+		$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+		$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+		$detail_user = (object) [
+			'iduser' => $data->iduser,
+			'username' => $data->username,
+			'nik' => $nik,
+			'nip' => $nip,
+			'nama_lengkap' => $data->nama_lengkap,
+			'tempat_lahir' => $data->tempat_lahir,
+			'tanggal_lahir' => $data->tanggal_lahir,
+			'status_pegawai' => $data->status_pegawai,
+			'nama_bank' => $data->nama_bank,
+			'no_rek' => $no_rek,
+			'alamat' => $alamat,
+			'instansi' => $data->instansi,
+			'unit_kerja' => $data->unit_kerja,
+			'nomor_telepon' => $nomor_telepon,
+			'email' => $data->email,
+			'profil_pic' => $data->profil_pic,
+			'user_created' => $data->user_created,
+			'user_updated' => $data->user_updated,
+			'closebook_request' => $data->closebook_request,
+			'closebook_request_date' => $data->closebook_request_date,
+			'closebook_last_updated' => $data->closebook_last_updated,
+			'closebook_param_count' => $data->closebook_param_count,
+			'user_flag' => $data->user_flag,
+			'idgroup' => $data->idgroup,
+			'group_type' => $data->group_type,
+			'group_assigned' => $data->group_assigned,
+			'group_flag' => $data->group_flag
+		];
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail User']),
@@ -707,38 +872,44 @@ class User extends Controller
 
 	public function update_proc($iduser = false)
 	{
+		$config =  new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$alamat = request()->getPost('alamat');
+		$no_rek = request()->getPost('no_rek');
+		$nomor_telepon = request()->getPost('nomor_telepon');
+
 		$old_user = $this->m_user->getUserById($iduser)[0];
 
 		$dataset = [
-			'nama_lengkap' => strtoupper((string) $this->request->getPost('nama_lengkap')),
-			'nik' => $this->request->getPost('nik'),
-			'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-			'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
-			'instansi' => $this->request->getPost('instansi'),
-			'alamat' => $this->request->getPost('alamat'),
-			'nomor_telepon' => $this->request->getPost('nomor_telepon'),
-			'status_pegawai' => $this->request->getPost('status_pegawai'),
-			'email' => $this->request->getPost('email'),
-			'unit_kerja' => $this->request->getPost('unit_kerja'),
-			'pass' => md5($this->request->getPost('pass')),
-			'idgroup' => $this->request->getPost('idgroup'),
-			'nama_bank' => strtoupper((string) $this->request->getPost('nama_bank')),
-			'no_rek' => $this->request->getPost('no_rek'),
+			'nama_lengkap' => strtoupper((string) request()->getPost('nama_lengkap')),
+			'tempat_lahir' => request()->getPost('tempat_lahir'),
+			'tanggal_lahir' => request()->getPost('tanggal_lahir'),
+			'instansi' => request()->getPost('instansi'),
+			'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
+			'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
+			'status_pegawai' => request()->getPost('status_pegawai'),
+			'email' => request()->getPost('email'),
+			'unit_kerja' => request()->getPost('unit_kerja'),
+			'idgroup' => request()->getPost('idgroup'),
+			'nama_bank' => strtoupper((string) request()->getPost('nama_bank')),
+			'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
 		];
 		
 		//check duplicate nip
-		$nip_baru = $this->request->getPost('nip');
+		$nip_baru = request()->getPost('nip');
 
 		if($nip_baru != null || $nip_baru != ''){
-			$nip_awal = $this->account->nip;
+			$nip_baru_enc = base64_encode($encrypter->encrypt($nip_baru));
+			$nip_awal = $old_user->nip;
 
-			if($nip_awal != $nip_baru){
+			if($nip_awal != $nip_baru_enc){
 				$cek_nip = $this->m_user->select('count(iduser) as hitung')
-					->where("nip = '".$nip_baru."' AND iduser != ".$iduser)
+					->where("nip = '".$nip_baru_enc."' AND iduser != ".$iduser)
 					->get()->getResult()[0]->hitung;
 
 				if ($cek_nip == 0) {
-					$dataset += ['nip' => $nip_baru];
+					$dataset += ['nip' => $nip_baru_enc];
 				}else{
 					$alert = view(
 						'partials/notification-alert', 
@@ -759,8 +930,8 @@ class User extends Controller
 		}
 
 		//check duplicate nik
-		$nik_baru = $this->request->getPost('nik');
-		$nik_awal = $this->account->nik;
+		$nik_baru = base64_encode($encrypter->encrypt(request()->getPost('nik')));
+		$nik_awal = $old_user->nik;
 
 		if ($nik_baru != $nik_awal) {
 			$cek_nik = $this->m_user->select('count(iduser) as hitung')
@@ -787,14 +958,14 @@ class User extends Controller
 			}
 		}
 
-		$new_pass = $this->request->getPost('pass');
-		$cek_pass = $this->request->getPost('pass2');
+		$new_pass = md5(request()->getPost('pass'));
+		$cek_pass = md5(request()->getPost('pass2'));
 
-		if ($new_pass != "" || !is_null($new_pass) )
+		if ($new_pass != "" || $new_pass != null)
 		{
-			if (md5($new_pass) == md5($cek_pass)) 
+			if ($new_pass == $cek_pass) 
 			{
-				$dataset += ['pass' => md5($new_pass)];
+				$dataset += ['pass' => password_hash($new_pass, PASSWORD_DEFAULT)];
 			}
 			else
 			{
@@ -815,15 +986,33 @@ class User extends Controller
 			}
 		}
 
-		$img = $this->request->getFile('profil_pic');
+		$img = request()->getFile('profil_pic');
 
-		if ($img->isValid())
-		{
-			unlink(ROOTPATH . "public/uploads/user/" . $old_user->username . "/profil_pic/" . $old_user->profil_pic );
-			$newName = $img->getRandomName();
-			$img->move(ROOTPATH . 'public/uploads/user/' . $old_user->username . '/profil_pic/', $newName);
-			$profile_pic = $img->getName();
-			$dataset += ['profil_pic' => $profile_pic];
+		if ($img->isValid() && !$img->hasMoved()) {
+			$allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+
+			if (in_array($img->getMimeType(), $allowedTypes)) {
+				$newName = $img->getRandomName();
+				$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
+				$profile_pic = $img->getName();
+				$dataset += ['profil_pic' => $profile_pic];	
+			}
+			else {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 		}
 
 		$dataset += ['updated' => date('Y-m-d H:i:s')];

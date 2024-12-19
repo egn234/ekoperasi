@@ -1,7 +1,8 @@
 <?php 
 namespace App\Controllers\Anggota;
 
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Controllers\Anggota\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_deposit;
@@ -10,20 +11,28 @@ use App\Models\M_param_manasuka;
 use App\Models\M_param_manasuka_log;
 use App\Models\M_notification;
 
-use App\Controllers\Anggota\Notifications;
-
-class Deposits extends Controller
+class Deposits extends BaseController
 {
+	protected $m_user;
+	protected $m_deposit;
+	protected $m_deposit_pag;
+	protected $m_param_manasuka;
+	protected $m_notification;
+	protected $account;
+	protected $notification;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_deposit = new M_deposit();
-		$this->m_deposit_pag = new M_deposit_pag();
-		$this->m_param_manasuka = new M_param_manasuka();
-		$this->m_notification = new M_notification();
+		$this->m_user = model(M_user::class);
+		$this->m_deposit = model(M_deposit::class);
+		$this->m_deposit_pag = model(M_deposit_pag::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
+		$this->m_notification = model(M_notification::class);
+
 		$this->notification = new Notifications();
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		$this->account = !empty($user) ? $user[0] : null;
 	}
 
 	public function index()
@@ -227,6 +236,25 @@ class Deposits extends Controller
 		$img = $this->request->getFile('bukti_transfer');
 
 		if ($img->isValid()) {
+
+			$allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
+
+			if (!in_array($img->getMimeType(), $allowed_types)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Tipe file tidak diizinkan', 
+					 	'status' => 'danger'
+					]
+				);
+				
+				$data_session = [
+					'notif' => $alert
+				];
+
+				session()->setFlashdata($data_session);
+				return redirect()->back();
+			}
 			
 			$cek_bukti = $this->m_deposit->getDepositById($iddeposit)[0]->bukti_transfer;
 			
@@ -378,12 +406,17 @@ class Deposits extends Controller
 
 	public function detail_mutasi()
 	{
+		$m_user = new M_user();
+		$m_deposit = new M_deposit();
+
+		$account = $m_user->getUserById(session()->get('iduser'))[0];
+
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
-			$user = $this->m_deposit->getDepositById($id)[0];
+			$user = $m_deposit->getDepositById($id)[0];
 			$data = [
 				'a' => $user,
-				'duser' => $this->account
+				'duser' => $account
 			];
 			echo view('anggota/deposit/part-depo-mod-detail', $data);
 		}
@@ -391,9 +424,10 @@ class Deposits extends Controller
 
 	public function up_mutasi()
 	{
+		$m_deposit = new M_deposit();
 		if ($_POST['rowid']) {
 			$id = $_POST['rowid'];
-			$user = $this->m_deposit->getDepositById($id)[0];
+			$user = $m_deposit->getDepositById($id)[0];
 			$data = ['a' => $user];
 			echo view('anggota/deposit/part-depo-mod-upload', $data);
 		}
