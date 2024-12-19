@@ -30,13 +30,14 @@ class User extends Controller
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->m_group = new M_group();
-		$this->m_deposit = new M_deposit();
-		$this->m_param = new M_param();
-		$this->m_param_manasuka = new M_param_manasuka();
-		$this->m_pinjaman = new M_pinjaman();
-		$this->m_cicilan = new M_cicilan();
+		$this->m_user = model(M_user::class);
+		$this->m_group = model(M_group::class);
+		$this->m_deposit = model(M_deposit::class);
+		$this->m_param = model(M_param::class);
+		$this->m_param_manasuka = model(M_param_manasuka::class);
+		$this->m_pinjaman = model(M_pinjaman::class);
+		$this->m_cicilan = model(M_cicilan::class);
+
 		$this->notification = new Notifications();
 
 		$config = new \Config\Encryption();
@@ -95,13 +96,12 @@ class User extends Controller
 	}
 
 	public function data_user()
-	{
-		
+	{	
 		$config = new \Config\Encryption();
 		$encrypter = \Config\Services::encrypter($config);
 		
         $request = service('request');
-        $model = new M_user(); // Replace with your actual model name
+        $model = $this->m_user; // Replace with your actual model name
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;
@@ -109,9 +109,20 @@ class User extends Controller
         $draw = $request->getPost('draw');
         $searchValue = $request->getPost('search')['value'];
 
+		$model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, closebook_request');
+
         // Start building the query for filtering
-	    $model->like('username', $searchValue)
-	          ->orLike('nama_lengkap', $searchValue);
+	    $model->groupStart()
+			->like('username', $searchValue)
+	        ->orLike('nama_lengkap', $searchValue)
+			->groupEnd();
+
+		// for filtering closebook request
+		if(isset($_GET['closebook'])) {
+			$model->where('closebook_request', 'closebook');
+		}
+
+		$recordsFiltered = $model->countAllResults(false);
 
         // Fetch data from the model using $start and $length
         $data = $model->asArray()->findAll($length, $start);
