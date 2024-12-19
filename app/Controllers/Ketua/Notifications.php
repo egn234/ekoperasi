@@ -8,16 +8,58 @@ use App\Models\M_notification;
 
 class Notifications extends BaseController
 {
-	protected $m_user;
+	protected $m_user, $m_notification;
 	protected $account;
-	protected $m_notification;
 
 	function __construct(){
 		$this->m_user = model(M_user::class);
 		$this->m_notification = model(M_notification::class);
 
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
 		$user = $this->m_user->getUserById(session()->get('iduser'));
-		$this->account = !empty($user) ? $user[0] : null;
+		if (empty($user)) {
+			$user = null;
+		} else {
+			$data = $user[0];
+			
+			$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+			$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+			$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+			$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+			$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+			$this->account = (object) [
+				'iduser' => $data->iduser,
+				'username' => $data->username,
+				'nik' => $nik,
+				'nip' => $nip,
+				'nama_lengkap' => $data->nama_lengkap,
+				'tempat_lahir' => $data->tempat_lahir,
+				'tanggal_lahir' => $data->tanggal_lahir,
+				'status_pegawai' => $data->status_pegawai,
+				'nama_bank' => $data->nama_bank,
+				'no_rek' => $no_rek,
+				'alamat' => $alamat,
+				'instansi' => $data->instansi,
+				'unit_kerja' => $data->unit_kerja,
+				'nomor_telepon' => $nomor_telepon,
+				'email' => $data->email,
+				'profil_pic' => $data->profil_pic,
+				'user_created' => $data->user_created,
+				'user_updated' => $data->user_updated,
+				'closebook_request' => $data->closebook_request,
+				'closebook_request_date' => $data->closebook_request_date,
+				'closebook_last_updated' => $data->closebook_last_updated,
+				'closebook_param_count' => $data->closebook_param_count,
+				'user_flag' => $data->user_flag,
+				'idgroup' => $data->idgroup,
+				'group_type' => $data->group_type,
+				'group_assigned' => $data->group_assigned,
+				'group_flag' => $data->group_flag
+			];
+		}
 	}
 
 	public function index()

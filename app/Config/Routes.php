@@ -46,6 +46,7 @@ $routes->group('test', static function ($routes){
     // $routes->get('test_db', 'Test_field::test_db');
     $routes->get('test_encryption', 'Test_field::encryption_meth');
     // $routes->get('encrypt-data', 'Test_field::convert_sensitive_data');
+    $routes->get('test_binary', 'Test_field::binary_search');
 });
 
 $routes->get('registrasi', 'Register::index');

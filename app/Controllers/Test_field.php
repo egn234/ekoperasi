@@ -265,11 +265,12 @@ class test_field extends BaseController
 		}
 	}
 
-	public function password_hashing()
+	public function binary_search()
 	{
-		$data = (string) "some data";
-		$hash = password_hash($data, PASSWORD_DEFAULT);
-		echo $hash;
+		$nik = (string) "6ijaGegAhgSc6mEIJccOOsVz9+rslOw7hQrwsPSxO4TBxZAb5XsbXirryWK7+8g+NI+ECvTEed9ASoh1DshCnOawJnWBIVpgjnh73iv3Q5RUOuF1zyTzP5G4YYlLryjA";
+		$cek_nik = $this->m_user->select('nik')->where('nik = "'. $nik.'"')->get()->getResult();
+
+		print_r($cek_nik);
 	}
 
 	public function convert_sensitive_data()

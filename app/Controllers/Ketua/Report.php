@@ -19,30 +19,74 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Report extends Controller
 {
+	protected $m_user;
+	protected $account;
+	protected $notification;
 
 	function __construct()
 	{
-		$this->m_user = new M_user();
-		$this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
-		$this->m_deposit = new M_deposit();
-		$this->m_monthly_report = new M_monthly_report();
-		$this->m_param = new M_param();
-		$this->m_param_manasuka = new M_param_manasuka();
-		$this->m_cicilan = new M_cicilan();
-		$this->m_pinjaman = new M_pinjaman();
+		$this->m_user = model(M_user::class);
+
 		$this->notification = new Notifications();
+
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
+		$user = $this->m_user->getUserById(session()->get('iduser'));
+		if (empty($user)) {
+			$user = null;
+		} else {
+			$data = $user[0];
+			
+			$nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
+			$nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
+			$no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
+			$nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
+			$alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
+
+			$this->account = (object) [
+				'iduser' => $data->iduser,
+				'username' => $data->username,
+				'nik' => $nik,
+				'nip' => $nip,
+				'nama_lengkap' => $data->nama_lengkap,
+				'tempat_lahir' => $data->tempat_lahir,
+				'tanggal_lahir' => $data->tanggal_lahir,
+				'status_pegawai' => $data->status_pegawai,
+				'nama_bank' => $data->nama_bank,
+				'no_rek' => $no_rek,
+				'alamat' => $alamat,
+				'instansi' => $data->instansi,
+				'unit_kerja' => $data->unit_kerja,
+				'nomor_telepon' => $nomor_telepon,
+				'email' => $data->email,
+				'profil_pic' => $data->profil_pic,
+				'user_created' => $data->user_created,
+				'user_updated' => $data->user_updated,
+				'closebook_request' => $data->closebook_request,
+				'closebook_request_date' => $data->closebook_request_date,
+				'closebook_last_updated' => $data->closebook_last_updated,
+				'closebook_param_count' => $data->closebook_param_count,
+				'user_flag' => $data->user_flag,
+				'idgroup' => $data->idgroup,
+				'group_type' => $data->group_type,
+				'group_assigned' => $data->group_assigned,
+				'group_flag' => $data->group_flag
+			];
+		}
 	}
 
 	public function index()
 	{
-		$list_report = $this->m_monthly_report->getAllMonthlyReport();
-		$list_tahun = $this->m_monthly_report->select('YEAR(created) AS tahun')
+		$m_monthly_report = model(M_monthly_report::class);
+		$list_report = $m_monthly_report->getAllMonthlyReport();
+		$list_tahun = $m_monthly_report->select('YEAR(created) AS tahun')
 											 ->groupBy('YEAR(created)', 'DESC')
 											 ->get()
 											 ->getResult();
 		$YEAR = date('Y');
 		$MONTH = date('m');
-		$cek_report = $this->m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
+		$cek_report = $m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
 		
 		$data = [
 			'title_meta' => view('ketua/partials/title-meta', ['title' => 'Reporting']),
@@ -60,8 +104,9 @@ class Report extends Controller
 
 	public function print_potongan_pinjaman()
 	{
-		$m_monthly_report = new M_monthly_report();
-		$idreportm = $this->request->getPost('idreportm');
+		$m_monthly_report = model(M_monthly_report::class);
+
+		$idreportm = request()->getPost('idreportm');
 
 		if($idreportm == 0){
 			$alert = view(
@@ -82,7 +127,7 @@ class Report extends Controller
 		$endDate = $report_data->created;
 		$startDate = $m_monthly_report->getPrevMonth($idreportm)[0]->created;
 		
-		$instansi = $this->request->getPost('instansi');
+		$instansi = request()->getPost('instansi');
 
 		if ($instansi == '0') {
 			$user_list = $this->m_user->where('flag', 1)
@@ -113,7 +158,7 @@ class Report extends Controller
 
 	public function print_rekap_tahunan()
 	{
-		$tahun = $this->request->getPost('tahun');
+		$tahun = request()->getPost('tahun');
 		
 		if ($tahun == '0') {
 			$alert = view(
@@ -185,8 +230,12 @@ class Report extends Controller
 
 	public function print_rekening_koran()
 	{
+		$m_param = model(M_param::class);
+		$m_deposit = model(M_deposit::class);
+		$m_pinjaman = model(M_pinjaman::class);
+		$m_cicilan = model(M_cicilan::class);
 
-		$tahun = $this->request->getPost('tahun');
+		$tahun = request()->getPost('tahun');
 		
 		if ($tahun == '0') {
 			$alert = view(
@@ -202,7 +251,7 @@ class Report extends Controller
 			return redirect()->back();
 		}
 
-		$setDay = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai + 1;
+		$setDay = $m_param->where('idparameter', 8)->get()->getResult()[0]->nilai + 1;
 
 		$user_list = $this->m_user->where('flag', '1')
 								  ->where('idgroup', 4)
@@ -275,21 +324,21 @@ class Report extends Controller
 			$lastYear = date('Y-m-d', strtotime($currentYear.' -1 year'));
 			
 			//SALDO SIMPANAN 1 JANUARI
-			$SaldoPokokTahunan = $this->m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
+			$SaldoPokokTahunan = $m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
 												 ->where("date_created BETWEEN '".$lastYear."' AND '".$currentYear."'")
 												 ->where('status', 'diterima')
                                             	 ->where('jenis_deposit', 'pokok')
                                             	 ->where('idanggota', $member->iduser)
                                             	 ->get()->getResult()[0]->saldo;
 
-			$SaldoWajibTahunan = $this->m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
+			$SaldoWajibTahunan = $m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
 												 ->where("date_created BETWEEN '".$lastYear."' AND '".$currentYear."'")
 												 ->where('status', 'diterima')
                                             	 ->where('jenis_deposit', 'wajib')
                                             	 ->where('idanggota', $member->iduser)
                                             	 ->get()->getResult()[0]->saldo;
 
-			$SaldoManasukaTahunan = $this->m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
+			$SaldoManasukaTahunan = $m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
 													->where("date_created BETWEEN '".$lastYear."' AND '".$currentYear."'")
 													->where('status', 'diterima')
                                             		->whereIn('jenis_deposit', ['manasuka', 'manasuka free'])
@@ -302,7 +351,7 @@ class Report extends Controller
             $sheet->setCellValue('F9', '=SUM(C9:E9)');
 
             //JUMLAH PINJAMAN PER 1 JANUARI
-            $pinjamanTahunan = $this->m_pinjaman->getPinjamanTahunan($member->iduser, $lastYear, $currentYear);
+            $pinjamanTahunan = $m_pinjaman->getPinjamanTahunan($member->iduser, $lastYear, $currentYear);
             
             $sheet->setCellValue('G9', ($pinjamanTahunan)?$pinjamanTahunan[0]->jumlah_pinjaman:'0');
             $sheet->setCellValue('L9', '=G9-SUM(H9:K9)');
@@ -329,7 +378,7 @@ class Report extends Controller
 					$endDate = $tahun.'-'.$i.'-'.$setDay;
 					$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
-					$saldo = $this->m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
+					$saldo = $m_deposit->select('SUM(cash_in) - SUM(cash_out) AS saldo')
 												 ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
 												 ->where('status', 'diterima')
                                             	 ->whereIn('jenis_deposit', $jenis_deposit)
@@ -353,7 +402,7 @@ class Report extends Controller
 				$endDate = $tahun.'-'.$i.'-'.$setDay;
 				$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
-				$jum_pinjaman = $this->m_pinjaman->select("SUM(nominal) as nominal, angsuran_bulanan, DATE(CONCAT(YEAR('".$startDate."'),'-',(bln_perdana - 1),'-',tanggal_bayar)) as tgl")
+				$jum_pinjaman = $m_pinjaman->select("SUM(nominal) as nominal, angsuran_bulanan, DATE(CONCAT(YEAR('".$startDate."'),'-',(bln_perdana - 1),'-',tanggal_bayar)) as tgl")
 												 ->where('status BETWEEN 4 AND 5')
 												 ->where("DATE(CONCAT(YEAR('".$startDate."'),'-',bln_perdana-1,'-',tanggal_bayar)) BETWEEN '".$startDate."' AND '".$endDate."'")
 												 ->where('idanggota', $member->iduser)
@@ -384,7 +433,7 @@ class Report extends Controller
 					$endDate = $tahun.'-'.$i.'-'.$setDay;
 					$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
-					$saldo = $this->m_cicilan->select('ROUND(SUM(tb_cicilan.'.$tipe.')) AS saldo')
+					$saldo = $m_cicilan->select('ROUND(SUM(tb_cicilan.'.$tipe.')) AS saldo')
 											 ->join('tb_pinjaman', 'tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman')
 											 ->where("tb_cicilan.date_created BETWEEN '".$startDate."' AND '".$endDate."'")
                                              ->where('idanggota', $member->iduser)
@@ -396,7 +445,7 @@ class Report extends Controller
 			}
 
 			//SISA CICILAN
-			$pinjaman_aktif = $this->m_pinjaman->where('status', '4')
+			$pinjaman_aktif = $m_pinjaman->where('status', '4')
 											   ->where('idanggota', $member->iduser)
 											   ->get()->getResult();
 			$row = 10;
@@ -405,7 +454,7 @@ class Report extends Controller
 					$startDate = date('Y-m-d', strtotime($pinjaman_aktif[0]->date_updated));
 					$endDate = $tahun.'-'.$i.'-'.$setDay;
 
-					$cicilan = $this->m_cicilan->select('COUNT(idcicilan) AS hitung')
+					$cicilan = $m_cicilan->select('COUNT(idcicilan) AS hitung')
 											   ->join('tb_pinjaman', 'tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman')
 											   ->where("tb_cicilan.date_created BETWEEN '".$startDate."' AND '".$endDate."'")
 											   ->where('idanggota', $member->iduser)

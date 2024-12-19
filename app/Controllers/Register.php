@@ -60,6 +60,7 @@ class register extends Controller
 		$alamat = request()->getPost('alamat');
 		$nomor_telepon = request()->getPost('nomor_telepon');
 		$no_rek = request()->getPost('no_rek');
+		
 		$pass = md5(request()->getPost('pass'));
 		$pass2 = md5(request()->getPost('pass2'));
 		
