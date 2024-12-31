@@ -9,7 +9,6 @@ use App\Models\M_user;
 use App\Models\M_deposit;
 use App\Models\M_monthly_report;
 use App\Models\M_param;
-use App\Models\M_param_manasuka;
 use App\Models\M_cicilan;
 use App\Models\M_pinjaman;
 
@@ -154,78 +153,6 @@ class Report extends Controller
 		header('Cache-Control: max-age=0');
 
 		echo view('ketua/report/print-potongan-pinjaman', $report);
-	}
-
-	public function print_rekap_tahunan()
-	{
-		$tahun = request()->getPost('tahun');
-		
-		if ($tahun == '0') {
-			$alert = view(
-				'partials/notification-alert', 
-				[
-					'notif_text' => 'Belum memilih tahun laporan',
-				 	'status' => 'warning'
-				]
-			);
-			
-			$dataset_notif = ['notif_print' => $alert];
-			session()->setFlashdata($dataset_notif);
-			return redirect()->back();
-		}
-
-		$endDate = $tahun.'-'.date('m-d', strtotime("+1 day"));
-		$startDate = date('Y-m-d', strtotime('-1 year', strtotime($endDate)));
-
-		$pegawai_but = $this->m_user->where('flag', 1)
-									->where('instansi', 'BUT')
-									->where('idgroup', 4)
-									->get()
-									->getResult();
-
-		$pegawai_giat = $this->m_user->where('flag', 1)
-									->where('instansi', 'GIAT')
-									->where('idgroup', 4)
-									->get()
-									->getResult();
-		
-		$pegawai_telkom = $this->m_user->where('flag', 1)
-									   ->where('instansi', 'Telkom')
-									   ->where('idgroup', 4)
-									   ->get()
-									   ->getResult();
-
-		$pegawai_trengginas = $this->m_user->where('flag', 1)
-										   ->where('instansi', 'Trengginas Jaya')
-										   ->where('idgroup', 4)
-										   ->get()
-										   ->getResult();
-
-		$pegawai_telyu = $this->m_user->where('flag', 1)
-									  ->where('instansi', 'Universitas Telkom')
-									  ->where('idgroup', 4)
-									  ->get()
-									  ->getResult();
-
-		$pegawai_ypt = $this->m_user->where('flag', 1)
-									->where('instansi', 'YPT')
-									->where('idgroup', 4)
-									->get()
-									->getResult();
-
-		$report = [
-			'page_title' => 'rekap tahunan',
-			'pegawai_but' => $pegawai_but,
-			'pegawai_giat' => $pegawai_giat,
-			'pegawai_telkom' => $pegawai_telkom,
-			'pegawai_trengginas' => $pegawai_trengginas,
-			'pegawai_telyu' => $pegawai_telyu,
-			'pegawai_ypt' => $pegawai_ypt,
-			'startDate' => $startDate,
-			'endDate' => $endDate
-		];
-
-		echo view('ketua/report/print-rekap-tahunan', $report);
 	}
 
 	public function print_rekening_koran()
@@ -526,5 +453,199 @@ class Report extends Controller
 
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 		$writer->save('php://output');
+	}
+
+	function generateReportTahunan()
+	{
+		$m_user = model(M_user::class);
+		$tahun = request()->getPost('tahun');
+
+		if ($tahun == '0') {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Belum memilih tahun laporan',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset_notif = ['notif_print' => $alert];
+			session()->setFlashdata($dataset_notif);
+			return redirect()->back();
+		}
+
+		$endDate = $tahun.'-'.date('m-d', strtotime("+1 day"));
+		$startDate = date('Y-m-d', strtotime('-1 year', strtotime($endDate)));
+
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('Laporan Tahun '.$tahun);
+
+		// Header kolom
+		$sheet->mergeCells('A1:A2'); // NO. URUT
+		$sheet->setCellValue('A1', 'NO. URUT');
+
+		$sheet->mergeCells('B1:B2'); // NAMA ANGGOTA KOPERASI
+		$sheet->setCellValue('B1', 'NAMA ANGGOTA KOPERASI');
+
+		$sheet->mergeCells('C1:E1'); // SIMPANAN (POKOK, WAJIB, MANASUKA)
+		$sheet->setCellValue('C1', 'SIMPANAN');
+		$sheet->setCellValue('C2', 'POKOK'); // Subkolom SIMPANAN
+		$sheet->setCellValue('D2', 'WAJIB');
+		$sheet->setCellValue('E2', 'MANASUKA');
+
+		$sheet->mergeCells('F1:F2'); // SALDO SIMPANAN PER ...
+		$sheet->setCellValue('F1', strtoupper('SALDO SIMPANAN PER ' . date('d F Y')));
+
+		$sheet->mergeCells('G1:H1'); // PINJAMAN (JUMLAH, PEMBAYARAN POKOK)
+		$sheet->setCellValue('G1', 'PINJAMAN');
+		$sheet->setCellValue('G2', 'JUMLAH PINJAMAN'); // Subkolom PINJAMAN
+		$sheet->setCellValue('H2', 'PEMBAYARAN POKOK');
+
+		$sheet->mergeCells('I1:I2'); // SALDO PINJAMAN PER ...
+		$sheet->setCellValue('I1', strtoupper('SALDO PINJAMAN PER ' . date('d F Y')));
+
+		$sheet->mergeCells('J1:K1'); // KETERANGAN (JUMLAH CICILAN, SISA CICILAN)
+		$sheet->setCellValue('J1', 'KETERANGAN');
+		$sheet->setCellValue('J2', 'JUMLAH CICILAN'); // Subkolom KETERANGAN
+		$sheet->setCellValue('K2', 'SISA CICILAN');
+
+		$sheet->mergeCells('L1:L2'); // NOMOR ANGGOTA
+		$sheet->setCellValue('L1', 'NOMOR ANGGOTA');
+
+		// Tambahkan styling (opsional)
+		$sheet->getStyle('A1:L2')->getFont()->setBold(true);
+		$sheet->getStyle('A1:L2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+		$sheet->getStyle('A1:L2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+		$list_pegawai = [
+			'BUT' => $m_user->where('flag', 1)->where('instansi', 'YPT')->where('idgroup', 4)->get()->getResult(),
+			'GIAT' => $m_user->where('flag', 1)->where('instansi', 'GIAT')->where('idgroup', 4)->get()->getResult(),
+			'Telkom' => $m_user->where('flag', 1)->where('instansi', 'Telkom')->where('idgroup', 4)->get()->getResult(),
+			'Trengginas Jaya' => $m_user->where('flag', 1)->where('instansi', 'Trengginas Jaya')->where('idgroup', 4)->get()->getResult(),
+			'Telkom University' => $m_user->where('flag', 1)->where('instansi', 'Telkom University')->where('idgroup', 4)->get()->getResult(),
+			'YPT' => $m_user->where('flag', 1)->where('instansi', 'YPT')->where('idgroup', 4)->get()->getResult()
+		];
+
+		$row = 3;
+		$number = 1;
+
+		$m_monthly_report = model(M_monthly_report::class);
+		$m_deposit = model(M_deposit::class);
+		$m_cicilan = model(M_cicilan::class);
+
+		foreach ($list_pegawai as $instansi => $pegawai_list) {
+			// Tambahkan baris pembatas untuk instansi
+			$sheet->mergeCells('A' . $row . ':L' . $row); // Gabungkan kolom A sampai L
+			$sheet->setCellValue('A' . $row, strtoupper('DAFTAR ' . $instansi)); // Nama instansi
+			$sheet->getStyle('A' . $row)->getFont()->setBold(true); // Bold untuk pembatas
+			$sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+			$row++;
+			
+			foreach ($pegawai_list as $index => $pegawai) {
+				// Perhitungan Data
+				$cicilan = $m_monthly_report->getHitunganPinjaman2($pegawai->iduser, $startDate, $endDate);
+				$pinjaman = $m_monthly_report->getPinjamanAktifByAnggota($pegawai->iduser, $startDate, $endDate);
+				
+				if ($pinjaman){
+					$count_cicilan = $m_monthly_report->countCicilanByPinjaman($pinjaman[0]->idpinjaman, $startDate, $endDate)[0]->hitung;
+				} else {
+					$count_cicilan = " - ";
+				}
+
+				$simpanan_pokok = $m_deposit->select("SUM(cash_in)-SUM(cash_out) AS nominal")
+					->where('status', 'diterima')
+					->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+					->where('jenis_deposit', 'pokok')
+					->where('idanggota', $pegawai->iduser)
+					->get()
+					->getResult()[0]
+					->nominal;
+
+				$simpanan_wajib = $m_deposit->select("SUM(cash_in)-SUM(cash_out) AS nominal")
+					->where('status', 'diterima')
+					->whereNotIn('deskripsi', ['saldo wajib'])
+					->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+					->where('jenis_deposit', 'wajib')
+					->where('idanggota', $pegawai->iduser)
+					->get()
+					->getResult()[0]
+					->nominal;
+
+				$simpanan_manasuka = $m_deposit->select("SUM(cash_in)-SUM(cash_out) AS nominal")
+					->where('status', 'diterima')
+					->whereNotIn('deskripsi', ['saldo manasuka'])
+					->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+					->whereIn('jenis_deposit', ['manasuka', 'manasuka free'])
+					->where('idanggota', $pegawai->iduser)
+					->get()
+					->getResult()[0]
+					->nominal;
+
+				if($pinjaman){
+					$cicilan_dalam = $m_cicilan->select("SUM(nominal) as nominal")
+						->where('idpinjaman', $pinjaman[0]->idpinjaman)
+						->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+						->get()->getResult()[0]
+						->nominal;
+
+					$cicilan_luar = $m_cicilan->select("SUM(nominal) as nominal")
+						->where('idpinjaman', $pinjaman[0]->idpinjaman)
+						->where("date_created < '".$startDate."'")
+						->get()->getResult()[0]
+						->nominal;
+
+					$jumlah_pinjaman = $pinjaman[0]->nominal - $cicilan_luar;
+
+				}else{
+					$cicilan_dalam = 0;
+					$cicilan_luar = 0;
+					$jumlah_pinjaman = 0;
+				}
+				
+
+				$manasuka = $m_monthly_report->getSumSimpanan2($pegawai->iduser, $startDate, $endDate)[0]->nominal;  
+				$p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
+
+				// Tambahkan data ke dalam kolom sheet
+				$sheet->setCellValue('A'.$row, $number);
+				$sheet->setCellValue('B'.$row, $pegawai->nama_lengkap);
+				$sheet->setCellValue('C'.$row, $simpanan_pokok);
+				$sheet->setCellValue('D'.$row, $simpanan_wajib);
+				$sheet->setCellValue('E'.$row, $simpanan_manasuka);
+				$sheet->setCellValue('F'.$row, ($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok));
+				$sheet->setCellValue('G'.$row, $jumlah_pinjaman);
+				$sheet->setCellValue('H'.$row, $cicilan_dalam);
+				$sheet->setCellValue('I'.$row, $jumlah_pinjaman-$cicilan_dalam);
+				$sheet->setCellValue('J'.$row, ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ');
+				$sheet->setCellValue('K'.$row, ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - ');
+				$sheet->setCellValue('L'.$row, $pegawai->username);
+
+				$row++;
+				$number++;
+			}
+		}
+		// Format kolom sebagai currency (contoh untuk kolom Simpanan dan Pinjaman)
+		$sheet->getStyle('C4:F' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Kolom Simpanan
+		$sheet->getStyle('G4:H' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Kolom Pinjaman
+		$sheet->getStyle('I4:I' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Saldo Pinjaman
+		// Set border untuk header (opsional)
+		$sheet->getStyle('A1:L' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+		// Setelah data selesai ditulis ke sheet
+		foreach (range('A', 'L') as $columnID) {
+			$sheet->getColumnDimension($columnID)->setAutoSize(true);
+		}
+
+		// Streaming Excel ke browser
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'REKAP_TAHUNAN_' . $tahun . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
 	}
 }

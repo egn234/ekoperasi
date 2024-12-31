@@ -141,3 +141,6 @@ db_log/*
 Dockerfile
 docker-compose.yml
 custom-php.ini
+
+# python venv
+app/ThirdParty/excel_report_lib/*

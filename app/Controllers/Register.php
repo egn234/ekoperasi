@@ -243,6 +243,20 @@ class register extends Controller
 				return redirect()->to('register');
 			}
 
+			if ($img->getSizeByUnit('kb') < 512) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Terlalu Kecil',
+							'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
+			}
+
 			// Optional: Validate Image Dimensions
 			$imageInfo = getimagesize($img->getTempName());
 			if ($imageInfo) {
