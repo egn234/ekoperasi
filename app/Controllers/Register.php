@@ -193,16 +193,53 @@ class register extends Controller
 		if ($img->isValid()) {
 			// Validation rules
 			$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+			$allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 			$maxSize = 2048; // Max size in KB (e.g., 2MB)
 
 			// Validate MIME Type
 			if (!in_array($img->getMimeType(), $allowedTypes)) {
-				return redirect()->back()->with('error', 'Invalid file type. Only JPG, PNG, and GIF are allowed.');
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Tidak Valid',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
 			}
 
+			$imageInfo = @getimagesize($img->getTempName());
+			if ($imageInfo === false) {
+				// Handle invalid image
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Tidak Valid',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
+			}
+			
 			// Validate File Size
 			if ($img->getSizeByUnit('kb') > $maxSize) {
-				return redirect()->back()->with('error', 'File is too large. Maximum size is 2MB.');
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Terlalu Besar',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
 			}
 
 			// Optional: Validate Image Dimensions
@@ -212,10 +249,30 @@ class register extends Controller
 				$height = $imageInfo[1];
 
 				if ($width > 2000 || $height > 2000) { // Example dimensions limit
-					return redirect()->back()->with('error', 'Image dimensions are too large. Maximum is 2000x2000 pixels.');
+					$alert = view(
+						'partials/notification-alert', 
+						[
+							'notif_text' => 'Gambar Terlalu Besar',
+							 'status' => 'warning'
+						]
+					);
+					
+					$dataset += ['notif' => $alert];
+					session()->setFlashdata($dataset);
+					return redirect()->to('register');
 				}
 			} else {
-				return redirect()->back()->with('error', 'Uploaded file is not a valid image.');
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Tidak Valid',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');;
 			}
 
 			// Move file to its destination if all validations pass
@@ -224,7 +281,17 @@ class register extends Controller
 			$profile_pic = $img->getName();
 			$dataset += ['profil_pic' => $profile_pic];
 		} else {
-			return redirect()->back()->with('error', $img->getErrorString());
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Gambar Tidak Valid',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset += ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->to('register');
 		}
 		
 		$dataset += [
