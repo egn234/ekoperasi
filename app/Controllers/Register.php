@@ -90,9 +90,14 @@ class register extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		if ($dataset['status_pegawai'] == "") {
@@ -104,9 +109,14 @@ class register extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		$cek_username = $this->m_user->countUser($dataset['username'])[0]->hitung;
@@ -120,9 +130,14 @@ class register extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		//check duplicate nip
@@ -144,11 +159,13 @@ class register extends Controller
 					]
 				);
 				
-				$dataset += [
-					'nip' => $nip,
-					'notif' => $alert
-				];
-				
+				$dataset['notif'] = $alert;
+				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
+				$dataset['alamat'] = $alamat;
+				$dataset['nomor_telepon'] = $nomor_telepon;
+				$dataset['no_rek'] = $no_rek;
+	
 				session()->setFlashdata($dataset);
 				return redirect()->back();
 			}else{
@@ -167,9 +184,15 @@ class register extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['nip'] = $nip;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 
 		if ($pass != $pass2) {
@@ -181,9 +204,15 @@ class register extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['nip'] = $nip;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');			
+			return redirect()->to('registrasi');			
 		} else {
 			$dataset += ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
 		}
@@ -207,9 +236,14 @@ class register extends Controller
 					]
 				);
 				
-				$dataset += ['notif' => $alert];
+				$dataset['notif'] = $alert;
+				$dataset['nik'] = $nik;
+				$dataset['alamat'] = $alamat;
+				$dataset['nomor_telepon'] = $nomor_telepon;
+				$dataset['no_rek'] = $no_rek;
+
 				session()->setFlashdata($dataset);
-				return redirect()->to('register');
+				return redirect()->to('registrasi');
 			}
 
 			$imageInfo = @getimagesize($img->getTempName());
@@ -223,9 +257,14 @@ class register extends Controller
 					]
 				);
 				
-				$dataset += ['notif' => $alert];
+				$dataset['notif'] = $alert;
+				$dataset['nik'] = $nik;
+				$dataset['alamat'] = $alamat;
+				$dataset['nomor_telepon'] = $nomor_telepon;
+				$dataset['no_rek'] = $no_rek;
+
 				session()->setFlashdata($dataset);
-				return redirect()->to('register');
+				return redirect()->to('registrasi');
 			}
 			
 			// Validate File Size
@@ -238,9 +277,14 @@ class register extends Controller
 					]
 				);
 				
-				$dataset += ['notif' => $alert];
+				$dataset['notif'] = $alert;
+				$dataset['nik'] = $nik;
+				$dataset['alamat'] = $alamat;
+				$dataset['nomor_telepon'] = $nomor_telepon;
+				$dataset['no_rek'] = $no_rek;
+
 				session()->setFlashdata($dataset);
-				return redirect()->to('register');
+				return redirect()->to('registrasi');
 			}
 
 			if ($img->getSizeByUnit('kb') < 512) {
@@ -252,9 +296,14 @@ class register extends Controller
 					]
 				);
 				
-				$dataset += ['notif' => $alert];
+				$dataset['notif'] = $alert;
+				$dataset['nik'] = $nik;
+				$dataset['alamat'] = $alamat;
+				$dataset['nomor_telepon'] = $nomor_telepon;
+				$dataset['no_rek'] = $no_rek;
+
 				session()->setFlashdata($dataset);
-				return redirect()->to('register');
+				return redirect()->to('registrasi');
 			}
 
 			// Optional: Validate Image Dimensions
@@ -272,9 +321,14 @@ class register extends Controller
 						]
 					);
 					
-					$dataset += ['notif' => $alert];
+					$dataset['notif'] = $alert;
+					$dataset['nik'] = $nik;
+					$dataset['alamat'] = $alamat;
+					$dataset['nomor_telepon'] = $nomor_telepon;
+					$dataset['no_rek'] = $no_rek;
+
 					session()->setFlashdata($dataset);
-					return redirect()->to('register');
+					return redirect()->to('registrasi');
 				}
 			} else {
 				$alert = view(
@@ -285,9 +339,14 @@ class register extends Controller
 					]
 				);
 				
-				$dataset += ['notif' => $alert];
+				$dataset['notif'] = $alert;
+				$dataset['nik'] = $nik;
+				$dataset['alamat'] = $alamat;
+				$dataset['nomor_telepon'] = $nomor_telepon;
+				$dataset['no_rek'] = $no_rek;
+
 				session()->setFlashdata($dataset);
-				return redirect()->to('register');;
+				return redirect()->to('registrasi');;
 			}
 
 			// Move file to its destination if all validations pass
@@ -304,9 +363,14 @@ class register extends Controller
 				]
 			);
 			
-			$dataset += ['notif' => $alert];
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			session()->setFlashdata($dataset);
-			return redirect()->to('register');
+			return redirect()->to('registrasi');
 		}
 		
 		$dataset += [
