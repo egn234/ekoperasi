@@ -224,6 +224,7 @@ class register extends Controller
 			$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 			$allowedExtensions = ['jpg', 'jpeg', 'gif'];
 			$maxSize = 2048; // Max size in KB (e.g., 2MB)
+			$minSize = 128; // Min size in KB
 
 			// Validate MIME Type and Extension
 			if (!in_array($img->getMimeType(), $allowedTypes) || 
@@ -287,7 +288,7 @@ class register extends Controller
 				return redirect()->to('registrasi');
 			}
 
-			if ($img->getSizeByUnit('kb') < 512) {
+			if ($img->getSizeByUnit('kb') < $minSize) {
 				$alert = view(
 					'partials/notification-alert', 
 					[
@@ -316,7 +317,7 @@ class register extends Controller
 					$alert = view(
 						'partials/notification-alert', 
 						[
-							'notif_text' => 'Gambar Terlalu Besar',
+							'notif_text' => 'Dimensi Gambar Terlalu Besar',
 							 'status' => 'warning'
 						]
 					);
