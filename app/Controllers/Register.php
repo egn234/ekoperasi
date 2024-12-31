@@ -232,16 +232,54 @@ class register extends Controller
 		if ($img->isValid()) {
 			// Validation rules
 			$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+			$allowedExtensions = ['jpg', 'jpeg', 'gif'];
 			$maxSize = 2048; // Max size in KB (e.g., 2MB)
 
-			// Validate MIME Type
-			if (!in_array($img->getMimeType(), $allowedTypes)) {
-				return redirect()->back()->with('error', 'Invalid file type. Only JPG, PNG, and GIF are allowed.');
+			// Validate MIME Type and Extension
+			if (!in_array($img->getMimeType(), $allowedTypes) || 
+        		!in_array(strtolower($img->getExtension()), $allowedExtensions)) {
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Tidak Valid',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
+			}
+
+			$imageInfo = @getimagesize($img->getTempName());
+			if ($imageInfo === false) {
+				// Handle invalid image
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Tidak Valid',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
 			}
 
 			// Validate File Size
 			if ($img->getSizeByUnit('kb') > $maxSize) {
-				return redirect()->back()->with('error', 'File is too large. Maximum size is 2MB.');
+				$alert = view(
+					'partials/notification-alert', 
+					[
+						'notif_text' => 'Gambar Terlalu Besar, Maks 2MB',
+						 'status' => 'warning'
+					]
+				);
+				
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->to('register');
 			}
 
 			// Optional: Validate Image Dimensions
