@@ -369,9 +369,19 @@ class Pinjaman extends BaseController
 
 	public function generate_form($idpinjaman)
 	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
 		$detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
 		$bunga = $this->m_param->getParamById(9)[0]->nilai/100;
 		$provisi = $this->m_param->getParamById(5)[0]->nilai/100;
+
+		$detail_pinjaman->nik_peminjam = ($detail_pinjaman->nik_peminjam != null || $detail_pinjaman->nik_peminjam != '')
+			? $encrypter->decrypt(base64_decode($detail_pinjaman->nik_peminjam)) : '';
+		$detail_pinjaman->nik_admin = ($detail_pinjaman->nik_admin != null || $detail_pinjaman->nik_admin != '')
+			? $encrypter->decrypt(base64_decode($detail_pinjaman->nik_admin)) : '';
+		$detail_pinjaman->nik_bendahara = ($detail_pinjaman->nik_bendahara != null || $detail_pinjaman->nik_bendahara != '')
+			? $encrypter->decrypt(base64_decode($detail_pinjaman->nik_bendahara)) : '';
 
 		$data = [
 			'detail_pinjaman' => $detail_pinjaman,
