@@ -150,7 +150,7 @@ class Pinjaman extends Controller
 			if ($bukti_tf->isValid()) {	
 
 				//cek tipe
-				$allowed_types = ['application/pdf'];
+				$allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
 				if (!in_array($bukti_tf->getMimeType(), $allowed_types)) {
 					$alert = view(
 						'partials/notification-alert', 
@@ -187,7 +187,7 @@ class Pinjaman extends Controller
 				}
 
 				//cek ekstensi
-				if ($bukti_tf->getExtension() !== 'pdf') {
+				if ($bukti_tf->getExtension() !== 'jpg' && $bukti_tf->getExtension() !== 'jpeg' && $bukti_tf->getExtension() !== 'png') {
 					$alert = view(
 						'partials/notification-alert', 
 						[
