@@ -171,7 +171,7 @@
                                                 </div>
                                                 
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="profile_pic">Foto Profil <span class="text-danger">*</span></label>
+                                                    <label class="form-label" for="profile_pic">Foto Profil (min: 128kb, max: 2mb)<span class="text-danger">*</span></label>
                                                     <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
                                                 </div>
                                                 <span class="text-xs text-danger">
@@ -243,7 +243,7 @@
                     </div>
                     <div class="modal-footer">
                         <a class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</a>
-                        <button type="submit" id="confirm_button" form="register_form" class="btn btn-primary" disabled>Registrasi</button>
+                        <button type="submit" id="confirm_button" class="btn btn-primary" disabled>Registrasi</button>
                     </div>
                 </div>
             </div>
@@ -258,12 +258,23 @@
 
         <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
         <script>
-            grecaptcha.ready(function() {
-                grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'})
-                    .then(function(token) {
+            setInterval(()=> {
+                grecaptcha.ready(function() {
+                    grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then(function(token) {
                         // Simpan token dalam input tersembunyi
                         document.getElementById('g-recaptcha-response').value = token;
                     });
+                });
+            }, 120000);
+
+            document.getElementById('confirm_button').addEventListener('click', (event) => {
+                event.preventDefault();
+                grecaptcha.ready(() => {
+                    grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then((token) => {
+                        document.getElementById('g-recaptcha-response').value = token;
+                        document.getElementById('register_form').submit();
+                    });
+                });
             });
         </script>
     </body>

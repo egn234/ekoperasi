@@ -312,7 +312,7 @@ class register extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gambar Terlalu Besar, Maks 2MB',
+						'notif_text' => 'Gambar Terlalu Besar (max. 2mb)',
 						 'status' => 'warning'
 					]
 				);
@@ -331,7 +331,7 @@ class register extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gambar Terlalu Kecil',
+						'notif_text' => 'Gambar Terlalu Kecil (min. 128kb)',
 							'status' => 'warning'
 					]
 				);
