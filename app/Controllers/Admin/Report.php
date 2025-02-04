@@ -16,6 +16,7 @@ use App\Models\M_pinjaman;
 use App\Controllers\Admin\Notifications;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 
 class Report extends Controller
 {
@@ -108,6 +109,9 @@ class Report extends Controller
 		$m_monthly_report = model(M_monthly_report::class);
 		$m_user = model(M_user::class);
 
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+
 		$idreportm = request()->getPost('idreportm');
 
 		if($idreportm == 0){
@@ -144,18 +148,79 @@ class Report extends Controller
 									  ->getResult();
 		}
 
-		$report = [
-			'page_title' => 'Ekspor',
-			'usr_list' => $user_list,
-			'endDate' => $endDate,
-			'startDate' => $startDate
-		];
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setTitle('Laporan Potongan Pinjaman');
 
-		header("Content-type: application/vnd.ms-excel");
-		header('Content-Disposition: attachment;filename="cutoff_'.$instansi.'_'.$report_data->created.'.xls"');
-		header('Cache-Control: max-age=0');
+		// Header kolom
+		$sheet->mergeCells('A1:A2');
+		$sheet->mergeCells('B1:B2');
+		$sheet->mergeCells('C1:C2');
+		$sheet->mergeCells('D1:D2');
+		$sheet->mergeCells('E1:E2');
+		$sheet->mergeCells('F1:I1');
+		$sheet->mergeCells('J1:J2');
+		$sheet->mergeCells('K1:L1');
 
-		echo view('admin/report/print-potongan-pinjaman', $report);
+		$sheet->setCellValue('A1', 'NO.');
+		$sheet->setCellValue('B1', 'NAMA');
+		$sheet->setCellValue('C1', 'NIK');
+		$sheet->setCellValue('D1', 'SIMPANAN WAJIB + POKOK');
+		$sheet->setCellValue('E1', 'SIMPANAN MANASUKA');
+		$sheet->setCellValue('F1', 'PINJAMAN');
+		$sheet->setCellValue('F2', 'PINJAMAN POKOK');
+		$sheet->setCellValue('G2', 'BUNGA PINJAMAN');
+		$sheet->setCellValue('H2', 'PROVISI');
+		$sheet->setCellValue('I2', 'JUMLAH');
+		$sheet->setCellValue('J1', 'TOTAL POTONGAN');
+		$sheet->setCellValue('K1', 'CICILAN PINJAMAN UANG');
+		$sheet->setCellValue('K2', 'JML');
+		$sheet->setCellValue('L2', 'KE');
+
+		$c = 1;
+		$cellNumber = 3;
+		foreach ($user_list as $a) {
+			$cicilan = $m_monthly_report->getHitunganPinjaman($a->iduser, $startDate, $endDate);
+			$pinjaman = $m_monthly_report->getPinjamanAktifByAnggota($a->iduser, $startDate, $endDate);
+
+			if ($pinjaman) {
+				$count_cicilan = $m_monthly_report->countCicilanByPinjaman($pinjaman[0]->idpinjaman, $startDate, $endDate)[0]->hitung;
+			}else{
+				$count_cicilan = " - ";
+			}
+			$pokok_wajib = $m_monthly_report->getSumSimpanan1($a->iduser, $startDate, $endDate)[0]->nominal;  
+			$manasuka = $m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
+			$p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
+			$p_bunga = ($cicilan)?$cicilan[0]->bunga:0;
+			$p_provisi = ($cicilan)?$cicilan[0]->provisi:0;
+
+			$total_potongan = ($pokok_wajib + $manasuka + $p_pokok + $p_bunga + $p_provisi);
+
+			$sheet->setCellValue('A'.$cellNumber, $c);
+			$sheet->setCellValue('B'.$cellNumber, $a->nama_lengkap);
+			$sheet->setCellValue('C'.$cellNumber, "'".$encrypter->decrypt(base64_decode($a->nik)));
+			$sheet->setCellValue('D'.$cellNumber, $pokok_wajib);
+			$sheet->setCellValue('E'.$cellNumber, $manasuka);
+			$sheet->setCellValue('F'.$cellNumber, $p_pokok);
+			$sheet->setCellValue('G'.$cellNumber, $p_bunga);
+			$sheet->setCellValue('H'.$cellNumber, $p_provisi);
+			$sheet->setCellValue('I'.$cellNumber, ($p_pokok + $p_bunga + $p_provisi));
+			$sheet->setCellValue('J'.$cellNumber, $total_potongan);
+			$sheet->setCellValue('K'.$cellNumber, ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ');
+			$sheet->setCellValue('L'.$cellNumber, $count_cicilan);
+			$c++;
+			$cellNumber++;
+		}
+		
+		foreach (range('A', 'L') as $columnID) {
+			$sheet->getColumnDimension($columnID)->setAutoSize(true);
+		}
+
+		$writer = new Csv($spreadsheet);
+		header('Content-Type: text/csv');
+		header('Content-Disposition: attachment; filename="cutoff_'.$instansi.'_'.$report_data->created.'.csv"');
+		$writer->save('php://output');
+		exit;
 	}
 	
 	public function print_rekening_koran()
