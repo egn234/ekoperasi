@@ -188,8 +188,13 @@ class Report extends Controller
 			}else{
 				$count_cicilan = " - ";
 			}
-			$pokok_wajib = $m_monthly_report->getSumSimpanan1($a->iduser, $startDate, $endDate)[0]->nominal;  
-			$manasuka = $m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;  
+			
+			$data_pokok_wajib = $m_monthly_report->getSumSimpanan1($a->iduser, $startDate, $endDate)[0]->nominal;  
+			$data_manasuka = $m_monthly_report->getSumSimpanan2($a->iduser, $startDate, $endDate)[0]->nominal;
+
+			$pokok_wajib = ($data_pokok_wajib)?$data_pokok_wajib:0;
+			$manasuka = ($data_manasuka)?$data_manasuka:0;
+
 			$p_pokok = ($cicilan)?$cicilan[0]->nominal:0;
 			$p_bunga = ($cicilan)?$cicilan[0]->bunga:0;
 			$p_provisi = ($cicilan)?$cicilan[0]->provisi:0;
