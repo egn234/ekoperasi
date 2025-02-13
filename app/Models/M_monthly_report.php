@@ -256,7 +256,8 @@ class m_monthly_report extends Model
                 (SELECT SUM(nominal) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND tipe_bayar = 'otomatis' AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS nominal,
                 (SELECT SUM(bunga) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND tipe_bayar = 'otomatis' AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS bunga,
                 (SELECT SUM(provisi) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND tipe_bayar = 'otomatis' AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS provisi
-            FROM tb_pinjaman WHERE idanggota = $iduser;
+            FROM tb_pinjaman WHERE idanggota = $iduser
+            AND status = 4;
         ";
 
         return $this->db->query($sql)->getResult();
@@ -270,7 +271,8 @@ class m_monthly_report extends Model
                 (SELECT SUM(bunga) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS bunga,
                 (SELECT SUM(provisi) FROM tb_cicilan WHERE tb_cicilan.idpinjaman = tb_pinjaman.idpinjaman AND date_created BETWEEN '$startDate' AND '$endDate' LIMIT 1) AS provisi
             FROM tb_pinjaman 
-            WHERE idanggota = $iduser;
+            WHERE idanggota = $iduser
+            AND status = 4;
         ";
 
         return $this->db->query($sql)->getResult();
