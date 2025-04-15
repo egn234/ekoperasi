@@ -146,7 +146,7 @@ $routes->group('admin', static function ($routes)
         $routes->get('generate-monthly-report', 'Admin\Report::gen_report');
 
         $routes->post('print-potongan-pinjaman', 'Admin\Report::print_potongan_pinjaman');
-        $routes->post('print-rekap-tahunan', 'Admin\Report::print_rekap_tahunan');
+        $routes->post('print-rekap-tahunan', 'Admin\Report::generateReportTahunan');
         $routes->post('print-rekening-koran', 'Admin\Report::print_rekening_koran');
     });
 });
@@ -212,7 +212,7 @@ $routes->group('bendahara', static function ($routes)
         $routes->get('generate-monthly-report', 'Bendahara\Report::gen_report');
         
         $routes->post('print-potongan-pinjaman', 'Bendahara\Report::print_potongan_pinjaman');
-        $routes->post('print-rekap-tahunan', 'Bendahara\Report::print_rekap_tahunan');
+        $routes->post('print-rekap-tahunan', 'Bendahara\Report::generateReportTahunan');
         $routes->post('print-rekening-koran', 'Bendahara\Report::print_rekening_koran');
     });
 });
@@ -247,7 +247,7 @@ $routes->group('ketua', static function ($routes)
         $routes->get('generate-monthly-report', 'Ketua\Report::gen_report');
 
         $routes->post('print-potongan-pinjaman', 'Ketua\Report::print_potongan_pinjaman');
-        $routes->post('print-rekap-tahunan', 'Ketua\Report::print_rekap_tahunan');
+        $routes->post('print-rekap-tahunan', 'Ketua\Report::generateReportTahunan');
         $routes->post('print-rekening-koran', 'Ketua\Report::print_rekening_koran');
     });
 });

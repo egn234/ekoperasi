@@ -210,7 +210,7 @@
                                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">
                                         Pengajuan Manasuka Bulanan
                                     </button>
-                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka">
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka" <?=($param_manasuka ? '' : 'disabled')?>>
                                         Pembatalan Manasuka Bulanan
                                     </button>
                                 </div>
@@ -295,7 +295,7 @@
                     <div class="mb-3">
                         <label for="nominal_param">Besarnya Nominal (Rp)</label>
                         <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>
-                        <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
+                        <input type="text" id="iduser" name="iduser" value="<?=$detail_user->iduser?>" hidden>
                     </div>
                 </form>
             </div>
@@ -307,23 +307,25 @@
     </div>
 </div>
 
-<div class="modal fade" id="batal_manasuka" aria-hidden="true" aria-labelledby="batal_manasuka" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fs-5" id="myModalLabel">Konfirmasi pembatalan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Set berhenti setoran manasuka bulanan untuk anggota ini, konfirmasi?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                <a href="<?= url_to('admin_cancel_parameter_manasuka', $param_manasuka[0]->idmnskparam) ?>" type="submit" class="btn btn-primary" disabled>Konfirmasi</a>
+<?php if($param_manasuka):?>
+    <div class="modal fade" id="batal_manasuka" aria-hidden="true" aria-labelledby="batal_manasuka" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5" id="myModalLabel">Konfirmasi pembatalan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Set berhenti setoran manasuka bulanan untuk anggota ini, konfirmasi?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+                    <a href="<?= url_to('admin_cancel_parameter_manasuka', $param_manasuka[0]->idmnskparam) ?>" type="submit" class="btn btn-primary" disabled>Konfirmasi</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+<?php endif; ?>
 
 <div id="detailMutasi" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">

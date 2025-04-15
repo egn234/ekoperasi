@@ -137,6 +137,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = request()->getPost('nip');
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
@@ -156,6 +157,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = request()->getPost('nip');
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
@@ -177,6 +179,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = request()->getPost('nip');
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
@@ -266,7 +269,7 @@ class register extends Controller
 
 		if ($img->isValid()) {
 			// Validation rules
-			$allowedTypes = ['image/jpeg', 'image/gif'];
+			$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 			$allowedExtensions = ['jpg', 'jpeg', 'gif'];
 			$maxSize = 2048; // Max size in KB (e.g., 2MB)
 			$minSize = 128; // Min size in KB
@@ -284,6 +287,7 @@ class register extends Controller
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -318,13 +322,14 @@ class register extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gambar Terlalu Besar (max. 2mb)',
+						'notif_text' => 'Gambar Terlalu Besar, Maks 2MB',
 						 'status' => 'warning'
 					]
 				);
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -337,13 +342,14 @@ class register extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gambar Terlalu Kecil (min. 128kb)',
+						'notif_text' => 'Gambar Terlalu Kecil, Min 128KB',
 							'status' => 'warning'
 					]
 				);
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -369,6 +375,7 @@ class register extends Controller
 					
 					$dataset['notif'] = $alert;
 					$dataset['nik'] = $nik;
+					$dataset['nip'] = $nip;
 					$dataset['alamat'] = $alamat;
 					$dataset['nomor_telepon'] = $nomor_telepon;
 					$dataset['no_rek'] = $no_rek;
@@ -387,6 +394,7 @@ class register extends Controller
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -411,6 +419,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = $nip;
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;

@@ -104,10 +104,11 @@ class Deposits extends Controller
 		$total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($iduser)[0]->saldo;
 		$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo;
 		$detail_user = $this->m_user->getUserById($iduser)[0];
-		$param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser);
+		$param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser) ? $this->m_param_manasuka->getParamByUserId($iduser) : false;
 		$currentpage = request()->getVar('page_grup1') ? request()->getVar('page_grup1') : 1;
 
-		$mnsk_param_log = $this->m_param_manasuka_log->select("COUNT(id) as hitung")
+		if ($param_manasuka) {
+			$mnsk_param_log = $this->m_param_manasuka_log->select("COUNT(id) as hitung")
 			->where('idmnskparam', $param_manasuka[0]->idmnskparam)
 			->get()->getResult()[0]
 			->hitung != 0
@@ -116,7 +117,11 @@ class Deposits extends Controller
 				->get()
 				->getResult()[0]
 				->created_at 
-			: date('Y-m-d H:i:s', strtotime('-3 months'));
+			: date('Y-m-d H:i:s', strtotime('-3 months'));			
+		} else {
+			$mnsk_param_log = date('Y-m-d H:i:s', strtotime('-3 months'));
+		}
+		
 
 		$data = [
 			'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail Simpanan']),

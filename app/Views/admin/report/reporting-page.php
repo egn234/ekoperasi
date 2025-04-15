@@ -107,7 +107,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="filterInstansi">Instansi</label>
                                                     <select class="form-select" id="filterInstansi" name="instansi">
-                                                        <option value="0">-semua-</option>
+                                                        <option value="0">-Semua-</option>
                                                         <option value="YPT">YPT</option>
                                                         <option value="Universitas Telkom">Universitas Telkom</option>
                                                         <option value="Trengginas Jaya">Trengginas Jaya</option>
@@ -144,7 +144,24 @@
                                     <h5>Rekening Koran</h5>
                                     <form action="<?= url_to('admin/report/print-rekening-koran') ?>" method="post">
                                         <div class="row">
-                                            <div class="col-sm-10">
+                                            <div class="col-sm-5">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="filterInstansi">Instansi</label>
+                                                    <select class="form-select" id="filterInstansi" name="instansi">
+                                                        <option value="0">-Pilih Instansi-</option>
+                                                        <option value="YPT">YPT</option>
+                                                        <option value="Universitas Telkom">Universitas Telkom</option>
+                                                        <option value="Trengginas Jaya">Trengginas Jaya</option>
+                                                        <option value="BUT">BUT</option>
+                                                        <option value="Telkom">Telkom</option>
+                                                        <option value="GIAT">GIAT</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        Harus Diisi
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-5">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="filterTahun">Laporan</label>
                                                     <select class="form-select" id="filterTahun" name="tahun" required>
