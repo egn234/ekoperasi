@@ -105,8 +105,8 @@ class register extends Controller
 		$result = file_get_contents($url, false, $context);
 		$response = json_decode($result);
 
-        // Periksa hasil validasi
-        if (!$response->success) {
+		// Periksa hasil validasi
+		if (!$response->success) {
 			$alert = view(
 				'partials/notification-alert', 
 				[
@@ -115,10 +115,16 @@ class register extends Controller
 				]
 			);
 			
+			$dataset['notif'] = $alert;
+			$dataset['nik'] = $nik;
+			$dataset['alamat'] = $alamat;
+			$dataset['nomor_telepon'] = $nomor_telepon;
+			$dataset['no_rek'] = $no_rek;
+
 			$dataset += ['notif' => $alert];
 			session()->setFlashdata($dataset);
 			return redirect()->to('registrasi');
-        }
+		}
 
 		if ($dataset['instansi'] == "") {
 			$alert = view(
