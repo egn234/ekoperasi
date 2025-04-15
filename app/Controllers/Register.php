@@ -92,6 +92,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = request()->getPost('nip');
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
@@ -111,6 +112,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = request()->getPost('nip');
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
@@ -132,6 +134,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = request()->getPost('nip');
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
@@ -239,6 +242,7 @@ class register extends Controller
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -260,6 +264,7 @@ class register extends Controller
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -280,6 +285,7 @@ class register extends Controller
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -292,13 +298,14 @@ class register extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gambar Terlalu Kecil',
+						'notif_text' => 'Gambar Terlalu Kecil, Min 128KB',
 							'status' => 'warning'
 					]
 				);
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -324,6 +331,7 @@ class register extends Controller
 					
 					$dataset['notif'] = $alert;
 					$dataset['nik'] = $nik;
+					$dataset['nip'] = $nip;
 					$dataset['alamat'] = $alamat;
 					$dataset['nomor_telepon'] = $nomor_telepon;
 					$dataset['no_rek'] = $no_rek;
@@ -342,6 +350,7 @@ class register extends Controller
 				
 				$dataset['notif'] = $alert;
 				$dataset['nik'] = $nik;
+				$dataset['nip'] = $nip;
 				$dataset['alamat'] = $alamat;
 				$dataset['nomor_telepon'] = $nomor_telepon;
 				$dataset['no_rek'] = $no_rek;
@@ -366,6 +375,7 @@ class register extends Controller
 			
 			$dataset['notif'] = $alert;
 			$dataset['nik'] = $nik;
+			$dataset['nip'] = $nip;
 			$dataset['alamat'] = $alamat;
 			$dataset['nomor_telepon'] = $nomor_telepon;
 			$dataset['no_rek'] = $no_rek;
