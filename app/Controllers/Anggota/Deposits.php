@@ -319,7 +319,20 @@ class Deposits extends BaseController
 		];
 
 		$this->m_param_manasuka->insertParamManasuka($dataset);
+
+		$idmnskparam = $this->m_param_manasuka->where('idanggota', $this->account->iduser)->orderBy('idmnskparam', 'desc')->first()->idmnskparam;
 		
+		$notification_data = [
+			'anggota_id' => $this->account->iduser,
+			'parameter_id' => $idmnskparam,
+			'message' => $this->account->nama_lengkap . " menyetujui pembayaran bulanan manasuka sebesar Rp " . number_format($dataset['nilai'], 0, ',', '.'),
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 1
+		];
+
+		$this->m_notification->insert($notification_data);
+		
+
 		$alert = view(
 			'partials/notification-alert', 
 			[
@@ -352,6 +365,16 @@ class Deposits extends BaseController
 			];
 			
 			$m_param_manasuka_log->insert($temp_log);
+
+			$notification_data = [
+				'anggota_id' => $this->account->iduser,
+				'parameter_id' => $idmnskparam,
+				'message' => $this->account->nama_lengkap . " mengubah pembayaran bulanan manasuka menjadi Rp " . number_format($dataset['nilai'], 0, ',', '.'),
+				'timestamp' => date('Y-m-d H:i:s'),
+				'group_type' => 1
+			];
+
+			$this->m_notification->insert($notification_data);
 			
 			$alert = view(
 				'partials/notification-alert', 
@@ -387,6 +410,15 @@ class Deposits extends BaseController
 		
 		$this->m_param_manasuka->updateParamManasuka($idmnskparam, $dataset);
 
+		$notification_data = [
+			'anggota_id' => $this->account->iduser,
+			'parameter_id' => $idmnskparam,
+			'message' => $this->account->nama_lengkap . " telah membatalkan pembayaran manasuka bulanan",
+			'timestamp' => date('Y-m-d H:i:s'),
+			'group_type' => 1
+		];
+
+		$this->m_notification->insert($notification_data);
 
 		$alert = view(
 			'partials/notification-alert', 
