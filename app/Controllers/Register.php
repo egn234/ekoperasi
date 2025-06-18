@@ -235,7 +235,7 @@ class register extends Controller
 				$alert = view(
 					'partials/notification-alert', 
 					[
-						'notif_text' => 'Gambar Tidak Valid',
+						'notif_text' => 'Tipe Gambar Tidak Diizinkan (jpg, jpeg)',
 						 'status' => 'warning'
 					]
 				);
