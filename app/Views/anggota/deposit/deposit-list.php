@@ -290,7 +290,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="<?=($param_manasuka)?url_to('anggota_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('admin/deposit/create_param_manasuka')?>" id="formParam" method="post">
+                <form action="<?=($param_manasuka)?url_to('anggota_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('anggota/deposit/create_param_manasuka')?>" id="formParam" method="post">
                     <div class="mb-3">
                         <label for="nominal_param">Besarnya Nominal (Rp)</label>
                         <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?=($param_manasuka)?$param_manasuka[0]->nilai:''?>" required>

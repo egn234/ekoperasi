@@ -78,6 +78,62 @@ class Notifications extends Controller
 		return $notification;
 	}
 
+	public function notification_list()
+	{
+		$perPage = 10;
+		$page = request()->getVar('page') ?? 1;
+
+		$notifications = $this->m_notification
+			->where('group_type', '1') // ganti sesuai role
+			->orderBy('timestamp', 'DESC')
+			->paginate($perPage);
+
+		$pager = $this->m_notification->pager;
+
+		$unread_count = $this->m_notification
+			->where('group_type', '1')
+			->where('status', 'unread')
+			->countAllResults();
+
+		$data = [
+			'title_meta' => view('admin/partials/title-meta', ['title' => 'Pinjaman']),
+			'page_title' => view('admin/partials/page-title', ['title' => 'Pinjaman', 'li_1' => 'EKoperasi', 'li_2' => 'Pinjaman']),
+			'notification_list' => $this->index()['notification_list'],
+			'notification_badges' => $this->index()['notification_badges'],
+			'daftar_notif' => $notifications,
+			'pager' => $pager,
+			'badge_notif' => $unread_count,
+			'duser' => $this->account
+		];
+		
+		return view('admin/notifikasi/list-notif', $data);
+	}
+
+	public function mark_all_read_table()
+	{
+		$this->m_notification->where('group_type', '1')
+							 ->where('status', 'unread')
+							 ->set('status', 'read')
+							 ->update();
+
+		return redirect()->back();
+	}
+
+	public function mark_as_read_table()
+	{
+		$id = request()->getPost('id');
+		
+		if ($id == null || $id == '') {
+			return redirect()->back();
+		}
+
+		$this->m_notification->where('id', $id)
+							 ->set('status', 'read')
+							 ->update();
+
+		return redirect()->back();
+	}
+
 	public function mark_all_read()
 	{
 		$this->m_notification->where('group_type', '1')

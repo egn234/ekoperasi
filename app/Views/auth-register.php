@@ -171,7 +171,12 @@
                                                 </div>
                                                 
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="profile_pic">Foto Profil (min: 128kb, max: 2mb)<span class="text-danger">*</span></label>
+                                                    <label class="form-label" for="profile_pic">
+                                                        Upload Foto Profil <span class="text-danger">*</span></br>
+                                                        <small class="text-muted">Format File: jpg, jpeg</small></br>
+                                                        <small class="text-muted">Ukuran File: Minimal 129kb, Maksimal 2MB</small></br>
+                                                        <small class="text-muted">Resolusi: Minimal 300x300px</small>
+                                                    </label>
                                                     <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
                                                 </div>
                                                 <span class="text-xs text-danger">

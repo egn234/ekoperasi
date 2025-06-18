@@ -66,11 +66,9 @@ $routes->group('admin', static function ($routes)
     
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('profile', 'Admin\Profile::index');
-    $routes->get('notification/mark-all-read', 'Admin\Notifications::mark_all_read');
     
     $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
     $routes->post('profile/edit_pass', 'Admin\Profile::update_pass');
-    $routes->post('notification/mark-as-read', 'Admin\Notifications::mark_as_read');
     
     $routes->add('user/(:num)', 'Admin\User::detail_user/$1', ['as' => 'user_detail']);
     $routes->add('user/update/(:num)', 'Admin\User::update_proc/$1', ['as' => 'update_user']);
@@ -148,6 +146,16 @@ $routes->group('admin', static function ($routes)
         $routes->post('print-potongan-pinjaman', 'Admin\Report::print_potongan_pinjaman');
         $routes->post('print-rekap-tahunan', 'Admin\Report::generateReportTahunan');
         $routes->post('print-rekening-koran', 'Admin\Report::print_rekening_koran');
+    });
+
+    //GROUP NOTIFICATION
+    $routes->group('notification', static function ($routes)
+    {
+        $routes->get('list', 'Admin\Notifications::notification_list');
+        $routes->get('mark-all-read', 'Admin\Notifications::mark_all_read');
+        $routes->post('mark-as-read', 'Admin\Notifications::mark_as_read');
+        $routes->get('tbl/mark-all-read', 'Admin\Notifications::mark_all_read_table');
+        $routes->post('tbl/mark-as-read', 'Admin\Notifications::mark_as_read_table');
     });
 });
 
