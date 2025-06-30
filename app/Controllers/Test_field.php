@@ -315,7 +315,7 @@ class test_field extends BaseController
 			}
 
 			# THIS IS FROM MD5 ALGORITHM FIRST!! MAKE SURE TO USE MD5 BEFORE HASH CHECK!!
-			$hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
+			# $hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
 			
 			$dataset = [
 				'nip' => $encrypted_nip,
@@ -323,9 +323,58 @@ class test_field extends BaseController
 				'no_rek' => $encrypted_no_rek,
 				'nomor_telepon' => $encrypted_nomor_telepon,
 				'alamat' => $encrypted_alamat,
-				'pass' => $hashed_password
+				# 'pass' => $hashed_password
 			];
 
+			$this->m_user->updateUser($user->iduser, $dataset);
+		}
+	}
+
+	public function encryption_meth_decode() {
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+		
+		$users = $this->m_user->getAllUser();
+		
+		foreach ($users as $user) {
+			if ($user->nip != null) {
+				$decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
+			} else {
+				$decrypted_nip = null;
+			}
+			
+			if ($user->nik != null) {
+				$decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
+			} else {
+				$decrypted_nik = null;
+			}
+			
+			if ($user->no_rek != null) {
+				$decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
+			} else {
+				$decrypted_no_rek = null;
+			}
+			
+			if ($user->nomor_telepon != null) {
+				$decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
+			} else {
+				$decrypted_nomor_telepon = null;
+			}
+			
+			if ($user->alamat != null) {
+				$decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
+			} else {
+				$decrypted_alamat = null;
+			}
+			
+			$dataset = [
+				'nip' => $decrypted_nip,
+				'nik' => $decrypted_nik,
+				'no_rek' => $decrypted_no_rek,
+				'nomor_telepon' => $decrypted_nomor_telepon,
+				'alamat' => $decrypted_alamat
+			];
+			
 			$this->m_user->updateUser($user->iduser, $dataset);
 		}
 	}
