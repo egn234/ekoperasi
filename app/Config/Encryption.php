@@ -65,6 +65,7 @@ class Encryption extends BaseConfig
      */
     public $digest = 'SHA512';
 
+    // Uncomment fungsi ini jika menggunakan OpenSSL
     public function __construct()
     {
         $this->key = getenv('ENCRYPTION_KEY');

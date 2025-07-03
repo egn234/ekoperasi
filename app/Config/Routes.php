@@ -49,7 +49,7 @@ $routes->group('test', static function ($routes){
 
     # INI BUAT KONVERSI DATA SENSITIF BUAT SEMUA DATABASE, AKTIFKAN SEKALI SAJA
     // $routes->get('encode-data', 'Test_field::convert_sensitive_data');
-    // $routes->get('decode-data', 'Test_field::encryption_meth_decode');
+    $routes->get('decode-data', 'Test_field::encryption_meth_decode');
 });
 
 $routes->get('registrasi', 'Register::index');
