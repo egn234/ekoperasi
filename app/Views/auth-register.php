@@ -184,6 +184,7 @@
                                                         <small class="text-muted">Resolusi: Minimal 300x300px</small>
                                                     </label>
                                                     <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
@@ -263,51 +264,7 @@
 
         <!-- validation init -->
         <script src="assets/js/pages/validation.init.js"></script>
-
-        <script type="text/javascript">
-            $('#konfirmasi_check').click(function(){
-                //If the checkbox is checked.
-                if($(this).is(':checked')){
-                    //Enable the submit button.
-                    $('#confirm_button').attr("disabled", false);
-                } else{
-                    //If it is not checked, disable the button.
-                    $('#confirm_button').attr("disabled", true);
-                }
-            });
-
-            document.addEventListener("DOMContentLoaded", function () {
-                const passwordToggles = document.querySelectorAll(".password-toggle");
-
-                passwordToggles.forEach(function (toggle) {
-                    toggle.addEventListener("click", function () {
-                        const targetId = toggle.getAttribute("data-target");
-                        const passwordInput = document.getElementById(targetId);
-
-                        if (passwordInput.type === "password") {
-                            passwordInput.type = "text";
-                            toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
-                        } else {
-                            passwordInput.type = "password";
-                            toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
-                        }
-                    });
-                });
-            });
-     
-            function validateNik(input) {
-                const nik = input.value;
-                
-                // Check if the NIK has exactly 16 digits
-                if (nik.length !== 16) {
-                    input.classList.add('is-invalid');
-                    input.classList.remove('is-valid');
-                } else {
-                    input.classList.remove('is-invalid');
-                    input.classList.add('is-valid');
-                }
-            }
-        </script>
+        <script src="assets/js/pages/register.js"></script>
     </body>
 
 </html>
