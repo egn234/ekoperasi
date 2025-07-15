@@ -116,8 +116,58 @@ $(document).ready(function () {
                 condition = input.val().trim().length < 8;
                 break;
             case 'profile_pic':
-                condition = input.val() === '';
-                break;
+                const file = input[0].files[0];
+                if (!file) {
+                    condition = true;
+                    break;
+                }
+
+                const allowedTypes = ['image/jpeg', 'image/jpg'];
+                const fileSizeKB = file.size / 1024;
+                const fileSizeMB = fileSizeKB / 1024;
+
+                if (!allowedTypes.includes(file.type)) {
+                    input.addClass('is-invalid').removeClass('is-valid');
+                    input.next('.invalid-feedback').text('Format file harus jpg atau jpeg.').show();
+                    return false;
+                }
+
+                if (fileSizeKB < 128) {
+                    input.addClass('is-invalid').removeClass('is-valid');
+                    input.next('.invalid-feedback').text('Ukuran file terlalu kecil. Minimal 128KB.').show();
+                    return false;
+                }
+
+                if (fileSizeMB > 2) {
+                    input.addClass('is-invalid').removeClass('is-valid');
+                    input.next('.invalid-feedback').text('Ukuran file terlalu besar. Maksimal 2MB.').show();
+                    return false;
+                }
+
+                // Validasi resolusi gambar
+                const img = new Image();
+                const objectUrl = URL.createObjectURL(file);
+
+                img.onload = function () {
+                    if (img.width < 300 || img.height < 300) {
+                        input.addClass('is-invalid').removeClass('is-valid');
+                        input.next('.invalid-feedback').text('Resolusi gambar minimal 300x300 px.').show();
+                    } else {
+                        input.removeClass('is-invalid').addClass('is-valid');
+                        input.next('.invalid-feedback').hide();
+                    }
+                    URL.revokeObjectURL(objectUrl);
+                };
+
+                img.onerror = function () {
+                    input.addClass('is-invalid').removeClass('is-valid');
+                    input.next('.invalid-feedback').text('File tidak bisa dibaca sebagai gambar.').show();
+                    URL.revokeObjectURL(objectUrl);
+                };
+
+                img.src = objectUrl;
+
+                return isValid;
         }
 
         if (condition) {

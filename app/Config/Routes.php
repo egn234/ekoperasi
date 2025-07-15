@@ -48,7 +48,8 @@ $routes->group('test', static function ($routes){
     // $routes->get('test_binary', 'Test_field::binary_search');
 
     # INI BUAT KONVERSI DATA SENSITIF BUAT SEMUA DATABASE, AKTIFKAN SEKALI SAJA
-    // $routes->get('encrypt-data', 'Test_field::convert_sensitive_data');
+    // $routes->get('encode-data', 'Test_field::convert_sensitive_data');
+    // $routes->get('decode-data', 'Test_field::encryption_meth_decode');
 });
 
 $routes->get('registrasi', 'Register::index');

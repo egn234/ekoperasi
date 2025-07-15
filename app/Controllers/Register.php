@@ -358,51 +358,6 @@ class register extends Controller
 				return redirect()->to('registrasi');
 			}
 
-			// Optional: Validate Image Dimensions
-			$imageInfo = getimagesize($img->getTempName());
-			if ($imageInfo) {
-				$width = $imageInfo[0];
-				$height = $imageInfo[1];
-
-				if ($width > 2000 || $height > 2000) { // Example dimensions limit
-					$alert = view(
-						'partials/notification-alert', 
-						[
-							'notif_text' => 'Dimensi Gambar Terlalu Besar',
-							 'status' => 'warning'
-						]
-					);
-					
-					$dataset['notif'] = $alert;
-					$dataset['nik'] = $nik;
-					$dataset['nip'] = $nip;
-					$dataset['alamat'] = $alamat;
-					$dataset['nomor_telepon'] = $nomor_telepon;
-					$dataset['no_rek'] = $no_rek;
-
-					session()->setFlashdata($dataset);
-					return redirect()->to('registrasi');
-				}
-			} else {
-				$alert = view(
-					'partials/notification-alert', 
-					[
-						'notif_text' => 'Gambar Tidak Valid',
-						 'status' => 'warning'
-					]
-				);
-				
-				$dataset['notif'] = $alert;
-				$dataset['nik'] = $nik;
-				$dataset['nip'] = $nip;
-				$dataset['alamat'] = $alamat;
-				$dataset['nomor_telepon'] = $nomor_telepon;
-				$dataset['no_rek'] = $no_rek;
-
-				session()->setFlashdata($dataset);
-				return redirect()->to('registrasi');;
-			}
-
 			// Move file to its destination if all validations pass
 			$newName = $img->getRandomName();
 			$img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);

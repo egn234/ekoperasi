@@ -178,6 +178,7 @@
                                                         <small class="text-muted">Resolusi: Minimal 300x300px</small>
                                                     </label>
                                                     <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
