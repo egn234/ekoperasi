@@ -59,13 +59,23 @@
                                 <?=session()->getFlashdata('notif_bulanan');?>
                                 <?=session()->getFlashdata('notif_gaji');?>
                                 <?=session()->getFlashdata('notif_kontrak');?>
-                                <table id="dataTable" class="table table-sm table-striped nowrap w-100">
-                                </table>
+                                <div class="row mb-2">
+                                    <table id="dataTable" class="table table-sm table-striped nowrap w-100"></table>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="float-end ms-2">
+                                        <button class="btn btn-danger btn-sm" id="btn-riwayat" data-bs-toggle="collapse" data-bs-target="#wrapper-riwayat" aria-expanded="false" aria-controls="wrapper-riwayat">
+                                            Riwayat Penolakan
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="wrapper-riwayat" class="collapse">
+                                    <table id="riwayat_penolakan" class="table table-sm table-striped nowrap w-100"></table>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- end col -->
                 </div> <!-- end row -->
-
             </div> <!-- container-fluid -->
         </div>
         <!-- End Page-content -->
@@ -89,6 +99,14 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <span id="fetched-data-lunasiPinjaman"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="detailTolak" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <span id="fetched-data-detailTolak"></span>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -179,145 +197,7 @@
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
-<script type="text/javascript">
-    function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
-        number = parseFloat(number).toFixed(decimals);
-        number = number.replace('.', decimalSeparator);
-        var parts = number.split(decimalSeparator);
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
-        return parts.join(decimalSeparator);
-    }
-
-    $(document).ready(function() {
-        $('#dataTable').DataTable({
-            ajax: {
-                url: "<?= base_url() ?>anggota/pinjaman/data_pinjaman",
-                type: "POST",
-                data: function (d) {
-                    d.length = d.length || 10; // Use the default if not provided
-                }
-            },
-            autoWidth: false,
-            scrollX: true,
-            serverSide: true,
-            searching: true,
-            columnDefs: [{
-                orderable: false,
-                targets: "_all",
-                defaultContent: "-",
-            }],
-            columns: [
-                {
-                    title: "Tanggal Pengajuan",
-                    data: "date_created"
-                },
-                {
-                    title: "Tipe",
-                    data: "tipe_permohonan"
-                },
-                {
-                    title: "Nominal",
-                    render: function(data, type, row, meta) {
-                        return 'Rp '+numberFormat(row.nominal, 2);
-                    }
-                },
-                {
-                    title: "Status",
-                    "render": function(data, type, row, meta) {
-                        let otuput;
-                        
-                        if(row.status == 0){
-                            otuput = 'Ditolak';
-                        }else if(row.status == 1){
-                            otuput = 'Upload Kelengkapan Form';
-                        }else if(row.status == 2){
-                            otuput = 'Menunggu Verifikasi';
-                        }else if(row.status == 3){
-                            otuput = 'Menunggu Approval Sekretariat';
-                        }else if(row.status == 4){
-                            otuput = 'Sedang Berlangsung';
-                        }else if(row.status == 5){
-                            otuput = 'Lunas';
-                        }else if(row.status == 6){
-                            otuput = 'Pelunasan diproses admin';
-                        }else if(row.status == 7){
-                            otuput = 'Pelunasan diproses bendahara';
-                        }
-
-                        return otuput;
-                    }
-                },
-                {
-                    title: "Lama Angsuran (bulan)",
-                    data: "angsuran_bulanan"
-                },
-                {
-                    title: "Aksi",
-                    render: function(data, type, row, full) {
-                        let head = '<div class="btn-group d-flex justify-content-center">';
-                        let button_a = '';
-                        let button_b = '';
-                        let button_c = '';
-                        let button_d = '';
-                        let tail = '</div>';
-
-                        if(row.status >= 4){
-                            button_a = '<a href="<?= base_url() ?>anggota/pinjaman/detail/'+row.idpinjaman+'" class="btn btn-info btn-sm"><i class="fa fa-file-alt"></i> Detail</a>';
-                        }
-
-                        if(row.status == 1){
-                            button_b = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="'+row.idpinjaman+'"><i class="fa fa-upload"></i> Upload form</a>';
-                            button_c = '<a href="<?= base_url()?>anggota/pinjaman/generate-form/'+row.idpinjaman+'" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-file-alt"></i> Print form</a>';
-                        }
-
-                        if(row.status == 4){
-                            button_d = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="'+row.idpinjaman+'"> Lunasi Pinjaman</a>';
-                        }
-
-                        return head + button_a + button_b + button_c + button_d + tail;
-                    }
-                }
-            ]
-        });
-
-        $('#uploadBT').on('show.bs.modal', function(e) {
-            var rowid = $(e.relatedTarget).data('id');
-            $.ajax({
-                type: 'POST',
-                url: '<?= base_url() ?>/anggota/pinjaman/up_form',
-                data: 'rowid=' + rowid,
-                success: function(data) {
-                    $('#fetched-data-uploadBT').html(data); //menampilkan data ke dalam modal
-                }
-            });
-        });
-
-        $('#lunasiPinjaman').on('show.bs.modal', function(e) {
-            var rowid = $(e.relatedTarget).data('id');
-            $.ajax({
-                type: 'POST',
-                url: '<?= base_url() ?>/anggota/pinjaman/lunasi_pinjaman',
-                data: 'rowid=' + rowid,
-                success: function(data) {
-                    $('#fetched-data-lunasiPinjaman').html(data); //menampilkan data ke dalam modal
-                }
-            });
-        });
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var currencyMask = IMask(document.getElementById('nominal'), {
-            mask: 'num',
-            blocks: {
-            num: {
-                    // nested masks are available!
-                    mask: Number,
-                    thousandsSeparator: '.'
-                }
-            }
-        });
-    });
-</script>
+<script src="<?=base_url()?>/assets/js/pages/anggota/pinjaman/list-pinjaman.js"></script>
 
 </body>
 

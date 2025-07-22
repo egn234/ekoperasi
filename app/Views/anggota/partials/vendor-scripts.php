@@ -8,11 +8,13 @@
 <script src="<?=base_url()?>/assets/libs/pace-js/pace.min.js"></script>
 
 <script>
+    const BASE_URL = '<?= base_url() ?>';
+
     $(document).ready(function(){
         $(".update-notification").click(function(){
             var id = $(this).data('id');
             $.ajax({
-                url: "<?php echo base_url('anggota/notification/mark-as-read/'); ?>",
+                url: BASE_URL + 'anggota/notification/mark-as-read',
                 type: "POST",
                 data: "id="+id,
                 success: function(response) {

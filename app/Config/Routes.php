@@ -300,9 +300,11 @@ $routes->group('anggota', static function ($routes)
         $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
         $routes->post('up_form', 'Anggota\Pinjaman::up_form');
         $routes->post('lunasi_pinjaman', 'Anggota\Pinjaman::lunasi_pinjaman');
+        $routes->post('detail_tolak', 'Anggota\Pinjaman::detail_tolak');
         $routes->post('top-up', 'Anggota\Pinjaman::top_up');
 
         $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
+        $routes->add('riwayat_penolakan', 'Anggota\Pinjaman::riwayat_penolakan');
         $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
         $routes->add('lunasi_proc/(:num)', 'Anggota\Pinjaman::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
         $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);
