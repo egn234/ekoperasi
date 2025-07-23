@@ -762,7 +762,7 @@ class Report extends Controller
 				'idadmin' => $this->account->iduser
 			];
 
-			// $m_deposit->insertDeposit($dataWajib);
+			$m_deposit->insertDeposit($dataWajib);
 			echo "New simpanan wajib processed for user ".$idUser."<br>";
 		}
 	}
