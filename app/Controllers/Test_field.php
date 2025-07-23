@@ -203,6 +203,77 @@ class test_field extends BaseController
 		}
 	}
 
+	public function encryption_meth()
+	{
+		$config = new \Config\Encryption();
+		$encrypter = \Config\Services::encrypter($config);
+		
+		$users = $this->m_user->getAllUser();
+
+		foreach ($users as $user) {
+			// echo "<pre>";
+			// echo $user->nip . "<br>";
+			// echo $user->nik . "<br>";
+			// echo $user->no_rek . "<br>";
+			// echo "</pre>";
+			// Increase execution time and memory limit
+			ini_set('max_execution_time', 600); // 10 minutes
+			ini_set('memory_limit', '512M'); // 512MB
+
+			if ($user->nip != null) {
+				$decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
+			} else {
+				$decrypted_nip = null;
+			}
+	
+			if ($user->nik != null) {
+				$decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
+			} else {	
+				$decrypted_nik = null;
+			}
+	
+			if ($user->no_rek != null) {
+				$decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
+			} else {
+				$decrypted_no_rek = null;
+			}
+	
+			if ($user->alamat != null) {
+				$decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
+			} else {
+				$decrypted_alamat = null;
+			}
+	
+			if ($user->nomor_telepon != null) {
+				$decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
+			} else {
+				$decrypted_nomor_telepon = null;
+			}
+
+			if (password_verify(md5('admingiat123'), $user->pass)) {
+				echo "success";
+			} else{
+				echo "failed";
+			}
+			
+			echo "<br>";
+			echo $decrypted_nip. "<br>";
+			echo $decrypted_nik. "<br>";
+			echo $decrypted_no_rek . "<br>";
+			echo $decrypted_alamat . "<br>";
+			echo $decrypted_nomor_telepon . "<br>";
+			echo $user->pass;
+		}
+	}
+
+	public function binary_search()
+	{
+		$nik = (string) "6ijaGegAhgSc6mEIJccOOsVz9+rslOw7hQrwsPSxO4TBxZAb5XsbXirryWK7+8g+NI+ECvTEed9ASoh1DshCnOawJnWBIVpgjnh73iv3Q5RUOuF1zyTzP5G4YYlLryjA";
+		$cek_nik = $this->m_user->select('nik')->where('nik = "'. $nik.'"')->get()->getResult();
+
+		print_r($cek_nik);
+	}
+
 	public function convert_sensitive_data()
 	{
 		// Increase execution time and memory limit
