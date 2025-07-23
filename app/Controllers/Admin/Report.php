@@ -725,7 +725,7 @@ class Report extends Controller
 			$data_pokok = [
 				'jenis_pengajuan' => 'penyimpanan',
 				'jenis_deposit' => 'pokok',
-				'cash_in' => $paramPokok->nilai,
+				'cash_in' => $paramPokok,
 				'cash_out' => 0,
 				'deskripsi' => 'biaya awal registrasi',
 				'status' => 'diterima',
@@ -753,7 +753,7 @@ class Report extends Controller
 			$dataWajib = [
 				'jenis_pengajuan' => 'penyimpanan',
 				'jenis_deposit' => 'wajib',
-				'cash_in' => $paramWajib->nilai,
+				'cash_in' => $paramWajib,
 				'cash_out' => 0,
 				'deskripsi' => 'Diambil dari potongan gaji bulanan',
 				'status' => 'diterima',

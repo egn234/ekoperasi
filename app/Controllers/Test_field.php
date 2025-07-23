@@ -8,6 +8,7 @@ use App\Models\M_cicilan;
 use App\Models\M_monthly_report;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
+use App\Models\M_deposit;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
 class test_field extends BaseController
@@ -259,5 +260,77 @@ class test_field extends BaseController
 		}
 		
 		echo "success";
+	}
+	
+	private function fetchParams($m_param)
+	{
+		return [
+			'pokok' => $m_param->where('idparameter', 1)->get()->getResult()[0]->nilai,
+			'wajib' => $m_param->where('idparameter', 2)->get()->getResult()[0]->nilai,
+			'bunga' => $m_param->where('idparameter', 9)->get()->getResult()[0]->nilai / 100,
+			'provisi' => $m_param->where('idparameter', 5)->get()->getResult()[0]->nilai / 100,
+		];
+	}
+
+	public function gen_wajib()
+	{
+		$m_monthly_report = model(M_monthly_report::class);
+		$m_user = model(M_user::class);
+		$m_param = model(M_param::class);
+
+		// 1. ambil konfigurasi awal
+		$YEAR = date('Y');
+		$MONTH = date('m');
+		$startDate = date('Y-m-d H:i:s', strtotime('2025-06-11 11:41:26'));
+		$endDate = date('Y-m-d H:i:s');
+		$params = $this->fetchParams($m_param);
+
+		// 2. ambil semua anggota aktif
+		$list_anggota = $m_user->where('flag', '1')->where('idgroup', 4)->get()->getResult();
+		
+		// 5. Proses Simpanan dan Pinjaman User
+		foreach ($list_anggota as $a){
+			$this->processWajib($a->iduser, $params['wajib'], $startDate, $endDate);
+		};
+
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Laporan Bulan ini berhasil dibuat',
+			 	'status' => 'success'
+			]
+		);
+		
+		$dataset_notif = ['notif' => $alert];
+		session()->setFlashdata($dataset_notif);
+		return redirect()->back();
+	}
+
+	private function processWajib($idUser, $paramWajib, $startDate, $endDate)
+	{
+		$m_deposit = model(M_deposit::class);
+		$cekWajib = $m_deposit->where('jenis_deposit', 'wajib')
+			->where('idanggota', $idUser)
+			->where('date_created >=', $startDate)
+			->where('date_created <=', $endDate)
+			->countAllResults();
+
+		if ($cekWajib == 0)
+		{
+			$dataWajib = [
+				'jenis_pengajuan' => 'penyimpanan',
+				'jenis_deposit' => 'wajib',
+				'cash_in' => $paramWajib,
+				'cash_out' => 0,
+				'deskripsi' => 'Diambil dari potongan gaji bulanan',
+				'status' => 'diterima',
+				'date_created' => date('Y-m-d H:i:s', strtotime('2025-07-10 12:43:46')),
+				'idanggota' => $idUser,
+				'idadmin' => 1
+			];
+
+			$m_deposit->insertDeposit($dataWajib);
+			// echo "New simpanan wajib processed for user ".$idUser."<br>";
+		}
 	}
 }
