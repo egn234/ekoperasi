@@ -623,18 +623,10 @@ class Report extends Controller
 
 		if ($logReport == 0 || !$logReport){
 
-			// 3. Buat Log Report
-			$monthly_log = [
-				'date_monthly' => $YEAR.'-'.$MONTH,
-				'flag' => 1
-			];
-
-			$m_monthly_report->insert($monthly_log);
-
-			// 4. Proses User Baru
+			// 3. Proses User Baru
 			$this->handleNewUsers($startDate, $endDate);
 
-			// 5. Proses Simpanan dan Pinjaman User
+			// 4. Proses Simpanan dan Pinjaman User
 			foreach ($list_anggota as $a){
 				$this->processPokok($a->iduser, $params['pokok']);
 				$this->processWajib($a->iduser, $params['wajib'], $startDate, $endDate);
@@ -642,8 +634,14 @@ class Report extends Controller
 				$this->processPinjaman($a->iduser, $params['bunga'], $params['provisi'], $startDate, $endDate);
 			}
 			
-			// echo "new_gen_report function true passed <br>";
+			// 5. Buat Log Report
+			$monthly_log = [
+				'date_monthly' => $YEAR.'-'.$MONTH,
+				'flag' => 1
+			];
 
+			$m_monthly_report->insert($monthly_log);
+			
 		} else {
 
 			$alert = view(
