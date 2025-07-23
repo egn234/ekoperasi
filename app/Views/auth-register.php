@@ -10,9 +10,10 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
-    <?= $this->include('partials/head-css') ?>
+        <?= $this->include('partials/head-css') ?>
+        <script src="https://www.google.com/recaptcha/api.js?render=<?=env('RECAPTCHA_SITE_KEY')?>"></script>
 
-</head>
+    </head>
 
 <?= $this->include('partials/body') ?>
 
@@ -48,10 +49,7 @@
                                                 </div>
                                                 <div class="mb-3"> 
                                                     <label class="form-label" for="nik_number">Nomor KTP/NIK <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="nik_number" value="<?=session()->getFlashdata('nik')?>" name="nik" required 
-                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
-                                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                                        onblur="validateNik(this)">
+                                                    <input type="number" class="form-control" id="nik_number" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
                                                     <div class="invalid-feedback">
                                                         Nomor KTP harus 16 digit
                                                     </div>
@@ -82,7 +80,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="institution">Instansi <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="institution" name="instansi" required>
-                                                        <option value="" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Instansi...</option>
+                                                        <option value="default" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Instansi...</option>
                                                         <option value="YPT" <?=(session()->getFlashdata('instansi') == 'YPT')?'selected':''?> >YPT</option>
                                                         <option value="Universitas Telkom" <?=(session()->getFlashdata('instansi') == 'Universitas Telkom')?'selected':''?> >Universitas Telkom</option>
                                                         <option value="Trengginas Jaya" <?=(session()->getFlashdata('instansi') == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
@@ -104,7 +102,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="staffing">Jenis Kepegawaian <span class="text-danger">*</span></label>
                                                     <select class="form-select" id="staffing" name="status_pegawai" required>
-                                                        <option value="" <?=(session()->getFlashdata('status_pegawai'))?'':'selected'?> disabled>Pilih...</option>
+                                                        <option value="default" <?=(session()->getFlashdata('status_pegawai'))?'':'selected'?> disabled>Pilih...</option>
                                                         <option value="tetap" <?=(session()->getFlashdata('status_pegawai') == 'tetap')?'selected':''?> >Tetap</option>
                                                         <option value="kontrak" <?=(session()->getFlashdata('status_pegawai') == 'kontrak')?'selected':''?> >Kontrak</option>
                                                     </select>
@@ -162,20 +160,16 @@
                                                         <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
                                                         <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
                                                 </div>
+
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
+                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password <span class="text-danger">*</span></label>
                                                     <div class="input-group auth-pass-inputgroup">
                                                         <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
                                                         <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
                                                 </div>
+                                                
                                                 <div class="mb-3">
                                                     <label class="form-label" for="profile_pic">
                                                         Upload Foto Profil <span class="text-danger">*</span></br>
@@ -189,8 +183,10 @@
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
                                                 </span>
+                                                <!-- reCAPTCHA Widget -->
+                                                <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
 
-                                                <a class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#konfirmasi">
+                                                <a class="btn btn-primary float-end" id="btnRegister">
                                                     Registrasi
                                                 </a>
 
@@ -221,6 +217,7 @@
             <!-- end container fluid -->
         </div>
 
+        <!-- Modal Konfirmasi -->
         <div id="konfirmasi" class="modal fade" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -242,9 +239,9 @@
                             </p>
                             <div class="mb-4">
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="konfirmasi_check" form="register_form" required>
+                                    <input type="checkbox" class="form-check-input" id="konfirmasi_check" required>
                                     <label class="form-check-label" for="konfirmasi_check">
-                                        <p class="mb-0">Bersedia dengan peraturan yang tertera </p>
+                                        <p class="mb-0">Bersedia dengan peraturan yang tertera</p>
                                     </label>
                                 </div>
                             </div>
@@ -252,9 +249,8 @@
                     </div>
                     <div class="modal-footer">
                         <a class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</a>
-                        <button type="submit" id="confirm_button" form="register_form" class="btn btn-primary" disabled>Registrasi</button>
+                        <button type="submit" id="confirm_button" class="btn btn-primary" disabled>Registrasi</button>
                     </div>
-
                 </div>
             </div>
         </div><!-- /.modal -->
@@ -265,6 +261,28 @@
         <!-- validation init -->
         <script src="assets/js/pages/validation.init.js"></script>
         <script src="assets/js/pages/register.js"></script>
+
+        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+        <script>
+            setInterval(()=> {
+                grecaptcha.ready(function() {
+                    grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then(function(token) {
+                        // Simpan token dalam input tersembunyi
+                        document.getElementById('g-recaptcha-response').value = token;
+                    });
+                });
+            }, 120000);
+
+            document.getElementById('confirm_button').addEventListener('click', (event) => {
+                event.preventDefault();
+                grecaptcha.ready(() => {
+                    grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then((token) => {
+                        document.getElementById('g-recaptcha-response').value = token;
+                        document.getElementById('register_form').submit();
+                    });
+                });
+            });
+        </script>
     </body>
 
 </html>

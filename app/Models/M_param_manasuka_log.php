@@ -21,5 +21,3 @@ class M_param_manasuka_log extends Model
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
 }
-
-?>

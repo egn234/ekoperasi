@@ -227,6 +227,79 @@ class Report extends Controller
 		$writer->save('php://output');
 		exit;
 	}
+
+	public function print_rekap_tahunan()
+	{
+		$m_user = model(M_user::class);
+		$tahun = request()->getPost('tahun');
+		
+		if ($tahun == '0') {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Belum memilih tahun laporan',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset_notif = ['notif_print' => $alert];
+			session()->setFlashdata($dataset_notif);
+			return redirect()->back();
+		}
+
+		$endDate = $tahun.'-'.date('m-d', strtotime("+1 day"));
+		$startDate = date('Y-m-d', strtotime('-1 year', strtotime($endDate)));
+
+		$pegawai_but = $m_user->where('flag', 1)
+									->where('instansi', 'BUT')
+									->where('idgroup', 4)
+									->get()
+									->getResult();
+
+		$pegawai_giat = $m_user->where('flag', 1)
+									->where('instansi', 'GIAT')
+									->where('idgroup', 4)
+									->get()
+									->getResult();
+		
+		$pegawai_telkom = $m_user->where('flag', 1)
+									   ->where('instansi', 'Telkom')
+									   ->where('idgroup', 4)
+									   ->get()
+									   ->getResult();
+
+		$pegawai_trengginas = $m_user->where('flag', 1)
+										   ->where('instansi', 'Trengginas Jaya')
+										   ->where('idgroup', 4)
+										   ->get()
+										   ->getResult();
+
+		$pegawai_telyu = $m_user->where('flag', 1)
+									  ->where('instansi', 'Universitas Telkom')
+									  ->where('idgroup', 4)
+									  ->get()
+									  ->getResult();
+
+		$pegawai_ypt = $m_user->where('flag', 1)
+									->where('instansi', 'YPT')
+									->where('idgroup', 4)
+									->get()
+									->getResult();
+
+		$report = [
+			'page_title' => 'rekap tahunan',
+			'pegawai_but' => $pegawai_but,
+			'pegawai_giat' => $pegawai_giat,
+			'pegawai_telkom' => $pegawai_telkom,
+			'pegawai_trengginas' => $pegawai_trengginas,
+			'pegawai_telyu' => $pegawai_telyu,
+			'pegawai_ypt' => $pegawai_ypt,
+			'startDate' => $startDate,
+			'endDate' => $endDate
+		];
+
+		echo view('admin/report/print-rekap-tahunan', $report);
+	}
 	
 	public function print_rekening_koran()
 	{
@@ -550,18 +623,10 @@ class Report extends Controller
 
 		if ($logReport == 0 || !$logReport){
 
-			// 3. Buat Log Report
-			$monthly_log = [
-				'date_monthly' => $YEAR.'-'.$MONTH,
-				'flag' => 1
-			];
-
-			$m_monthly_report->insert($monthly_log);
-
-			// 4. Proses User Baru
+			// 3. Proses User Baru
 			$this->handleNewUsers($startDate, $endDate);
 
-			// 5. Proses Simpanan dan Pinjaman User
+			// 4. Proses Simpanan dan Pinjaman User
 			foreach ($list_anggota as $a){
 				$this->processPokok($a->iduser, $params['pokok']);
 				$this->processWajib($a->iduser, $params['wajib'], $startDate, $endDate);
@@ -569,8 +634,14 @@ class Report extends Controller
 				$this->processPinjaman($a->iduser, $params['bunga'], $params['provisi'], $startDate, $endDate);
 			}
 			
-			// echo "new_gen_report function true passed <br>";
+			// 5. Buat Log Report
+			$monthly_log = [
+				'date_monthly' => $YEAR.'-'.$MONTH,
+				'flag' => 1
+			];
 
+			$m_monthly_report->insert($monthly_log);
+			
 		} else {
 
 			$alert = view(
@@ -652,7 +723,7 @@ class Report extends Controller
 			$data_pokok = [
 				'jenis_pengajuan' => 'penyimpanan',
 				'jenis_deposit' => 'pokok',
-				'cash_in' => $paramPokok->nilai,
+				'cash_in' => $paramPokok,
 				'cash_out' => 0,
 				'deskripsi' => 'biaya awal registrasi',
 				'status' => 'diterima',
@@ -671,7 +742,7 @@ class Report extends Controller
 		$m_deposit = model(M_deposit::class);
 		$cekWajib = $m_deposit->where('jenis_deposit', 'wajib')
 			->where('idanggota', $idUser)
-			->where('date_created >=', $startDate)
+			->where('date_created >', $startDate)
 			->where('date_created <=', $endDate)
 			->countAllResults();
 
@@ -680,7 +751,7 @@ class Report extends Controller
 			$dataWajib = [
 				'jenis_pengajuan' => 'penyimpanan',
 				'jenis_deposit' => 'wajib',
-				'cash_in' => $paramWajib->nilai,
+				'cash_in' => $paramWajib,
 				'cash_out' => 0,
 				'deskripsi' => 'Diambil dari potongan gaji bulanan',
 				'status' => 'diterima',

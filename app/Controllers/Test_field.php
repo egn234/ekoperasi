@@ -8,6 +8,7 @@ use App\Models\M_cicilan;
 use App\Models\M_monthly_report;
 use App\Models\M_param;
 use App\Models\M_param_manasuka;
+use App\Models\M_deposit;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
 class test_field extends BaseController
@@ -202,77 +203,6 @@ class test_field extends BaseController
 		}
 	}
 
-	public function encryption_meth()
-	{
-		$config = new \Config\Encryption();
-		$encrypter = \Config\Services::encrypter($config);
-		
-		$users = $this->m_user->getAllUser();
-
-		foreach ($users as $user) {
-			// echo "<pre>";
-			// echo $user->nip . "<br>";
-			// echo $user->nik . "<br>";
-			// echo $user->no_rek . "<br>";
-			// echo "</pre>";
-			// Increase execution time and memory limit
-			ini_set('max_execution_time', 600); // 10 minutes
-			ini_set('memory_limit', '512M'); // 512MB
-
-			if ($user->nip != null) {
-				$decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
-			} else {
-				$decrypted_nip = null;
-			}
-	
-			if ($user->nik != null) {
-				$decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
-			} else {	
-				$decrypted_nik = null;
-			}
-	
-			if ($user->no_rek != null) {
-				$decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
-			} else {
-				$decrypted_no_rek = null;
-			}
-	
-			if ($user->alamat != null) {
-				$decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
-			} else {
-				$decrypted_alamat = null;
-			}
-	
-			if ($user->nomor_telepon != null) {
-				$decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
-			} else {
-				$decrypted_nomor_telepon = null;
-			}
-
-			if (password_verify(md5('admingiat123'), $user->pass)) {
-				echo "success";
-			} else{
-				echo "failed";
-			}
-			
-			echo "<br>";
-			echo $decrypted_nip. "<br>";
-			echo $decrypted_nik. "<br>";
-			echo $decrypted_no_rek . "<br>";
-			echo $decrypted_alamat . "<br>";
-			echo $decrypted_nomor_telepon . "<br>";
-			echo $user->pass;
-		}
-	}
-
-	public function binary_search()
-	{
-		$nik = (string) "6ijaGegAhgSc6mEIJccOOsVz9+rslOw7hQrwsPSxO4TBxZAb5XsbXirryWK7+8g+NI+ECvTEed9ASoh1DshCnOawJnWBIVpgjnh73iv3Q5RUOuF1zyTzP5G4YYlLryjA";
-		$cek_nik = $this->m_user->select('nik')->where('nik = "'. $nik.'"')->get()->getResult();
-
-		print_r($cek_nik);
-	}
-
 	public function convert_sensitive_data()
 	{
 		// Increase execution time and memory limit
@@ -315,7 +245,7 @@ class test_field extends BaseController
 			}
 
 			# THIS IS FROM MD5 ALGORITHM FIRST!! MAKE SURE TO USE MD5 BEFORE HASH CHECK!!
-			# $hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
+			$hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
 			
 			$dataset = [
 				'nip' => $encrypted_nip,
@@ -323,60 +253,84 @@ class test_field extends BaseController
 				'no_rek' => $encrypted_no_rek,
 				'nomor_telepon' => $encrypted_nomor_telepon,
 				'alamat' => $encrypted_alamat,
-				# 'pass' => $hashed_password
+				'pass' => $hashed_password
 			];
 
 			$this->m_user->updateUser($user->iduser, $dataset);
 		}
+		
+		echo "success";
+	}
+	
+	private function fetchParams($m_param)
+	{
+		return [
+			'pokok' => $m_param->where('idparameter', 1)->get()->getResult()[0]->nilai,
+			'wajib' => $m_param->where('idparameter', 2)->get()->getResult()[0]->nilai,
+			'bunga' => $m_param->where('idparameter', 9)->get()->getResult()[0]->nilai / 100,
+			'provisi' => $m_param->where('idparameter', 5)->get()->getResult()[0]->nilai / 100,
+		];
 	}
 
-	public function encryption_meth_decode() {
-		$config = new \Config\Encryption();
-		$encrypter = \Config\Services::encrypter($config);
+	public function gen_wajib()
+	{
+		$m_monthly_report = model(M_monthly_report::class);
+		$m_user = model(M_user::class);
+		$m_param = model(M_param::class);
+
+		// 1. ambil konfigurasi awal
+		$YEAR = date('Y');
+		$MONTH = date('m');
+		$startDate = date('Y-m-d H:i:s', strtotime('2025-06-11 11:41:26'));
+		$endDate = date('Y-m-d H:i:s');
+		$params = $this->fetchParams($m_param);
+
+		// 2. ambil semua anggota aktif
+		$list_anggota = $m_user->where('flag', '1')->where('idgroup', 4)->get()->getResult();
 		
-		$users = $this->m_user->getAllUser();
+		// 5. Proses Simpanan dan Pinjaman User
+		foreach ($list_anggota as $a){
+			$this->processWajib($a->iduser, $params['wajib'], $startDate, $endDate);
+		};
+
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Laporan Bulan ini berhasil dibuat',
+			 	'status' => 'success'
+			]
+		);
 		
-		foreach ($users as $user) {
-			if ($user->nip != null) {
-				$decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
-			} else {
-				$decrypted_nip = null;
-			}
-			
-			if ($user->nik != null) {
-				$decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
-			} else {
-				$decrypted_nik = null;
-			}
-			
-			if ($user->no_rek != null) {
-				$decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
-			} else {
-				$decrypted_no_rek = null;
-			}
-			
-			if ($user->nomor_telepon != null) {
-				$decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
-			} else {
-				$decrypted_nomor_telepon = null;
-			}
-			
-			if ($user->alamat != null) {
-				$decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
-			} else {
-				$decrypted_alamat = null;
-			}
-			
-			$dataset = [
-				'nip' => $decrypted_nip,
-				'nik' => $decrypted_nik,
-				'no_rek' => $decrypted_no_rek,
-				'nomor_telepon' => $decrypted_nomor_telepon,
-				'alamat' => $decrypted_alamat
+		$dataset_notif = ['notif' => $alert];
+		session()->setFlashdata($dataset_notif);
+		return redirect()->back();
+	}
+
+	private function processWajib($idUser, $paramWajib, $startDate, $endDate)
+	{
+		$m_deposit = model(M_deposit::class);
+		$cekWajib = $m_deposit->where('jenis_deposit', 'wajib')
+			->where('idanggota', $idUser)
+			->where('date_created >=', $startDate)
+			->where('date_created <=', $endDate)
+			->countAllResults();
+
+		if ($cekWajib == 0)
+		{
+			$dataWajib = [
+				'jenis_pengajuan' => 'penyimpanan',
+				'jenis_deposit' => 'wajib',
+				'cash_in' => $paramWajib,
+				'cash_out' => 0,
+				'deskripsi' => 'Diambil dari potongan gaji bulanan',
+				'status' => 'diterima',
+				'date_created' => date('Y-m-d H:i:s', strtotime('2025-07-10 12:43:46')),
+				'idanggota' => $idUser,
+				'idadmin' => 1
 			];
-			
-			$this->m_user->updateUser($user->iduser, $dataset);
+
+			$m_deposit->insertDeposit($dataWajib);
+			// echo "New simpanan wajib processed for user ".$idUser."<br>";
 		}
 	}
 }
-?>

@@ -46,10 +46,11 @@ $routes->group('test', static function ($routes){
     // $routes->get('test_db', 'Test_field::test_db');
     // $routes->get('test_encryption', 'Test_field::encryption_meth');
     // $routes->get('test_binary', 'Test_field::binary_search');
+    // $routes->get('gen_wajib', 'Test_field::gen_wajib');
 
     # INI BUAT KONVERSI DATA SENSITIF BUAT SEMUA DATABASE, AKTIFKAN SEKALI SAJA
     // $routes->get('encode-data', 'Test_field::convert_sensitive_data');
-    $routes->get('decode-data', 'Test_field::encryption_meth_decode');
+    // $routes->get('decode-data', 'Test_field::encryption_meth_decode');
 });
 
 $routes->get('registrasi', 'Register::index');

@@ -137,10 +137,4 @@ public/uploads/*
 db_log/*
 
 # Docker
-.dockerignore
-Dockerfile
 docker-compose.yml
-custom-php.ini
-
-# python venv
-app/ThirdParty/excel_report_lib/*

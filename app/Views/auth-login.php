@@ -1,7 +1,6 @@
 <?= $this->include('partials/head-main') ?>
 
     <head>
-
         <meta charset="utf-8" />
         <title>Login | EKoperasi</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,13 +10,12 @@
         <link rel="shortcut icon" href="<?=base_url()?>/favicon.ico">
 
         <?= $this->include('partials/head-css') ?>
-        
         <style type="text/css">
             .grecaptcha-badge {
                 visibility: hidden;
             }
         </style>
-</head>
+    </head>
 
 <?= $this->include('partials/body') ?>
 
@@ -58,7 +56,10 @@
                                                     <input type="password" class="form-control" placeholder="Masukkan password" aria-label="Password" name="password" id="password" aria-describedby="password-addon">
                                                     <button class="btn btn-light ms-0" type="button" id="password-toggle"><i class="mdi mdi-eye-outline"></i></button>
                                                 </div>
+
                                             </div>
+                                            <!-- reCAPTCHA Widget -->
+                                            <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
 
                                             <div class="mb-3">
                                                 <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Log In</button>
@@ -106,12 +107,16 @@
             </div>
             <!-- end container fluid -->
         </div>
-
-
-        <!-- JAVASCRIPT -->
-        <?= $this->include('partials/vendor-scripts') ?>
-        
-        <!-- password addon init -->
+        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+        <script>
+            grecaptcha.ready(function() {
+                grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'login'})
+                    .then(function(token) {
+                        // Simpan token dalam input tersembunyi
+                        document.getElementById('g-recaptcha-response').value = token;
+                    });
+            });
+        </script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const passwordInput = document.getElementById("password");
@@ -128,6 +133,9 @@
                 });
             });
         </script>
-    </body>
 
+        <!-- JAVASCRIPT -->
+       <?= $this->include('partials/vendor-scripts') ?>
+        <!-- password addon init -->
+    </body>
 </html>

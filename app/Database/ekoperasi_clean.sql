@@ -242,12 +242,11 @@ CREATE TABLE `tb_user` (
 -- Table structure for table `ci_sessions`
 --
 
-CREATE TABLE `ci_sessions` (
-    `id` VARCHAR(128) NOT NULL PRIMARY KEY,
-    `ip_address` VARCHAR(45) NOT NULL,
-    timestamp INT(10) UNSIGNED DEFAULT 0 NOT NULL,
-    data BLOB NOT NULL,
-    PRIMARY KEY (`id`),
+CREATE TABLE IF NOT EXISTS `ci_sessions` (
+    `id` varchar(128) NOT null,
+    `ip_address` varchar(45) NOT null,
+    `timestamp` timestamp DEFAULT CURRENT_TIMESTAMP NOT null,
+    `data` blob NOT null,
     KEY `ci_sessions_timestamp` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
