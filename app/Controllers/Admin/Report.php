@@ -744,7 +744,7 @@ class Report extends Controller
 		$m_deposit = model(M_deposit::class);
 		$cekWajib = $m_deposit->where('jenis_deposit', 'wajib')
 			->where('idanggota', $idUser)
-			->where('date_created >=', $startDate)
+			->where('date_created >', $startDate)
 			->where('date_created <=', $endDate)
 			->countAllResults();
 
