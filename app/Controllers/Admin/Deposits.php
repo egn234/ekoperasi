@@ -336,14 +336,6 @@ class Deposits extends Controller
 
 	public function konfirmasi_mutasi($iddeposit = false)
 	{
-		$dataset = [
-			'idadmin' => $this->account->iduser,
-			'status' => 'diproses bendahara',
-			'date_updated' => date('Y-m-d H:i:s')
-		];
-
-		$this->m_deposit->setStatus($iddeposit, $dataset);
-
 		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
 		$nama_anggota = $this->m_user->where('iduser', $idanggota)->get()->getResult()[0]->nama_lengkap;
 		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
@@ -351,9 +343,25 @@ class Deposits extends Controller
 		$message = false;
 		if ($jenis_pengajuan == 'penarikan') {
 			$message = 'penarikan';
+			$cash_in = 0;
+			$cash_out = request()->getPost('nominal_uang');
 		}else{
 			$message = 'penyimpanan';
+			$cash_in = request()->getPost('nominal_uang');
+			$cash_out = 0;
 		};
+
+		log_message('error', $cash_in." ".$cash_out);
+		
+		$dataset = [
+			'idadmin' => $this->account->iduser,
+			'status' => 'diproses bendahara',
+			'cash_in' => $cash_in,
+			'cash_out' => $cash_out,
+			'date_updated' => date('Y-m-d H:i:s')
+		];
+
+		$this->m_deposit->setStatus($iddeposit, $dataset);
 
 		$notification_bendahara = [
 			'admin_id' => $this->account->iduser,
@@ -458,7 +466,7 @@ class Deposits extends Controller
 				'a' => $deposit,
 				'flag' => 0
 			];
-			echo view('admin/deposit/part-depo-mod-approval', $data);
+			echo view('admin/deposit/part-depo-mod-cancel', $data);
 		}
 	}
 
@@ -473,8 +481,8 @@ class Deposits extends Controller
 			$total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($deposit->idanggota)[0]->saldo;
 			$total_saldo = '';
 
+			// pengecekan saldo
 			$confirmation = false;
-
 			if ($deposit->cash_in == 0) {
 				if ($deposit->jenis_deposit == 'wajib') {
 
@@ -508,29 +516,32 @@ class Deposits extends Controller
 
 				}
 			}
+			
+			$duser = $this->m_user->getUserById($deposit->idanggota)[0];
 
 			$data = [
 				'a' => $deposit,
 				'flag' => 1,
+				'duser' => $duser,
 				'total_saldo' => $total_saldo,
 				'confirmation' => $confirmation
 			];
-			echo view('admin/deposit/part-depo-mod-approval', $data);
+			echo view('admin/deposit/part-depo-mod-approve', $data);
 		}
 	}
 
 	public function data_transaksi()
 	{
 		$request = service('request');
-        $model = $this->m_deposit;
+		$model = $this->m_deposit;
 
-        // Parameters from the DataTable
-        $start = $request->getPost('start') ?? 0;
-        $length = $request->getPost('length') ?? 10;
-        $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value'];
+		// Parameters from the DataTable
+		$start = $request->getPost('start') ?? 0;
+		$length = $request->getPost('length') ?? 10;
+		$draw = $request->getPost('draw');
+		$searchValue = $request->getPost('search')['value'];
 
-        // Fetch data from the model using $start and $length
+		// Fetch data from the model using $start and $length
 		$model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.email, tb_user.nomor_telepon, tb_user.email');
 		$model->like('nama_lengkap', $searchValue);
 		$model->orLike('username', $searchValue);
@@ -538,28 +549,28 @@ class Deposits extends Controller
 		$model->orLike('status', $searchValue);
 		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
 		$model->orderBy('tb_deposit.date_created', 'DESC');
-        $data = $model->asArray()->findAll($length, $start);
+		$data = $model->asArray()->findAll($length, $start);
 
-        // Total records (you can also use $model->countAll() for exact total)
-        $recordsTotal = $model->countAllResults();
+		// Total records (you can also use $model->countAll() for exact total)
+		$recordsTotal = $model->countAllResults();
 
-        // Records after filtering (if any)
+		// Records after filtering (if any)
 		$model->like('nama_lengkap', $searchValue);
 		$model->orLike('username', $searchValue);
 		$model->orLike('email', $searchValue);
 		$model->orLike('status', $searchValue);
 		$model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
-        $recordsFiltered = $model->countAllResults();
+		$recordsFiltered = $model->countAllResults();
 
-        // Prepare the response in the DataTable format
-        $response = [
-            'draw' => $draw,
-            'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsFiltered,
-            'data' => $data
-        ];
+		// Prepare the response in the DataTable format
+		$response = [
+				'draw' => $draw,
+				'recordsTotal' => $recordsTotal,
+				'recordsFiltered' => $recordsFiltered,
+				'data' => $data
+		];
 
-        return $this->response->setJSON($response);
+		return $this->response->setJSON($response);
 	}
 
 	public function data_transaksi_filter()
@@ -615,20 +626,20 @@ class Deposits extends Controller
 
 	public function data_user()
 	{
-        $request = service('request');
-        $model = $this->m_user; // Replace with your actual model name
+		$request = service('request');
+		$model = $this->m_user; // Replace with your actual model name
 
 		$config = new \Config\Encryption();
 		$encrypter = \Config\Services::encrypter($config);
 
-        // Parameters from the DataTable
-        $start = $request->getPost('start') ?? 0;
-        $length = $request->getPost('length') ?? 10;
-        $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value'];
+		// Parameters from the DataTable
+		$start = $request->getPost('start') ?? 0;
+		$length = $request->getPost('length') ?? 10;
+		$draw = $request->getPost('draw');
+		$searchValue = $request->getPost('search')['value'];
 
-        // Start building the query for filtering
-	    $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag')
+		// Start building the query for filtering
+		$model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag')
 	    ->where('idgroup', 4)
 	    ->groupStart()
 	    	->like('username', $searchValue)
@@ -636,22 +647,22 @@ class Deposits extends Controller
 	        ->orLike('nomor_telepon', $searchValue)
 	    ->groupEnd();
 
-        // Fetch data from the model using $start and $length
-        $data = $model->asArray()->findAll($length, $start);
-        
-        // Total records (you can also use $model->countAll() for exact total)
-	    $model->select('iduser')->where('idgroup', 4);
-        $recordsTotal = $model->countAllResults();
+		// Fetch data from the model using $start and $length
+		$data = $model->asArray()->findAll($length, $start);
+		
+		// Total records (you can also use $model->countAll() for exact total)
+		$model->select('iduser')->where('idgroup', 4);
+		$recordsTotal = $model->countAllResults();
 
-        // Records after filtering (if any)
-	    $model->select('iduser')
+		// Records after filtering (if any)
+		$model->select('iduser')
 	    ->where('idgroup', 4)
 	    ->groupStart()
 	    	->like('username', $searchValue)
 	        ->orLike('nama_lengkap', $searchValue)
 	        ->orLike('nomor_telepon', $searchValue)
 	    ->groupEnd();
-        $recordsFiltered = $model->countAllResults();
+		$recordsFiltered = $model->countAllResults();
 		
 		// Decrypt `nomor_telepon` for each user
 		foreach ($data as &$row) {
@@ -660,14 +671,14 @@ class Deposits extends Controller
 			}
 		}
 
-        // Prepare the response in the DataTable format
-        $response = [
-            'draw' => $draw,
-            'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsFiltered,
-            'data' => $data
-        ];
+		// Prepare the response in the DataTable format
+		$response = [
+				'draw' => $draw,
+				'recordsTotal' => $recordsTotal,
+				'recordsFiltered' => $recordsFiltered,
+				'data' => $data
+		];
 
-        return $this->response->setJSON($response);
+		return $this->response->setJSON($response);
 	}
 }

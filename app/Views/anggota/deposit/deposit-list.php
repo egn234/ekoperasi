@@ -349,6 +349,7 @@
 <!-- Required datatable js -->
 <script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
 <!-- form mask -->
 <script src="<?=base_url()?>/assets/libs/imask/imask.min.js"></script>
 
