@@ -761,7 +761,7 @@ class Report extends Controller
 			];
 
 			$m_deposit->insertDeposit($dataWajib);
-			echo "New simpanan wajib processed for user ".$idUser."<br>";
+			// echo "New simpanan wajib processed for user ".$idUser."<br>";
 		}
 	}
 
