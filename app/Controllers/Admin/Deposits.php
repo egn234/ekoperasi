@@ -344,10 +344,10 @@ class Deposits extends Controller
 		if ($jenis_pengajuan == 'penarikan') {
 			$message = 'penarikan';
 			$cash_in = 0;
-			$cash_out = request()->getPost('nominal_uang');
+			$cash_out = filter_var(request()->getPost('nominal_uang'), FILTER_SANITIZE_NUMBER_INT);
 		}else{
 			$message = 'penyimpanan';
-			$cash_in = request()->getPost('nominal_uang');
+			$cash_in = filter_var(request()->getPost('nominal_uang'), FILTER_SANITIZE_NUMBER_INT);
 			$cash_out = 0;
 		};
 
