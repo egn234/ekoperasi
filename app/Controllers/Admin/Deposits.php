@@ -434,7 +434,7 @@ class Deposits extends Controller
 		$this->m_deposit->setStatus($iddeposit, $dataset);
 
 		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
-		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
+		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_pengajuan;
 
 		$message = false;
 		if ($jenis_pengajuan == 'penarikan') {
