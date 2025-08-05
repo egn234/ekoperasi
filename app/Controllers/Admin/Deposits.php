@@ -346,7 +346,7 @@ class Deposits extends Controller
 
 		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
 		$nama_anggota = $this->m_user->where('iduser', $idanggota)->get()->getResult()[0]->nama_lengkap;
-		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
+		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_pengajuan;
 
 		$message = false;
 		if ($jenis_pengajuan == 'penarikan') {
@@ -402,7 +402,7 @@ class Deposits extends Controller
 		$this->m_deposit->setStatus($iddeposit, $dataset);
 
 		$idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
-		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
+		$jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_pengajuan;
 
 		$message = false;
 		if ($jenis_pengajuan == 'penarikan') {
