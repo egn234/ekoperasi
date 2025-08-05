@@ -97,6 +97,7 @@ $routes->group('admin', static function ($routes)
     {
         $routes->get('list', 'Admin\Deposits::index');
         $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
+        $routes->get('edit/(:num)', 'Admin\Deposits::edit_mutasi/$1');
 
         $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
         $routes->post('add_req', 'Admin\Deposits::add_proc');

@@ -71,6 +71,7 @@ class Deposits extends Controller
 		];
 	}
 
+	// DAFTAR ANGGOTA
 	public function index()
 	{
 		$data = [
@@ -82,19 +83,6 @@ class Deposits extends Controller
 		];
 		
 		return view('admin/deposit/anggota-list', $data);
-	}
-
-	public function list_transaksi()
-	{
-		$data = [
-			'title_meta' => view('admin/partials/title-meta', ['title' => 'Kelola Transaksi Simpanan']),
-			'page_title' => view('admin/partials/page-title', ['title' => 'Kelola Transaksi Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Kelola Transaksi Simpanan']),
-			'notification_list' => $this->notification->index()['notification_list'],
-			'notification_badges' => $this->notification->index()['notification_badges'],
-			'duser' => $this->account
-		];
-		
-		return view('admin/deposit/deposit-list', $data);
 	}
 
 	public function detail_anggota($iduser = false)
@@ -332,6 +320,42 @@ class Deposits extends Controller
 
 		session()->setFlashdata($data_session);
 		return redirect()->back();
+	}
+
+	// DAFTAR TRANSAKSI
+	public function list_transaksi()
+	{
+		$data = [
+			'title_meta' => view('admin/partials/title-meta', ['title' => 'Kelola Transaksi Simpanan']),
+			'page_title' => view('admin/partials/page-title', ['title' => 'Kelola Transaksi Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Kelola Transaksi Simpanan']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
+			'duser' => $this->account
+		];
+		
+		return view('admin/deposit/deposit-list', $data);
+	}
+
+	// TODO: nunggu selesai
+	public function edit_mutasi($id = false)
+	{
+		$deposit = $this->m_deposit
+			->select('tb_deposit.*, tb_user.nama_lengkap, tb_user.nik')
+			->join('tb_user', 'tb_user.iduser = tb_deposit.idanggota')
+			->where('iddeposit', $id)
+			->get()
+			->getResult()[0];
+
+		$data = [
+			'title_meta' => view('admin/partials/title-meta', ['title' => 'Ubah Pengajuan Simpanan']),
+			'page_title' => view('admin/partials/page-title', ['title' => 'Ubah Pengajuan Simpanan', 'li_1' => 'EKoperasi', 'li_2' => 'Ubah Pengajuan Simpanan']),
+			'notification_list' => $this->notification->index()['notification_list'],
+			'notification_badges' => $this->notification->index()['notification_badges'],
+			'duser' => $this->account,
+			'deposit' => $deposit
+		];
+		
+		return view('admin/deposit/deposit-edit', $data);
 	}
 
 	public function konfirmasi_mutasi($iddeposit = false)
