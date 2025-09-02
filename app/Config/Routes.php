@@ -40,6 +40,7 @@ $routes->get('/', 'Login::index');
 
 //for testing db only, uncomment this route
 $routes->group('test', static function ($routes){
+    $routes->add('generate-monthly/(:any)', 'Test_field::gen_report/$1');
     // $routes->get('/', 'Test_field::index');
     // $routes->get('test_cicilan', 'Test_field::insert_cicilan');
     // $routes->get('test_gen_cicilan', 'Test_field::gen_sisa_cicilan');
@@ -96,6 +97,7 @@ $routes->group('admin', static function ($routes)
     {
         $routes->get('list', 'Admin\Deposits::index');
         $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
+        $routes->get('edit/(:num)', 'Admin\Deposits::edit_mutasi/$1');
 
         $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
         $routes->post('add_req', 'Admin\Deposits::add_proc');
@@ -301,9 +303,11 @@ $routes->group('anggota', static function ($routes)
         $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
         $routes->post('up_form', 'Anggota\Pinjaman::up_form');
         $routes->post('lunasi_pinjaman', 'Anggota\Pinjaman::lunasi_pinjaman');
+        $routes->post('detail_tolak', 'Anggota\Pinjaman::detail_tolak');
         $routes->post('top-up', 'Anggota\Pinjaman::top_up');
 
         $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
+        $routes->add('riwayat_penolakan', 'Anggota\Pinjaman::riwayat_penolakan');
         $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
         $routes->add('lunasi_proc/(:num)', 'Anggota\Pinjaman::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
         $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);

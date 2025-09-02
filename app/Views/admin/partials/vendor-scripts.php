@@ -8,17 +8,20 @@
 <script src="<?=base_url()?>/assets/libs/pace-js/pace.min.js"></script>
 
 <script>
-    $(document).ready(function(){
-        $(".update-notification").click(function(){
-            var id = $(this).data('id');
-            $.ajax({
-                url: "<?php echo base_url('admin/notification/mark-as-read/'); ?>",
-                type: "POST",
-                data: "id="+id,
-                success: function(response) {
-                    "<?php echo 'success' ?>"
-                }
-            });
-        });
-    });
+	const BASE_URL = '<?= base_url() ?>';
+	
+	$(document).ready(function(){
+		$(".update-notification").click(function(){
+			var id = $(this).data('id');
+			$.ajax({
+				url: "<?php echo base_url('admin/notification/mark-as-read/'); ?>",
+				type: "POST",
+				data: "id="+id,
+				success: function(response) {
+					"<?php echo 'success' ?>"
+				}
+			});
+		});
+	});
+	
 </script>

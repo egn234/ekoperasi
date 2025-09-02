@@ -174,27 +174,27 @@
                 {
                     title: "Status",
                     "render": function(data, type, row, meta) {
-                        let otuput;
+                        let output;
                         
                         if(row.status == 0){
-                            otuput = 'Ditolak';
+                            output = 'Ditolak';
                         }else if(row.status == 1){
-                            otuput = 'Upload Kelengkapan Form';
+                            output = 'Upload Kelengkapan Form';
                         }else if(row.status == 2){
-                            otuput = 'Menunggu Verifikasi';
+                            output = 'Menunggu Verifikasi';
                         }else if(row.status == 3){
-                            otuput = 'Menunggu Approval Sekretariat';
+                            output = 'Menunggu Approval Sekretariat';
                         }else if(row.status == 4){
-                            otuput = 'Sedang Berlangsung';
+                            output = 'Sedang Berlangsung';
                         }else if(row.status == 5){
-                            otuput = 'Lunas';
+                            output = 'Lunas';
                         }else if(row.status == 6){
-                            otuput = 'Pelunasan diproses admin';
+                            output = 'Pelunasan diproses admin';
                         }else if(row.status == 7){
-                            otuput = 'Pelunasan diproses bendahara';
+                            output = 'Pelunasan diproses bendahara';
                         }
 
-                        return otuput;
+                        return output;
                     }
                 },
                 {

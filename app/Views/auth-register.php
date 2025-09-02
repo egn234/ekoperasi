@@ -10,9 +10,7 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
-        <?= $this->include('partials/head-css') ?>
-        <script src="https://www.google.com/recaptcha/api.js?render=<?=env('RECAPTCHA_SITE_KEY')?>"></script>
-
+    <?= $this->include('partials/head-css') ?>
     </head>
 
 <?= $this->include('partials/body') ?>
@@ -183,9 +181,7 @@
                                                 <span class="text-xs text-danger">
                                                   *Tidak boleh dikosongkan
                                                 </span>
-                                                <!-- reCAPTCHA Widget -->
-                                                <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
-
+                                                
                                                 <a class="btn btn-primary float-end" id="btnRegister">
                                                     Registrasi
                                                 </a>
@@ -262,27 +258,6 @@
         <script src="assets/js/pages/validation.init.js"></script>
         <script src="assets/js/pages/register.js"></script>
 
-        <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
-        <script>
-            setInterval(()=> {
-                grecaptcha.ready(function() {
-                    grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then(function(token) {
-                        // Simpan token dalam input tersembunyi
-                        document.getElementById('g-recaptcha-response').value = token;
-                    });
-                });
-            }, 120000);
-
-            document.getElementById('confirm_button').addEventListener('click', (event) => {
-                event.preventDefault();
-                grecaptcha.ready(() => {
-                    grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then((token) => {
-                        document.getElementById('g-recaptcha-response').value = token;
-                        document.getElementById('register_form').submit();
-                    });
-                });
-            });
-        </script>
     </body>
 
 </html>
