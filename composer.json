@@ -5,8 +5,8 @@
     "homepage": "https://codeigniter.com",
     "license": "MIT",
     "require": {
-        "php": "^7.4 || ^8.0",
-        "codeigniter4/framework": "4.3.8",
+        "php": "^8.0",
+        "codeigniter4/framework": "^4.6.0",
         "phpoffice/phpspreadsheet": "^1.24",
         "kint-php/kint": "^5.0"
     },
