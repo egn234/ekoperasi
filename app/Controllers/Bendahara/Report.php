@@ -74,7 +74,8 @@ class Report extends Controller
 
 		$list_report = $m_monthly_report->getAllMonthlyReport();
 		$list_tahun = $m_monthly_report->select('YEAR(created) AS tahun')
-											 ->groupBy('YEAR(created)', 'DESC')
+											 ->groupBy('YEAR(created)')
+											 ->orderBy('YEAR(created)', 'DESC')
 											 ->get()
 											 ->getResult();
 		$YEAR = date('Y');

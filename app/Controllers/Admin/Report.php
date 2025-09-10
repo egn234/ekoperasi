@@ -81,7 +81,8 @@ class Report extends Controller
 										->getResult();
 
 		$list_tahun = $m_monthly_report->select('YEAR(created) AS tahun')
-											 ->groupBy('YEAR(created)', 'DESC')
+											 ->groupBy('YEAR(created)')
+											 ->orderBy('YEAR(created)', 'DESC')
 											 ->get()
 											 ->getResult();
 		$YEAR = date('Y');

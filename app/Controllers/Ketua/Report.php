@@ -80,7 +80,8 @@ class Report extends Controller
 		$m_monthly_report = model(M_monthly_report::class);
 		$list_report = $m_monthly_report->getAllMonthlyReport();
 		$list_tahun = $m_monthly_report->select('YEAR(created) AS tahun')
-											 ->groupBy('YEAR(created)', 'DESC')
+											 ->groupBy('YEAR(created)')
+											 ->orderBy('YEAR(created)', 'DESC')
 											 ->get()
 											 ->getResult();
 		$YEAR = date('Y');
