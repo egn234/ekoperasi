@@ -101,6 +101,7 @@ $routes->group('admin', static function ($routes)
 
         $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
         $routes->post('add_req', 'Admin\Deposits::add_proc');
+        $routes->post('update_mutasi/(:num)', 'Admin\Deposits::update_mutasi/$1');
         $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
         
         $routes->post('cancel-mnsk', 'Admin\Deposits::cancel_mnsk');

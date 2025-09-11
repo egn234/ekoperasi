@@ -159,7 +159,6 @@ class Deposits extends Controller
 		$nominal = filter_var(request()->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
 		$deskripsi = request()->getPost('description');
 
-
 		$cash_in = 0;
 		$cash_out = 0;
 		$status = 'diterima';
@@ -336,7 +335,6 @@ class Deposits extends Controller
 		return view('admin/deposit/deposit-list', $data);
 	}
 
-	// TODO: nunggu selesai
 	public function edit_mutasi($id = false)
 	{
 		$deposit = $this->m_deposit
@@ -356,6 +354,68 @@ class Deposits extends Controller
 		];
 		
 		return view('admin/deposit/deposit-edit', $data);
+	}
+
+	public function update_mutasi($iddeposit = false)
+	{
+		$iduser = request()->getPost('idanggota');
+		$jenis_pengajuan = request()->getPost('jenis_pengajuan');
+		if ($jenis_pengajuan == "") {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Gagal membuat pengajuan: Pilih jenis pengajuan terlebih dahulu',
+				 	'status' => 'warning'
+				]
+			);
+			
+			$dataset = ['notif' => $alert];
+			session()->setFlashdata($dataset);
+			return redirect()->back();
+		}
+
+		$jenis_deposit = request()->getPost('jenis_deposit');
+
+		$nominal = request()->getPost('nominal');
+
+		$cash_in = 0;
+		$cash_out = 0;
+
+		if ($jenis_pengajuan == 'penyimpanan') {
+			$cash_in = $nominal;
+		}else{
+			$cash_out = $nominal;
+		}
+
+		$dataset = [
+			'jenis_pengajuan' => $jenis_pengajuan,
+			'jenis_deposit' => $jenis_deposit,
+			'cash_in' => $cash_in,
+			'cash_out' => $cash_out,
+			'date_created' => date('Y-m-d H:i:s'),
+			'idanggota' => $iduser,
+			'idadmin' => $this->account->iduser
+		];
+
+		// print_r($dataset); exit;
+
+		// anggap ini update bukti transfer
+		$this->m_deposit->updateBuktiTransfer($iddeposit, $dataset);
+		
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Pengajuan berhasil diubah',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = [
+			'notif' => $alert
+		];
+
+		session()->setFlashdata($data_session);
+		return redirect()->back();
 	}
 
 	public function konfirmasi_mutasi($iddeposit = false)

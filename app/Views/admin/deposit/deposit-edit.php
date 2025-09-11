@@ -43,7 +43,59 @@
 							</div>
 							<div class="card-body">
 								<?=session()->getFlashdata('notif');?>
-								
+								<form action="<?= base_url('admin/deposit/update_mutasi/' . ($deposit->iddeposit ?? '')) ?>" method="post">
+									<div class="mb-3">
+										<label for="jenis_pengajuan" class="form-label">Jenis Pengajuan</label>
+										<select class="form-select" id="jenis_pengajuan" name="jenis_pengajuan" required>
+											<option value="penyimpanan" <?= ($deposit->jenis_pengajuan == 'penyimpanan' ? 'selected' : '') ?>>Penyimpanan</option>
+											<option value="penarikan" <?= ($deposit->jenis_pengajuan == 'penarikan' ? 'selected' : '') ?>>Penarikan</option>
+										</select>
+										<input type="hidden" name="idanggota" value="<?= $deposit->idanggota ?>">
+									</div>
+
+									<div class="mb-3">
+										<label for="jenis_deposit" class="form-label">Jenis Simpanan</label>
+										<select class="form-select" id="jenis_deposit" name="jenis_deposit" required>
+											<option value="pokok" <?= ($deposit->jenis_deposit == 'pokok' ? 'selected' : '') ?>>Pokok</option>
+											<option value="manasuka" <?= ($deposit->jenis_deposit == 'manasuka' ? 'selected' : '') ?>>Manasuka</option>
+											<option value="manasuka free" <?= ($deposit->jenis_deposit == 'manasuka free' ? 'selected' : '') ?>>Manasuka Free</option>
+											<option value="wajib" <?= ($deposit->jenis_deposit == 'wajib' ? 'selected' : '') ?>>Wajib</option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label for="nominal" class="form-label">Nominal</label>
+										<input type="number" class="form-control" id="nominal" name="nominal" value="<?= $deposit->cash_out == 0 ? $deposit->cash_in : $deposit->cash_out ?>" min="0" required>
+									</div>
+									
+									<!-- Tombol Kembali -->
+									<a href="http://localhost:8080/admin/deposit/list_transaksi" class="btn btn-secondary">
+										Kembali
+									</a>
+									<!-- Tombol trigger modal konfirmasi -->
+									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalKonfirmasi">
+										Simpan Perubahan
+									</button>
+
+									<!-- Modal Konfirmasi -->
+									<div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="modalKonfirmasiLabel">Konfirmasi Perubahan</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													Apakah Anda yakin ingin menyimpan perubahan pada pengajuan simpanan ini?
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+													<button type="submit" class="btn btn-primary">Ya, Simpan</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
 							</div>
 						</div>
 					</div> <!-- end col -->
