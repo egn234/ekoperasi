@@ -1,4 +1,3 @@
-<!-- TODO: PISAHIN MODAL TOLAK SAMA MODAL TERIMA -->
 <div class="modal-header">
 	<h5 class="modal-title" id="myModalLabel">Konfirmasi</h5>
 	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -24,8 +23,15 @@
 			<form action="<?= url_to('admin_konfirmasi_simpanan', $a->iddeposit)?>" id="formTerima" method="post">
 				<div class="mb-3">
 					<label class="form-label" for="nominal_uang">Nominal</label>
-					<!-- TODO: filter mask jadi angka pake imask js -->
-					<input type="text" class="form-control" id="nominal_uang" name="nominal_uang" value="<?=($a->jenis_pengajuan == "penyimpanan")?$a->cash_in:$a->cash_out?>">
+					<input 
+						type="number"
+						step="0.01"
+						class="form-control"
+						id="nominal_uang"
+						name="nominal_uang"
+						value="<?=number_format(($a->jenis_pengajuan == "penyimpanan") ? $a->cash_in : $a->cash_out, 0, '', '')?>"
+					>
+					<small id="preview_nominal" class="form-text text-muted"></small>
 				</div>
 			</form>
 		</div>
