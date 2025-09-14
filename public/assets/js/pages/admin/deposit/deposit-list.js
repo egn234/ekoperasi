@@ -214,7 +214,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
 
-
       // update setiap user ketik
       nominalInput.addEventListener('input', updatePreview);
 

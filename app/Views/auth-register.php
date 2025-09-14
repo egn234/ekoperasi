@@ -245,7 +245,7 @@
                     </div>
                     <div class="modal-footer">
                         <a class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</a>
-                        <button type="submit" id="confirm_button" class="btn btn-primary" disabled>Registrasi</button>
+                        <button type="submit" id="confirm_button" form="register_form" class="btn btn-primary" disabled>Registrasi</button>
                     </div>
                 </div>
             </div>
