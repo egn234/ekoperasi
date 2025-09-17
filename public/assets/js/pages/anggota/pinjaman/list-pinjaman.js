@@ -13,7 +13,7 @@ $(function() {
       url: BASE_URL + "anggota/pinjaman/data_pinjaman",
       type: "POST",
       data: function (d) {
-        d.length = d.length || 10; // Use the default if not provided
+        d.length = d.length || 10;
       }
     },
     autoWidth: false,
@@ -186,7 +186,7 @@ $(function() {
       url: BASE_URL + 'anggota/pinjaman/up_form',
       data: 'rowid=' + rowid,
       success: function(data) {
-        $('#fetched-data-uploadBT').html(data); //menampilkan data ke dalam modal
+        $('#fetched-data-uploadBT').html(data);
       }
     });
   });
@@ -198,7 +198,7 @@ $(function() {
       url: BASE_URL + 'anggota/pinjaman/lunasi_pinjaman',
       data: 'rowid=' + rowid,
       success: function(data) {
-        $('#fetched-data-lunasiPinjaman').html(data); //menampilkan data ke dalam modal
+        $('#fetched-data-lunasiPinjaman').html(data);
       }
     });
   });
@@ -210,9 +210,58 @@ $(function() {
       url: BASE_URL + 'anggota/pinjaman/detail_tolak',
       data: 'rowid=' + rowid,
       success: function(data) {
-        $('#fetched-data-detailTolak').html(data); //menampilkan data ke dalam modal
+        $('#fetched-data-detailTolak').html(data);
       }
     });
   });
-}); 
+
+  $('#addPengajuan').on('show.bs.modal', function(e) {
+    var id = 1;
+    
+    $.ajax({
+      type: 'POST',
+      url: BASE_URL + 'anggota/pinjaman/add_pengajuan',
+      data: 'id=' + id,
+      success: function(data) {
+        $('#fetched-data-addPengajuan').html(data);
+      }
+    });
+  })
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  var myModal = document.getElementById('addPengajuan');
+  myModal.addEventListener('shown.bs.modal', function () {
+    const nominalInput = document.getElementById('nominal');
+    const previewNominal = document.getElementById('preview_nominal');
+
+    if (nominalInput) {
+      // fungsi untuk update preview
+      function updatePreview() {
+        // Ambil angka aja (buang selain digit)
+        const raw = nominalInput.value.replace(/[^\d]/g, "");
+
+        if (raw) {
+          // parse ke integer
+          const num = parseInt(raw, 10);
+
+          // format ribuan tanpa desimal
+          const formatted = new Intl.NumberFormat("id-ID", {
+            maximumFractionDigits: 0
+          }).format(num);
+
+          previewNominal.textContent = `Nominal Rp. ${formatted}`;
+        } else {
+          previewNominal.textContent = "";
+        }
+      }
+
+      // update setiap user ketik
+      nominalInput.addEventListener('input', updatePreview);
+
+      // 🔥 inisialisasi awal pakai value dari DB
+      updatePreview();
+    }
+  });
+});
 

@@ -860,6 +860,19 @@ class Pinjaman extends BaseController
 			echo view('anggota/pinjaman/part-pinj-mod-tolak', $data);
 		}
 	}
+	
+	public function add_pengajuan()
+	{
+		if ($_POST['id']) {
+			$id = $_POST['id'];
+			
+			$data = [
+				'duser' => $this->account
+			];
+
+			echo view('anggota/pinjaman/part-pinj-mod-add', $data);
+		}
+	}
 
 	public function top_up()
 	{
@@ -918,38 +931,38 @@ class Pinjaman extends BaseController
         return $this->response->setJSON($response);
 	}
 
-    public function riwayat_penolakan()
-    {
-        $request = service('request');
-        $model = new M_pinjaman();
+	public function riwayat_penolakan()
+	{
+		$request = service('request');
+		$model = new M_pinjaman();
 
-        // Parameters from the DataTable
-        $start = $request->getPost('start') ?? 0;
-        $length = $request->getPost('length') ?? 10;
-        $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value'];
+		// Parameters from the DataTable
+		$start = $request->getPost('start') ?? 0;
+		$length = $request->getPost('length') ?? 10;
+		$draw = $request->getPost('draw');
+		$searchValue = $request->getPost('search')['value'];
 
-        // Fetch data from the model using $start and $length
-        $model->where('idanggota', $this->account->iduser);
-        $model->where('status', 0);
-        $data = $model->asArray()->findAll($length, $start);
+		// Fetch data from the model using $start and $length
+		$model->where('idanggota', $this->account->iduser);
+		$model->where('status', 0);
+		$data = $model->asArray()->findAll($length, $start);
 
-        // Total records (you can also use $model->countAll() for exact total)
-        $model->where('idanggota', $this->account->iduser);
-        $recordsTotal = $model->countAllResults();
+		// Total records (you can also use $model->countAll() for exact total)
+		$model->where('idanggota', $this->account->iduser);
+		$recordsTotal = $model->countAllResults();
 
-        // Records after filtering (if any)
-        $model->where('idanggota', $this->account->iduser);
-        $recordsFiltered = $model->countAllResults();
+		// Records after filtering (if any)
+		$model->where('idanggota', $this->account->iduser);
+		$recordsFiltered = $model->countAllResults();
 
-        // Prepare the response in the DataTable format
-        $response = [
-            'draw' => $draw,
-            'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsFiltered,
-            'data' => $data
-        ];
+		// Prepare the response in the DataTable format
+		$response = [
+				'draw' => $draw,
+				'recordsTotal' => $recordsTotal,
+				'recordsFiltered' => $recordsFiltered,
+				'data' => $data
+		];
 
-        return $this->response->setJSON($response);
-    }
+		return $this->response->setJSON($response);
+	}
 }

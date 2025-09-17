@@ -281,6 +281,7 @@ $routes->group('anggota', static function ($routes)
         $routes->post('up_form', 'Anggota\Pinjaman::up_form');
         $routes->post('lunasi_pinjaman', 'Anggota\Pinjaman::lunasi_pinjaman');
         $routes->post('detail_tolak', 'Anggota\Pinjaman::detail_tolak');
+        $routes->post('add_pengajuan', 'Anggota\Pinjaman::add_pengajuan');
         $routes->post('top-up', 'Anggota\Pinjaman::top_up');
 
         $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
