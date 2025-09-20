@@ -143,10 +143,12 @@ class Pinjaman extends BaseController
 		$cek_cicilan_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser)[0]->hitung;
 		$cek_cicilan = $this->request->getPost('angsuran_bulanan');
 		$satuan_waktu = $this->request->getPost('satuan_waktu');
+		
 		$cek_pegawai = $this->m_user->where('iduser', $this->account->iduser)
-									->get()
-									->getResult()[0]
-									->status_pegawai;
+			->get()
+			->getResult()[0]
+			->status_pegawai;
+
 		if($cek_pegawai == 'tetap'){
 			$batas_bulanan = 24;
 			$batas_nominal = 50000000;
@@ -156,6 +158,40 @@ class Pinjaman extends BaseController
 		}
 
 		$dataset = [];
+		$param_minimal_bulan = $this->m_param
+				->where('idparameter', 10)
+				->get()
+				->getResult()[0]->nilai;
+
+		$pegawai_created_date = $this->m_user
+				->where('iduser', $this->account->iduser)
+				->get()
+				->getResult()[0]->created;
+
+		// Buat object DateTime
+		$date_created = new \DateTime($pegawai_created_date);
+		$date_now = new \DateTime();
+
+		// Hitung selisih
+		$diff = $date_created->diff($date_now);
+
+		// Selisih bulan total (tahun * 12 + bulan)
+		$selisih_bulan = ($diff->y * 12) + $diff->m;
+
+		if ($selisih_bulan < $param_minimal_bulan) {
+				$alert = view(
+						'partials/notification-alert',
+						[
+								'notif_text' => 'Tidak dapat mengajukan pinjaman: Pengajuan Pinjaman baru bisa dilakukan setelah '.$param_minimal_bulan.' bulan dari tanggal bergabung',
+								'status' => 'danger'
+						]
+				);
+
+				$dataset += ['notif' => $alert];
+				session()->setFlashdata($dataset);
+				return redirect()->back();
+		}
+
 		if ($cek_cicilan_aktif != 0) {
 			$alert = view(
 				'partials/notification-alert', 
