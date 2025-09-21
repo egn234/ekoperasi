@@ -116,4 +116,59 @@ class login extends Controller
 		return redirect()->to('/');
 	}
 
+	public function forgot_password()
+	{
+		$data = [
+			'title_meta' => view('partials/title-meta', ['title' => 'Lupa Password'])
+		];
+		return view('forgot-password', $data);
+	}
+
+	public function reset_password()
+	{
+		$username = request()->getPost('username');
+		$cek_username = $this->m_user->countUsername($username)[0]->hitung;
+
+		if ($cek_username != 0) {
+			// generate random hash password
+			$temp_plain = bin2hex(random_bytes(6)); // example: "4f3a9b7c2d1e"
+
+			// add password temp
+			$dataset = [
+				'temp_password_hash' =>  $temp_plain,
+				'temp_password_expires_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
+				'must_reset_password'	=> 1
+			];
+
+			$this->m_user->updateUserByUsername($username, $dataset);
+		} else {
+			$alert = view(
+				'partials/notification-alert', 
+				[
+					'notif_text' => 'Username tidak ditemukan',
+				 	'status' => 'danger'
+				]
+			);
+			
+			session()->setFlashdata('notif', $alert);
+			return redirect()->back();
+		}
+
+		$alert = view(
+			'partials/notification-alert', 
+			[
+				'notif_text' => 'Permintaan reset password berhasil dikirim',
+			 	'status' => 'success'
+			]
+		);
+		
+		$data_session = [
+			'username' => request()->getPost('username'),
+			'notif' => $alert
+		];
+
+		session()->setFlashdata($data_session);
+		return redirect()->back();
+	}
+
 }

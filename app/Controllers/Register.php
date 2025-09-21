@@ -274,7 +274,7 @@ class register extends Controller
 			}
 			
 			// Validate File Size
-			if ($img->getSizeByUnit('kb') > $maxSize) {
+			if ($img->getSize() / 1024 > $maxSize) {
 				$alert = view(
 					'partials/notification-alert', 
 					[
@@ -294,7 +294,7 @@ class register extends Controller
 				return redirect()->to('registrasi');
 			}
 
-			if ($img->getSizeByUnit('kb') < $minSize) {
+			if ($img->getSize() / 1024 < $minSize) {
 				$alert = view(
 					'partials/notification-alert', 
 					[
