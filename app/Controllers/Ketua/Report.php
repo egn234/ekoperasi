@@ -26,7 +26,7 @@ class Report extends Controller
     {
         $this->m_user = model(M_user::class);
         $this->notification = new Notifications();
-        $this->account = $this->m_user->getUserById(session()->get('iduser'));
+        $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
 
     public function index()

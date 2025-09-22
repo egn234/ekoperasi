@@ -93,36 +93,36 @@
             <?php endif; ?>
           </div>
         </div>
-<style>
-  .notif-dropdown .notif-scroll {
-    max-height: 350px;
-    overflow-y: auto;
-    min-width: 340px;
-  }
-  .notif-dropdown .notif-item-row {
-    transition: background 0.2s, box-shadow 0.2s;
-    border-bottom: 1px solid #f1f1f1;
-    cursor: pointer;
-  }
-  .notif-dropdown .notif-unread .notif-item-row {
-    background: #f0f6ff;
-    border-left: 4px solid #0d6efd;
-  }
-  .notif-dropdown .notif-read .notif-item-row {
-    color: #6c757d;
-    background: #fff;
-    opacity: 0.92;
-  }
-  .notif-dropdown .notif-item-row:hover {
-    background: #e9f2ff;
-    box-shadow: 0 2px 8px rgba(13,110,253,0.08);
-    z-index: 2;
-  }
-  .notif-dropdown .badge {
-    font-size: 0.75em;
-    vertical-align: middle;
-  }
-</style>
+        <style>
+          .notif-dropdown .notif-scroll {
+            max-height: 350px;
+            overflow-y: auto;
+            min-width: 340px;
+          }
+          .notif-dropdown .notif-item-row {
+            transition: background 0.2s, box-shadow 0.2s;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer;
+          }
+          .notif-dropdown .notif-unread .notif-item-row {
+            background: #f0f6ff;
+            border-left: 4px solid #0d6efd;
+          }
+          .notif-dropdown .notif-read .notif-item-row {
+            color: #6c757d;
+            background: #fff;
+            opacity: 0.92;
+          }
+          .notif-dropdown .notif-item-row:hover {
+            background: #e9f2ff;
+            box-shadow: 0 2px 8px rgba(13,110,253,0.08);
+            z-index: 2;
+          }
+          .notif-dropdown .badge {
+            font-size: 0.75em;
+            vertical-align: middle;
+          }
+        </style>
       </div>
 
       <div class="dropdown d-none d-sm-inline-block">

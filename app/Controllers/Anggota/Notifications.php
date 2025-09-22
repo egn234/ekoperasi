@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers\Anggota;
 
-use APp\Controllers\BaseController;
+use App\Controllers\BaseController;
 
 use App\Models\M_user;
 use App\Models\M_notification;

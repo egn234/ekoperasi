@@ -312,7 +312,7 @@ class test_field extends BaseController
             }
 
             # THIS IS FROM MD5 ALGORITHM FIRST!! MAKE SURE TO USE MD5 BEFORE HASH CHECK!!
-            $hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
+            // $hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
             
             $dataset = [
                 'nip' => $encrypted_nip,
@@ -320,7 +320,7 @@ class test_field extends BaseController
                 'no_rek' => $encrypted_no_rek,
                 'nomor_telepon' => $encrypted_nomor_telepon,
                 'alamat' => $encrypted_alamat,
-                'pass' => $hashed_password
+                // 'pass' => $hashed_password
             ];
 
             $this->m_user->updateUser($user->iduser, $dataset);
@@ -376,6 +376,8 @@ class test_field extends BaseController
             
             $this->m_user->updateUser($user->iduser, $dataset);
         }
+        
+        echo "success";
     }
 
     public function gen_report($secret = false)

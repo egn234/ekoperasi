@@ -15,7 +15,7 @@ $routes->set404Override();
 $routes->get('/', 'Login::index');
 
 //for testing db only, uncomment this route
-// $routes->group('test', static function ($routes){
+$routes->group('test', static function ($routes){
     // $routes->add('generate-monthly/(:any)', 'Test_field::gen_report/$1');
     // $routes->get('/', 'Test_field::index');
     // $routes->get('test_cicilan', 'Test_field::insert_cicilan');
@@ -26,9 +26,9 @@ $routes->get('/', 'Login::index');
     // $routes->get('gen_wajib', 'Test_field::gen_wajib');
 
     # INI BUAT KONVERSI DATA SENSITIF BUAT SEMUA DATABASE, AKTIFKAN SEKALI SAJA
-    // $routes->get('encode-data', 'Test_field::convert_sensitive_data');
-    // $routes->get('decode-data', 'Test_field::encryption_meth_decode');
-// });
+    $routes->get('encode-data', 'Test_field::convert_sensitive_data');
+    $routes->get('decode-data', 'Test_field::encryption_meth_decode');
+});
 
 $routes->get('registrasi', 'Register::index');
 

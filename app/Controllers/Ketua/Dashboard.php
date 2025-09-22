@@ -1,7 +1,7 @@
 <?php 
 namespace App\Controllers\Ketua;
 
-use App\Controllers\BaseController;
+use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_deposit;
@@ -10,7 +10,7 @@ use App\Models\M_pinjaman;
 
 use App\Controllers\Ketua\Notifications;
 
-class Dashboard extends BaseController
+class Dashboard extends Controller
 {
     protected $m_user, $m_deposit, $m_monthly_report, $m_pinjaman;
     protected $notification;
