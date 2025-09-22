@@ -13,566 +13,615 @@ use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
 class test_field extends BaseController
 {
-	private $m_user;
-	protected $m_pinjaman;
-	protected $m_cicilan;
-	protected $m_monthly_report;
-	protected $m_param;
-	protected $m_param_manasuka;
-
-	function __construct()
-	{
-		$this->m_user = new M_user();
-		$this->m_pinjaman = new M_pinjaman();
-		$this->m_cicilan = new M_cicilan();
-		$this->m_monthly_report = new M_monthly_report();
-		$this->m_param = new M_param();
-		$this->m_param_manasuka = new M_param_manasuka();
-	}
-
-	public function index()
-	{
-		$list_anggota = $this->m_user->where('flag', '1')
-									 ->where('idgroup', 4)
-									 ->get()
-									 ->getResult();
-
-		echo "<pre>";
-		foreach ($list_anggota as $a){
-			$param_manasuka = $this->m_param_manasuka->where('idanggota', $a->iduser)->get()->getResult();
-			foreach($param_manasuka as $pm){
-				$data_manasuka = [
-					'jenis_pengajuan' => 'penyimpanan',
-					'jenis_deposit' => 'manasuka',
-					'cash_in' => $pm->nilai,
-					'cash_out' => 0,
-					'deskripsi' => 'Diambil dari potongan gaji bulanan',
-					'status' => 'diterima',
-					'date_created' => date('Y-m-d H:i:s'),
-					'idanggota' => $a->iduser,
-					'idadmin' => $a->iduser
-				];	
-			}
-			print_r($data_manasuka);
-		}
-
-		$date_monthly = '2024-09';
-		$getDay = $this->m_monthly_report->select('DAY(created) AS day')
-				->where('date_monthly', $date_monthly)
-				->get()
-				->getResult()[0]->day;
-
-		$endDate = $date_monthly.'-'.($getDay+1);
-		$startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
-
-		echo $endDate;
-		echo $startDate;
-
-		echo "</pre>";
-	}
-
-	public function insert_cicilan()
-	{
-		$pin = $this->m_pinjaman->where('idpinjaman', 5)->get()->getResult()[0];
-		$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
-		$provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
-
-		for ($i=0; $i < 10; $i++) {
-			$dataset_cicilan = [
-				'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
-				'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
-				'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$provisi))/$pin->angsuran_bulanan,
-				'date_created' => date('Y-m-d H:i:s'),
-				'idpinjaman' => $pin->idpinjaman
-			];
-	
-			$this->m_cicilan->insertCicilan($dataset_cicilan);
-			$provisi = 0;
-		}
-
-		return redirect()->back();
-	}
-
-	public function gen_sisa_cicilan()
-	{
-		$YEAR = date('Y');
-		$MONTH = date('m');
-
-		// $setDay = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai+1;
-		// $endDate = date('Y-m-').$setDay;
-		// $startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
-
-		$startDate = $this->m_monthly_report->where('idreportm', 3)->get()->getResult()[0]->created;
-		$endDate = date('Y-m-d H:i:s');
-		// echo "Start: ".$startDate.", End: ".$endDate;
-
-		$list_anggota = $this->m_user->where('flag', '1')
-									 ->where('idgroup', 4)
-									 ->get()
-									 ->getResult();
-
-		//LOOPING LIST ANGGOTA
-		foreach ($list_anggota as $a){
-									 
-			//PENGECEKAN PINJAMAN
-			$cek_pinjaman = $this->m_pinjaman->where('status', 4)
-												->where('idanggota', $a->iduser)
-												->countAllResults();
-			if ($cek_pinjaman != 0) {
-				
-				$pinjaman = $this->m_pinjaman->where('status', 4)
-												->where('idanggota', $a->iduser)
-												->orderBy('date_updated', 'DESC')
-												->get()
-												->getResult();
-				//LOOP PINJAMAN
-				foreach($pinjaman as $pin){
-
-					//CEK VALIDASI CICILAN BULAN INI
-					$validasi_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
-														->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
-														->countAllResults();
-					if ($validasi_cicilan == 0) {
-						//CEK CICILAN
-						$cek_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
-														->countAllResults();
-						if ($cek_cicilan == 0) {
-
-							$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
-							$provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
-
-							$dataset_cicilan = [
-								'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
-								'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
-								'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$provisi))/$pin->angsuran_bulanan,
-								'date_created' => date('Y-m-d H:i:s'),
-								'idpinjaman' => $pin->idpinjaman
-							];
-
-							$this->m_cicilan->insertCicilan($dataset_cicilan);
-							
-						}elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
-
-							$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
-
-							$dataset_cicilan = [
-								'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
-								'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
-								'date_created' => date('Y-m-d H:i:s'),
-								'idpinjaman' => $pin->idpinjaman
-							];
-
-							$this->m_cicilan->insertCicilan($dataset_cicilan);
-
-							$status_pinjaman = ['status' => 5];
-							$this->m_pinjaman->updatePinjaman($pin->idpinjaman, $status_pinjaman);
-
-						}elseif ($cek_cicilan != 0 && $cek_cicilan < $pin->angsuran_bulanan) {
-
-							$bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
-
-							$dataset_cicilan = [
-								'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
-								'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
-								'date_created' => date('Y-m-d H:i:s'),
-								'idpinjaman' => $pin->idpinjaman
-							];
-
-							$this->m_cicilan->insertCicilan($dataset_cicilan);
-						}
-					}
-				}
-			}
-		}
-
-		echo "success";
-	}
-	
-	public function test_db()
-	{
-		try {
-			$db = \Config\Database::connect();
-			$builder = $db->table('tb_user');
-			$query = $builder->get(1);
-			$results = $query->getResult();
-			if ($results) {
-				echo "success";
-			}
-		} catch (\Exception $e) {
-			echo $e->getMessage();
-		}
-	}
-
-	public function encryption_meth()
-	{
-		$config = new \Config\Encryption();
-		$encrypter = \Config\Services::encrypter($config);
-		
-		$users = $this->m_user->getAllUser();
-
-		foreach ($users as $user) {
-			// echo "<pre>";
-			// echo $user->nip . "<br>";
-			// echo $user->nik . "<br>";
-			// echo $user->no_rek . "<br>";
-			// echo "</pre>";
-			// Increase execution time and memory limit
-			ini_set('max_execution_time', 600); // 10 minutes
-			ini_set('memory_limit', '512M'); // 512MB
-
-			if ($user->nip != null) {
-				$decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
-			} else {
-				$decrypted_nip = null;
-			}
-	
-			if ($user->nik != null) {
-				$decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
-			} else {	
-				$decrypted_nik = null;
-			}
-	
-			if ($user->no_rek != null) {
-				$decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
-			} else {
-				$decrypted_no_rek = null;
-			}
-	
-			if ($user->alamat != null) {
-				$decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
-			} else {
-				$decrypted_alamat = null;
-			}
-	
-			if ($user->nomor_telepon != null) {
-				$decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
-			} else {
-				$decrypted_nomor_telepon = null;
-			}
-
-			if (password_verify(md5('admingiat123'), $user->pass)) {
-				echo "success";
-			} else{
-				echo "failed";
-			}
-			
-			echo "<br>";
-			echo $decrypted_nip. "<br>";
-			echo $decrypted_nik. "<br>";
-			echo $decrypted_no_rek . "<br>";
-			echo $decrypted_alamat . "<br>";
-			echo $decrypted_nomor_telepon . "<br>";
-			echo $user->pass;
-		}
-	}
-
-	public function binary_search()
-	{
-		$nik = (string) "6ijaGegAhgSc6mEIJccOOsVz9+rslOw7hQrwsPSxO4TBxZAb5XsbXirryWK7+8g+NI+ECvTEed9ASoh1DshCnOawJnWBIVpgjnh73iv3Q5RUOuF1zyTzP5G4YYlLryjA";
-		$cek_nik = $this->m_user->select('nik')->where('nik = "'. $nik.'"')->get()->getResult();
-
-		print_r($cek_nik);
-	}
-
-	public function convert_sensitive_data()
-	{
-		// Increase execution time and memory limit
-		ini_set('max_execution_time', 600); // 10 minutes
-		ini_set('memory_limit', '512M'); // 512MB
-
-		$config = new \Config\Encryption();
-		$encrypter = \Config\Services::encrypter($config);
-		$users = $this->m_user->getAllUser();
-
-		foreach ($users as $user) {
-			if ($user->nip != null) {
-				$encrypted_nip = base64_encode($encrypter->encrypt($user->nip));
-			} else {
-				$encrypted_nip = null;
-			}
-
-			if ($user->nik != null) {
-				$encrypted_nik = base64_encode($encrypter->encrypt($user->nik));
-			} else {
-				$encrypted_nik = null;
-			}
-
-			if ($user->no_rek != null){
-				$encrypted_no_rek = base64_encode($encrypter->encrypt($user->no_rek));
-			} else {
-				$encrypted_no_rek = null;
-			}
-
-			if ($user->nomor_telepon != null) {
-				$encrypted_nomor_telepon = base64_encode($encrypter->encrypt($user->nomor_telepon));
-			} else {
-				$encrypted_nomor_telepon = null;
-			}
-
-			if ($user->alamat != null) {
-				$encrypted_alamat = base64_encode($encrypter->encrypt($user->alamat));
-			} else {
-				$encrypted_alamat = null;
-			}
-
-			# THIS IS FROM MD5 ALGORITHM FIRST!! MAKE SURE TO USE MD5 BEFORE HASH CHECK!!
-			$hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
-			
-			$dataset = [
-				'nip' => $encrypted_nip,
-				'nik' => $encrypted_nik,
-				'no_rek' => $encrypted_no_rek,
-				'nomor_telepon' => $encrypted_nomor_telepon,
-				'alamat' => $encrypted_alamat,
-				'pass' => $hashed_password
-			];
-
-			$this->m_user->updateUser($user->iduser, $dataset);
-		}
-		
-		echo "success";
-	}
-
-	public function gen_report($secret = false)
-	{
-		if ($secret != getenv('ENCRYPTION_KEY')) {
-			log_message('error', "Access denied");
-			return;
-		}
-
-		$m_monthly_report = model(M_monthly_report::class);
-		$m_user = model(M_user::class);
-		$m_param = model(M_param::class);
-
-		// 1. ambil konfigurasi awal
-		$YEAR = date('Y');
-		$MONTH = date('m');
-		$startDate = $m_monthly_report->orderBy('idreportm', 'DESC')->get(1)->getResult()[0]->created;
-		$endDate = date('Y-m-d H:i:s');
-		$params = $this->fetchParams($m_param);
-
-		// 2. ambil semua anggota aktif
-		$list_anggota = $m_user->where('flag', '1')->where('idgroup', 4)->get()->getResult();
-
-		$logReport = $m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
-
-		if ($logReport == 0 || !$logReport){
-
-			// 3. Proses User Baru
-			$this->handleNewUsers($startDate, $endDate);
-
-			// 4. Proses Simpanan dan Pinjaman User
-			foreach ($list_anggota as $a){
-				$this->processPokok($a->iduser, $params['pokok']);
-				$this->processWajib($a->iduser, $params['wajib'], $startDate, $endDate);
-				$this->processManasuka($a->iduser);
-				$this->processPinjaman($a->iduser, $params['bunga'], $params['provisi'], $startDate, $endDate);
-			}
-			
-			// 5. Buat Log Report
-			$monthly_log = [
-				'date_monthly' => $YEAR.'-'.$MONTH,
-				'flag' => 1
-			];
-
-			$m_monthly_report->insert($monthly_log);
-			
-		} else {
-			log_message('error', 'Monthly Report already exist');
-			return;
-		}
-
-		log_message('info', 'Monthly Report Generated');
-		return;	
-	}
-
-	private function fetchParams($m_param)
-	{
-		return [
-			'pokok' => $m_param->where('idparameter', 1)->get()->getResult()[0]->nilai,
-			'wajib' => $m_param->where('idparameter', 2)->get()->getResult()[0]->nilai,
-			'bunga' => $m_param->where('idparameter', 9)->get()->getResult()[0]->nilai / 100,
-			'provisi' => $m_param->where('idparameter', 5)->get()->getResult()[0]->nilai / 100,
-		];
-	}
-
-	private function handleNewUsers($startDate, $endDate)
-	{
-		$m_deposit = model(M_deposit::class);
-
-		//UPDATE STATUS POKOK UNTUK SEMUA ANGGOTA BARU BULAN INI
-		$m_deposit->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
-			->where('status', 'diproses')
-			->where('jenis_deposit', 'pokok')
-			->where('deskripsi', 'biaya awal registrasi')
-			->where('idanggota IN (SELECT iduser FROM tb_user WHERE flag = 1)')
-			->set('status', 'diterima')
-			->set('idadmin', 1)
-			->update();
-
-		//UPDATE STATUS WAJIB UNTUK SEMUA ANGGOTA BARU BULAN INI
-		$m_deposit->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
-			->where('status', 'diproses')
-			->where('jenis_deposit', 'wajib')
-			->where('deskripsi', 'biaya awal registrasi')
-			->where('idanggota IN (SELECT iduser FROM tb_user WHERE flag = 1)')
-			->set('status', 'diterima')
-			->set('idadmin', 1)
-			->update();
-
-		// echo "New users processed <br>";
-	}
-
-	private function processPokok($idUser, $paramPokok)
-	{
-		$m_deposit = model(M_deposit::class);
-		$queryPokok = "(deskripsi='biaya awal registrasi' OR deskripsi='saldo pokok')";
-
-		$cekPokok = $m_deposit->where('jenis_deposit', 'pokok')
-			->where('idanggota', $idUser)
-			->where($queryPokok)
-			->countAllResults();
-		
-		if ($cekPokok == 0)
-		{
-			$data_pokok = [
-				'jenis_pengajuan' => 'penyimpanan',
-				'jenis_deposit' => 'pokok',
-				'cash_in' => $paramPokok,
-				'cash_out' => 0,
-				'deskripsi' => 'biaya awal registrasi',
-				'status' => 'diterima',
-				'date_created' => date('Y-m-d H:i:s'),
-				'idanggota' => $idUser,
-				'idadmin' => 1
-			];
-
-			$m_deposit->insertDeposit($data_pokok);
-			// echo "New pokok processed for user ".$idUser."<br>";
-		}	
-	}
-
-	private function processWajib($idUser, $paramWajib, $startDate, $endDate)
-	{
-		$m_deposit = model(M_deposit::class);
-		$cekWajib = $m_deposit->where('jenis_deposit', 'wajib')
-			->where('idanggota', $idUser)
-			->where('date_created >', $startDate)
-			->where('date_created <=', $endDate)
-			->countAllResults();
-
-		if ($cekWajib == 0)
-		{
-			$dataWajib = [
-				'jenis_pengajuan' => 'penyimpanan',
-				'jenis_deposit' => 'wajib',
-				'cash_in' => $paramWajib,
-				'cash_out' => 0,
-				'deskripsi' => 'Diambil dari potongan gaji bulanan',
-				'status' => 'diterima',
-				'date_created' => date('Y-m-d H:i:s'),
-				'idanggota' => $idUser,
-				'idadmin' => 1
-			];
-
-			$m_deposit->insertDeposit($dataWajib);
-			// echo "New simpanan wajib processed for user ".$idUser."<br>";
-		}
-	}
-
-	private function processManasuka($idUser)
-	{
-		$m_deposit = model(M_deposit::class);
-		$m_user = model(M_user::class);
-		$m_param_manasuka = model(M_param_manasuka::class);
-	
-		// Ambil parameter manasuka untuk anggota
-		$param_manasuka = $m_param_manasuka->where('idanggota', $idUser)->get(1)->getRow();
-	
-		// Validasi parameter
-		if (!$param_manasuka) {
-			$user = $m_user->getUserById($idUser)[0];
-			log_message('error', "Param manasuka tidak ditemukan untuk anggota: $user->username");
-			return;
-		}
-	
-		$data_manasuka = [
-			'jenis_pengajuan' => 'penyimpanan',
-			'jenis_deposit' => 'manasuka',
-			'cash_in' => $param_manasuka->nilai,
-			'cash_out' => 0,
-			'deskripsi' => 'Diambil dari potongan gaji bulanan',
-			'status' => 'diterima',
-			'date_created' => date('Y-m-d H:i:s'),
-			'idanggota' => $idUser,
-			'idadmin' => 1
-		];
-	
-		$result = $m_deposit->insertDeposit($data_manasuka);
-		// echo "New manasuka processed for user ".$idUser."<br>";
-
-		if (!$result) {
-			$user = $m_user->getUserById($idUser)[0];
-			log_message('error', "Gagal menyimpan manasuka untuk anggota: $user->username");
-		}
-	}
-
-	private function processPinjaman($idUser, $paramBunga, $paramProvisi, $startDate, $endDate)
-	{
-		$m_pinjaman = model(M_pinjaman::class);
-		$m_cicilan = model(M_cicilan::class);
-
-		$cek_pinjaman = $m_pinjaman->where('status', 4)
-			->where('idanggota', $idUser)
-			->countAllResults();
-
-		if ($cek_pinjaman != 0) {
-			
-			$pinjaman = $m_pinjaman->where('status', 4)
-				->where('idanggota', $idUser)
-				->orderBy('date_updated', 'DESC')
-				->get()
-				->getResult();
-
-			//LOOP PINJAMAN
-			foreach($pinjaman as $pin){
-
-				//CEK VALIDASI CICILAN BULAN INI
-				$validasi_cicilan = $m_cicilan->where('idpinjaman', $pin->idpinjaman)
-					->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
-					->where('tipe_bayar', 'otomatis')
-					->countAllResults();
-
-				if ($validasi_cicilan == 0) {
-					
-					$dataCicilan = [
-						'idpinjaman' => $pin->idpinjaman,
-						'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
-						'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$paramBunga))/$pin->angsuran_bulanan,
-						'date_created' => date('Y-m-d H:i:s'),
-					];
-
-					//CEK CICILAN
-					$cek_cicilan = $m_cicilan->where('idpinjaman', $pin->idpinjaman)->countAllResults();
-
-					if ($cek_cicilan == 0) {
-
-						$dataCicilan += [
-							'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$paramProvisi))/$pin->angsuran_bulanan
-						];
-						
-					}elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
-
-						$statusPinjaman = ['status' => 5];
-						$m_pinjaman->updatePinjaman($pin->idpinjaman, $statusPinjaman);
-						// echo "Cicilan for pinjaman ".$pin->idpinjaman." lunas for user ".$idUser."<br>";
-
-					}
-
-					$m_cicilan->insertCicilan($dataCicilan);
-					// echo "New cicilan processed for pinjaman ".$pin->idpinjaman." at user ".$idUser."<br>";
-				}
-			}
-		}
-	}
+    private $m_user;
+    protected $m_pinjaman;
+    protected $m_cicilan;
+    protected $m_monthly_report;
+    protected $m_param;
+    protected $m_param_manasuka;
+
+    function __construct()
+    {
+        $this->m_user = new M_user();
+        $this->m_pinjaman = new M_pinjaman();
+        $this->m_cicilan = new M_cicilan();
+        $this->m_monthly_report = new M_monthly_report();
+        $this->m_param = new M_param();
+        $this->m_param_manasuka = new M_param_manasuka();
+    }
+
+    public function index()
+    {
+        $list_anggota = $this->m_user->where('flag', '1')
+                                     ->where('idgroup', 4)
+                                     ->get()
+                                     ->getResult();
+
+        echo "<pre>";
+        foreach ($list_anggota as $a){
+            $param_manasuka = $this->m_param_manasuka->where('idanggota', $a->iduser)->get()->getResult();
+            foreach($param_manasuka as $pm){
+                $data_manasuka = [
+                    'jenis_pengajuan' => 'penyimpanan',
+                    'jenis_deposit' => 'manasuka',
+                    'cash_in' => $pm->nilai,
+                    'cash_out' => 0,
+                    'deskripsi' => 'Diambil dari potongan gaji bulanan',
+                    'status' => 'diterima',
+                    'date_created' => date('Y-m-d H:i:s'),
+                    'idanggota' => $a->iduser,
+                    'idadmin' => $a->iduser
+                ];	
+            }
+            print_r($data_manasuka);
+        }
+
+        $date_monthly = '2024-09';
+        $getDay = $this->m_monthly_report->select('DAY(created) AS day')
+                ->where('date_monthly', $date_monthly)
+                ->get()
+                ->getResult()[0]->day;
+
+        $endDate = $date_monthly.'-'.($getDay+1);
+        $startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
+
+        echo $endDate;
+        echo $startDate;
+
+        echo "</pre>";
+    }
+
+    public function insert_cicilan()
+    {
+        $pin = $this->m_pinjaman->where('idpinjaman', 5)->get()->getResult()[0];
+        $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+        $provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
+
+        for ($i=0; $i < 10; $i++) {
+            $dataset_cicilan = [
+                'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
+                'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$provisi))/$pin->angsuran_bulanan,
+                'date_created' => date('Y-m-d H:i:s'),
+                'idpinjaman' => $pin->idpinjaman
+            ];
+    
+            $this->m_cicilan->insertCicilan($dataset_cicilan);
+            $provisi = 0;
+        }
+
+        return redirect()->back();
+    }
+
+    public function gen_sisa_cicilan()
+    {
+        $YEAR = date('Y');
+        $MONTH = date('m');
+
+        // $setDay = $this->m_param->where('idparameter', 8)->get()->getResult()[0]->nilai+1;
+        // $endDate = date('Y-m-').$setDay;
+        // $startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
+
+        $startDate = $this->m_monthly_report->where('idreportm', 3)->get()->getResult()[0]->created;
+        $endDate = date('Y-m-d H:i:s');
+        // echo "Start: ".$startDate.", End: ".$endDate;
+
+        $list_anggota = $this->m_user->where('flag', '1')
+                                     ->where('idgroup', 4)
+                                     ->get()
+                                     ->getResult();
+
+        //LOOPING LIST ANGGOTA
+        foreach ($list_anggota as $a){
+                                     
+            //PENGECEKAN PINJAMAN
+            $cek_pinjaman = $this->m_pinjaman->where('status', 4)
+                                                ->where('idanggota', $a->iduser)
+                                                ->countAllResults();
+            if ($cek_pinjaman != 0) {
+                
+                $pinjaman = $this->m_pinjaman->where('status', 4)
+                                                ->where('idanggota', $a->iduser)
+                                                ->orderBy('date_updated', 'DESC')
+                                                ->get()
+                                                ->getResult();
+                //LOOP PINJAMAN
+                foreach($pinjaman as $pin){
+
+                    //CEK VALIDASI CICILAN BULAN INI
+                    $validasi_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
+                                                        ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+                                                        ->countAllResults();
+                    if ($validasi_cicilan == 0) {
+                        //CEK CICILAN
+                        $cek_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
+                                                        ->countAllResults();
+                        if ($cek_cicilan == 0) {
+
+                            $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+                            $provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
+
+                            $dataset_cicilan = [
+                                'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                                'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
+                                'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$provisi))/$pin->angsuran_bulanan,
+                                'date_created' => date('Y-m-d H:i:s'),
+                                'idpinjaman' => $pin->idpinjaman
+                            ];
+
+                            $this->m_cicilan->insertCicilan($dataset_cicilan);
+                            
+                        }elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
+
+                            $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+
+                            $dataset_cicilan = [
+                                'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                                'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
+                                'date_created' => date('Y-m-d H:i:s'),
+                                'idpinjaman' => $pin->idpinjaman
+                            ];
+
+                            $this->m_cicilan->insertCicilan($dataset_cicilan);
+
+                            $status_pinjaman = ['status' => 5];
+                            $this->m_pinjaman->updatePinjaman($pin->idpinjaman, $status_pinjaman);
+
+                        }elseif ($cek_cicilan != 0 && $cek_cicilan < $pin->angsuran_bulanan) {
+
+                            $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
+
+                            $dataset_cicilan = [
+                                'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                                'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$bunga))/$pin->angsuran_bulanan,
+                                'date_created' => date('Y-m-d H:i:s'),
+                                'idpinjaman' => $pin->idpinjaman
+                            ];
+
+                            $this->m_cicilan->insertCicilan($dataset_cicilan);
+                        }
+                    }
+                }
+            }
+        }
+
+        echo "success";
+    }
+    
+    public function test_db()
+    {
+        try {
+            $db = \Config\Database::connect();
+            $builder = $db->table('tb_user');
+            $query = $builder->get(1);
+            $results = $query->getResult();
+            if ($results) {
+                echo "success";
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function encryption_meth()
+    {
+        $config = new \Config\Encryption();
+        $encrypter = \Config\Services::encrypter($config);
+        
+        $users = $this->m_user->getAllUser();
+
+        foreach ($users as $user) {
+            // echo "<pre>";
+            // echo $user->nip . "<br>";
+            // echo $user->nik . "<br>";
+            // echo $user->no_rek . "<br>";
+            // echo "</pre>";
+            // Increase execution time and memory limit
+            ini_set('max_execution_time', 600); // 10 minutes
+            ini_set('memory_limit', '512M'); // 512MB
+
+            if ($user->nip != null) {
+                $decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
+            } else {
+                $decrypted_nip = null;
+            }
+    
+            if ($user->nik != null) {
+                $decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
+            } else {	
+                $decrypted_nik = null;
+            }
+    
+            if ($user->no_rek != null) {
+                $decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
+            } else {
+                $decrypted_no_rek = null;
+            }
+    
+            if ($user->alamat != null) {
+                $decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
+            } else {
+                $decrypted_alamat = null;
+            }
+    
+            if ($user->nomor_telepon != null) {
+                $decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
+            } else {
+                $decrypted_nomor_telepon = null;
+            }
+
+            if (password_verify(md5('admingiat123'), $user->pass)) {
+                echo "success";
+            } else{
+                echo "failed";
+            }
+            
+            echo "<br>";
+            echo $decrypted_nip. "<br>";
+            echo $decrypted_nik. "<br>";
+            echo $decrypted_no_rek . "<br>";
+            echo $decrypted_alamat . "<br>";
+            echo $decrypted_nomor_telepon . "<br>";
+            echo $user->pass;
+        }
+    }
+
+    public function binary_search()
+    {
+        $nik = (string) "6ijaGegAhgSc6mEIJccOOsVz9+rslOw7hQrwsPSxO4TBxZAb5XsbXirryWK7+8g+NI+ECvTEed9ASoh1DshCnOawJnWBIVpgjnh73iv3Q5RUOuF1zyTzP5G4YYlLryjA";
+        $cek_nik = $this->m_user->select('nik')->where('nik = "'. $nik.'"')->get()->getResult();
+
+        print_r($cek_nik);
+    }
+
+    public function convert_sensitive_data()
+    {
+        // Increase execution time and memory limit
+        ini_set('max_execution_time', 600); // 10 minutes
+        ini_set('memory_limit', '512M'); // 512MB
+
+        $config = new \Config\Encryption();
+        $encrypter = \Config\Services::encrypter($config);
+        $users = $this->m_user->getAllUser();
+
+        foreach ($users as $user) {
+            if ($user->nip != null) {
+                $encrypted_nip = base64_encode($encrypter->encrypt($user->nip));
+            } else {
+                $encrypted_nip = null;
+            }
+
+            if ($user->nik != null) {
+                $encrypted_nik = base64_encode($encrypter->encrypt($user->nik));
+            } else {
+                $encrypted_nik = null;
+            }
+
+            if ($user->no_rek != null){
+                $encrypted_no_rek = base64_encode($encrypter->encrypt($user->no_rek));
+            } else {
+                $encrypted_no_rek = null;
+            }
+
+            if ($user->nomor_telepon != null) {
+                $encrypted_nomor_telepon = base64_encode($encrypter->encrypt($user->nomor_telepon));
+            } else {
+                $encrypted_nomor_telepon = null;
+            }
+
+            if ($user->alamat != null) {
+                $encrypted_alamat = base64_encode($encrypter->encrypt($user->alamat));
+            } else {
+                $encrypted_alamat = null;
+            }
+
+            # THIS IS FROM MD5 ALGORITHM FIRST!! MAKE SURE TO USE MD5 BEFORE HASH CHECK!!
+            $hashed_password = password_hash($user->pass, PASSWORD_DEFAULT);
+            
+            $dataset = [
+                'nip' => $encrypted_nip,
+                'nik' => $encrypted_nik,
+                'no_rek' => $encrypted_no_rek,
+                'nomor_telepon' => $encrypted_nomor_telepon,
+                'alamat' => $encrypted_alamat,
+                'pass' => $hashed_password
+            ];
+
+            $this->m_user->updateUser($user->iduser, $dataset);
+        }
+        
+        echo "success";
+    }
+    
+    public function encryption_meth_decode() {
+        $config = new \Config\Encryption();
+        $encrypter = \Config\Services::encrypter($config);
+        
+        $users = $this->m_user->getAllUser();
+        
+        foreach ($users as $user) {
+            if ($user->nip != null) {
+                $decrypted_nip = $encrypter->decrypt(base64_decode($user->nip));
+            } else {
+                $decrypted_nip = null;
+            }
+            
+            if ($user->nik != null) {
+                $decrypted_nik = $encrypter->decrypt(base64_decode($user->nik));
+            } else {
+                $decrypted_nik = null;
+            }
+            
+            if ($user->no_rek != null) {
+                $decrypted_no_rek = $encrypter->decrypt(base64_decode($user->no_rek));
+            } else {
+                $decrypted_no_rek = null;
+            }
+            
+            if ($user->nomor_telepon != null) {
+                $decrypted_nomor_telepon = $encrypter->decrypt(base64_decode($user->nomor_telepon));
+            } else {
+                $decrypted_nomor_telepon = null;
+            }
+            
+            if ($user->alamat != null) {
+                $decrypted_alamat = $encrypter->decrypt(base64_decode($user->alamat));
+            } else {
+                $decrypted_alamat = null;
+            }
+            
+            $dataset = [
+                'nip' => $decrypted_nip,
+                'nik' => $decrypted_nik,
+                'no_rek' => $decrypted_no_rek,
+                'nomor_telepon' => $decrypted_nomor_telepon,
+                'alamat' => $decrypted_alamat
+            ];
+            
+            $this->m_user->updateUser($user->iduser, $dataset);
+        }
+    }
+
+    public function gen_report($secret = false)
+    {
+        if ($secret != getenv('ENCRYPTION_KEY')) {
+            log_message('error', "Access denied");
+            return;
+        }
+
+        $m_monthly_report = model(M_monthly_report::class);
+        $m_user = model(M_user::class);
+        $m_param = model(M_param::class);
+
+        // 1. ambil konfigurasi awal
+        $YEAR = date('Y');
+        $MONTH = date('m');
+        $startDate = $m_monthly_report->orderBy('idreportm', 'DESC')->get(1)->getResult()[0]->created;
+        $endDate = date('Y-m-d H:i:s');
+        $params = $this->fetchParams($m_param);
+
+        // 2. ambil semua anggota aktif
+        $list_anggota = $m_user->where('flag', '1')->where('idgroup', 4)->get()->getResult();
+
+        $logReport = $m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
+
+        if ($logReport == 0 || !$logReport){
+
+            // 3. Proses User Baru
+            $this->handleNewUsers($startDate, $endDate);
+
+            // 4. Proses Simpanan dan Pinjaman User
+            foreach ($list_anggota as $a){
+                $this->processPokok($a->iduser, $params['pokok']);
+                $this->processWajib($a->iduser, $params['wajib'], $startDate, $endDate);
+                $this->processManasuka($a->iduser);
+                $this->processPinjaman($a->iduser, $params['bunga'], $params['provisi'], $startDate, $endDate);
+            }
+            
+            // 5. Buat Log Report
+            $monthly_log = [
+                'date_monthly' => $YEAR.'-'.$MONTH,
+                'flag' => 1
+            ];
+
+            $m_monthly_report->insert($monthly_log);
+            
+        } else {
+            log_message('error', 'Monthly Report already exist');
+            return;
+        }
+
+        log_message('info', 'Monthly Report Generated');
+        return;	
+    }
+
+    private function fetchParams($m_param)
+    {
+        return [
+            'pokok' => $m_param->where('idparameter', 1)->get()->getResult()[0]->nilai,
+            'wajib' => $m_param->where('idparameter', 2)->get()->getResult()[0]->nilai,
+            'bunga' => $m_param->where('idparameter', 9)->get()->getResult()[0]->nilai / 100,
+            'provisi' => $m_param->where('idparameter', 5)->get()->getResult()[0]->nilai / 100,
+        ];
+    }
+
+    private function handleNewUsers($startDate, $endDate)
+    {
+        $m_deposit = model(M_deposit::class);
+
+        //UPDATE STATUS POKOK UNTUK SEMUA ANGGOTA BARU BULAN INI
+        $m_deposit->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+            ->where('status', 'diproses')
+            ->where('jenis_deposit', 'pokok')
+            ->where('deskripsi', 'biaya awal registrasi')
+            ->where('idanggota IN (SELECT iduser FROM tb_user WHERE flag = 1)')
+            ->set('status', 'diterima')
+            ->set('idadmin', 1)
+            ->update();
+
+        //UPDATE STATUS WAJIB UNTUK SEMUA ANGGOTA BARU BULAN INI
+        $m_deposit->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+            ->where('status', 'diproses')
+            ->where('jenis_deposit', 'wajib')
+            ->where('deskripsi', 'biaya awal registrasi')
+            ->where('idanggota IN (SELECT iduser FROM tb_user WHERE flag = 1)')
+            ->set('status', 'diterima')
+            ->set('idadmin', 1)
+            ->update();
+
+        // echo "New users processed <br>";
+    }
+
+    private function processPokok($idUser, $paramPokok)
+    {
+        $m_deposit = model(M_deposit::class);
+        $queryPokok = "(deskripsi='biaya awal registrasi' OR deskripsi='saldo pokok')";
+
+        $cekPokok = $m_deposit->where('jenis_deposit', 'pokok')
+            ->where('idanggota', $idUser)
+            ->where($queryPokok)
+            ->countAllResults();
+        
+        if ($cekPokok == 0)
+        {
+            $data_pokok = [
+                'jenis_pengajuan' => 'penyimpanan',
+                'jenis_deposit' => 'pokok',
+                'cash_in' => $paramPokok,
+                'cash_out' => 0,
+                'deskripsi' => 'biaya awal registrasi',
+                'status' => 'diterima',
+                'date_created' => date('Y-m-d H:i:s'),
+                'idanggota' => $idUser,
+                'idadmin' => 1
+            ];
+
+            $m_deposit->insertDeposit($data_pokok);
+            // echo "New pokok processed for user ".$idUser."<br>";
+        }	
+    }
+
+    private function processWajib($idUser, $paramWajib, $startDate, $endDate)
+    {
+        $m_deposit = model(M_deposit::class);
+        $cekWajib = $m_deposit->where('jenis_deposit', 'wajib')
+            ->where('idanggota', $idUser)
+            ->where('date_created >', $startDate)
+            ->where('date_created <=', $endDate)
+            ->countAllResults();
+
+        if ($cekWajib == 0)
+        {
+            $dataWajib = [
+                'jenis_pengajuan' => 'penyimpanan',
+                'jenis_deposit' => 'wajib',
+                'cash_in' => $paramWajib,
+                'cash_out' => 0,
+                'deskripsi' => 'Diambil dari potongan gaji bulanan',
+                'status' => 'diterima',
+                'date_created' => date('Y-m-d H:i:s'),
+                'idanggota' => $idUser,
+                'idadmin' => 1
+            ];
+
+            $m_deposit->insertDeposit($dataWajib);
+            // echo "New simpanan wajib processed for user ".$idUser."<br>";
+        }
+    }
+
+    private function processManasuka($idUser)
+    {
+        $m_deposit = model(M_deposit::class);
+        $m_user = model(M_user::class);
+        $m_param_manasuka = model(M_param_manasuka::class);
+    
+        // Ambil parameter manasuka untuk anggota
+        $param_manasuka = $m_param_manasuka->where('idanggota', $idUser)->get(1)->getRow();
+    
+        // Validasi parameter
+        if (!$param_manasuka) {
+            $user = $m_user->getUserById($idUser)[0];
+            log_message('error', "Param manasuka tidak ditemukan untuk anggota: $user->username");
+            return;
+        }
+    
+        $data_manasuka = [
+            'jenis_pengajuan' => 'penyimpanan',
+            'jenis_deposit' => 'manasuka',
+            'cash_in' => $param_manasuka->nilai,
+            'cash_out' => 0,
+            'deskripsi' => 'Diambil dari potongan gaji bulanan',
+            'status' => 'diterima',
+            'date_created' => date('Y-m-d H:i:s'),
+            'idanggota' => $idUser,
+            'idadmin' => 1
+        ];
+    
+        $result = $m_deposit->insertDeposit($data_manasuka);
+        // echo "New manasuka processed for user ".$idUser."<br>";
+
+        if (!$result) {
+            $user = $m_user->getUserById($idUser)[0];
+            log_message('error', "Gagal menyimpan manasuka untuk anggota: $user->username");
+        }
+    }
+
+    private function processPinjaman($idUser, $paramBunga, $paramProvisi, $startDate, $endDate)
+    {
+        $m_pinjaman = model(M_pinjaman::class);
+        $m_cicilan = model(M_cicilan::class);
+
+        $cek_pinjaman = $m_pinjaman->where('status', 4)
+            ->where('idanggota', $idUser)
+            ->countAllResults();
+
+        if ($cek_pinjaman != 0) {
+            
+            $pinjaman = $m_pinjaman->where('status', 4)
+                ->where('idanggota', $idUser)
+                ->orderBy('date_updated', 'DESC')
+                ->get()
+                ->getResult();
+
+            //LOOP PINJAMAN
+            foreach($pinjaman as $pin){
+
+                //CEK VALIDASI CICILAN BULAN INI
+                $validasi_cicilan = $m_cicilan->where('idpinjaman', $pin->idpinjaman)
+                    ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+                    ->where('tipe_bayar', 'otomatis')
+                    ->countAllResults();
+
+                if ($validasi_cicilan == 0) {
+                    
+                    $dataCicilan = [
+                        'idpinjaman' => $pin->idpinjaman,
+                        'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                        'bunga' => ($pin->nominal*($pin->angsuran_bulanan*$paramBunga))/$pin->angsuran_bulanan,
+                        'date_created' => date('Y-m-d H:i:s'),
+                    ];
+
+                    //CEK CICILAN
+                    $cek_cicilan = $m_cicilan->where('idpinjaman', $pin->idpinjaman)->countAllResults();
+
+                    if ($cek_cicilan == 0) {
+
+                        $dataCicilan += [
+                            'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$paramProvisi))/$pin->angsuran_bulanan
+                        ];
+                        
+                    }elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
+
+                        $statusPinjaman = ['status' => 5];
+                        $m_pinjaman->updatePinjaman($pin->idpinjaman, $statusPinjaman);
+                        // echo "Cicilan for pinjaman ".$pin->idpinjaman." lunas for user ".$idUser."<br>";
+
+                    }
+
+                    $m_cicilan->insertCicilan($dataCicilan);
+                    // echo "New cicilan processed for pinjaman ".$pin->idpinjaman." at user ".$idUser."<br>";
+                }
+            }
+        }
+    }
 }

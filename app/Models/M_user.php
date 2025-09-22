@@ -20,11 +20,6 @@ class M_user extends Model
     protected $validationRules    = [];
     protected $validationMessages = [];
     protected $skipValidation     = false;
-
-    function __construct()
-    {
-    	$this->db = db_connect();
-    }
     
     function getUser($username)
     {
@@ -238,6 +233,13 @@ class M_user extends Model
     {
         $builder = $this->db->table('tb_user');
         $builder->where('iduser', $iduser);
+        $builder->update($dataset);
+    }
+
+    function updateUserByUsername($username, $dataset)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->where('username', $username);
         $builder->update($dataset);
     }
 

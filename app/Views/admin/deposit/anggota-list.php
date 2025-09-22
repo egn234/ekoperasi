@@ -43,9 +43,7 @@
                             </div>
                             <div class="card-body">
                                 <?=session()->getFlashdata('notif');?>
-                                <table id="dataTable" class="table table-sm table-striped nowrap w-100">
-
-                                </table>
+                                <table id="dataTable" class="table table-sm table-striped nowrap w-100"></table>
                             </div>
                         </div>
                     </div> <!-- end col -->
