@@ -22,6 +22,7 @@ class login extends Controller
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Login'])
         ];
+
         return view('auth-login', $data);
     }
 
@@ -55,25 +56,21 @@ class login extends Controller
                     if($user->idgroup == 1){
                         return redirect()->to('admin/dashboard');
                         echo session()->get('username');
-                    }
-                    elseif($user->idgroup == 2){
+                    } elseif($user->idgroup == 2) {
                         return redirect()->to('bendahara/dashboard');
-                    }
-                    elseif($user->idgroup == 3){
+                    } elseif($user->idgroup == 3) {
                         return redirect()->to('ketua/dashboard');
-                    }
-                    elseif($user->idgroup == 4){
+                    } elseif($user->idgroup == 4) {
                         $cek_new_user = $this->m_param_manasuka->where('idanggota', $userdata['iduser'])->get()->getResult();
 
                         if ($cek_new_user != null) {
                             return redirect()->to('anggota/dashboard');
-                        }else{
+                        } else {
                             echo "<script>alert('Selamat datang di Ekoperasi! silahkan isi pengajuan manasuka terlebih dahulu'); window.location.href = '".base_url()."/anggota/profile/set-manasuka';</script>";
                             exit;
                         }
                     }
-                }
-                else {
+                } else {
                     $alert = '
                         <div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
                             Akun ini sudah tidak aktif
@@ -84,8 +81,7 @@ class login extends Controller
                     session()->setFlashdata('s_username', $username);
                     return redirect()->to('/');
                 }
-            }
-            else {
+            } else {
                 $alert = '
                     <div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
                         Password tidak sesuai
@@ -96,8 +92,7 @@ class login extends Controller
                 session()->setFlashdata('s_username', $username);
                 return redirect()->to('/');
             }
-        }	
-        else {
+        } else {
             $alert = '
                 <div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
                     Akun tidak terdaftar
@@ -168,5 +163,4 @@ class login extends Controller
         session()->setFlashdata($data_session);
         return redirect()->back();
     }
-
 }

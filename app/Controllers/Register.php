@@ -34,11 +34,11 @@ class register extends Controller
 
         if ($clean_int >= 1000) {
             $username = 'GIAT'.($clean_int+1);
-        }elseif ($clean_int >= 100) {
+        } elseif ($clean_int >= 100) {
             $username = 'GIAT0'.($clean_int+1);
-        }elseif ($clean_int >= 10) {
+        } elseif ($clean_int >= 10) {
             $username = 'GIAT00'.($clean_int+1);
-        }elseif ($clean_int >= 1) {
+        } elseif ($clean_int >= 1) {
             $username = 'GIAT000'.($clean_int+1);
         }
 

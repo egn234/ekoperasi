@@ -33,9 +33,9 @@ class test_field extends BaseController
     public function index()
     {
         $list_anggota = $this->m_user->where('flag', '1')
-                                     ->where('idgroup', 4)
-                                     ->get()
-                                     ->getResult();
+            ->where('idgroup', 4)
+            ->get()
+            ->getResult();
 
         echo "<pre>";
         foreach ($list_anggota as $a){
@@ -51,23 +51,22 @@ class test_field extends BaseController
                     'date_created' => date('Y-m-d H:i:s'),
                     'idanggota' => $a->iduser,
                     'idadmin' => $a->iduser
-                ];	
+                ];
             }
             print_r($data_manasuka);
         }
 
         $date_monthly = '2024-09';
         $getDay = $this->m_monthly_report->select('DAY(created) AS day')
-                ->where('date_monthly', $date_monthly)
-                ->get()
-                ->getResult()[0]->day;
+            ->where('date_monthly', $date_monthly)
+            ->get()
+            ->getResult()[0]->day;
 
         $endDate = $date_monthly.'-'.($getDay+1);
         $startDate = date('Y-m-d', strtotime('-1 month', strtotime($endDate)));
 
         echo $endDate;
         echo $startDate;
-
         echo "</pre>";
     }
 
@@ -107,37 +106,38 @@ class test_field extends BaseController
         // echo "Start: ".$startDate.", End: ".$endDate;
 
         $list_anggota = $this->m_user->where('flag', '1')
-                                     ->where('idgroup', 4)
-                                     ->get()
-                                     ->getResult();
+            ->where('idgroup', 4)
+            ->get()
+            ->getResult();
 
         //LOOPING LIST ANGGOTA
         foreach ($list_anggota as $a){
                                      
             //PENGECEKAN PINJAMAN
             $cek_pinjaman = $this->m_pinjaman->where('status', 4)
-                                                ->where('idanggota', $a->iduser)
-                                                ->countAllResults();
-            if ($cek_pinjaman != 0) {
-                
+                ->where('idanggota', $a->iduser)
+                ->countAllResults();
+            
+            if ($cek_pinjaman != 0) {    
                 $pinjaman = $this->m_pinjaman->where('status', 4)
-                                                ->where('idanggota', $a->iduser)
-                                                ->orderBy('date_updated', 'DESC')
-                                                ->get()
-                                                ->getResult();
+                    ->where('idanggota', $a->iduser)
+                    ->orderBy('date_updated', 'DESC')
+                    ->get()
+                    ->getResult();
+
                 //LOOP PINJAMAN
                 foreach($pinjaman as $pin){
-
                     //CEK VALIDASI CICILAN BULAN INI
                     $validasi_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
-                                                        ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
-                                                        ->countAllResults();
+                        ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
+                        ->countAllResults();
+                    
                     if ($validasi_cicilan == 0) {
                         //CEK CICILAN
                         $cek_cicilan = $this->m_cicilan->where('idpinjaman', $pin->idpinjaman)
-                                                        ->countAllResults();
-                        if ($cek_cicilan == 0) {
+                            ->countAllResults();
 
+                        if ($cek_cicilan == 0) {
                             $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
                             $provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
 
@@ -150,9 +150,7 @@ class test_field extends BaseController
                             ];
 
                             $this->m_cicilan->insertCicilan($dataset_cicilan);
-                            
-                        }elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
-
+                        } elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
                             $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
 
                             $dataset_cicilan = [
@@ -166,9 +164,7 @@ class test_field extends BaseController
 
                             $status_pinjaman = ['status' => 5];
                             $this->m_pinjaman->updatePinjaman($pin->idpinjaman, $status_pinjaman);
-
-                        }elseif ($cek_cicilan != 0 && $cek_cicilan < $pin->angsuran_bulanan) {
-
+                        } elseif ($cek_cicilan != 0 && $cek_cicilan < $pin->angsuran_bulanan) {
                             $bunga = $this->m_param->where('idparameter', 9)->get()->getResult()[0]->nilai/100;
 
                             $dataset_cicilan = [
@@ -252,7 +248,7 @@ class test_field extends BaseController
 
             if (password_verify(md5('admingiat123'), $user->pass)) {
                 echo "success";
-            } else{
+            } else {
                 echo "failed";
             }
             
@@ -406,7 +402,6 @@ class test_field extends BaseController
         $logReport = $m_monthly_report->where('date_monthly', $YEAR.'-'.$MONTH)->countAllResults();
 
         if ($logReport == 0 || !$logReport){
-
             // 3. Proses User Baru
             $this->handleNewUsers($startDate, $endDate);
 
@@ -425,7 +420,6 @@ class test_field extends BaseController
             ];
 
             $m_monthly_report->insert($monthly_log);
-            
         } else {
             log_message('error', 'Monthly Report already exist');
             return;
@@ -482,8 +476,7 @@ class test_field extends BaseController
             ->where($queryPokok)
             ->countAllResults();
         
-        if ($cekPokok == 0)
-        {
+        if ($cekPokok == 0) {
             $data_pokok = [
                 'jenis_pengajuan' => 'penyimpanan',
                 'jenis_deposit' => 'pokok',
@@ -510,8 +503,7 @@ class test_field extends BaseController
             ->where('date_created <=', $endDate)
             ->countAllResults();
 
-        if ($cekWajib == 0)
-        {
+        if ($cekWajib == 0) {
             $dataWajib = [
                 'jenis_pengajuan' => 'penyimpanan',
                 'jenis_deposit' => 'wajib',
@@ -575,8 +567,7 @@ class test_field extends BaseController
             ->where('idanggota', $idUser)
             ->countAllResults();
 
-        if ($cek_pinjaman != 0) {
-            
+        if ($cek_pinjaman != 0) { 
             $pinjaman = $m_pinjaman->where('status', 4)
                 ->where('idanggota', $idUser)
                 ->orderBy('date_updated', 'DESC')
@@ -585,15 +576,13 @@ class test_field extends BaseController
 
             //LOOP PINJAMAN
             foreach($pinjaman as $pin){
-
                 //CEK VALIDASI CICILAN BULAN INI
                 $validasi_cicilan = $m_cicilan->where('idpinjaman', $pin->idpinjaman)
                     ->where("date_created BETWEEN '".$startDate."' AND '".$endDate."'")
                     ->where('tipe_bayar', 'otomatis')
                     ->countAllResults();
 
-                if ($validasi_cicilan == 0) {
-                    
+                if ($validasi_cicilan == 0) {  
                     $dataCicilan = [
                         'idpinjaman' => $pin->idpinjaman,
                         'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
@@ -605,17 +594,13 @@ class test_field extends BaseController
                     $cek_cicilan = $m_cicilan->where('idpinjaman', $pin->idpinjaman)->countAllResults();
 
                     if ($cek_cicilan == 0) {
-
                         $dataCicilan += [
                             'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$paramProvisi))/$pin->angsuran_bulanan
-                        ];
-                        
-                    }elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
-
+                        ];  
+                    } elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
                         $statusPinjaman = ['status' => 5];
                         $m_pinjaman->updatePinjaman($pin->idpinjaman, $statusPinjaman);
                         // echo "Cicilan for pinjaman ".$pin->idpinjaman." lunas for user ".$idUser."<br>";
-
                     }
 
                     $m_cicilan->insertCicilan($dataCicilan);
