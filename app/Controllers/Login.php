@@ -13,8 +13,8 @@ class login extends Controller
 
     function __construct()
     {
-        $this->m_user = model(M_user::class);
-        $this->m_param_manasuka = model(M_param_manasuka::class);
+        $this->m_user = new M_user();
+        $this->m_param_manasuka = new M_param_manasuka();
     }
 
     public function index()
@@ -117,40 +117,56 @@ class login extends Controller
         return view('forgot-password', $data);
     }
 
-    public function reset_password()
+    public function forgot_password_proc()
     {
         $username = request()->getPost('username');
-        $cek_username = $this->m_user->countUsername($username)[0]->hitung;
+        $nik = request()->getPost('nik');
+        $email = request()->getPost('email');
+        $nomor_telepon = request()->getPost('nomor_telepon');
 
-        if ($cek_username != 0) {
-            // generate random hash password
-            $temp_plain = bin2hex(random_bytes(6)); // example: "4f3a9b7c2d1e"
+        // TODO: CAPTCHA here
+        
+        $cek_data = $this->m_user
+            ->where('username', $username)
+            ->where('nik', $nik)
+            ->where('email', $email)
+            ->where('nomor_telepon', $nomor_telepon)
+            ->countAllResults();
 
-            // add password temp
-            $dataset = [
-                'temp_password_hash' =>  $temp_plain,
-                'temp_password_expires_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
-                'must_reset_password'	=> 1
-            ];
-
-            $this->m_user->updateUserByUsername($username, $dataset);
-        } else {
+        if ($cek_data == 0) {
             $alert = view(
                 'partials/notification-alert', 
                 [
-                    'notif_text' => 'Username tidak ditemukan',
+                    'notif_text' => 'User tidak ditemukan',
                     'status' => 'danger'
                 ]
             );
-            
+
             session()->setFlashdata('notif', $alert);
             return redirect()->back();
         }
 
+        $cek_token = $this->m_user
+            ->where('username', $username)
+            ->where('pass_reset_status', 0)
+            ->countAllResults();
+        
+        if($cek_token != 0) {
+            $token = bin2hex(random_bytes(16));
+            $db = \Config\Database::connect();
+            $builder = $db->table('tb_user');
+            $builder->where('username', $username)->update([
+                'pass_reset_token' => $token,
+                'pass_reset_status' => 1
+            ]);
+        } else {
+            $token = $this->m_user->where('username', $username)->get()->getResult()[0]->pass_reset_token;
+        }
+        
         $alert = view(
             'partials/notification-alert', 
             [
-                'notif_text' => 'Permintaan reset password berhasil dikirim',
+                'notif_text' => 'Permintaan reset password berhasil, tolong buat password baru',
                 'status' => 'success'
             ]
         );
@@ -161,6 +177,91 @@ class login extends Controller
         ];
 
         session()->setFlashdata($data_session);
-        return redirect()->back();
+        return redirect()->to('/reset_password?token=' . $token);
+    }
+
+    public function reset_password()
+    {
+        $token = request()->getGet('token');
+        
+        if ($token == null) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Forbidden',
+                    'status' => 'danger'
+                ]
+            );
+            
+            session()->setFlashdata('notif_login', $alert);
+            return redirect()->to('/');
+        }
+
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'Reset Password']),
+            'token' => $token
+        ];
+
+        return view('reset-password', $data);
+    }
+
+    public function update_password($token)
+    {
+        $pass = request()->getPost('pass');
+        $pass2 = request()->getPost('pass2');
+
+        // TODO: CAPTCHA here
+
+        $cek_token = $this->m_user
+            ->where('pass_reset_token', $token)
+            ->where('pass_reset_status', 1)
+            ->countAllResults();
+
+        if ($cek_token == 0) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Forbidden',
+                    'status' => 'danger'
+                ]
+            );
+            
+            session()->setFlashdata('notif_login', $alert);
+            return redirect()->to('/');
+        }
+
+        if ($pass != $pass2) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Konfirmasi password tidak sesuai',
+                    'status' => 'danger'
+                ]
+            );
+            
+            session()->setFlashdata('notif', $alert);
+            return redirect()->back();
+        }
+
+        $hash = password_hash(md5($pass), PASSWORD_DEFAULT);
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('tb_user');
+        $builder->where('pass_reset_token', $token)->update([
+            'pass' => $hash,
+            'pass_reset_status' => 0
+        ]);
+
+        $alert = view(
+            'partials/notification-alert', 
+            [
+                'notif_text' => 'Password berhasil diubah',
+                'status' => 'success'
+            ]
+        );
+        
+        $data_session = ['notif_login' => $alert];
+        session()->setFlashdata($data_session);
+        return redirect()->to('/');
     }
 }

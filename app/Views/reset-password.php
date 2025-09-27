@@ -2,7 +2,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Lupa Password | Ekoperasi</title>
+  <title>Buat Password Baru | Ekoperasi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
   <meta content="Themesbrand" name="author" />
@@ -30,44 +30,27 @@
                   <div class="auth-content my-auto">
                     <div class="text-center">
                       <h5 class="mb-0">Reset Password</h5>
-                      <p class="text-muted mt-2">Masukkan info yang telah terdaftar pada akun anda</p>
+                      <p class="text-muted mt-2">Masukkan Password baru</p>
                     </div>
-                    <form action="<?= url_to('forgot_password_proc') ?>" method="post" class="needs-validation">
+                    <form action="<?= url_to('update_password', $token) ?>" method="post" class="needs-validation">
                       <?=session()->getFlashdata('notif');?>
-                      
+  
                       <div class="mb-3">
-                        <label class="form-label" for="username">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="<?=session()->getFlashdata('username')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
+                        <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                        <div class="input-group auth-pass-inputgroup">
+                          <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
+                          <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label" for="retype_pass">Masukkan Ulang Password <span class="text-danger">*</span></label>
+                        <div class="input-group auth-pass-inputgroup">
+                          <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
+                          <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
                         </div>
                       </div>
 
-                      <div class="mb-3">
-                        <label class="form-label" for="email">E-mail</label>
-                        <input type="email" class="form-control" id="email" name="email" value="<?=session()->getFlashdata('email')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-
-                      <div class="mb-3">
-                        <label class="form-label" for="nik">NIK</label>
-                        <input type="text" class="form-control" id="nik" name="nik" value="<?=session()->getFlashdata('nik')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-
-                      <div class="mb-3">
-                        <label class="form-label" for="nomor_telepon">No. Telepon yang telah terdaftar</label>
-                        <input type="text" class="form-control" id="nomor_telepon" name="nomor_telepon" value="<?=session()->getFlashdata('nomor_telepon')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-
-                      <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Lupa Password</button>
+                      <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Buat Password</button>
                     </form>
                     <div class="mt-5 text-center">
                       <p class="text-muted mb-0">Sudah terdaftar menjadi anggota ? 
@@ -96,5 +79,6 @@
   <!-- validation init -->
   <script src="assets/js/pages/validation.init.js"></script>
 
+  <!-- TODO: CAPTCHA here for main branch -->
 </body>
 </html>

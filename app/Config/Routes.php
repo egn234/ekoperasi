@@ -38,7 +38,10 @@ $routes->post('reg_proc', 'Register::register_proc');
 $routes->add('logout', 'Login::logout');
 
 $routes->add('forgot_password', 'Login::forgot_password');
-$routes->post('reset_password', 'Login::reset_password');
+$routes->add('reset_password', 'Login::reset_password');
+
+$routes->post('forgot_password_proc', 'Login::forgot_password_proc');
+$routes->post('update_password/(:any)', 'Login::update_password/$1', ['as' => 'update_password']);
 
 $routes->add('maintenance', 'Maintenance::index');
 

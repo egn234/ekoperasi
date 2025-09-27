@@ -239,9 +239,10 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button class="btn btn-success" 
-                data-bs-target="#konfGenerate" 
-                data-bs-toggle="modal" 
-                data-bs-dismiss="modal">
+          data-bs-target="#konfGenerate" 
+          data-bs-toggle="modal" 
+          data-bs-dismiss="modal"
+        >
           Ya, tetap generate
         </button>
       </div>

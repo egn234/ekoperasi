@@ -11,11 +11,39 @@ class M_user extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = [];
+    protected $allowedFields = [
+        'iduser',
+        'username',
+        'pass',
+        'nik',
+        'nip',
+        'nama_lengkap',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'alamat',
+        'instansi',
+        'unit_kerja',
+        'status_pegawai',
+        'nomor_telepon',
+        'email',
+        'nama_bank',
+        'no_rek',
+        'profil_pic',
+        'pass_reset_token',
+        'pass_reset_status,',
+        'closebook_request',
+        'closebook_request_date',
+        'closebook_last_updated',
+        'closebook_param_count',
+        'flag',
+        'idgroup',
+        'created',
+        'updated'
+    ];
 
     protected $useTimestamps = false;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $createdField  = 'created';
+    protected $updatedField  = 'updated';
 
     protected $validationRules    = [];
     protected $validationMessages = [];
