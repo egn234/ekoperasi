@@ -57,7 +57,10 @@ class register extends Controller
         $alamat = request()->getPost('alamat');
         $nomor_telepon = request()->getPost('nomor_telepon');
         $no_rek = request()->getPost('no_rek');
+
+        // TODO: CAPTCHA here
         
+        // note: kode lama melakukan md5 sebelum password_hash; dipertahankan agar minimal perubahan
         $pass = md5(request()->getPost('pass'));
         $pass2 = md5(request()->getPost('pass2'));
         
@@ -217,6 +220,7 @@ class register extends Controller
             $dataset += ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
         }
 
+        // PROFILE PICTURE (sama seperti sebelumnya)
         $img = request()->getFile('profil_pic');
 
         if ($img->isValid()) {
@@ -335,11 +339,48 @@ class register extends Controller
             session()->setFlashdata($dataset);
             return redirect()->to('registrasi');
         }
-        
+
+        // --- NEW: KTP FILE HANDLING ---
+        $ktp = request()->getFile('ktp_file');
+
+        if ($ktp && $ktp->isValid()) {
+            // Accept jpg/jpeg and pdf as KTP formats
+            $allowedKtpMime = ['image/jpeg', 'image/png', 'application/pdf'];
+            $allowedKtpExt = ['jpg', 'jpeg', 'png', 'pdf'];
+            $maxKtpSize = 4096; // 4MB max for KTP
+
+            if (!in_array($ktp->getMimeType(), $allowedKtpMime) || !in_array(strtolower($ktp->getExtension()), $allowedKtpExt)) {
+                $alert = view('partials/notification-alert', ['notif_text' => 'File KTP harus JPG/JPEG/PNG/PDF', 'status' => 'warning']);
+                $dataset['notif'] = $alert;
+                session()->setFlashdata($dataset);
+                return redirect()->to('registrasi');
+            }
+
+            if ($ktp->getSize() / 1024 > $maxKtpSize) {
+                $alert = view('partials/notification-alert', ['notif_text' => 'File KTP terlalu besar, maksimal 4MB', 'status' => 'warning']);
+                $dataset['notif'] = $alert;
+                session()->setFlashdata($dataset);
+                return redirect()->to('registrasi');
+            }
+
+            // Move KTP file to user folder
+            $ktpNewName = $ktp->getRandomName();
+            $ktp->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/ktp/', $ktpNewName);
+            $dataset += ['ktp_file' => $ktp->getName()];
+        } else {
+            $alert = view('partials/notification-alert', ['notif_text' => 'KTP harus diupload', 'status' => 'warning']);
+            $dataset['notif'] = $alert;
+            session()->setFlashdata($dataset);
+            return redirect()->to('registrasi');
+        }
+
+        // --- set created and flags ---
         $dataset += [
             'created' => date('Y-m-d H:i:s'),
             'closebook_param_count' => 0,
-            'flag' => 1
+            'flag' => 1,
+            // important: set to 0 (non aktif) until admin verifikasi KTP
+            'verified' => 0
         ];
         
         $this->m_user->insertUser($dataset);
@@ -354,7 +395,7 @@ class register extends Controller
         $j_deposit_r = ['pokok', 'wajib'];
 
         for ($i = 0; $i < count($init_aktivasi); $i++) {
-            $dataset = [
+            $dataset_deposit = [
                 'jenis_pengajuan' => 'penyimpanan',
                 'jenis_deposit' => $j_deposit_r[$i],
                 'cash_in' => $init_aktivasi[$i],
@@ -365,13 +406,13 @@ class register extends Controller
                 'idanggota' => $iduser_new
             ];
 
-            $this->m_deposit->insertDeposit($dataset);
+            $this->m_deposit->insertDeposit($dataset_deposit);
         }
         
         $alert = view(
             'partials/notification-alert', 
             [
-                'notif_text' => 'User berhasil dibuat',
+                'notif_text' => 'User berhasil dibuat. Akun sementara tidak aktif. Menunggu verifikasi KTP oleh admin.',
                 'status' => 'success'
             ]
         );

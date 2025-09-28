@@ -134,6 +134,7 @@ app/database/import_format_dummy.xlsx
 
 
 public/uploads/*
+!public/uploads/.htaccess
 db_log/*
 
 # Docker

@@ -53,7 +53,22 @@ class Dashboard extends Controller
             'list_pinjaman' => $list_pinjaman,
             'duser' => $this->account
         ];
-        
+
+        $db = \Config\Database::connect();
+        $total_register = $db->table("tb_user")->where('verified', 0)->countAllResults();
+        if ($total_register != 0) {  
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Ada '.$total_register.' anggota yang belum diverifikasi',
+                    'status' => 'info'
+                ]
+            );
+            
+            $data_session = ['register_notif' => $alert];
+            session()->setFlashdata($data_session);
+        };
+
         return view('admin/dashboard', $data);
     }
 }

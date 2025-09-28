@@ -162,6 +162,8 @@
                           <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
                         </div>
                       </div>
+
+                      <!-- Profil Pic -->
                       <div class="mb-3">
                         <label class="form-label" for="profile_pic">
                           Upload Foto Profil <span class="text-danger">*</span></br>
@@ -172,6 +174,20 @@
                         <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
                         <div class="invalid-feedback"></div>
                       </div>
+
+                      <!-- NEW: KTP upload -->
+                      <div class="mb-3">
+                        <label class="form-label" for="ktp_file">
+                          Upload KTP / Identitas <span class="text-danger">*</span></br>
+                          <small class="text-muted">Format: JPG, PNG, atau PDF. Maks 4MB.</small>
+                        </label>
+                        <input type="file" name="ktp_file" id="ktp_file" class="form-control" accept="image/jpg, image/jpeg, image/png, application/pdf" required>
+                        <div class="invalid-feedback">Harus Mengupload KTP</div>
+                        <div class="form-text text-warning mt-1">
+                          Akun akan diaktifkan setelah pemeriksaan KTP oleh admin.
+                        </div>
+                      </div>
+
                       <span class="text-xs text-danger">
                         *Tidak boleh dikosongkan
                       </span>
@@ -196,7 +212,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> 
     </div>
   </div>
 

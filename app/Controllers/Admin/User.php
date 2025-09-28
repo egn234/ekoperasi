@@ -758,47 +758,7 @@ class User extends Controller
     public function detail_user($iduser = false)
     {
         $group_list = $this->m_group->getAllGroup();
-
-        $config = new \Config\Encryption();
-        $encrypter = \Config\Services::encrypter($config);
-
-        $data = $this->m_user->getUserById($iduser)[0];
-
-        $nik = ($data->nik != null || $data->nik != '') ? $encrypter->decrypt(base64_decode($data->nik)) : '';
-        $nip = ($data->nip != null || $data->nip != '') ? $encrypter->decrypt(base64_decode($data->nip)) : '';
-        $no_rek = ($data->no_rek != null || $data->no_rek != '') ? $encrypter->decrypt(base64_decode($data->no_rek)) : '';
-        $nomor_telepon = ($data->nomor_telepon != null || $data->nomor_telepon != '') ? $encrypter->decrypt(base64_decode($data->nomor_telepon)) : '';
-        $alamat = ($data->alamat != null || $data->alamat != '') ? $encrypter->decrypt(base64_decode($data->alamat)) : '';
-
-        $detail_user = (object) [
-            'iduser' => $data->iduser,
-            'username' => $data->username,
-            'nik' => $nik,
-            'nip' => $nip,
-            'nama_lengkap' => $data->nama_lengkap,
-            'tempat_lahir' => $data->tempat_lahir,
-            'tanggal_lahir' => $data->tanggal_lahir,
-            'status_pegawai' => $data->status_pegawai,
-            'nama_bank' => $data->nama_bank,
-            'no_rek' => $no_rek,
-            'alamat' => $alamat,
-            'instansi' => $data->instansi,
-            'unit_kerja' => $data->unit_kerja,
-            'nomor_telepon' => $nomor_telepon,
-            'email' => $data->email,
-            'profil_pic' => $data->profil_pic,
-            'user_created' => $data->user_created,
-            'user_updated' => $data->user_updated,
-            'closebook_request' => $data->closebook_request,
-            'closebook_request_date' => $data->closebook_request_date,
-            'closebook_last_updated' => $data->closebook_last_updated,
-            'closebook_param_count' => $data->closebook_param_count,
-            'user_flag' => $data->user_flag,
-            'idgroup' => $data->idgroup,
-            'group_type' => $data->group_type,
-            'group_assigned' => $data->group_assigned,
-            'group_flag' => $data->group_flag
-        ];
+        $detail_user = $this->m_user->getUserById($iduser)[0];
 
         $data = [
             'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail User']),
@@ -815,9 +775,6 @@ class User extends Controller
 
     public function update_proc($iduser = false)
     {
-        $config =  new \Config\Encryption();
-        $encrypter = \Config\Services::encrypter($config);
-
         $alamat = request()->getPost('alamat');
         $no_rek = request()->getPost('no_rek');
         $nomor_telepon = request()->getPost('nomor_telepon');
@@ -829,30 +786,29 @@ class User extends Controller
             'tempat_lahir' => request()->getPost('tempat_lahir'),
             'tanggal_lahir' => request()->getPost('tanggal_lahir'),
             'instansi' => request()->getPost('instansi'),
-            'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
-            'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
+            'alamat' => $alamat,
+            'nomor_telepon' => $nomor_telepon,
             'status_pegawai' => request()->getPost('status_pegawai'),
             'email' => request()->getPost('email'),
             'unit_kerja' => request()->getPost('unit_kerja'),
             'idgroup' => request()->getPost('idgroup'),
             'nama_bank' => strtoupper((string) request()->getPost('nama_bank')),
-            'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
+            'no_rek' => $no_rek,
         ];
         
         //check duplicate nip
         $nip_baru = request()->getPost('nip');
 
         if($nip_baru != null || $nip_baru != ''){
-            $nip_baru_enc = base64_encode($encrypter->encrypt($nip_baru));
             $nip_awal = $old_user->nip;
 
-            if($nip_awal != $nip_baru_enc){
+            if($nip_awal != $nip_baru){
                 $cek_nip = $this->m_user->select('count(iduser) as hitung')
-                    ->where("nip = '".$nip_baru_enc."' AND iduser != ".$iduser)
+                    ->where("nip = '".$nip_baru."' AND iduser != ".$iduser)
                     ->get()->getResult()[0]->hitung;
 
                 if ($cek_nip == 0) {
-                    $dataset += ['nip' => $nip_baru_enc];
+                    $dataset += ['nip' => $nip_baru];
                 }else{
                     $alert = view(
                         'partials/notification-alert', 
@@ -862,9 +818,7 @@ class User extends Controller
                         ]
                     );
                     
-                    $data_session = [
-                        'notif' => $alert
-                    ];
+                    $data_session = [ 'notif' => $alert ];
 
                     session()->setFlashdata($data_session);
                     return redirect()->back();
@@ -873,7 +827,7 @@ class User extends Controller
         }
 
         //check duplicate nik
-        $nik_baru = base64_encode($encrypter->encrypt(request()->getPost('nik')));
+        $nik_baru = request()->getPost('nik');
         $nik_awal = $old_user->nik;
 
         if ($nik_baru != $nik_awal) {

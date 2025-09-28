@@ -181,10 +181,7 @@ class Deposits extends Controller
             ]
         );
         
-        $data_session = [
-            'notif' => $alert
-        ];
-
+        $data_session = [ 'notif' => $alert ];
         session()->setFlashdata($data_session);
         return redirect()->back();
     }

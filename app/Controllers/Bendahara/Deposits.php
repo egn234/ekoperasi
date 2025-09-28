@@ -357,9 +357,6 @@ class Deposits extends Controller
 
     public function data_user()
     {
-        $config = new \Config\Encryption();
-        $encrypter = \Config\Services::encrypter($config);
-
         $request = service('request');
         $model = $this->m_user; // Replace with your actual model name
 
@@ -380,13 +377,6 @@ class Deposits extends Controller
 
         // Fetch data from the model using $start and $length
         $data = $model->asArray()->findAll($length, $start);
-        
-        // Decrypt `nomor_telepon` for each user
-        foreach ($data as &$row) {
-            if (!empty($row['nomor_telepon'])) {
-                $row['nomor_telepon'] = $encrypter->decrypt(base64_decode($row['nomor_telepon']));
-            }
-        }
 
         // Total records (you can also use $model->countAll() for exact total)
         $model->select('iduser')->where('idgroup', 4);

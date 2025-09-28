@@ -73,6 +73,14 @@ $routes->group('admin', static function ($routes)
         $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
     });
 
+    $routes->group('register', static function ($routes)
+    {
+        $routes->get('list', 'Admin\Registrasi::list');
+        $routes->add('data_user', 'Admin\Registrasi::data_user');
+        $routes->add('detail_user', 'Admin\Registrasi::detail_user');
+        $routes->add('verify_user/(:num)', 'Admin\Registrasi::verify_user/$1', ['as' => 'admin_verify_user']);
+    });
+
     //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)
     {

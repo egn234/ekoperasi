@@ -15,9 +15,9 @@
       <div class="container-fluid">
         <?= $page_title ?>
         <div class="row">
+          <?= session()->getFlashdata('register_notif'); ?>
           <div class="col-xl-6 col-md-12">
             <div class="row">
-
               <div class="col-xl-6 col-md-12">
                 <div class="card card-h-100">
                   <div class="card-body">

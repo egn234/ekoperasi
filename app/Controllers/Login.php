@@ -36,8 +36,19 @@ class login extends Controller
             $user = $this->m_user->getUser($username)[0];
             
             if (password_verify($pass, $user->pass)) {
-                $flag = $user->flag;
+                if ($user->verified == 0) {
+                    $alert = '
+                    <div class="alert alert-danger text-center mb-4 mt-4 pt-2" role="alert">
+                        Akun ini belum diverifikasi oleh admin
+                    </div>
+                    ';
+
+                    session()->setFlashdata('notif_login', $alert);
+                    session()->setFlashdata('s_username', $username);
+                    return redirect()->to('/');
+                }
                 
+                $flag = $user->flag;
                 if ($flag != 0) {
                     $userdata = [
                         'iduser' => $user->iduser,
@@ -62,7 +73,6 @@ class login extends Controller
                         return redirect()->to('ketua/dashboard');
                     } elseif($user->idgroup == 4) {
                         $cek_new_user = $this->m_param_manasuka->where('idanggota', $userdata['iduser'])->get()->getResult();
-
                         if ($cek_new_user != null) {
                             return redirect()->to('anggota/dashboard');
                         } else {
