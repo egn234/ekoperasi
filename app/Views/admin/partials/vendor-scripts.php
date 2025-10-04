@@ -9,19 +9,25 @@
 
 <script>
 	const BASE_URL = '<?= base_url() ?>';
-	
 	$(document).ready(function(){
-		$(".update-notification").click(function(){
+		// Mark as read via AJAX
+		$(".update-notification").click(function(e){
 			var id = $(this).data('id');
-			$.ajax({
-				url: "<?php echo base_url('admin/notification/mark-as-read/'); ?>",
-				type: "POST",
-				data: "id="+id,
-				success: function(response) {
-					"<?php echo 'success' ?>"
-				}
-			});
+			if(id) {
+				$.ajax({
+					url: BASE_URL + "admin/notification/mark-as-read/",
+					type: "POST",
+					data: {id: id},
+				});
+			}
+			// Auto-close dropdown on click
+			var dropdown = $(this).closest('.dropdown-menu');
+			if(dropdown.length) {
+				setTimeout(function(){
+					dropdown.removeClass('show');
+					$('.dropdown-backdrop').remove();
+				}, 100);
+			}
 		});
 	});
-	
 </script>
