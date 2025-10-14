@@ -45,6 +45,28 @@ class AnggotaFilter implements FilterInterface
 	    	if ($idgroup == 3) {
 	    		return redirect()->to('ketua/dashboard');
 	    	}
+
+	    	// Untuk anggota (idgroup == 4), cek apakah sudah mengisi manasuka
+	    	if ($idgroup == 4) {
+	    		$m_param_manasuka = new \App\Models\M_param_manasuka();
+	    		$iduser = session()->get('iduser');
+	    		$cek_manasuka = $m_param_manasuka->where('idanggota', $iduser)->get()->getResult();
+	    		
+	    		$currentPath = $request->getUri()->getPath();
+	    		
+	    		// Jika belum mengisi manasuka dan tidak sedang di halaman set-manasuka atau proses set-manasuka
+	    		if (empty($cek_manasuka) && 
+	    			strpos($currentPath, 'set-manasuka') === false && 
+	    			strpos($currentPath, 'set-manasuka-proc') === false) {
+	    			$alert = '
+					<div class="alert alert-info text-center mb-4 mt-4 pt-2" role="alert">
+						Silahkan isi pengajuan manasuka terlebih dahulu
+					</div>
+				';
+				session()->setFlashdata('notif', $alert);
+				return redirect()->to('anggota/profile/set-manasuka');
+	    		}
+	    	}
 	    }        
     }
 

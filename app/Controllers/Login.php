@@ -76,8 +76,14 @@ class login extends Controller
                         if ($cek_new_user != null) {
                             return redirect()->to('anggota/dashboard');
                         } else {
-                            echo "<script>alert('Selamat datang di Ekoperasi! silahkan isi pengajuan manasuka terlebih dahulu'); window.location.href = '".base_url()."/anggota/profile/set-manasuka';</script>";
-                            exit;
+                            // Set flash message untuk user baru
+                            $alert = '
+                            <div class="alert alert-info text-center mb-4 mt-4 pt-2" role="alert">
+                                Selamat datang di Ekoperasi! Silahkan isi pengajuan manasuka terlebih dahulu
+                            </div>
+                            ';
+                            session()->setFlashdata('notif', $alert);
+                            return redirect()->to('anggota/profile/set-manasuka');
                         }
                     }
                 } else {
