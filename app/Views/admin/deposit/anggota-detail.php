@@ -4,6 +4,9 @@
   <?= $title_meta ?>
   <?= $this->include('admin/partials/head-css') ?>
   
+  <!-- Custom CSS for Admin Deposit -->
+  <link href="<?= base_url() ?>/assets/css/admin/deposit-list.css" rel="stylesheet" type="text/css" />
+  
   <style type="text/css">
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
@@ -23,181 +26,298 @@
         <?= $page_title ?>
         <div class="row">
           <div class="col-md-9 col-sm-12">
-            <div class="card">
-              <div class="card-header">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <h4 class="card-title">Daftar Pengajuan Simpanan</h4>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white border-bottom">
+                <div class="row align-items-center">
+                  <div class="col-md-6 col-sm-12">
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                          <i class="fas fa-list-alt"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="card-title mb-1">Riwayat Transaksi Anggota</h4>
+                        <p class="text-muted small mb-0">Kelola pengajuan dan mutasi simpanan anggota</p>
+                      </div>
+                    </div>
                   </div>
                   <div class="col-md-6 col-sm-12">
-                    <div class="btn-group float-md-end">
-                      <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
-                        Tambah Pengajuan Manasuka
-                      </a>
+                    <div class="float-md-end mt-3 mt-md-0">
+                      <button class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addPengajuan">
+                        <i class="fas fa-plus me-2"></i>Tambah Pengajuan
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="card-body">
                 <?=session()->getFlashdata('notif');?>
-                <?php $i = 1 + (10 * ($currentpage - 1)); ?>
-                <?php foreach ($deposit_list2 as $k) : ?>
-                  <?php if ($k['cash_in'] == 0) {?>
-                    <div class="card <?=
-                      $k['status'] == 'diproses' || $k['status'] == 'diproses bendahara' || $k['status'] == 'diproses admin' || $k['status'] == 'upload bukti' ? 'border-secondary' 
-                        : ($k['status'] == 'diterima' ? 'border-success' 
-                          : 'border-danger') 
+                
+                <!-- Transaction List Style -->
+                <div class="transaction-container">
+                  <?php $i = 1 + (10 * ($currentpage - 1)); ?>
+                  <?php foreach ($deposit_list2 as $k) : ?>
+                    <div class="transaction-item border-bottom py-3 <?= 
+                      $k['status'] == 'diproses' ||
+                      $k['status'] == 'diproses bendahara' ||
+                      $k['status'] == 'diproses admin' ||
+                      $k['status'] == 'upload bukti' ? 'bg-light' 
+                      : ($k['status'] == 'diterima' ? 'bg-success bg-opacity-10' 
+                      : ($k['status'] == 'ditolak' ? 'bg-danger bg-opacity-10' : '')) 
                     ?>">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col-6">
-                            <i class="fa fa-upload"></i>
-                            <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
+                      <div class="row align-items-center">
+                        <!-- Transaction Icon & Type -->
+                        <div class="col-1 text-center">
+                          <div class="transaction-icon rounded-circle d-inline-flex align-items-center justify-content-center" 
+                               style="width: 40px; height: 40px; <?= $k['cash_in'] == 0 ? 'background-color: #fee2e2; color: #dc2626;' : 'background-color: #dcfce7; color: #16a34a;' ?>">
+                            <?php if ($k['cash_in'] == 0) : ?>
+                              <i class="fas fa-arrow-up"></i>
+                            <?php else : ?>
+                              <i class="fas fa-arrow-down"></i>
+                            <?php endif; ?>
                           </div>
-                          <div class="col-6">
-                            <div class="float-end">
-                              <b>- <?= number_format($k['cash_out'], 2, ',', '.')?></b>
+                        </div>
+                        
+                        <!-- Transaction Details -->
+                        <div class="col-5">
+                          <div class="transaction-info">
+                            <h6 class="mb-1 fw-semibold"><?= ucwords($k['jenis_pengajuan']) ?></h6>
+                            <p class="mb-1 text-muted small"><?= ucwords($k['jenis_deposit']) ?></p>
+                            <div class="d-flex align-items-center gap-2">
+                              <span class="badge rounded-pill <?= 
+                                $k['status'] == 'diproses' ||
+                                $k['status'] == 'diproses bendahara' ||
+                                $k['status'] == 'diproses admin' ||
+                                $k['status'] == 'upload bukti' ? 'bg-warning' 
+                                : ($k['status'] == 'diterima' ? 'bg-success' 
+                                : 'bg-danger') 
+                              ?> small">
+                                <?= ucwords($k['status']) ?>
+                              </span>
+                              <small class="text-muted"><?= date('d M Y', strtotime($k['date_created'])) ?></small>
                             </div>
                           </div>
                         </div>
-                        <div class="row mt-3">
-                          <div class="col-8">
-                            <span class="text-muted">
-                              Status: <?= $k['status'] ?> <br>
-                              Tanggal: <?= $k['date_created'] ?>
-                            </span>
-                          </div>
-                          <div class="col-4">
-                            <div class="btn-group float-end">
-                              <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka free' && $k['jenis_pengajuan'] == 'penyimpanan' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
-                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
-                                  <i class="fa fa-upload"></i> upload bukti
-                                </a>
-                              <?php }?>
-                              <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
-                                <i class="fa fa-file-alt"></i> Detail
-                              </a>
+                        
+                        <!-- Amount -->
+                        <div class="col-3 text-end">
+                          <?php if ($k['cash_in'] == 0) : ?>
+                            <div class="amount text-danger fw-bold">
+                              <span class="small">Rp</span> <?= number_format($k['cash_out'], 0, ',', '.') ?>
                             </div>
+                            <small class="text-muted">Keluar</small>
+                          <?php else : ?>
+                            <div class="amount text-success fw-bold">
+                              <span class="small">Rp</span> <?= number_format($k['cash_in'], 0, ',', '.') ?>
+                            </div>
+                            <small class="text-muted">Masuk</small>
+                          <?php endif; ?>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="col-3 text-end">
+                          <div class="dropdown">
+                            <button class="btn btn-link text-muted p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
+                                  <i class="fas fa-file-alt me-2"></i> Lihat Detail
+                                </a>
+                              </li>
+                              <?php if ($k['status'] == 'diproses' || $k['status'] == 'diproses admin' || $k['status'] == 'upload bukti') : ?>
+                              <li>
+                                <a class="dropdown-item text-success" href="#" data-bs-toggle="modal" data-bs-target="#approveMutasi" data-id="<?=$k['iddeposit']?>">
+                                  <i class="fas fa-check me-2"></i> Setujui
+                                </a>
+                              </li>
+                              <li>
+                                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#cancelMutasi" data-id="<?=$k['iddeposit']?>">
+                                  <i class="fas fa-times me-2"></i> Tolak
+                                </a>
+                              </li>
+                              <?php endif; ?>
+                              <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka free' && $k['jenis_pengajuan'] == 'penyimpanan' && $k['status'] != "diterima" && $k['status'] != "ditolak") : ?>
+                              <li>
+                                <a class="dropdown-item text-info" href="#" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
+                                  <i class="fas fa-upload me-2"></i> Upload Bukti
+                                </a>
+                              </li>
+                              <?php endif; ?>
+                            </ul>
                           </div>
                         </div>
                       </div>
                     </div>
-                  <?php } else {?>
-                    <div class="card <?= 
-                      $k['status'] == 'diproses' || $k['status'] == 'diproses bendahara' || $k['status'] == 'diproses admin' || $k['status'] == 'upload bukti' ? 'border-secondary' 
-                        : ($k['status'] == 'diterima' ? 'border-success' 
-                          : 'border-danger') 
-                    ?>">
-                      <div class="card-body">
-                        <div class="row md-3">
-                          <div class="col-8">
-                            <i class="fa fa-download"></i>
-                            <b class="text-bold"><?= $k['jenis_pengajuan'] . ' ' . $k['jenis_deposit']?></b>
-                          </div>
-                          <div class="col-4">
-                            <div class="float-end">
-                              <span class="text-success"><b>+ <?= number_format($k['cash_in'], 2, ',', '.')?></b></span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row mt-3">
-                          <div class="col-8">
-                            <span class="text-muted">
-                              Status: <?= $k['status'] ?> <br>
-                              Tanggal: <?= $k['date_created'] ?>
-                            </span>
-                          </div>
-                          <div class="col-4">
-                            <div class="btn-group float-end">
-                              <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
-                                <i class="fa fa-file-alt"></i> Detail
-                              </a>
-                              <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka free' && $k['jenis_pengajuan'] == 'penyimpanan' && $k['status'] != "diterima" && $k['status'] != "ditolak") {?>
-                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
-                                  <i class="fa fa-upload"></i> upload bukti
-                                </a>
-                              <?php }?>
-                            </div>
-                          </div>
-                        </div>
+                  <?php endforeach; ?>
+                  
+                  <?php if (empty($deposit_list2)) : ?>
+                    <div class="text-center py-5">
+                      <div class="mb-3">
+                        <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                      </div>
+                      <h5 class="text-muted">Belum Ada Transaksi</h5>
+                      <p class="text-muted">Anggota belum memiliki riwayat transaksi</p>
+                    </div>
+                  <?php endif; ?>
+                </div>
+                
+                <!-- Pagination -->
+                <?php if (!empty($deposit_list2)) : ?>
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <p class="text-muted small mb-0">
+                        Menampilkan <?= count($deposit_list2) ?> dari <?= $total_rows ?? 0 ?> transaksi
+                      </p>
+                      <div>
+                        <?= $pager->links('grup1', 'default_minia')?>
                       </div>
                     </div>
-                  <?php } ?>
-                <?php endforeach; ?>
-                <div class="mb-3 col-12">
-                  <div class="float-md-end">
-                    <?= $pager->links('grup1', 'default_minia')?>
                   </div>
                 </div>
+                <?php endif; ?>
               </div>
             </div>
           </div>
           
           <div class="col-md-3 col-sm-12">
-            <div class="card">
-              <div class="card-header">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <h4 class="card-title">Detail Anggota</h4>
+            <!-- Member Info Card -->
+            <div class="card border-0 shadow-sm mb-4">
+              <div class="card-header bg-gradient-primary text-white border-0">
+                <h5 class="card-title mb-0 text-white">
+                  <i class="fas fa-user me-2"></i>Detail Anggota
+                </h5>
+              </div>
+              <div class="card-body p-0">
+                <!-- Member Profile -->
+                <div class="p-4 border-bottom">
+                  <div class="text-center">
+                    <div class="mb-3">
+                      <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                           style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fas fa-user"></i>
+                      </div>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-0"><?=$detail_user->nama_lengkap?></h5>
+                    <p class="text-muted small mb-0">ID: <?=$detail_user->iduser?></p>
                   </div>
                 </div>
+                
+                <!-- Balance Summary -->
+                <div class="bg-light p-4 border-bottom">
+                  <div class="text-center">
+                    <p class="text-muted small mb-1">Total Saldo Simpanan</p>
+                    <h3 class="text-primary fw-bold mb-0">
+                      Rp <?=number_format(($total_saldo_manasuka + $total_saldo_wajib + $total_saldo_pokok), 0, ',','.')?>
+                    </h3>
+                  </div>
+                </div>
+                
+                <!-- Balance Details -->
+                <div class="p-3">
+                  <div class="balance-item d-flex justify-content-between py-3 border-bottom">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <div class="balance-icon me-2 rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                          <i class="fas fa-piggy-bank" style="font-size: 10px;"></i>
+                        </div>
+                        <div>
+                          <p class="mb-0 fw-medium" style="font-size: 13px;">Simpanan Pokok</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
+                        Rp <?=number_format($total_saldo_pokok, 0, ',','.')?>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="balance-item d-flex justify-content-between py-3 border-bottom">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <div class="balance-icon me-2 rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                          <i class="fas fa-calendar-check" style="font-size: 10px;"></i>
+                        </div>
+                        <div>
+                          <p class="mb-0 fw-medium" style="font-size: 13px;">Simpanan Wajib</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
+                        Rp <?=number_format($total_saldo_wajib, 0, ',','.')?>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="balance-item d-flex justify-content-between py-3 border-bottom">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <div class="balance-icon me-2 rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                          <i class="fas fa-hand-holding-usd" style="font-size: 10px;"></i>
+                        </div>
+                        <div>
+                          <p class="mb-0 fw-medium" style="font-size: 13px;">Simpanan Manasuka</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
+                        Rp <?=number_format($total_saldo_manasuka, 0, ',','.')?>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="balance-item d-flex justify-content-between py-3">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <div class="balance-icon me-2 rounded-circle bg-secondary bg-opacity-10 text-secondary d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                          <i class="fas fa-coins" style="font-size: 10px;"></i>
+                        </div>
+                        <div>
+                          <p class="mb-0 fw-medium" style="font-size: 13px;">Nominal Manasuka</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
+                        <?php if (!$param_manasuka) : ?>
+                          <span class="text-warning">Belum diatur</span>
+                        <?php else : ?>
+                          Rp <?=number_format($param_manasuka[0]->nilai, 0, ',','.')?>
+                        <?php endif; ?>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Admin Actions Card -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white border-bottom">
+                <h6 class="card-title mb-0">
+                  <i class="fas fa-tools me-2 text-muted"></i>Aksi Admin
+                </h6>
               </div>
               <div class="card-body">
-                <div class="mb-3">
-                  <h5 class="font-size-15">Nama:</h5>
-                  <div class="text-muted h3">
-                    <?=$detail_user->nama_lengkap?>
-                  </div>
-                </div>
-                <hr>
-                <div class="mb-3">
-                  <h5 class="font-size-15">Saldo Simpanan Pokok:</h5>
-                  <div class="text-muted h3">
-                    Rp <?=number_format($total_saldo_pokok, 2, ',','.')?>
-                  </div>
-                </div>
-                <hr>
-                <div class="mb-3">
-                  <h5 class="font-size-15">Saldo Simpanan Wajib:</h5>
-                  <div class="text-muted h3">
-                    Rp <?=number_format($total_saldo_wajib, 2, ',','.')?>
-                  </div>
-                </div>
-                <hr>
-                <div class="mb-3">
-                  <h5 class="font-size-15">Saldo Simpanan Manasuka:</h5>
-                  <div class="text-muted h3">
-                    Rp <?=number_format($total_saldo_manasuka, 2, ',','.')?>
-                  </div>
-                </div>
-                <hr>
-                <div class="mb-3">
-                  <h5 class="font-size-15">Total Saldo Simpanan:</h5>
-                  <div class="text-muted h3">
-                    Rp <?=number_format(($total_saldo_manasuka + $total_saldo_wajib + $total_saldo_pokok), 2, ',','.')?>
-                  </div>
-                </div>
-                <hr>
-                <hr>
-                <div class="mb-3">
-                  <h5 class="font-size-15">Nominal Setoran Manasuka:</h5>
-                  <div class="text-muted h3">
-                    <?php if (!$param_manasuka) {
-                      echo 'Parameter belum di set';
-                    }else{?>
-                      Rp <?=number_format($param_manasuka[0]->nilai, 2, ',','.')?>
-                    <?php }?>
-                  </div>
-                </div>
-                <div class="mt-5 d-grid gap-2">
-                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#set_param_manasuka">
-                    Pengajuan Manasuka Bulanan
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" 
+                          data-bs-toggle="modal" data-bs-target="#set_param_manasuka">
+                    <i class="fas fa-edit me-2"></i>Atur Manasuka
                   </button>
-                  <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#batal_manasuka" <?=($param_manasuka ? '' : 'disabled')?>>
-                    Pembatalan Manasuka Bulanan
+                  <button class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" 
+                          data-bs-toggle="modal" data-bs-target="#batal_manasuka" 
+                          <?=($param_manasuka ? '' : 'disabled')?>>
+                    <i class="fas fa-times me-2"></i>Batalkan Manasuka
                   </button>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -409,6 +529,38 @@
         nominalInput.addEventListener('input', updatePreview);
         updatePreview();
       }
+    });
+    
+    // Handle admin approve modal
+    document.addEventListener('DOMContentLoaded', function() {
+      const approveModals = document.querySelectorAll('[id^="approve_modal_"]');
+      
+      approveModals.forEach(modal => {
+        modal.addEventListener('shown.bs.modal', function () {
+          const nominalInput = modal.querySelector('#nominal_uang');
+          const previewNominal = modal.querySelector('#preview_nominal');
+
+          if (nominalInput && previewNominal) {
+            function updatePreview() {
+              const raw = nominalInput.value.replace(/[^\d]/g, "");
+
+              if (raw) {
+                const num = parseInt(raw, 10);
+                const formatted = new Intl.NumberFormat("id-ID", {
+                  maximumFractionDigits: 0
+                }).format(num);
+
+                previewNominal.innerHTML = `<i class="fas fa-calculator me-1"></i>Preview: Rp ${formatted}`;
+              } else {
+                previewNominal.innerHTML = `<i class="fas fa-calculator me-1"></i>Preview akan muncul saat Anda mengetik`;
+              }
+            }
+
+            nominalInput.addEventListener('input', updatePreview);
+            updatePreview();
+          }
+        });
+      });
     });
   });
 </script>

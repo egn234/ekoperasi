@@ -1,0 +1,205 @@
+/* Banking Transaction Styles */
+.transaction-container {
+  background: #fff;
+  border-radius: 8px;
+}
+
+.transaction-item {
+  border-radius: 8px;
+  margin-bottom: 2px;
+  padding: 12px 16px !important;
+  transition: background-color 0.15s ease;
+}
+
+/* Subtle focus effects without hover conflicts */
+.transaction-item {
+  cursor: default;
+}
+
+.transaction-item:focus-within {
+  background-color: #f8f9fa !important;
+}
+
+/* Clean button styling for dropdown */
+.transaction-item .dropdown .btn-link {
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.transaction-item .dropdown .btn-link:hover {
+  background-color: #e9ecef;
+}
+
+.transaction-icon {
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid currentColor;
+}
+
+.transaction-info h6 {
+  font-size: 14px;
+  color: #2d3748;
+  line-height: 1.2;
+}
+
+.transaction-info p {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.amount {
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.amount .small {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge.small {
+  font-size: 10px;
+  padding: 4px 8px;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 8px 0;
+  z-index: 1050 !important;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f7fafc;
+  color: #2d3748;
+}
+
+.dropdown-item i {
+  width: 16px;
+  font-size: 12px;
+}
+
+/* Status-specific styling */
+.bg-success.bg-opacity-10 {
+  background-color: rgba(34, 197, 94, 0.08) !important;
+  border-left: 3px solid #22c55e;
+}
+
+.bg-danger.bg-opacity-10 {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border-left: 3px solid #ef4444;
+}
+
+.bg-light {
+  background-color: #f8fafc !important;
+  border-left: 3px solid #94a3b8;
+}
+
+/* Empty state styling */
+.text-center.py-5 {
+  padding: 60px 20px !important;
+}
+
+/* Sidebar Balance Card Styles */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.balance-item {
+  transition: background-color 0.2s ease;
+}
+
+.balance-item:hover {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.balance-icon {
+  transition: transform 0.2s ease;
+}
+
+.balance-item:hover .balance-icon {
+  transform: scale(1.1);
+}
+
+.card.border-0 {
+  border: 1px solid #e2e8f0 !important;
+}
+
+.card.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+.alert.py-2 {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  border-radius: 6px;
+  border: none;
+}
+
+.btn-outline-primary.btn-sm {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-danger.btn-sm {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .transaction-item .col-1 {
+    flex: 0 0 auto;
+    width: auto;
+    margin-right: 12px;
+  }
+  
+  .transaction-item .col-6 {
+    flex: 1;
+  }
+  
+  .transaction-item .col-3 {
+    flex: 0 0 auto;
+    width: auto;
+    text-align: right !important;
+    margin-left: auto;
+  }
+  
+  .transaction-item .col-2 {
+    flex: 0 0 auto;
+    width: auto;
+    margin-left: 8px;
+  }
+  
+  .amount {
+    font-size: 14px;
+  }
+  
+  .transaction-info h6 {
+    font-size: 13px;
+  }
+  
+  .transaction-info p {
+    font-size: 11px;
+  }
+  
+  .col-md-9 {
+    margin-bottom: 20px;
+  }
+}

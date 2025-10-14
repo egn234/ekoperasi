@@ -3,6 +3,10 @@
 <head>
 	<?= $title_meta ?>
   <?= $this->include('admin/partials/head-css') ?>
+  
+  <!-- Custom CSS for Admin Deposit -->
+  <link href="<?= base_url() ?>/assets/css/admin/deposit-list.css" rel="stylesheet" type="text/css" />
+  
 	<style type="text/css">
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
@@ -12,49 +16,69 @@
 	</style>
 </head>
 
-<body>
+<?= $this->include('admin/partials/body') ?>
 
-	<div id="layout-wrapper">
-		<?= $this->include('admin/partials/menu') ?>
-		<div class="main-content">
-			<div class="page-content">
-				<div class="container-fluid">
-					<?= $page_title ?>
-					<div class="row">
-						<div class="col-12">
-							<div class="card">
-								<div class="card-header">
-									<div class="row">
-										<div class="col-sm-12">
-											<h4 class="card-title">Daftar Pengajuan Simpanan yang Diproses</h4>
+<div id="layout-wrapper">
+	<?= $this->include('admin/partials/menu') ?>
+	<div class="main-content">
+		<div class="page-content">
+			<div class="container-fluid">
+				<?= $page_title ?>
+				
+				<!-- Pending Deposits Card -->
+				<div class="row mb-4">
+					<div class="col-12">
+						<div class="card border-0 shadow-sm">
+							<div class="card-header bg-gradient-warning text-white border-0">
+								<div class="d-flex align-items-center">
+									<div class="me-3">
+										<div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+											<i class="fas fa-hourglass-half text-white"></i>
 										</div>
 									</div>
+									<div>
+										<h4 class="card-title mb-1 text-white">Pengajuan Menunggu Persetujuan</h4>
+										<p class="text-white-50 mb-0 small">Daftar pengajuan yang perlu diproses</p>
+									</div>
 								</div>
-								<div class="card-body">
-									<?=session()->getFlashdata('notif');?>
-									<table id="dt_list_filter" class="table table-sm table-striped nowrap w-100">
+							</div>
+							<div class="card-body">
+								<?=session()->getFlashdata('notif');?>
+								<div class="table-responsive">
+									<table id="dt_list_filter" class="table table-hover align-middle mb-0">
 									</table>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="row">
-						<div class="col-12">
-							<div class="card">
-								<div class="card-header">
-									<div class="row">
-										<div class="col-sm-12">
-											<h4 class="card-title">Daftar Semua Pengajuan Simpanan</h4>
+				</div>
+				
+				<!-- All Deposits Card -->
+				<div class="row">
+					<div class="col-12">
+						<div class="card border-0 shadow-sm">
+							<div class="card-header bg-white border-bottom">
+								<div class="d-flex align-items-center">
+									<div class="me-3">
+										<div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+											<i class="fas fa-list-alt"></i>
 										</div>
 									</div>
+									<div>
+										<h4 class="card-title mb-1">Riwayat Semua Pengajuan</h4>
+										<p class="text-muted mb-0 small">Semua data pengajuan simpanan anggota</p>
+									</div>
 								</div>
-								<div class="card-body">
-									<table id="dt_list" class="table table-sm table-striped nowrap w-100">
+							</div>
+							<div class="card-body">
+								<div class="table-responsive">
+									<table id="dt_list" class="table table-hover align-middle mb-0">
 									</table>
 								</div>
 							</div>
 						</div>
 					</div>
+				</div>
 				</div>
 			</div>
 			<?= $this->include('admin/partials/footer') ?>

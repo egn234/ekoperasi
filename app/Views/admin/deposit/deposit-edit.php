@@ -1,9 +1,11 @@
-<!-- TODO: LANJUTIN SETELAH OM JAWAB -->
 <?= $this->include('admin/partials/head-main') ?>
 
 <head>
   <?= $title_meta ?>
   <?= $this->include('admin/partials/head-css') ?>
+  
+  <!-- Custom CSS for Admin Deposit -->
+  <link href="<?= base_url() ?>/assets/css/admin/deposit-list.css" rel="stylesheet" type="text/css" />
 
   <style type="text/css">
     input::-webkit-outer-spin-button,
@@ -16,28 +18,27 @@
 
 <?= $this->include('admin/partials/body') ?>
 
-<!-- Begin page -->
 <div id="layout-wrapper">
-
   <?= $this->include('admin/partials/menu') ?>
-
-  <!-- ============================================================== -->
-  <!-- Start right Content here -->
-  <!-- ============================================================== -->
+  
   <div class="main-content">
     <div class="page-content">
       <div class="container-fluid">
-        <!-- start page title -->
         <?= $page_title ?>
-        <!-- end page title -->
-
+        
         <div class="row">
           <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <div class="row">
-                  <div class="col-sm-12">
-                    <h4 class="card-title">Ubah Pengajuan Simpanan</h4>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-gradient-primary text-white border-0">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                      <i class="fas fa-edit text-white"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="card-title mb-1 text-white">Edit Pengajuan Simpanan</h4>
+                    <p class="text-white-50 mb-0 small">Ubah data pengajuan simpanan anggota</p>
                   </div>
                 </div>
               </div>
