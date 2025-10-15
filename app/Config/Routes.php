@@ -24,6 +24,7 @@ $routes->group('test', static function ($routes){
     // $routes->get('test_encryption', 'Test_field::encryption_meth');
     // $routes->get('test_binary', 'Test_field::binary_search');
     // $routes->get('gen_wajib', 'Test_field::gen_wajib');
+    $routes->get('password-dev', 'Test_field::password_transform');
 
     # INI BUAT KONVERSI DATA SENSITIF BUAT SEMUA DATABASE, AKTIFKAN SEKALI SAJA
     $routes->get('encode-data', 'Test_field::convert_sensitive_data');

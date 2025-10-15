@@ -198,11 +198,11 @@
                     <div class="mb-3">
                       <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
                            style="width: 60px; height: 60px; font-size: 24px;">
-                        <i class="fas fa-user"></i>
+                        <img src="<?= ($detail_user->profil_pic) ? base_url().'/uploads/user/'.$detail_user->username.'/profil_pic/'.$detail_user->profil_pic : base_url().'/assets/images/users/avatar-1.png' ?>" alt="Avatar" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
                       </div>
                     </div>
                     <h5 class="fw-bold text-dark mb-0"><?=$detail_user->nama_lengkap?></h5>
-                    <p class="text-muted small mb-0">ID: <?=$detail_user->iduser?></p>
+                    <p class="text-muted small mb-0"><?=$detail_user->username?></p>
                   </div>
                 </div>
                 

@@ -48,7 +48,6 @@ class Deposits extends Controller
 
     public function detail_anggota($iduser = false)
     {
-        $depo_list = $this->m_deposit->getDepositByUserId($iduser);
         $total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($iduser)[0]->saldo;
         $total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($iduser)[0]->saldo;
         $total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo;
@@ -78,7 +77,6 @@ class Deposits extends Controller
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account,
             'detail_user' => $detail_user,
-            'deposit_list' => $depo_list,
             'total_saldo_wajib' => $total_saldo_wajib,
             'total_saldo_pokok' => $total_saldo_pokok,
             'total_saldo_manasuka' => $total_saldo_manasuka,
@@ -86,6 +84,10 @@ class Deposits extends Controller
             'param_manasuka_cek' => $mnsk_param_log,
             'deposit_list2' => $this->m_deposit_pag
                 ->where('idanggota', $iduser)
+                ->groupStart()
+                    ->where('cash_in !=', 0)
+                    ->orWhere('cash_out !=', 0)
+                ->groupEnd()
                 ->orderBy('date_created', 'DESC')
                 ->paginate(10, 'grup1'),
 

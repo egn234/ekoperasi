@@ -611,4 +611,19 @@ class test_field extends BaseController
             }
         }
     }
+
+    public function password_transform()
+    {
+        // Increase execution time and memory limit
+        ini_set('max_execution_time', 600); // 10 minutes
+        ini_set('memory_limit', '512M'); // 512MB
+
+        // Change all passwords to "1" for easy development testing
+        $users = $this->m_user->getAllUser();
+        foreach ($users as $user) {
+            $this->m_user->updateUser($user->iduser, ['pass' => password_hash(md5('1'), PASSWORD_DEFAULT)]);
+        }
+
+        echo "success";
+    }
 }

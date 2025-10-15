@@ -48,36 +48,36 @@
               <?php endforeach; ?>
               </ul>
             </div>
-<style>
-  .notif-list .notif-item {
-    transition: box-shadow 0.2s, background 0.2s;
-    border-left: 4px solid transparent;
-  }
-  .notif-list .notif-item.notif-unread {
-    background: #f0f6ff;
-    border-left: 4px solid #0d6efd;
-  }
-  .notif-list .notif-item.notif-read {
-    color: #6c757d;
-    background: #fff;
-    opacity: 0.85;
-  }
-  .notif-list .notif-item:hover {
-    box-shadow: 0 2px 8px rgba(13,110,253,0.08);
-    background: #e9f2ff;
-    z-index: 2;
-  }
-  .notif-list .badge {
-    font-size: 0.75em;
-    vertical-align: middle;
-  }
-  .btn-xs {
-    padding: 0.15rem 0.5rem;
-    font-size: 0.75rem;
-    line-height: 1.2;
-    border-radius: 0.2rem;
-  }
-</style>
+            <style>
+              .notif-list .notif-item {
+                transition: box-shadow 0.2s, background 0.2s;
+                border-left: 4px solid transparent;
+              }
+              .notif-list .notif-item.notif-unread {
+                background: #f0f6ff;
+                border-left: 4px solid #0d6efd;
+              }
+              .notif-list .notif-item.notif-read {
+                color: #6c757d;
+                background: #fff;
+                opacity: 0.85;
+              }
+              .notif-list .notif-item:hover {
+                box-shadow: 0 2px 8px rgba(13,110,253,0.08);
+                background: #e9f2ff;
+                z-index: 2;
+              }
+              .notif-list .badge {
+                font-size: 0.75em;
+                vertical-align: middle;
+              }
+              .btn-xs {
+                padding: 0.15rem 0.5rem;
+                font-size: 0.75rem;
+                line-height: 1.2;
+                border-radius: 0.2rem;
+              }
+            </style>
 
             <div class="mt-3">
               <?= $pager->links('default', 'default_minia') ?>
