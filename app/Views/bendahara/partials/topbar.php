@@ -38,14 +38,22 @@
         </button>
 
         <!-- NOTIFICATION DROPDOWN -->
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 notif-dropdown" aria-labelledby="page-header-notifications-dropdown">
-          <div class="p-3 border-bottom bg-light sticky-top" style="z-index:2;">
-            <div class="row align-items-center">
-              <div class="col">
-                <h6 class="m-0"> Notifikasi </h6>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 notif-dropdown shadow-lg border-0" aria-labelledby="page-header-notifications-dropdown">
+          <div class="notif-header">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <div class="notif-header-icon">
+                  <i class="fas fa-bell"></i>
+                </div>
+                <div>
+                  <h6 class="mb-0 fw-bold text-white">Notifikasi</h6>
+                  <small class="text-white-50"><?= $notification_badges ?? 0 ?> notifikasi baru</small>
+                </div>
               </div>
-              <div class="col-auto">
-                <a href="<?= base_url('bendahara/notification/mark-all-read') ?>" class="small text-reset text-decoration-underline"> Tandai semua sudah dibaca (<?= $notification_badges ?>)</a>
+              <div>
+                <a href="<?= base_url('admin/notification/mark-all-read') ?>" class="btn btn-sm btn-outline-light btn-rounded">
+                  <i class="fas fa-check-double me-1"></i>Tandai Semua
+                </a>
               </div>
             </div>
           </div>
@@ -62,67 +70,56 @@
                 $iconBg = $a->deposit_id ? 'bg-primary' : 'bg-success';
               ?>
               <a href="<?= $url ?>" data-id="<?= $a->id ?>" class="update-notification text-reset notification-item <?= $notifClass ?>">
-                <div class="d-flex align-items-center py-2 px-3 border-bottom notif-item-row <?= $bg ?>">
-                  <div class="flex-shrink-0 avatar-sm me-3">
-                    <span class="avatar-title <?= $iconBg ?> rounded-circle font-size-16">
-                      <i class="bx bx-error-circle"></i>
-                    </span>
-                  </div>
-                  <div class="flex-grow-1">
-                    <div class="d-flex align-items-center mb-1">
-                      <h6 class="mb-0 me-2 fw-bold" style="font-size:1rem; color:<?= $isUnread ? '#0d6efd' : '#333' ?>;">
-                        <?= $a->message ?>
-                      </h6>
-                      <?= $badge ?>
+                <div class="notif-item-container <?= $bg ?>">
+                  <div class="notif-item-content">
+                    <div class="notif-avatar">
+                      <div class="avatar-wrapper <?= $iconBg ?>">
+                        <i class="<?= $a->deposit_id ? 'fas fa-piggy-bank' : ($a->closebook ? 'fas fa-book' : 'fas fa-hand-holding-usd') ?>"></i>
+                      </div>
+                      <?php if($isUnread): ?>
+                        <div class="status-dot"></div>
+                      <?php endif; ?>
                     </div>
-                    <div class="font-size-13 text-muted">
-                      <span><?= $type ?></span>
-                      <span class="mx-1">&bull;</span>
-                      <i class="mdi mdi-clock-outline"></i> <span><?= $a->timestamp ?></span>
+                    
+                    <div class="notif-content">
+                      <div class="notif-message">
+                        <span class="message-text <?= $isUnread ? 'fw-bold' : '' ?>"><?= $a->message ?></span>
+                        <?= $badge ?>
+                      </div>
+                      
+                      <div class="notif-meta">
+                        <span class="notif-type">
+                          <i class="fas fa-tag me-1"></i><?= $type ?>
+                        </span>
+                        <span class="notif-time">
+                          <i class="far fa-clock me-1"></i><?= $a->timestamp ?>
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="notif-actions">
+                      <div class="action-indicator">
+                        <i class="fas fa-chevron-right"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
               </a>
             <?php endforeach ?>
             <?php if(!count($notification_list)): ?>
-              <div class="text-reset notification-item">
-                <div class="d-flex text-secondary p-3">
-                  Tidak ada notifikasi
+              <div class="empty-notifications">
+                <div class="empty-icon">
+                  <i class="fas fa-bell-slash"></i>
+                </div>
+                <div class="empty-text">
+                  <h6 class="mb-1">Belum ada notifikasi</h6>
+                  <p class="text-muted mb-0">Notifikasi baru akan muncul di sini</p>
                 </div>
               </div>
             <?php endif; ?>
           </div>
         </div>
-        <style>
-          .notif-dropdown .notif-scroll {
-            max-height: 350px;
-            overflow-y: auto;
-            min-width: 340px;
-          }
-          .notif-dropdown .notif-item-row {
-            transition: background 0.2s, box-shadow 0.2s;
-            border-bottom: 1px solid #f1f1f1;
-            cursor: pointer;
-          }
-          .notif-dropdown .notif-unread .notif-item-row {
-            background: #f0f6ff;
-            border-left: 4px solid #0d6efd;
-          }
-          .notif-dropdown .notif-read .notif-item-row {
-            color: #6c757d;
-            background: #fff;
-            opacity: 0.92;
-          }
-          .notif-dropdown .notif-item-row:hover {
-            background: #e9f2ff;
-            box-shadow: 0 2px 8px rgba(13,110,253,0.08);
-            z-index: 2;
-          }
-          .notif-dropdown .badge {
-            font-size: 0.75em;
-            vertical-align: middle;
-          }
-        </style>
+        <link rel="stylesheet" href="<?= base_url('assets/css/notif.css') ?>">
       </div>
 
       <div class="dropdown d-none d-sm-inline-block">
