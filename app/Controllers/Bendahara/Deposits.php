@@ -66,6 +66,10 @@ class Deposits extends Controller
         $currentpage = request()->getVar('page_grup1') ? request()->getVar('page_grup1') : 1;
         $deposit_list2 = $this->m_deposit_pag
             ->where('idanggota', $iduser)
+            ->groupStart()
+                ->where('cash_in !=', 0)
+                ->orWhere('cash_out !=', 0)
+            ->groupEnd()
             ->orderBy('date_created', 'DESC')
             ->paginate(10, 'grup1');
 

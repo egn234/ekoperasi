@@ -67,6 +67,10 @@ class Deposits extends BaseController
             'duser' => $this->account,
             'deposit_list2' => $this->m_deposit_pag
                 ->where('idanggota', $this->account->iduser)
+                ->groupStart()
+                    ->where('cash_in !=', 0)
+                    ->orWhere('cash_out !=', 0)
+                ->groupEnd()
                 ->orderBy('date_created', 'DESC')
                 ->paginate(10, 'grup1'),
 
