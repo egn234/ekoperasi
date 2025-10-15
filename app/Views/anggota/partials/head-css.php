@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?= base_url('assets/css/notif.css') ?>">
+
 <!-- preloader css -->
 <link rel="stylesheet" href="<?=base_url()?>/assets/css/preloader.min.css" type="text/css" />
 

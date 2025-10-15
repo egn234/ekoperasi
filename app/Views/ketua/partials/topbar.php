@@ -33,7 +33,7 @@
         <button type="button" class="btn header-item noti-icon position-relative" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell" class="icon-lg"></i>
           <?php if($notification_badges): ?>
-          <span class="badge bg-danger rounded-pill"><?= $notification_badges ?></span>
+          <span class="badge-notif bg-danger rounded-pill"><?= $notification_badges ?></span>
           <?php else: ''; endif; ?>
         </button>
 
@@ -119,7 +119,6 @@
             <?php endif; ?>
           </div>
         </div>
-        <link rel="stylesheet" href="<?= base_url('assets/css/notif.css') ?>">
       </div>
 
       <div class="dropdown d-none d-sm-inline-block">

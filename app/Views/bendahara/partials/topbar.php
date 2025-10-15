@@ -119,7 +119,6 @@
             <?php endif; ?>
           </div>
         </div>
-        <link rel="stylesheet" href="<?= base_url('assets/css/notif.css') ?>">
       </div>
 
       <div class="dropdown d-none d-sm-inline-block">

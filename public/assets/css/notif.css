@@ -228,19 +228,6 @@
   text-shadow: 0 0 8px rgba(84, 104, 255, 0.3);
 }
 
-/* Badge Styling */
-.badge {
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-weight: 600;
-  background: linear-gradient(45deg, #5468ff, #4338ca);
-  border: none;
-  color: white;
-  margin-left: 8px;
-  animation: fadeInScale 0.3s ease;
-}
-
 @keyframes fadeInScale {
   from { opacity: 0; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1); }
