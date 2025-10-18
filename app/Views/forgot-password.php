@@ -67,6 +67,9 @@
                         </div>
                       </div>
 
+                      <!-- reCAPTCHA Widget -->
+                      <input type="hidden" name="recaptcha_token" id="g-recaptcha-response"/>
+
                       <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Lupa Password</button>
                     </form>
                     <div class="mt-5 text-center">
@@ -95,6 +98,27 @@
 
   <!-- validation init -->
   <script src="assets/js/pages/validation.init.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+  <script>
+    setInterval(()=> {
+      grecaptcha.ready(function() {
+        grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then(function(token) {
+          // Simpan token dalam input tersembunyi
+          document.getElementById('g-recaptcha-response').value = token;
+        });
+      });
+    }, 120000);
+
+    document.getElementById('confirm_button').addEventListener('click', (event) => {
+      event.preventDefault();
+      grecaptcha.ready(() => {
+        grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'register'}).then((token) => {
+          document.getElementById('g-recaptcha-response').value = token;
+          document.getElementById('register_form').submit();
+        });
+      });
+    });
+  </script>
 
 </body>
 </html>

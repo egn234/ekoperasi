@@ -53,40 +53,85 @@ class register extends Controller
 
     public function register_proc()
     {
+        $config = new \Config\Encryption();
+        $encrypter = \Config\Services::encrypter($config);
+
         $nik = request()->getPost('nik');
         $alamat = request()->getPost('alamat');
         $nomor_telepon = request()->getPost('nomor_telepon');
         $no_rek = request()->getPost('no_rek');
 
-        // TODO: CAPTCHA here
-        
-        // note: kode lama melakukan md5 sebelum password_hash; dipertahankan agar minimal perubahan
         $pass = md5(request()->getPost('pass'));
         $pass2 = md5(request()->getPost('pass2'));
         
         $dataset = [
             'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
-            'nik' => $nik,
+            'nik' => ($nik != null || $nik != '') ? base64_encode($encrypter->encrypt($nik)) : '',
             'tempat_lahir' => request()->getPost('tempat_lahir'),
             'tanggal_lahir' => request()->getPost('tanggal_lahir'),
             'instansi' => request()->getPost('instansi'),
             'unit_kerja' => request()->getPost('unit_kerja'),
             'status_pegawai' => request()->getPost('status_pegawai'),
-            'alamat' => $alamat,
+            'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
             'nama_bank' => strtoupper(request()->getPost('nama_bank')),
-            'no_rek' => $no_rek,
-            'nomor_telepon' => $nomor_telepon,
+            'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
+            'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
             'email' => request()->getPost('email'),
             'username' => request()->getPost('username'),
             'idgroup' => 4
         ];
+
+        // Ambil data reCAPTCHA response
+        $recaptchaResponse = request()->getPost('recaptcha_token');
+        $recaptchaSecret = getenv('RECAPTCHA_SECRET_KEY'); // Ganti dengan Secret Key Anda
+
+        // Validasi reCAPTCHA ke Google
+        $url = 'https://www.google.com/recaptcha/api/siteverify';
+        $data = [
+            'secret'   => $recaptchaSecret,
+            'response' => $recaptchaResponse,
+            'remoteip' => request()->getIPAddress()
+        ];
+
+        $options = [
+            'http' => [
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($data)
+            ]
+        ];
+
+        $context  = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        $response = json_decode($result);
+
+        // Periksa hasil validasi
+        if (!$response->success) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Captcha tidak sesuai',
+                    'status' => 'warning'
+                ]
+            );
+            
+            $dataset['notif'] = $alert;
+            $dataset['nik'] = $nik;
+            $dataset['alamat'] = $alamat;
+            $dataset['nomor_telepon'] = $nomor_telepon;
+            $dataset['no_rek'] = $no_rek;
+
+            $dataset += ['notif' => $alert];
+            session()->setFlashdata($dataset);
+            return redirect()->to('registrasi');
+        }
 
         if ($dataset['instansi'] == "") {
             $alert = view(
                 'partials/notification-alert', 
                 [
                     'notif_text' => 'Pilih Institusi terlebih dahulu',
-                     'status' => 'warning'
+                    'status' => 'warning'
                 ]
             );
             
