@@ -22,11 +22,6 @@ class M_param extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    function __construct()
-    {
-    	$this->db = db_connect();
-    }
-
     function getAllParam()
     {
         $sql = "SELECT * FROM tb_parameter";

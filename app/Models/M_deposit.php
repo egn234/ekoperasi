@@ -22,11 +22,6 @@ class m_deposit extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    function __construct()
-    {
-    	$this->db = db_connect();
-    }
-
     function getAllDeposit()
     {
     	$sql = "
@@ -106,7 +101,7 @@ class m_deposit extends Model
 
     function getDepositByUserId($iduser)
     {
-        $sql = "SELECT * FROM tb_deposit WHERE idanggota = $iduser ORDER BY date_created DESC";
+        $sql = "SELECT * FROM tb_deposit WHERE idanggota = $iduser AND (cash_in != 0 OR cash_out != 0) ORDER BY date_created DESC";
         return $this->db->query($sql)->getResult();  
     }
 

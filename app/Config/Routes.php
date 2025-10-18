@@ -1,45 +1,22 @@
 <?php
 
-namespace Config;
+use CodeIgniter\Router\RouteCollection;
 
-// Create a new instance of our RouteCollection class.
-$routes = Services::routes();
-
-// Load the system's routing file first, so that the app and ENVIRONMENT
-// can override as needed.
-if (is_file(SYSTEMPATH . 'Config/Routes.php')) {
-    require SYSTEMPATH . 'Config/Routes.php';
-}
-
-/*
- * --------------------------------------------------------------------
- * Router Setup
- * --------------------------------------------------------------------
+/**
+ * @var RouteCollection $routes
  */
+
 $routes->setDefaultNamespace('App\Controllers');
 $routes->setDefaultController('Login');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
-// The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
-// where controller filters or CSRF protection are bypassed.
-// If you don't want to define all routes, please use the Auto Routing (Improved).
-// Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
-// $routes->setAutoRoute(false);
-
-/*
- * --------------------------------------------------------------------
- * Route Definitions
- * --------------------------------------------------------------------
- */
-
-// We get a performance increase by specifying the default
-// route since we don't have to scan directories.
 
 $routes->get('/', 'Login::index');
 
 //for testing db only, uncomment this route
 $routes->group('test', static function ($routes){
+    // $routes->add('generate-monthly/(:any)', 'Test_field::gen_report/$1');
     // $routes->get('/', 'Test_field::index');
     // $routes->get('test_cicilan', 'Test_field::insert_cicilan');
     // $routes->get('test_gen_cicilan', 'Test_field::gen_sisa_cicilan');
@@ -47,10 +24,11 @@ $routes->group('test', static function ($routes){
     // $routes->get('test_encryption', 'Test_field::encryption_meth');
     // $routes->get('test_binary', 'Test_field::binary_search');
     // $routes->get('gen_wajib', 'Test_field::gen_wajib');
+    $routes->get('password-dev', 'Test_field::password_transform');
 
     # INI BUAT KONVERSI DATA SENSITIF BUAT SEMUA DATABASE, AKTIFKAN SEKALI SAJA
-    // $routes->get('encode-data', 'Test_field::convert_sensitive_data');
-    // $routes->get('decode-data', 'Test_field::encryption_meth_decode');
+    $routes->get('encode-data', 'Test_field::convert_sensitive_data');
+    $routes->get('decode-data', 'Test_field::encryption_meth_decode');
 });
 
 $routes->get('registrasi', 'Register::index');
@@ -60,12 +38,17 @@ $routes->post('reg_proc', 'Register::register_proc');
 
 $routes->add('logout', 'Login::logout');
 
+$routes->add('forgot_password', 'Login::forgot_password');
+$routes->add('reset_password', 'Login::reset_password');
+
+$routes->post('forgot_password_proc', 'Login::forgot_password_proc');
+$routes->post('update_password/(:any)', 'Login::update_password/$1', ['as' => 'update_password']);
+
 $routes->add('maintenance', 'Maintenance::index');
 
 //GROUP ADMIN
 $routes->group('admin', static function ($routes)
-{
-    
+{   
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('profile', 'Admin\Profile::index');
     
@@ -91,14 +74,24 @@ $routes->group('admin', static function ($routes)
         $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
     });
 
+    $routes->group('register', static function ($routes)
+    {
+        $routes->get('list', 'Admin\Registrasi::list');
+        $routes->add('data_user', 'Admin\Registrasi::data_user');
+        $routes->add('detail_user', 'Admin\Registrasi::detail_user');
+        $routes->add('verify_user/(:num)', 'Admin\Registrasi::verify_user/$1', ['as' => 'admin_verify_user']);
+    });
+
     //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)
     {
         $routes->get('list', 'Admin\Deposits::index');
         $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
+        $routes->get('edit/(:num)', 'Admin\Deposits::edit_mutasi/$1');
 
         $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
         $routes->post('add_req', 'Admin\Deposits::add_proc');
+        $routes->post('update_mutasi/(:num)', 'Admin\Deposits::update_mutasi/$1');
         $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
         
         $routes->post('cancel-mnsk', 'Admin\Deposits::cancel_mnsk');
@@ -113,7 +106,6 @@ $routes->group('admin', static function ($routes)
         $routes->add('data_transaksi_filter', 'Admin\Deposits::data_transaksi_filter');
         $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
-        
     });
 
     //GROUP DAFTAR PINJAMAN
@@ -193,7 +185,6 @@ $routes->group('bendahara', static function ($routes)
         $routes->add('user/(:num)', 'Bendahara\Deposits::detail_anggota/$1', ['as' => 'b_anggota_detail']);
         $routes->add('confirm/(:num)', 'Bendahara\Deposits::konfirmasi_mutasi/$1', ['as' => 'bendahara_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Bendahara\Deposits::batalkan_mutasi/$1', ['as' => 'bendahara_batalkan_simpanan']);
-        
     });
 
     //GROUP DAFTAR PINJAMAN
@@ -282,7 +273,7 @@ $routes->group('anggota', static function ($routes)
     $routes->group('deposit', static function ($routes)
     {
         $routes->get('list', 'Anggota\Deposits::index');
-       
+        
         $routes->post('add_req', 'Anggota\Deposits::add_proc');
         $routes->post('detail_mutasi', 'Anggota\Deposits::detail_mutasi');
         $routes->post('up_mutasi', 'Anggota\Deposits::up_mutasi');
@@ -301,9 +292,12 @@ $routes->group('anggota', static function ($routes)
         $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
         $routes->post('up_form', 'Anggota\Pinjaman::up_form');
         $routes->post('lunasi_pinjaman', 'Anggota\Pinjaman::lunasi_pinjaman');
+        $routes->post('detail_tolak', 'Anggota\Pinjaman::detail_tolak');
+        $routes->post('add_pengajuan', 'Anggota\Pinjaman::add_pengajuan');
         $routes->post('top-up', 'Anggota\Pinjaman::top_up');
 
         $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
+        $routes->add('riwayat_penolakan', 'Anggota\Pinjaman::riwayat_penolakan');
         $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
         $routes->add('lunasi_proc/(:num)', 'Anggota\Pinjaman::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
         $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);
@@ -311,20 +305,3 @@ $routes->group('anggota', static function ($routes)
         $routes->add('top-up-req/(:num)', 'Anggota\Pinjaman::top_up_proc/$1', ['as' => 'anggota_pinjaman_topup']);
     });
 });
-
-/*
- * --------------------------------------------------------------------
- * Additional Routing
- * --------------------------------------------------------------------
- *
- * There will often be times that you need additional routing and you
- * need it to be able to override any defaults in this file. Environment
- * based routes is one such time. require() additional route files here
- * to make that happen.
- *
- * You will have access to the $routes object within that file without
- * needing to reload it.
- */
-if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
-    require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
-}

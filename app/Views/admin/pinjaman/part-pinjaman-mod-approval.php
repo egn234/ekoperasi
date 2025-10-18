@@ -1,26 +1,29 @@
 <div class="modal-header">
-    <h5 class="modal-title" id="myModalLabel">Konfirmasi</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	<h5 class="modal-title" id="myModalLabel">Konfirmasi</h5>
+	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <div class="mb-3">
-        <?=($flag == 1)?'Terima':'Tolak'?> pengajuan pinjaman ini?
-<br>
-        <?php if ($flag == 0) {?>
-            <form action="<?= url_to('admin_cancel_pinjaman', $a->idpinjaman) ?>" id="formSheet" method="post">
-                <div class="mb-3">
-                    <label class="form-label" for="alasan_tolak">Alasan Ditolak</label>
-                    <input type="text" class="form-control" id="alasan_tolak" name="alasan_tolak">
-                </div>
-            </form>
-        <?php }?>
-    </div>
+	<div class="mb-3">
+		Terima pengajuan pinjaman ini?
+		<div class = "row mt-3">
+			<form action="<?= url_to('admin_approve_pinjaman', $a->idpinjaman)?>" id="formTerima" method="post">
+				<div class="mb-3">
+					<label class="form-label" for="nominal_uang">Nominal</label>
+					<input 
+						type="number"
+						step="0.01"
+						class="form-control"
+						id="nominal_uang"
+						name="nominal_uang"
+						value="<?= number_format($a->nominal, 0, '', '') ?>"
+					>
+					<small id="preview_nominal" class="form-text text-muted"></small>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-    <?php if($flag == 1){?>
-        <a href="<?= url_to('admin_approve_pinjaman', $a->idpinjaman) ?>" class="btn btn-success">Terima</a>
-    <?php }else{?>
-        <button type="submit" form="formSheet" class="btn btn-danger">Tolak</button>
-    <?php }?>
+	<button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
+	<button type="submit" form="formTerima" class="btn btn-success">Terima</button>
 </div>

@@ -11,20 +11,45 @@ class M_user extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = [];
+    protected $allowedFields = [
+        'iduser',
+        'username',
+        'pass',
+        'nik',
+        'nip',
+        'nama_lengkap',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'alamat',
+        'instansi',
+        'unit_kerja',
+        'status_pegawai',
+        'nomor_telepon',
+        'email',
+        'nama_bank',
+        'no_rek',
+        'profil_pic',
+        'ktp_file',
+        'pass_reset_token',
+        'pass_reset_status,',
+        'closebook_request',
+        'closebook_request_date',
+        'closebook_last_updated',
+        'closebook_param_count',
+        'flag',
+        'verified',
+        'idgroup',
+        'created',
+        'updated'
+    ];
 
     protected $useTimestamps = false;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $createdField  = 'created';
+    protected $updatedField  = 'updated';
 
     protected $validationRules    = [];
     protected $validationMessages = [];
     protected $skipValidation     = false;
-
-    function __construct()
-    {
-    	$this->db = db_connect();
-    }
     
     function getUser($username)
     {
@@ -139,6 +164,8 @@ class M_user extends Model
                 nomor_telepon, 
                 email, 
                 profil_pic, 
+                ktp_file,
+                verified,
                 tb_user.created AS user_created, 
                 tb_user.updated AS user_updated, 
                 closebook_request, 
@@ -238,6 +265,13 @@ class M_user extends Model
     {
         $builder = $this->db->table('tb_user');
         $builder->where('iduser', $iduser);
+        $builder->update($dataset);
+    }
+
+    function updateUserByUsername($username, $dataset)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->where('username', $username);
         $builder->update($dataset);
     }
 
