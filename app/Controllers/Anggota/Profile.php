@@ -44,9 +44,6 @@ class Profile extends BaseController
 
     public function update_proc()
     {
-        $config = new \Config\Encryption();
-        $encrypter = \Config\Services::encrypter($config);
-
         $alamat = request()->getPost('alamat');
         $nomor_telepon = request()->getPost('nomor_telepon');
         $no_rek = request()->getPost('no_rek');
@@ -57,10 +54,10 @@ class Profile extends BaseController
             'tanggal_lahir' => request()->getPost('tanggal_lahir'),
             'status_pegawai' => request()->getPost('status_pegawai'),
             'instansi' => request()->getPost('instansi'),
-            'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
+            'alamat' => $alamat,
             'nama_bank' => strtoupper(request()->getPost('nama_bank')),
-            'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
-            'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
+            'no_rek' => $no_rek,
+            'nomor_telepon' => $nomor_telepon,
             'email' => request()->getPost('email'),
             'unit_kerja' => request()->getPost('unit_kerja')
         ];
@@ -69,16 +66,15 @@ class Profile extends BaseController
         $nip_baru = $this->request->getPost('nip');
 
         if($nip_baru != null || $nip_baru != ''){
-            $nip_baru_enc = base64_encode($encrypter->encrypt($nip_baru));
             $nip_awal = $this->account->nip;
 
             if($nip_awal != $nip_baru){
                 $cek_nip = $this->m_user->select('count(iduser) as hitung')
-                    ->where("nip = '".$nip_baru_enc."' AND iduser != ".$this->account->iduser)
+                    ->where("nip = '".$nip_baru."' AND iduser != ".$this->account->iduser)
                     ->get()->getResult()[0]->hitung;
 
                 if ($cek_nip == 0) {
-                    $dataset += ['nip' => $nip_baru_enc];
+                    $dataset += ['nip' => $nip_baru];
                 }else{
                     $alert = view(
                         'partials/notification-alert', 
@@ -100,16 +96,15 @@ class Profile extends BaseController
 
         //check duplicate nik
         $nik_baru = request()->getPost('nik');
-        $nik_baru_enc = base64_encode($encrypter->encrypt($nik_baru));
         $nik_awal = $this->account->nik;
 
         if ($nik_baru != $nik_awal) {
             $cek_nik = $this->m_user->select('count(iduser) as hitung')
-                ->where("nik = '".$nik_baru_enc."' AND iduser != ".$this->account->iduser)
+                ->where("nik = '".$nik_baru."' AND iduser != ".$this->account->iduser)
                 ->get()->getResult()[0]->hitung;
 
             if ($cek_nik == 0) {
-                $dataset += ['nik' => $nik_baru_enc];
+                $dataset += ['nik' => $nik_baru];
             }else{
                 $alert = view(
                     'partials/notification-alert', 
@@ -175,6 +170,61 @@ class Profile extends BaseController
             $img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
             $profile_pic = $img->getName();
             $dataset += ['profil_pic' => $profile_pic];
+        }
+
+        // Handle KTP file upload
+        $ktp = $this->request->getFile('ktp_file');
+        
+        if ($ktp && $ktp->isValid() && !$ktp->hasMoved()) {
+            // Accept jpg/jpeg, png and pdf as KTP formats
+            $allowedKtpMime = ['image/jpeg', 'image/png', 'application/pdf'];
+            $allowedKtpExt = ['jpg', 'jpeg', 'png', 'pdf'];
+            $maxKtpSize = 4096; // 4MB max for KTP
+
+            if (!in_array($ktp->getMimeType(), $allowedKtpMime) || !in_array(strtolower($ktp->getExtension()), $allowedKtpExt)) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'File KTP harus JPG/JPEG/PNG/PDF',
+                        'status' => 'danger'
+                    ]
+                );
+                $data_session = [
+                    'notif' => $alert
+                ];
+
+                session()->setFlashdata($data_session);
+                return redirect()->back();
+            }
+
+            if ($ktp->getSize() / 1024 > $maxKtpSize) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'File KTP terlalu besar, maksimal 4MB',
+                        'status' => 'danger'
+                    ]
+                );
+                $data_session = [
+                    'notif' => $alert
+                ];
+
+                session()->setFlashdata($data_session);
+                return redirect()->back();
+            }
+
+            // Remove old KTP file if exists
+            if ($this->account->ktp_file) {
+                $oldKtpFile = ROOTPATH . "public/uploads/user/" . $this->account->username . "/ktp/" . $this->account->ktp_file;
+                if (file_exists($oldKtpFile)) {
+                    unlink($oldKtpFile);
+                }
+            }
+            
+            // Move KTP file to user folder
+            $ktpNewName = $ktp->getRandomName();
+            $ktp->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/ktp/', $ktpNewName);
+            $dataset += ['ktp_file' => $ktp->getName()];
         }
 
         $dataset += [
