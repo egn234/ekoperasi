@@ -336,10 +336,13 @@ class Pinjaman extends Controller
         if ($_POST['rowid']) {
             $id = $_POST['rowid'];
             $pinjaman = $this->m_pinjaman->getPinjamanById($id)[0];
+            $user = $this->m_user->getUserById($pinjaman->idanggota)[0];
             $data = [
                 'a' => $pinjaman,
+                'b' => $user,
                 'flag' => 1
             ];
+            
             echo view('admin/pinjaman/part-pinjaman-mod-approval', $data);
         }
     }
