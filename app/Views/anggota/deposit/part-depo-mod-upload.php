@@ -21,7 +21,7 @@
       <div>
         <strong class="text-info">Petunjuk Upload:</strong>
         <ul class="mb-0 mt-2 text-info">
-          <li>Format file: JPG atau JPEG</li>
+          <li>Format file: PDF, JPG atau JPEG</li>
           <li>Ukuran maksimal: 5MB</li>
           <li>Pastikan bukti transfer jelas dan terbaca</li>
         </ul>
@@ -38,17 +38,18 @@
       <div class="upload-area border border-2 border-dashed rounded-3 p-4 text-center position-relative" 
            style="border-color: #e2e8f0 !important; transition: all 0.3s ease;">
         <input type="file" 
-               name="bukti_transfer" 
-               id="bkt_trf" 
-               class="form-control position-absolute w-100 h-100 opacity-0" 
-               style="top: 0; left: 0; cursor: pointer;"
-               accept="image/jpg,image/jpeg" 
-               required>
+          name="bukti_transfer" 
+          id="bkt_trf" 
+          class="form-control position-absolute w-100 h-100 opacity-0" 
+          style="top: 0; left: 0; cursor: pointer;"
+          accept="image/jpg,image/jpeg,application/pdf"
+          required
+        >
         
         <div class="upload-content">
           <i class="fas fa-cloud-upload-alt text-muted mb-3" style="font-size: 2rem;"></i>
-          <h6 class="text-muted mb-2">Klik atau seret file ke sini</h6>
-          <p class="text-muted small mb-0">Format: JPG, JPEG (Maks. 5MB)</p>
+          <h6 class="text-muted mb-2">Klik di sini</h6>
+          <p class="text-muted small mb-0">Format: JPG, JPEG, PDF (Maks. 5MB)</p>
         </div>
         
         <div class="upload-preview d-none">

@@ -4,6 +4,11 @@
   border-radius: 8px;
 }
 
+.transaction-card {
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .transaction-item {
   border-radius: 8px;
   margin-bottom: 2px;
@@ -162,6 +167,66 @@
   transition: all 0.2s ease;
 }
 
+/* Mobile optimized transaction cards */
+.transaction-card .amount {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.transaction-card .amount small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.transaction-card h6 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.transaction-card .text-muted.small {
+  font-size: 13px;
+}
+
+/* Better mobile spacing */
+@media (max-width: 768px) {
+  .transaction-card {
+    margin-bottom: 12px !important;
+  }
+  
+  .transaction-card .transaction-icon {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .transaction-card .amount {
+    font-size: 15px;
+  }
+  
+  .transaction-card .amount small {
+    font-size: 11px;
+  }
+  
+  .transaction-card h6 {
+    font-size: 14px;
+  }
+  
+  .transaction-card .text-muted.small {
+    font-size: 12px;
+  }
+  
+  .col-md-9 {
+    margin-bottom: 20px;
+  }
+  
+  .badge.small {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+  
+  .dropdown-menu {
+    font-size: 13px;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .transaction-item .col-1 {
@@ -197,9 +262,5 @@
   
   .transaction-info p {
     font-size: 11px;
-  }
-  
-  .col-md-9 {
-    margin-bottom: 20px;
   }
 }

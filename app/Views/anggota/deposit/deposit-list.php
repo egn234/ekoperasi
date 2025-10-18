@@ -59,15 +59,91 @@
                 <div class="transaction-container">
                   <?php $i = 1 + (10 * ($currentpage - 1)); ?>
                   <?php foreach ($deposit_list2 as $k) : ?>
-                    <div class="transaction-item border-bottom py-3 <?= 
+                    <div class="transaction-card mb-3 border rounded-3 p-3 <?= 
                       $k['status'] == 'diproses' ||
                       $k['status'] == 'diproses bendahara' ||
                       $k['status'] == 'diproses admin' ||
-                      $k['status'] == 'upload bukti' ? 'bg-light' 
-                      : ($k['status'] == 'diterima' ? 'bg-success bg-opacity-10' 
-                      : ($k['status'] == 'ditolak' ? 'bg-danger bg-opacity-10' : '')) 
+                      $k['status'] == 'upload bukti' ? 'bg-light border-warning' 
+                      : ($k['status'] == 'diterima' ? 'bg-success bg-opacity-10 border-success' 
+                      : ($k['status'] == 'ditolak' ? 'bg-danger bg-opacity-10 border-danger' : '')) 
                     ?>">
-                      <div class="row align-items-center">
+                      <!-- Mobile Layout -->
+                      <div class="d-flex d-md-none">
+                        <div class="me-3">
+                          <div class="transaction-icon rounded-circle d-flex align-items-center justify-content-center" 
+                               style="width: 48px; height: 48px; <?= $k['cash_in'] == 0 ? 'background-color: #fee2e2; color: #dc2626;' : 'background-color: #dcfce7; color: #16a34a;' ?>">
+                            <?php if ($k['cash_in'] == 0) : ?>
+                              <i class="fas fa-arrow-up"></i>
+                            <?php else : ?>
+                              <i class="fas fa-arrow-down"></i>
+                            <?php endif; ?>
+                          </div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                              <h6 class="mb-1 fw-semibold"><?= ucwords($k['jenis_pengajuan']) ?></h6>
+                              <p class="mb-0 text-muted small"><?= ucwords($k['jenis_deposit']) ?></p>
+                            </div>
+                            <div class="text-end">
+                              <?php if ($k['cash_in'] == 0) : ?>
+                                <div class="amount text-danger fw-bold mb-1">
+                                  <small>Rp</small> <?= number_format($k['cash_out'], 0, ',', '.') ?>
+                                </div>
+                                <small class="text-muted">Keluar</small>
+                              <?php else : ?>
+                                <div class="amount text-success fw-bold mb-1">
+                                  <small>Rp</small> <?= number_format($k['cash_in'], 0, ',', '.') ?>
+                                </div>
+                                <small class="text-muted">Masuk</small>
+                              <?php endif; ?>
+                            </div>
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                              <span class="badge rounded-pill <?= 
+                                $k['status'] == 'diproses' ||
+                                $k['status'] == 'diproses bendahara' ||
+                                $k['status'] == 'diproses admin' ||
+                                $k['status'] == 'upload bukti' ? 'bg-warning' 
+                                : ($k['status'] == 'diterima' ? 'bg-success' 
+                                : 'bg-danger') 
+                              ?> small">
+                                <?= ucwords($k['status']) ?>
+                              </span>
+                              <small class="text-muted"><?= date('d M Y', strtotime($k['date_created'])) ?></small>
+                            </div>
+                            <div class="dropdown">
+                              <button class="btn btn-link text-muted p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                              </button>
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                  <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
+                                    <i class="fas fa-file-alt me-2"></i> Lihat Detail
+                                  </a>
+                                </li>
+                                <?php if (
+                                  !$k['bukti_transfer'] &&
+                                  $k['jenis_deposit'] == 'manasuka free' &&
+                                  $k['jenis_pengajuan'] == 'penyimpanan' &&
+                                  $k['status'] != "diterima" &&
+                                  $k['status'] != "ditolak"
+                                ) : ?>
+                                <li>
+                                  <a class="dropdown-item text-success" href="#" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
+                                    <i class="fas fa-upload me-2"></i> Upload Bukti
+                                  </a>
+                                </li>
+                                <?php endif; ?>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Desktop Layout -->
+                      <div class="d-none d-md-flex align-items-center">
                         <!-- Transaction Icon & Type -->
                         <div class="col-1 text-center">
                           <div class="transaction-icon rounded-circle d-inline-flex align-items-center justify-content-center" 
@@ -488,99 +564,12 @@
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
 
+<!-- Page specific scripts -->
 <script type="text/javascript">
-  $('.dtable').DataTable();
-  $(document).ready(function() {
-    $('#detailMutasi').on('show.bs.modal', function(e) {
-      var rowid = $(e.relatedTarget).data('id');
-      $.ajax({
-        type: 'POST',
-        url: '<?= base_url() ?>/anggota/deposit/detail_mutasi',
-        data: 'rowid=' + rowid,
-        success: function(data) {
-          $('.fetched-data').html(data); //menampilkan data ke dalam modal
-        }
-      });
-    });
-    $('#uploadBT').on('show.bs.modal', function(e) {
-      var rowid = $(e.relatedTarget).data('id');
-      $.ajax({
-        type: 'POST',
-        url: '<?= base_url() ?>/anggota/deposit/up_mutasi',
-        data: 'rowid=' + rowid,
-        success: function(data) {
-          $('.fetched-data').html(data); //menampilkan data ke dalam modal
-        }
-      });
-    });
-
-    $('#konfirmasi_check').click(function(){
-      //If the checkbox is checked.
-      if($(this).is(':checked')){
-        //Enable the submit button.
-        $('#confirm_button').attr("disabled", false);
-      } else{
-        //If it is not checked, disable the button.
-        $('#confirm_button').attr("disabled", true);
-      }
-    });
-  });
-
-  document.addEventListener("DOMContentLoaded", function () {
-    var modalAdd = document.getElementById('addPengajuan');
-    var modalParam = document.getElementById('set_param_manasuka');
-
-    modalAdd.addEventListener('shown.bs.modal', function () {
-      const nominalInput = document.getElementById('nominal_add');
-      const previewNominal = document.getElementById('preview_nominal1');
-
-      if (nominalInput) {
-        function updatePreview() {
-          const raw = nominalInput.value.replace(/[^\d]/g, "");
-
-          if (raw) {
-            const num = parseInt(raw, 10);
-            const formatted = new Intl.NumberFormat("id-ID", {
-              maximumFractionDigits: 0
-            }).format(num);
-
-            previewNominal.textContent = `Nominal Rp. ${formatted}`;
-          } else {
-            previewNominal.textContent = "";
-          }
-        }
-
-        nominalInput.addEventListener('input', updatePreview);
-        updatePreview();
-      }
-    });
-
-    modalParam.addEventListener('shown.bs.modal', function () {
-      const nominalInput = document.getElementById('nominal_param');
-      const previewNominal = document.getElementById('preview_nominal2');
-
-      if (nominalInput) {
-        function updatePreview() {
-          const raw = nominalInput.value.replace(/[^\d]/g, "");
-
-          if (raw) {
-            const num = parseInt(raw, 10);
-            const formatted = new Intl.NumberFormat("id-ID", {
-              maximumFractionDigits: 0
-            }).format(num);
-
-            previewNominal.textContent = `Nominal Rp. ${formatted}`;
-          } else {
-            previewNominal.textContent = "";
-          }
-        }
-
-        nominalInput.addEventListener('input', updatePreview);
-        updatePreview();
-      }
-    });
-  });
+  // Set base URL for AJAX calls
+  const BASE_URL = '<?= base_url() ?>';
 </script>
+<script src="<?=base_url()?>/assets/js/pages/anggota/deposit-list.js"></script>
 
 </body>
 
