@@ -563,12 +563,6 @@
 <script src="<?=base_url()?>/assets/libs/imask/imask.min.js"></script>
 
 <script src="<?=base_url()?>/assets/js/app.js"></script>
-
-<!-- Page specific scripts -->
-<script type="text/javascript">
-  // Set base URL for AJAX calls
-  const BASE_URL = '<?= base_url() ?>';
-</script>
 <script src="<?=base_url()?>/assets/js/pages/anggota/deposit-list.js"></script>
 
 </body>

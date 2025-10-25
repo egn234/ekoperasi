@@ -50,6 +50,7 @@ $routes->add('maintenance', 'Maintenance::index');
 $routes->group('admin', static function ($routes)
 {   
     $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
+    $routes->get('dashboard/getChartData', 'Admin\Dashboard::getChartData', ['as' => 'admin_chart_data']);
     $routes->get('profile', 'Admin\Profile::index');
     
     $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
@@ -157,6 +158,7 @@ $routes->group('admin', static function ($routes)
 $routes->group('bendahara', static function ($routes)
 {
     $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
+    $routes->get('dashboard/getChartData', 'Bendahara\Dashboard::getChartData', ['as' => 'bendahara_chart_data']);
     $routes->get('profile', 'Bendahara\Profile::index');
     $routes->get('parameter', 'Bendahara\Kelola_param::index');
     $routes->get('notification/mark-all-read', 'Bendahara\Notifications::mark_all_read');
@@ -222,6 +224,7 @@ $routes->group('bendahara', static function ($routes)
 $routes->group('ketua', static function ($routes)
 {
     $routes->get('dashboard', 'Ketua\Dashboard::index', ['as' => 'dashboard_ketua']);
+    $routes->get('dashboard/getChartData', 'Ketua\Dashboard::getChartData', ['as' => 'ketua_chart_data']);
     $routes->get('profile', 'Ketua\Profile::index');
     $routes->get('notification/mark-all-read', 'Ketua\Notifications::mark_all_read');
     
