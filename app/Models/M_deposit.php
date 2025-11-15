@@ -257,4 +257,68 @@ class m_deposit extends Model
         ";
         return $this->db->query($sql)->getResult();
     }
+
+    function getDepositChartByMonths($months = 6)
+    {
+        $sql = "
+            SELECT *
+            FROM(
+                SELECT 
+                    SUM(cash_in)
+                    + (
+                        SELECT IFNULL(SUM(nominal)+SUM(bunga)+SUM(provisi), 0) FROM tb_cicilan
+                        WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                    )
+                    - SUM(cash_out)
+                    - (
+                        SELECT IFNULL(SUM(nominal), 0)
+                        FROM tb_pinjaman
+                        WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                        AND status = 4
+                    ) AS saldo,
+                    COUNT(*) AS count,
+                    DATE_FORMAT(date_created, '%Y-%m') AS month,
+                    DATE_FORMAT(date_created, '%M %Y') AS month_name
+                FROM tb_deposit a
+                WHERE a.status = 'diterima'
+                AND date_created >= DATE_SUB(NOW(), INTERVAL ? MONTH)
+                GROUP BY month
+                ORDER BY month DESC
+                LIMIT ?
+            ) t
+            ORDER BY month ASC
+        ";
+        return $this->db->query($sql, [$months, $months])->getResult();
+    }
+
+    function getDepositChartByDateRange($startDate, $endDate)
+    {
+        $sql = "
+            SELECT *
+            FROM(
+                SELECT 
+                    SUM(cash_in)
+                    + (
+                        SELECT IFNULL(SUM(nominal)+SUM(bunga)+SUM(provisi), 0) FROM tb_cicilan
+                        WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                    )
+                    - SUM(cash_out)
+                    - (
+                        SELECT IFNULL(SUM(nominal), 0)
+                        FROM tb_pinjaman
+                        WHERE DATE_FORMAT(date_created, '%Y-%m') = DATE_FORMAT(a.date_created, '%Y-%m')
+                        AND status = 4
+                    ) AS saldo,
+                    COUNT(*) AS count,
+                    DATE_FORMAT(date_created, '%Y-%m') AS month,
+                    DATE_FORMAT(date_created, '%M %Y') AS month_name
+                FROM tb_deposit a
+                WHERE a.status = 'diterima'
+                AND DATE(date_created) BETWEEN ? AND ?
+                GROUP BY month
+                ORDER BY month ASC
+            ) t
+        ";
+        return $this->db->query($sql, [$startDate, $endDate])->getResult();
+    }
 }

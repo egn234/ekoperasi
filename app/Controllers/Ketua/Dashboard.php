@@ -56,4 +56,103 @@ class Dashboard extends Controller
         
         return view('ketua/dashboard', $data);
     }
+
+    public function getChartData()
+    {
+        $range = $this->request->getGet('range') ?? '6months';
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $chartType = $this->request->getGet('type') ?? 'deposit';
+
+        try {
+            $chartData = [];
+            
+            switch ($chartType) {
+                case 'deposit':
+                    $chartData = $this->getDepositChartData($range, $startDate, $endDate);
+                    break;
+                case 'loan':
+                    $chartData = $this->getLoanChartData($range, $startDate, $endDate);
+                    break;
+                case 'member':
+                    $chartData = $this->getMemberChartData($range, $startDate, $endDate);
+                    break;
+                default:
+                    $chartData = $this->getDepositChartData($range, $startDate, $endDate);
+            }
+
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => $chartData,
+                'range' => $range,
+                'type' => $chartType
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Failed to fetch chart data: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+
+    private function getDepositChartData($range, $startDate = null, $endDate = null)
+    {
+        if ($startDate && $endDate) {
+            return $this->m_deposit->getDepositChartByDateRange($startDate, $endDate);
+        }
+
+        switch ($range) {
+            case '3months':
+                return $this->m_deposit->getDepositChartByMonths(3);
+            case '6months':
+                return $this->m_deposit->getDepositChartByMonths(6);
+            case '12months':
+                return $this->m_deposit->getDepositChartByMonths(12);
+            case '2years':
+                return $this->m_deposit->getDepositChartByMonths(24);
+            default:
+                return $this->m_deposit->getDepositChartByMonths(6);
+        }
+    }
+
+    private function getLoanChartData($range, $startDate = null, $endDate = null)
+    {
+        if ($startDate && $endDate) {
+            return $this->m_pinjaman->getLoanChartByDateRange($startDate, $endDate);
+        }
+
+        switch ($range) {
+            case '3months':
+                return $this->m_pinjaman->getLoanChartByMonths(3);
+            case '6months':
+                return $this->m_pinjaman->getLoanChartByMonths(6);
+            case '12months':
+                return $this->m_pinjaman->getLoanChartByMonths(12);
+            case '2years':
+                return $this->m_pinjaman->getLoanChartByMonths(24);
+            default:
+                return $this->m_pinjaman->getLoanChartByMonths(6);
+        }
+    }
+
+    private function getMemberChartData($range, $startDate = null, $endDate = null)
+    {
+        if ($startDate && $endDate) {
+            return $this->m_user->getMemberChartByDateRange($startDate, $endDate);
+        }
+
+        switch ($range) {
+            case '3months':
+                return $this->m_user->getMemberChartByMonths(3);
+            case '6months':
+                return $this->m_user->getMemberChartByMonths(6);
+            case '12months':
+                return $this->m_user->getMemberChartByMonths(12);
+            case '2years':
+                return $this->m_user->getMemberChartByMonths(24);
+            default:
+                return $this->m_user->getMemberChartByMonths(6);
+        }
+    }
 }

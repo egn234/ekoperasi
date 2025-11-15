@@ -21,10 +21,8 @@ class m_pinjaman extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    function __construct()
-    {
-    	$this->db = db_connect();
-    }
+    // Remove custom constructor to avoid modifying protected $db property
+    // Use $this->db as provided by the parent Model class
 
     function getAllPinjaman()
     {
@@ -180,5 +178,40 @@ class m_pinjaman extends Model
         ";
 
         return $this->db->query($sql)->getResult();
+    }
+
+    function getLoanChartByMonths($months = 6)
+    {
+        $sql = "
+            SELECT 
+                IFNULL(SUM(nominal), 0) AS saldo,
+                DATE_FORMAT(date_created, '%Y-%m') AS month,
+                DATE_FORMAT(date_created, '%M %Y') AS month_name,
+                COUNT(*) as count
+            FROM tb_pinjaman
+            WHERE status = 4
+            AND date_created >= DATE_SUB(NOW(), INTERVAL ? MONTH)
+            GROUP BY month
+            ORDER BY month ASC
+            LIMIT ?
+        ";
+        return $this->db->query($sql, [$months, $months])->getResult();
+    }
+
+    function getLoanChartByDateRange($startDate, $endDate)
+    {
+        $sql = "
+            SELECT 
+                IFNULL(SUM(nominal), 0) AS saldo,
+                DATE_FORMAT(date_created, '%Y-%m') AS month,
+                DATE_FORMAT(date_created, '%M %Y') AS month_name,
+                COUNT(*) as count
+            FROM tb_pinjaman
+            WHERE status = 4
+            AND DATE(date_created) BETWEEN ? AND ?
+            GROUP BY month
+            ORDER BY month ASC
+        ";
+        return $this->db->query($sql, [$startDate, $endDate])->getResult();
     }
 }

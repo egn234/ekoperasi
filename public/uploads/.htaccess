@@ -1,14 +1,3 @@
-# mencegah eksekusi PHP di folder uploads
-<IfModule mod_php7.c>
-    php_flag engine off
-</IfModule>
-<IfModule mod_php8.c>
-    php_flag engine off
-</IfModule>
-
-# block typical script extensions
-<FilesMatch "\.(php|php5|phtml|pl|py|jsp|sh|cgi|exe|phar)$">
+<FilesMatch "\.php$">
     Require all denied
 </FilesMatch>
-
-Options -Indexes

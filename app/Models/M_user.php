@@ -364,5 +364,40 @@ class M_user extends Model
         $sql = "SELECT username from tb_user WHERE username LIKE 'GIAT%' ORDER BY username DESC LIMIT 1";
         return $this->db->query($sql)->getResult();
     }
+
+    function getMemberChartByMonths($months = 6)
+    {
+        $sql = "
+            SELECT 
+                COUNT(*) AS count,
+                COUNT(*) AS saldo,
+                DATE_FORMAT(date_created, '%Y-%m') AS month,
+                DATE_FORMAT(date_created, '%M %Y') AS month_name
+            FROM tb_user
+            WHERE verified = 1
+            AND date_created >= DATE_SUB(NOW(), INTERVAL ? MONTH)
+            GROUP BY month
+            ORDER BY month ASC
+            LIMIT ?
+        ";
+        return $this->db->query($sql, [$months, $months])->getResult();
+    }
+
+    function getMemberChartByDateRange($startDate, $endDate)
+    {
+        $sql = "
+            SELECT 
+                COUNT(*) AS count,
+                COUNT(*) AS saldo,
+                DATE_FORMAT(date_created, '%Y-%m') AS month,
+                DATE_FORMAT(date_created, '%M %Y') AS month_name
+            FROM tb_user
+            WHERE verified = 1
+            AND DATE(date_created) BETWEEN ? AND ?
+            GROUP BY month
+            ORDER BY month ASC
+        ";
+        return $this->db->query($sql, [$startDate, $endDate])->getResult();
+    }
     
 }

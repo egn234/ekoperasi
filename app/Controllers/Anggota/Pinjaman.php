@@ -57,6 +57,13 @@ class Pinjaman extends BaseController
         $tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
         $currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
+        // Get total count of paid installments (not paginated)
+        $total_paid_installments = $this->m_cicilan->select('COUNT(idcicilan) as total_count')
+            ->where('idpinjaman', $idpinjaman)
+            ->get()
+            ->getResult()[0]
+            ->total_count;
+
         $list_cicilan2 =  $this->m_cicilan_pag
             ->select('
                 (
@@ -88,7 +95,8 @@ class Pinjaman extends BaseController
             'pager' => $this->m_cicilan_pag->pager,
             'currentpage' => $currentpage,
             'detail_pinjaman' => $detail_pinjaman,
-            'tagihan_lunas' => $tagihan_lunas
+            'tagihan_lunas' => $tagihan_lunas,
+            'total_paid_installments' => $total_paid_installments
         ];
         
         return view('anggota/pinjaman/list-cicilan', $data);	
@@ -249,6 +257,63 @@ class Pinjaman extends BaseController
 
     public function top_up_proc($idpinjaman = false)
     {
+        // Validate loan eligibility for top up
+        $loan_detail = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
+        
+        // Check if loan is completed
+        if ($loan_detail->status == 5) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Tidak dapat melakukan top up. Pinjaman sudah lunas.',
+                    'status' => 'warning'
+                ]
+            );
+            
+            $dataset = ['notif' => $alert];
+            session()->setFlashdata($dataset);
+            return redirect()->back();
+        }
+        
+        // Check if loan is active
+        if ($loan_detail->status != 4) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Tidak dapat melakukan top up. Pinjaman belum aktif atau sudah selesai.',
+                    'status' => 'warning'
+                ]
+            );
+            
+            $dataset = ['notif' => $alert];
+            session()->setFlashdata($dataset);
+            return redirect()->back();
+        }
+        
+        // Calculate remaining installments
+        $count_cicilan = $this->m_cicilan->select('COUNT(idcicilan) as hitung')
+            ->where('idpinjaman', $idpinjaman)
+            ->get()
+            ->getResult()[0]
+            ->hitung;
+        
+        $sisa_cicilan = $loan_detail->angsuran_bulanan - $count_cicilan;
+        
+        // Check if remaining installments are less than or equal to 2
+        if ($sisa_cicilan <= 2) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Tidak dapat melakukan top up. Sisa cicilan harus lebih dari 2 bulan. Sisa cicilan saat ini: ' . $sisa_cicilan . ' bulan.',
+                    'status' => 'warning'
+                ]
+            );
+            
+            $dataset = ['notif' => $alert];
+            session()->setFlashdata($dataset);
+            return redirect()->back();
+        }
+        
         $cek_cicilan = $this->request->getPost('angsuran_bulanan');
         $satuan_waktu = $this->request->getPost('satuan_waktu');
         $cek_pegawai = $this->m_user->where('iduser', $this->account->iduser)
@@ -822,6 +887,44 @@ class Pinjaman extends BaseController
         if ($_POST['rowid']) {
             $id = $_POST['rowid'];
             $user = $this->m_pinjaman->getPinjamanById($id)[0];
+            
+            // Check if loan is completed
+            if ($user->status == 5) {
+                echo view('anggota/pinjaman/part-cicil-mod-topup-error', [
+                    'error_message' => 'Tidak dapat melakukan top up. Pinjaman sudah lunas.',
+                    'error_type' => 'completed'
+                ]);
+                return;
+            }
+            
+            // Check if loan is active
+            if ($user->status != 4) {
+                echo view('anggota/pinjaman/part-cicil-mod-topup-error', [
+                    'error_message' => 'Tidak dapat melakukan top up. Pinjaman belum aktif atau sudah selesai.',
+                    'error_type' => 'inactive'
+                ]);
+                return;
+            }
+            
+            // Calculate remaining installments
+            $count_cicilan = $this->m_cicilan->select('COUNT(idcicilan) as hitung')
+                ->where('idpinjaman', $id)
+                ->get()
+                ->getResult()[0]
+                ->hitung;
+            
+            $sisa_cicilan = $user->angsuran_bulanan - $count_cicilan;
+            
+            // Check if remaining installments are less than or equal to 2
+            if ($sisa_cicilan <= 2) {
+                echo view('anggota/pinjaman/part-cicil-mod-topup-error', [
+                    'error_message' => 'Tidak dapat melakukan top up. Sisa cicilan harus lebih dari 2 bulan. Sisa cicilan saat ini: ' . $sisa_cicilan . ' bulan.',
+                    'error_type' => 'insufficient_remaining',
+                    'remaining_installments' => $sisa_cicilan
+                ]);
+                return;
+            }
+            
             $penalty = $this->m_param->getParamById(6)[0]->nilai;
             $sum_cicilan = $this->m_cicilan->select("SUM(nominal) as saldo")
                 ->where('idpinjaman', $id)
@@ -833,7 +936,8 @@ class Pinjaman extends BaseController
                 'a' => $user,
                 'sisa' => $sisa_pinjaman,
                 'duser' => $this->account,
-                'penalty' => $penalty
+                'penalty' => $penalty,
+                'sisa_cicilan' => $sisa_cicilan
             ];
             echo view('anggota/pinjaman/part-cicil-mod-topup', $data);
         }
