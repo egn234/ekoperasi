@@ -56,7 +56,7 @@
                         <?php 
                           // Calculate remaining installments for button visibility using accurate count
                           $sisa_cicilan_view = $detail_pinjaman->angsuran_bulanan - $total_paid_installments;
-                          $can_top_up = ($detail_pinjaman->status == 4 && $sisa_cicilan_view > 2);
+                          $can_top_up = ($detail_pinjaman->status == 4 && $sisa_cicilan_view <= 2);
                         ?>
                         <?php if($can_top_up): ?>
                           <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#topUp" data-id="<?=$detail_pinjaman->idpinjaman?>">

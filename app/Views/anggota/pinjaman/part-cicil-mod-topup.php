@@ -80,7 +80,7 @@
                                 <i class="fas fa-info-circle me-2 text-info"></i>
                                 <div>
                                     <strong>Sisa Cicilan: <?= $sisa_cicilan ?> bulan</strong><br>
-                                    <small>Top Up hanya dapat dilakukan jika sisa cicilan lebih dari 2 bulan</small>
+                                    <small>Top Up hanya dapat dilakukan jika sisa cicilan kurang dari atau sama dengan 2 bulan</small>
                                 </div>
                             </div>
                         </div>

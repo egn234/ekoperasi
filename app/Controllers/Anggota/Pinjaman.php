@@ -299,12 +299,12 @@ class Pinjaman extends BaseController
         
         $sisa_cicilan = $loan_detail->angsuran_bulanan - $count_cicilan;
         
-        // Check if remaining installments are less than or equal to 2
-        if ($sisa_cicilan <= 2) {
+        // Check if remaining installments are more than 2 (top up only allowed when ≤ 2)
+        if ($sisa_cicilan > 2) {
             $alert = view(
                 'partials/notification-alert', 
                 [
-                    'notif_text' => 'Tidak dapat melakukan top up. Sisa cicilan harus lebih dari 2 bulan. Sisa cicilan saat ini: ' . $sisa_cicilan . ' bulan.',
+                    'notif_text' => 'Top up hanya dapat dilakukan ketika sisa cicilan kurang dari atau sama dengan 2 bulan. Sisa cicilan saat ini: ' . $sisa_cicilan . ' bulan.',
                     'status' => 'warning'
                 ]
             );
@@ -915,11 +915,11 @@ class Pinjaman extends BaseController
             
             $sisa_cicilan = $user->angsuran_bulanan - $count_cicilan;
             
-            // Check if remaining installments are less than or equal to 2
-            if ($sisa_cicilan <= 2) {
+            // Check if remaining installments are more than 2 (top up only allowed when ≤ 2)
+            if ($sisa_cicilan > 2) {
                 echo view('anggota/pinjaman/part-cicil-mod-topup-error', [
-                    'error_message' => 'Tidak dapat melakukan top up. Sisa cicilan harus lebih dari 2 bulan. Sisa cicilan saat ini: ' . $sisa_cicilan . ' bulan.',
-                    'error_type' => 'insufficient_remaining',
+                    'error_message' => 'Top up hanya dapat dilakukan ketika sisa cicilan kurang dari atau sama dengan 2 bulan. Sisa cicilan saat ini: ' . $sisa_cicilan . ' bulan.',
+                    'error_type' => 'too_many_remaining',
                     'remaining_installments' => $sisa_cicilan
                 ]);
                 return;

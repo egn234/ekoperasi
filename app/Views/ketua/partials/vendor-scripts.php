@@ -4,8 +4,6 @@
 <script src="<?=base_url()?>/assets/libs/simplebar/simplebar.min.js"></script>
 <script src="<?=base_url()?>/assets/libs/node-waves/waves.min.js"></script>
 <script src="<?=base_url()?>/assets/libs/feather-icons/feather.min.js"></script>
-<!-- pace js -->
-<script src="<?=base_url()?>/assets/libs/pace-js/pace.min.js"></script>
 
 <script>
     $(document).ready(function(){

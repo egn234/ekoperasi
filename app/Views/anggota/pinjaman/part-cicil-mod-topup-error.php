@@ -10,10 +10,10 @@
                                  style="width: 80px; height: 80px; font-size: 32px;">
                                 <i class="fas fa-check-circle"></i>
                             </div>
-                        <?php elseif($error_type == 'insufficient_remaining'): ?>
+                        <?php elseif($error_type == 'too_many_remaining'): ?>
                             <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" 
                                  style="width: 80px; height: 80px; font-size: 32px;">
-                                <i class="fas fa-exclamation-triangle"></i>
+                                <i class="fas fa-clock"></i>
                             </div>
                         <?php else: ?>
                             <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" 
@@ -26,8 +26,8 @@
                     <h5 class="mb-3">
                         <?php if($error_type == 'completed'): ?>
                             Pinjaman Sudah Lunas
-                        <?php elseif($error_type == 'insufficient_remaining'): ?>
-                            Sisa Cicilan Tidak Mencukupi
+                        <?php elseif($error_type == 'too_many_remaining'): ?>
+                            Sisa Cicilan Terlalu Banyak
                         <?php else: ?>
                             Pinjaman Tidak Aktif
                         <?php endif; ?>
@@ -35,13 +35,13 @@
                     
                     <p class="text-muted mb-4"><?= $error_message ?></p>
                     
-                    <?php if($error_type == 'insufficient_remaining'): ?>
+                    <?php if($error_type == 'too_many_remaining'): ?>
                         <div class="alert alert-warning border-0 mb-4" style="background-color: #fff3cd;">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-info-circle me-2 text-warning"></i>
                                 <div class="text-start">
                                     <strong>Ketentuan Top Up:</strong><br>
-                                    <small>Top Up hanya dapat dilakukan ketika sisa cicilan lebih dari 2 bulan</small>
+                                    <small>Top Up hanya dapat dilakukan ketika sisa cicilan kurang dari atau sama dengan 2 bulan</small>
                                 </div>
                             </div>
                         </div>
@@ -52,7 +52,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <span class="text-muted">Sisa Cicilan Saat Ini</span>
-                                            <h4 class="mb-0 <?= $remaining_installments <= 2 ? 'text-danger' : 'text-success' ?>">
+                                            <h4 class="mb-0 <?= $remaining_installments > 2 ? 'text-warning' : 'text-success' ?>">
                                                 <?= $remaining_installments ?> Bulan
                                             </h4>
                                         </div>
