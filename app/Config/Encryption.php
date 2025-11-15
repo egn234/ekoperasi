@@ -103,5 +103,6 @@ class Encryption extends BaseConfig
         parent::__construct();
 
         $this->key = getenv('ENCRYPTION_KEY');
+        // $this->key = "ngorok";
     }
 }

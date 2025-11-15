@@ -75,6 +75,15 @@
                         </div>
                         </b>
                         <hr>
+                        <div class="alert alert-info border-0 mb-3" style="background-color: #e0f2fe;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-2 text-info"></i>
+                                <div>
+                                    <strong>Sisa Cicilan: <?= $sisa_cicilan ?> bulan</strong><br>
+                                    <small>Top Up hanya dapat dilakukan jika sisa cicilan lebih dari 2 bulan</small>
+                                </div>
+                            </div>
+                        </div>
                         <i class="text-danger">
                             *Pinjaman yang sedang aktif akan otomatis lunas, dan sisa saldo pinjaman akan dipindahkan ke pengajuan yang baru<br>
                             *Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at<br>
