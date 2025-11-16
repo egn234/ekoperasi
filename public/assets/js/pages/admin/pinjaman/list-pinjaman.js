@@ -40,6 +40,12 @@ $(document).ready(function() {
         }
       },
       {
+        title: "Asuransi",
+        "render": function(data, type, row, meta) {
+          return '<a href="#" class="btn btn-sm btn-outline-info view-asuransi" data-id="'+row.idpinjaman+'">Lihat Asuransi</a>';
+        }
+      },
+      {
         title: "Status",
         "render": function(data, type, row, meta) {
           let output;
@@ -123,6 +129,12 @@ $(document).ready(function() {
           }
         },
         {
+          title: "Asuransi",
+          render: function(data, type, row, meta) {
+            return '<a href="#" class="btn btn-sm btn-outline-info view-asuransi" data-id="'+row.idpinjaman+'">Lihat Asuransi</a>';
+          }
+        },
+        {
           title: "Tanggal Pengajuan",
           data: "date_created"
         },
@@ -202,6 +214,46 @@ $(document).ready(function() {
       data: 'rowid=' + rowid,
       success: function(data) {
         $('#fetched-data-lunasiPartial').html(data); //menampilkan data ke dalam modal
+      }
+    });
+  });
+
+  // Handler for viewing asuransi
+  $(document).on('click', '.view-asuransi', function(e) {
+    e.preventDefault();
+    var idpinjaman = $(this).data('id');
+    
+    $.ajax({
+      type: 'GET',
+      url: `${BASE_URL}admin/pinjaman/get_asuransi/${idpinjaman}`,
+      success: function(response) {
+        if(response.status === 'success') {
+          let content = '';
+          if(response.data.length > 0) {
+            content = '<div class="table-responsive"><table class="table table-sm">';
+            content += '<thead><tr><th>Periode (Bulan)</th><th>Nilai Asuransi</th></tr></thead>';
+            content += '<tbody>';
+            
+                            response.data.forEach(function(item) {
+                              content += `<tr>
+                                <td>${item.bulan_kumulatif} bulan</td>
+                                <td>Rp ${numberFormat(item.nilai_asuransi, 2)}</td>
+                              </tr>`;
+                            });            content += '</tbody>';
+            content += `<tfoot><tr><th>Total</th><th>Rp ${numberFormat(response.total_asuransi, 2)}</th></tr></tfoot>`;
+            content += '</table></div>';
+          } else {
+            content = '<div class="alert alert-info">Tidak ada data asuransi untuk pinjaman ini.</div>';
+          }
+          
+          $('#asuransi-content').html(content);
+          $('#asuransiModal').modal('show');
+        } else {
+          alert('Error: ' + response.message);
+        }
+      },
+      error: function() {
+        alert('Gagal mengambil data asuransi');
       }
     });
   });

@@ -12,6 +12,7 @@ use App\Models\M_param;
 use App\Models\M_param_manasuka;
 use App\Models\M_cicilan;
 use App\Models\M_pinjaman;
+use App\Models\M_asuransi;
 
 use App\Controllers\Admin\Notifications;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -115,7 +116,9 @@ class Report extends Controller
         $sheet->mergeCells('E1:E2');
         $sheet->mergeCells('F1:I1');
         $sheet->mergeCells('J1:J2');
-        $sheet->mergeCells('K1:L1');
+        $sheet->mergeCells('K1:K2');
+        $sheet->mergeCells('L1:L2');
+        $sheet->mergeCells('M1:N1');
         $sheet->setCellValue('A1', 'NO.');
         $sheet->setCellValue('B1', 'NAMA');
         $sheet->setCellValue('C1', 'NIK');
@@ -126,10 +129,12 @@ class Report extends Controller
         $sheet->setCellValue('G2', 'BUNGA PINJAMAN');
         $sheet->setCellValue('H2', 'PROVISI');
         $sheet->setCellValue('I2', 'JUMLAH');
-        $sheet->setCellValue('J1', 'TOTAL POTONGAN');
-        $sheet->setCellValue('K1', 'CICILAN PINJAMAN UANG');
-        $sheet->setCellValue('K2', 'JML');
-        $sheet->setCellValue('L2', 'KE');
+        $sheet->setCellValue('J1', 'ASURANSI');
+        $sheet->setCellValue('K1', 'TOTAL POTONGAN');
+        $sheet->setCellValue('L1', 'CICILAN PINJAMAN UANG');
+        $sheet->setCellValue('M1', 'CICILAN PINJAMAN UANG');
+        $sheet->setCellValue('L2', 'JML');
+        $sheet->setCellValue('M2', 'KE');
         $c = 1;
         $cellNumber = 3;
 
@@ -139,8 +144,17 @@ class Report extends Controller
 
             if ($pinjaman) {
                 $count_cicilan = $m_monthly_report->countCicilanByPinjaman($pinjaman[0]->idpinjaman, $startDate, $endDate)[0]->hitung;
+                
+                // Get asuransi data
+                $m_asuransi = model(M_asuransi::class);
+                $asuransi_data = $m_asuransi->getAsuransiByIdPinjaman($pinjaman[0]->idpinjaman);
+                $total_asuransi = 0;
+                foreach ($asuransi_data as $asuransi) {
+                    $total_asuransi += $asuransi->nilai_asuransi;
+                }
             }else{
                 $count_cicilan = " - ";
+                $total_asuransi = 0;
             }
             
             $data_pokok_wajib = $m_monthly_report->getSumSimpanan1($a->iduser, $startDate, $endDate)[0]->nominal;  
@@ -153,7 +167,7 @@ class Report extends Controller
             $p_bunga = ($cicilan)?$cicilan[0]->bunga:0;
             $p_provisi = ($cicilan)?$cicilan[0]->provisi:0;
 
-            $total_potongan = ($pokok_wajib + $manasuka + $p_pokok + $p_bunga + $p_provisi);
+            $total_potongan = ($pokok_wajib + $manasuka + $p_pokok + $p_bunga + $p_provisi + $total_asuransi);
 
             $sheet->setCellValue('A'.$cellNumber, $c);
             $sheet->setCellValue('B'.$cellNumber, $a->nama_lengkap);
@@ -164,14 +178,15 @@ class Report extends Controller
             $sheet->setCellValue('G'.$cellNumber, $p_bunga);
             $sheet->setCellValue('H'.$cellNumber, $p_provisi);
             $sheet->setCellValue('I'.$cellNumber, ($p_pokok + $p_bunga + $p_provisi));
-            $sheet->setCellValue('J'.$cellNumber, $total_potongan);
-            $sheet->setCellValue('K'.$cellNumber, ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ');
-            $sheet->setCellValue('L'.$cellNumber, $count_cicilan);
+            $sheet->setCellValue('J'.$cellNumber, $total_asuransi);
+            $sheet->setCellValue('K'.$cellNumber, $total_potongan);
+            $sheet->setCellValue('L'.$cellNumber, ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ');
+            $sheet->setCellValue('M'.$cellNumber, $count_cicilan);
             $c++;
             $cellNumber++;
         }
         
-        foreach (range('A', 'L') as $columnID) {
+        foreach (range('A', 'M') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -859,21 +874,24 @@ class Report extends Controller
         $sheet->setCellValue('G2', 'JUMLAH PINJAMAN'); // Subkolom PINJAMAN
         $sheet->setCellValue('H2', 'PEMBAYARAN POKOK');
 
-        $sheet->mergeCells('I1:I2'); // SALDO PINJAMAN PER ...
-        $sheet->setCellValue('I1', strtoupper('SALDO PINJAMAN PER ' . date('d F Y')));
+        $sheet->mergeCells('I1:I2'); // ASURANSI
+        $sheet->setCellValue('I1', 'ASURANSI');
 
-        $sheet->mergeCells('J1:K1'); // KETERANGAN (JUMLAH CICILAN, SISA CICILAN)
-        $sheet->setCellValue('J1', 'KETERANGAN');
-        $sheet->setCellValue('J2', 'JUMLAH CICILAN'); // Subkolom KETERANGAN
-        $sheet->setCellValue('K2', 'SISA CICILAN');
+        $sheet->mergeCells('J1:J2'); // SALDO PINJAMAN PER ...
+        $sheet->setCellValue('J1', strtoupper('SALDO PINJAMAN PER ' . date('d F Y')));
 
-        $sheet->mergeCells('L1:L2'); // NOMOR ANGGOTA
-        $sheet->setCellValue('L1', 'NOMOR ANGGOTA');
+        $sheet->mergeCells('K1:L1'); // KETERANGAN (JUMLAH CICILAN, SISA CICILAN)
+        $sheet->setCellValue('K1', 'KETERANGAN');
+        $sheet->setCellValue('K2', 'JUMLAH CICILAN'); // Subkolom KETERANGAN
+        $sheet->setCellValue('L2', 'SISA CICILAN');
+
+        $sheet->mergeCells('M1:M2'); // NOMOR ANGGOTA
+        $sheet->setCellValue('M1', 'NOMOR ANGGOTA');
 
         // Tambahkan styling (opsional)
-        $sheet->getStyle('A1:L2')->getFont()->setBold(true);
-        $sheet->getStyle('A1:L2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:L2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('A1:M2')->getFont()->setBold(true);
+        $sheet->getStyle('A1:M2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:M2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
         $list_pegawai = [
             'BUT' => $m_user->where('flag', 1)->where('instansi', 'YPT')->where('idgroup', 4)->get()->getResult(),
@@ -893,7 +911,7 @@ class Report extends Controller
 
         foreach ($list_pegawai as $instansi => $pegawai_list) {
             // Tambahkan baris pembatas untuk instansi
-            $sheet->mergeCells('A' . $row . ':L' . $row); // Gabungkan kolom A sampai L
+            $sheet->mergeCells('A' . $row . ':M' . $row); // Gabungkan kolom A sampai M
             $sheet->setCellValue('A' . $row, strtoupper('DAFTAR ' . $instansi)); // Nama instansi
             $sheet->getStyle('A' . $row)->getFont()->setBold(true); // Bold untuk pembatas
             $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
@@ -906,8 +924,17 @@ class Report extends Controller
                 
                 if ($pinjaman){
                     $count_cicilan = $m_monthly_report->countCicilanByPinjaman($pinjaman[0]->idpinjaman, $startDate, $endDate)[0]->hitung;
+                    
+                    // Get asuransi data
+                    $m_asuransi = model(M_asuransi::class);
+                    $asuransi_data = $m_asuransi->getAsuransiByIdPinjaman($pinjaman[0]->idpinjaman);
+                    $total_asuransi = 0;
+                    foreach ($asuransi_data as $asuransi) {
+                        $total_asuransi += $asuransi->nilai_asuransi;
+                    }
                 } else {
                     $count_cicilan = " - ";
+                    $total_asuransi = 0;
                 }
 
                 $simpanan_pokok = $m_deposit->select("SUM(cash_in)-SUM(cash_out) AS nominal")
@@ -971,10 +998,11 @@ class Report extends Controller
                 $sheet->setCellValue('F'.$row, ($simpanan_manasuka+$simpanan_wajib+$simpanan_pokok));
                 $sheet->setCellValue('G'.$row, $jumlah_pinjaman);
                 $sheet->setCellValue('H'.$row, $cicilan_dalam);
-                $sheet->setCellValue('I'.$row, $jumlah_pinjaman-$cicilan_dalam);
-                $sheet->setCellValue('J'.$row, ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ');
-                $sheet->setCellValue('K'.$row, ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - ');
-                $sheet->setCellValue('L'.$row, $pegawai->username);
+                $sheet->setCellValue('I'.$row, $total_asuransi);
+                $sheet->setCellValue('J'.$row, $jumlah_pinjaman-$cicilan_dalam);
+                $sheet->setCellValue('K'.$row, ($pinjaman)?$pinjaman[0]->angsuran_bulanan:' - ');
+                $sheet->setCellValue('L'.$row, ($count_cicilan != " - ")?$pinjaman[0]->angsuran_bulanan - $count_cicilan:' - ');
+                $sheet->setCellValue('M'.$row, $pegawai->username);
 
                 $row++;
                 $number++;
@@ -983,12 +1011,12 @@ class Report extends Controller
         // Format kolom sebagai currency (contoh untuk kolom Simpanan dan Pinjaman)
         $sheet->getStyle('C4:F' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Kolom Simpanan
         $sheet->getStyle('G4:H' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Kolom Pinjaman
-        $sheet->getStyle('I4:I' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Saldo Pinjaman
+        $sheet->getStyle('I4:J' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00'); // Asuransi dan Saldo Pinjaman
         // Set border untuk header (opsional)
-        $sheet->getStyle('A1:L' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getStyle('A1:M' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
         // Setelah data selesai ditulis ke sheet
-        foreach (range('A', 'L') as $columnID) {
+        foreach (range('A', 'M') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 

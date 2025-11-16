@@ -114,6 +114,7 @@ $routes->group('admin', static function ($routes)
     {
         $routes->get('list', 'Admin\Pinjaman::index');
         $routes->get('list_pelunasan', 'Admin\Pinjaman::list_pelunasan');
+        $routes->get('get_asuransi/(:num)', 'Admin\Pinjaman::get_asuransi/$1');
 
         $routes->post('cancel-pinjaman', 'Admin\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Admin\Pinjaman::approve_loan');
@@ -193,6 +194,7 @@ $routes->group('bendahara', static function ($routes)
     $routes->group('pinjaman', static function ($routes)
     {
         $routes->get('list', 'Bendahara\Pinjaman::index');
+        $routes->get('get_asuransi/(:num)', 'Bendahara\Pinjaman::get_asuransi/$1');
 
         $routes->post('cancel-pinjaman', 'Bendahara\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Bendahara\Pinjaman::approve_loan');
@@ -236,6 +238,7 @@ $routes->group('ketua', static function ($routes)
     $routes->group('pinjaman', static function ($routes)
     {
         $routes->get('list', 'Ketua\Pinjaman::index');
+        $routes->get('get_asuransi/(:num)', 'Ketua\Pinjaman::get_asuransi/$1');
 
         $routes->post('cancel-pinjaman', 'Ketua\Pinjaman::cancel_loan');
         $routes->post('approve-pinjaman', 'Ketua\Pinjaman::approve_loan');
@@ -301,6 +304,7 @@ $routes->group('anggota', static function ($routes)
 
         $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
         $routes->add('riwayat_penolakan', 'Anggota\Pinjaman::riwayat_penolakan');
+        $routes->get('get_asuransi/(:num)', 'Anggota\Pinjaman::get_asuransi/$1');
         $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
         $routes->add('lunasi_proc/(:num)', 'Anggota\Pinjaman::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
         $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);

@@ -55,6 +55,7 @@
                                         <th>Nama Pemohon</th>
                                         <th>Tipe</th>
                                         <th>Nominal</th>
+                                        <th>Asuransi</th>
                                         <th>Tanggal Pengajuan</th>
                                         <th>Lama Angsuran (bulan)</th>
                                         <th>Form Persetujuan</th>
@@ -68,6 +69,9 @@
                                                 <td><?= $a->nama_peminjam ?></td>
                                                 <td><?= $a->tipe_permohonan ?></td>
                                                 <td>Rp <?= number_format($a->nominal, 2, ',', '.') ?></td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-info view-asuransi" data-id="<?=$a->idpinjaman?>">Lihat Asuransi</a>
+                                                </td>
                                                 <td><?= date('d F Y', strtotime($a->date_created)) ?></td>
                                                 <td><?= $a->angsuran_bulanan ?></td>
                                                 <td>
@@ -132,6 +136,20 @@
     </div>
 </div><!-- /.modal -->
 
+<div id="asuransiModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Informasi Asuransi Pinjaman</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="asuransi-content">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div><!-- /.modal -->
+
 
 <?= $this->include('ketua/partials/right-sidebar') ?>
 
@@ -169,6 +187,57 @@
                 }
             });
         });
+
+        // Handler for viewing asuransi
+        $(document).on('click', '.view-asuransi', function(e) {
+            e.preventDefault();
+            var idpinjaman = $(this).data('id');
+            
+            $.ajax({
+                type: 'GET',
+                url: '<?= base_url() ?>/ketua/pinjaman/get_asuransi/' + idpinjaman,
+                success: function(response) {
+                    if(response.status === 'success') {
+                        let content = '';
+                        if(response.data.length > 0) {
+                            content = '<div class="table-responsive"><table class="table table-sm">';
+                            content += '<thead><tr><th>Periode (Bulan)</th><th>Nilai Asuransi</th></tr></thead>';
+                            content += '<tbody>';
+                            
+                            response.data.forEach(function(item) {
+                                content += `<tr>
+                                    <td>${item.bulan_kumulatif} bulan</td>
+                                    <td>Rp ${numberFormat(item.nilai_asuransi, 2)}</td>
+                                </tr>`;
+                            });
+                            
+                            content += '</tbody>';
+                            content += `<tfoot><tr><th>Total</th><th>Rp ${numberFormat(response.total_asuransi, 2)}</th></tr></tfoot>`;
+                            content += '</table></div>';
+                        } else {
+                            content = '<div class="alert alert-info">Tidak ada data asuransi untuk pinjaman ini.</div>';
+                        }
+                        
+                        $('#asuransi-content').html(content);
+                        $('#asuransiModal').modal('show');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Gagal mengambil data asuransi');
+                }
+            });
+        });
+
+        // Function for number formatting
+        function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+            number = parseFloat(number).toFixed(decimals);
+            number = number.replace('.', decimalSeparator);
+            var parts = number.split(decimalSeparator);
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+            return parts.join(decimalSeparator);
+        }
     });
 </script>
 

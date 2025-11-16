@@ -108,6 +108,20 @@
   </div>
 </div><!-- /.modal -->
 
+<div id="asuransiModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Informasi Asuransi Pinjaman</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="asuransi-content">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div><!-- /.modal -->
+
 <?= $this->include('admin/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->

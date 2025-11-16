@@ -28,6 +28,14 @@
         Harus Diisi
       </div>
     </div>
+    
+    <!-- Informasi Provisi -->
+    <div class="alert alert-info mb-3">
+      <h6 class="alert-heading"><i class="mdi mdi-information-outline"></i> Informasi Potongan Awal</h6>
+      <p class="mb-1"><strong>Provisi:</strong> <?= $provisi->nilai ?>% dari nominal pinjaman</p>
+      <small class="text-muted">Provisi akan dipotong dari nominal pinjaman yang dicairkan</small>
+    </div>
+    
     <div class="row mb-3">
       <label class="form-label" for="angsuran_bulanan">Lama Cicilan Pelunasan</label>
       <div class="col-6">
@@ -55,6 +63,18 @@
         </div>
       </div>
     </div>
+    
+    <!-- Informasi Asuransi -->
+    <div class="alert alert-warning mb-3">
+      <h6 class="alert-heading"><i class="mdi mdi-shield-check-outline"></i> Informasi Asuransi Pinjaman</h6>
+      <p class="mb-1"><strong>Kelipatan:</strong> Setiap <?= (int)$bulan_kelipatan_asuransi->nilai ?> bulan cicilan</p>
+      <p class="mb-1"><strong>Nominal:</strong> Rp <?= number_format($nominal_asuransi->nilai, 0, ',', '.') ?> per kelipatan</p>
+      <p class="mb-0"><small class="text-muted"><i class="mdi mdi-information"></i> Asuransi dibayarkan di awal saat pencairan pinjaman</small></p>
+      <div id="preview_asuransi" class="mt-2">
+        <small class="text-muted">Pilih lama cicilan untuk melihat estimasi asuransi</small>
+      </div>
+    </div>
+    
     <span class="text-xs">
       <i>
         *Tanggal pencairan, penarikan dan pinjaman dilakukan setiap hari jum'at </br>

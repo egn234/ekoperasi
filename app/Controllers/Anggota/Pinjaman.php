@@ -10,6 +10,7 @@ use App\Models\M_cicilan;
 use App\Models\M_cicilan_pag;
 use App\Models\M_param;
 use App\Models\M_notification;
+use App\Models\M_asuransi;
 
 class Pinjaman extends BaseController
 {
@@ -20,6 +21,7 @@ class Pinjaman extends BaseController
     protected $m_cicilan_pag;
     protected $m_param;
     protected $m_notification;
+    protected $m_asuransi;
     protected $notification;
 
     function __construct()
@@ -30,6 +32,7 @@ class Pinjaman extends BaseController
         $this->m_cicilan_pag = model(M_cicilan_pag::class);
         $this->m_param = model(M_param::class);
         $this->m_notification = model(M_notification::class);
+        $this->m_asuransi = model(M_asuransi::class);
         $this->notification = new Notifications();
 
         $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
@@ -55,6 +58,7 @@ class Pinjaman extends BaseController
     {
         $detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
         $tagihan_lunas = $this->m_cicilan->getSaldoTerbayarByIdPinjaman($idpinjaman)[0];
+        $asuransi_data = $this->m_asuransi->getAsuransiByIdPinjaman($idpinjaman);
         $currentpage = $this->request->getVar('page_grup1') ? $this->request->getVar('page_grup1') : 1;
 
         // Get total count of paid installments (not paginated)
@@ -96,6 +100,7 @@ class Pinjaman extends BaseController
             'currentpage' => $currentpage,
             'detail_pinjaman' => $detail_pinjaman,
             'tagihan_lunas' => $tagihan_lunas,
+            'asuransi_data' => $asuransi_data,
             'total_paid_installments' => $total_paid_installments
         ];
         
@@ -237,6 +242,31 @@ class Pinjaman extends BaseController
             ];
 
             $this->m_pinjaman->insertPinjaman($dataset);
+
+            // Get the last inserted loan ID
+            $last_pinjaman_id = $this->m_pinjaman->db->insertID();
+
+            // Calculate and insert insurance
+            $bulan_kelipatan = (int)$this->m_param->getParamById(11)[0]->nilai;
+            $nominal_asuransi = (float)$this->m_param->getParamById(12)[0]->nilai;
+
+            log_message('info', 'Insurance calculation - Angsuran: ' . $angsuran_bulanan . ', Kelipatan: ' . $bulan_kelipatan . ', Nominal: ' . $nominal_asuransi);
+
+            $asuransi_data = $this->m_asuransi->calculateAsuransi($angsuran_bulanan, $nominal_asuransi, $bulan_kelipatan);
+
+            log_message('info', 'Insurance data to insert: ' . json_encode($asuransi_data));
+
+            foreach ($asuransi_data as $asuransi) {
+                $asuransi_insert_data = [
+                    'idpinjaman' => $last_pinjaman_id,
+                    'bulan_kumulatif' => $asuransi['bulan_kumulatif'],
+                    'nilai_asuransi' => $asuransi['nilai_asuransi'],
+                    'status' => 'aktif'
+                ];
+                
+                log_message('info', 'Inserting asuransi: ' . json_encode($asuransi_insert_data));
+                $this->m_asuransi->insertAsuransi($asuransi_insert_data);
+            }
 
             $alert = view(
                 'partials/notification-alert', 
@@ -398,6 +428,25 @@ class Pinjaman extends BaseController
             ];
 
             $this->m_pinjaman->insertPinjaman($dataset);
+
+            // Get the last inserted loan ID for top up
+            $last_topup_id = $this->m_pinjaman->db->insertID();
+
+            // Calculate and insert insurance for top up
+            $bulan_kelipatan = (int)$this->m_param->getParamById(11)[0]->nilai;
+            $nominal_asuransi = (float)$this->m_param->getParamById(12)[0]->nilai;
+
+            $asuransi_data = $this->m_asuransi->calculateAsuransi($angsuran_bulanan, $nominal_asuransi, $bulan_kelipatan);
+
+            foreach ($asuransi_data as $asuransi) {
+                $asuransi_insert_data = [
+                    'idpinjaman' => $last_topup_id,
+                    'bulan_kumulatif' => $asuransi['bulan_kumulatif'],
+                    'nilai_asuransi' => $asuransi['nilai_asuransi'],
+                    'status' => 'aktif'
+                ];
+                $this->m_asuransi->insertAsuransi($asuransi_insert_data);
+            }
 
             $dataset_pinjaman = [
                 'status' => 5,
@@ -877,7 +926,18 @@ class Pinjaman extends BaseController
     {
         if ($_POST['id']) {
             $id = $_POST['id'];
-            $data = ['duser' => $this->account];
+            
+            // Get parameters for display
+            $provisi = $this->m_param->getParamById(5)[0]; // Provisi
+            $bulan_kelipatan_asuransi = $this->m_param->getParamById(11)[0]; // Bulan kelipatan asuransi
+            $nominal_asuransi = $this->m_param->getParamById(12)[0]; // Nominal asuransi
+            
+            $data = [
+                'duser' => $this->account,
+                'provisi' => $provisi,
+                'bulan_kelipatan_asuransi' => $bulan_kelipatan_asuransi,
+                'nominal_asuransi' => $nominal_asuransi
+            ];
             echo view('anggota/pinjaman/part-pinj-mod-add', $data);
         }
     }
@@ -926,6 +986,10 @@ class Pinjaman extends BaseController
             }
             
             $penalty = $this->m_param->getParamById(6)[0]->nilai;
+            $provisi = $this->m_param->getParamById(5)[0]; // Provisi
+            $bulan_kelipatan_asuransi = $this->m_param->getParamById(11)[0]; // Bulan kelipatan asuransi
+            $nominal_asuransi = $this->m_param->getParamById(12)[0]; // Nominal asuransi
+            
             $sum_cicilan = $this->m_cicilan->select("SUM(nominal) as saldo")
                 ->where('idpinjaman', $id)
                 ->get()
@@ -937,7 +1001,10 @@ class Pinjaman extends BaseController
                 'sisa' => $sisa_pinjaman,
                 'duser' => $this->account,
                 'penalty' => $penalty,
-                'sisa_cicilan' => $sisa_cicilan
+                'sisa_cicilan' => $sisa_cicilan,
+                'provisi' => $provisi,
+                'bulan_kelipatan_asuransi' => $bulan_kelipatan_asuransi,
+                'nominal_asuransi' => $nominal_asuransi
             ];
             echo view('anggota/pinjaman/part-cicil-mod-topup', $data);
         }
@@ -1011,5 +1078,61 @@ class Pinjaman extends BaseController
         ];
 
         return $this->response->setJSON($response);
+    }
+
+    /**
+     * Get insurance details for a specific loan
+     */
+    public function get_asuransi($idpinjaman)
+    {
+        try {
+            // Debug log
+            log_message('info', 'Getting asuransi for idpinjaman: ' . $idpinjaman);
+            
+            // First check if the loan exists
+            $pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman);
+            if (empty($pinjaman)) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Pinjaman tidak ditemukan'
+                ]);
+            }
+            
+            $asuransi_data = $this->m_asuransi->getAsuransiByIdPinjaman($idpinjaman);
+            
+            log_message('info', 'Asuransi data count: ' . count($asuransi_data));
+            
+            if (empty($asuransi_data)) {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'data' => [],
+                    'message' => 'Tidak ada data asuransi untuk pinjaman ini',
+                    'total_asuransi' => 0,
+                    'debug' => [
+                        'idpinjaman' => $idpinjaman,
+                        'sql_query' => 'SELECT * FROM tb_asuransi_pinjaman WHERE idpinjaman = ' . $idpinjaman
+                    ]
+                ]);
+            }
+
+            // Calculate total insurance
+            $total_asuransi = 0;
+            foreach ($asuransi_data as $item) {
+                $total_asuransi += $item->nilai_asuransi;
+            }
+
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => $asuransi_data,
+                'total_asuransi' => $total_asuransi
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error in get_asuransi: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Gagal mengambil data asuransi: ' . $e->getMessage()
+            ]);
+        }
     }
 }

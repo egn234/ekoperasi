@@ -8,12 +8,13 @@ use App\Models\M_pinjaman;
 use App\Models\M_cicilan;
 use App\Models\M_param;
 use App\Models\M_notification;
+use App\Models\M_asuransi;
 
 use App\Controllers\Bendahara\Notifications;
 
 class Pinjaman extends Controller
 {
-    protected $m_user, $m_pinjaman, $m_cicilan, $m_param, $m_notification;
+    protected $m_user, $m_pinjaman, $m_cicilan, $m_param, $m_notification, $m_asuransi;
     protected $account;
     protected $notification;
 
@@ -24,6 +25,7 @@ class Pinjaman extends Controller
         $this->m_cicilan = model(M_cicilan::class);
         $this->m_param = model(M_param::class);
         $this->m_notification = model(M_notification::class);
+        $this->m_asuransi = model(M_asuransi::class);
         $this->notification = new Notifications();
         $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
@@ -574,5 +576,58 @@ class Pinjaman extends Controller
         ];
 
         return $this->response->setJSON($response);
+    }
+
+    public function get_asuransi($idpinjaman)
+    {
+        try {
+            // Debug log
+            log_message('info', 'Getting asuransi for idpinjaman: ' . $idpinjaman);
+            
+            // First check if the loan exists
+            $pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman);
+            if (empty($pinjaman)) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Pinjaman tidak ditemukan'
+                ]);
+            }
+            
+            $asuransi_data = $this->m_asuransi->getAsuransiByIdPinjaman($idpinjaman);
+            
+            log_message('info', 'Asuransi data count: ' . count($asuransi_data));
+            
+            if (empty($asuransi_data)) {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'data' => [],
+                    'message' => 'Tidak ada data asuransi untuk pinjaman ini',
+                    'total_asuransi' => 0,
+                    'debug' => [
+                        'idpinjaman' => $idpinjaman,
+                        'sql_query' => 'SELECT * FROM tb_asuransi_pinjaman WHERE idpinjaman = ' . $idpinjaman
+                    ]
+                ]);
+            }
+
+            // Calculate total insurance
+            $total_asuransi = 0;
+            foreach ($asuransi_data as $item) {
+                $total_asuransi += $item->nilai_asuransi;
+            }
+
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => $asuransi_data,
+                'total_asuransi' => $total_asuransi
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error in get_asuransi: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Gagal mengambil data asuransi: ' . $e->getMessage()
+            ]);
+        }
     }
 }

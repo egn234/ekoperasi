@@ -98,6 +98,22 @@
   </div>
 </div>
 
+<div id="detailAsuransi" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detail Asuransi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="fetched-data-asuransi">
+          <p class="text-center">Memuat data...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <?= $this->include('anggota/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->

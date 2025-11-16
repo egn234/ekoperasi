@@ -71,6 +71,15 @@ $(function() {
         data: "angsuran_bulanan"
       },
       {
+        title: "Asuransi",
+        render: function(data, type, row, full) {
+          if(row.status >= 1){
+            return '<a class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailAsuransi" data-id="'+row.idpinjaman+'"><i class="fa fa-shield-alt"></i> Lihat</a>';
+          }
+          return '-';
+        }
+      },
+      {
         title: "Aksi",
         render: function(data, type, row, full) {
           let head = '<div class="btn-group d-flex justify-content-center">';
@@ -162,6 +171,12 @@ $(function() {
         data: "angsuran_bulanan"
       },
       {
+        title: "Asuransi",
+        render: function(data, type, row, full) {
+          return '<a class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailAsuransi" data-id="'+row.idpinjaman+'"><i class="fa fa-shield-alt"></i> Lihat</a>';
+        }
+      },
+      {
         title: "Aksi",
         render: (data, type, row) => {
           let head = '<div class="btn-group d-flex justify-content-center">';
@@ -215,6 +230,41 @@ $(function() {
     });
   });
 
+  $('#detailAsuransi').on('show.bs.modal', function(e) {
+    var idpinjaman = $(e.relatedTarget).data('id');
+    $.ajax({
+      type: 'GET',
+      url: BASE_URL + 'anggota/pinjaman/get_asuransi/' + idpinjaman,
+      dataType: 'json',
+      success: function(response) {
+        if(response.status === 'success') {
+          let html = '';
+          if(response.data.length === 0) {
+            html = '<div class="alert alert-info">Tidak ada data asuransi untuk pinjaman ini.</div>';
+          } else {
+            html = '<table class="table table-sm table-bordered">';
+            html += '<thead><tr><th>Bulan Kumulatif</th><th>Nilai Asuransi</th><th>Status</th></tr></thead>';
+            html += '<tbody>';
+            response.data.forEach(function(item) {
+              html += '<tr>';
+              html += '<td>Bulan ke-' + item.bulan_kumulatif + '</td>';
+              html += '<td>Rp ' + numberFormat(item.nilai_asuransi, 0) + '</td>';
+              html += '<td><span class="badge bg-' + (item.status === 'aktif' ? 'success' : 'secondary') + '">' + item.status + '</span></td>';
+              html += '</tr>';
+            });
+            html += '</tbody>';
+            html += '</table>';
+            html += '<div class="mt-3"><strong>Total Asuransi: Rp ' + numberFormat(response.total_asuransi, 0) + '</strong></div>';
+          }
+          $('#fetched-data-asuransi').html(html);
+        }
+      },
+      error: function() {
+        $('#fetched-data-asuransi').html('<div class="alert alert-danger">Gagal memuat data asuransi.</div>');
+      }
+    });
+  });
+
   $('#addPengajuan').on('show.bs.modal', function(e) {
     var id = 1;
     
@@ -234,9 +284,37 @@ document.addEventListener('DOMContentLoaded', function () {
   myModal.addEventListener('shown.bs.modal', function () {
     const nominalInput = document.getElementById('nominal');
     const previewNominal = document.getElementById('preview_nominal');
+    const angsuranInput = document.getElementById('angsuran_bulanan');
+    const satuanWaktuSelect = document.getElementById('bulanan_tahunan');
+    const previewAsuransi = document.getElementById('preview_asuransi');
+
+    // Get parameter values from alert boxes
+    const alertProvisi = document.querySelector('.alert-info');
+    const alertAsuransi = document.querySelector('.alert-warning');
+    
+    let persenProvisi = 0;
+    let kelipatan = 0;
+    let nominalAsuransi = 0;
+
+    // Extract provisi percentage
+    if (alertProvisi) {
+      const provisiText = alertProvisi.querySelector('p').textContent;
+      const provisiMatch = provisiText.match(/([\d,.]+)%/);
+      persenProvisi = provisiMatch ? parseFloat(provisiMatch[1].replace(',', '.')) : 0;
+    }
+
+    // Extract asuransi parameters
+    if (alertAsuransi) {
+      const kelipatanText = alertAsuransi.querySelector('p:nth-child(2)').textContent;
+      const nominalText = alertAsuransi.querySelector('p:nth-child(3)').textContent;
+      
+      kelipatan = parseInt(kelipatanText.match(/\d+/)[0]);
+      const nominalMatch = nominalText.match(/Rp\s*([\d,.]+)/);
+      nominalAsuransi = nominalMatch ? parseInt(nominalMatch[1].replace(/\./g, '').replace(/,/g, '')) : 0;
+    }
 
     if (nominalInput) {
-      // fungsi untuk update preview
+      // fungsi untuk update preview nominal dan provisi
       function updatePreview() {
         // Ambil angka aja (buang selain digit)
         const raw = nominalInput.value.replace(/[^\d]/g, "");
@@ -250,10 +328,19 @@ document.addEventListener('DOMContentLoaded', function () {
             maximumFractionDigits: 0
           }).format(num);
 
-          previewNominal.textContent = `Nominal Rp. ${formatted}`;
+          // Hitung provisi
+          const nilaiProvisi = num * (persenProvisi / 100);
+          const formattedProvisi = new Intl.NumberFormat("id-ID", {
+            maximumFractionDigits: 0
+          }).format(nilaiProvisi);
+
+          previewNominal.innerHTML = `Nominal Rp. ${formatted}<br><strong class="text-danger">Potongan Provisi: Rp. ${formattedProvisi}</strong>`;
         } else {
           previewNominal.textContent = "";
         }
+        
+        // Update asuransi juga saat nominal berubah
+        updateAsuransiPreview();
       }
 
       // update setiap user ketik
@@ -261,6 +348,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // 🔥 inisialisasi awal pakai value dari DB
       updatePreview();
+    }
+
+    // fungsi untuk update preview asuransi
+    function updateAsuransiPreview() {
+      const angsuran = parseInt(angsuranInput.value) || 0;
+      const satuanWaktu = parseInt(satuanWaktuSelect.value) || 1;
+      
+      // Convert to months
+      let totalBulan = angsuran;
+      if (satuanWaktu === 2) { // Tahun
+        totalBulan = angsuran * 12;
+      }
+
+      if (totalBulan > 0) {
+        // Calculate insurance periods menggunakan Math.ceil untuk pembulatan ke atas
+        const jumlahKelipatan = Math.ceil(totalBulan / kelipatan);
+        const totalAsuransi = jumlahKelipatan * nominalAsuransi;
+
+        if (jumlahKelipatan > 0) {
+          let html = '<div class="mt-2 p-2 bg-light rounded">';
+          html += '<small><strong>Estimasi Asuransi yang harus dibayar di awal:</strong></small><br>';
+          html += '<small>Total Cicilan: ' + totalBulan + ' bulan</small><br>';
+          html += '<small>Kelipatan: ' + jumlahKelipatan + ' x ' + kelipatan + ' bulan</small><br>';
+          html += '<small><strong class="text-danger">Total Asuransi: Rp ' + new Intl.NumberFormat("id-ID").format(totalAsuransi) + '</strong></small>';
+          html += '</div>';
+          
+          previewAsuransi.innerHTML = html;
+        } else {
+          previewAsuransi.innerHTML = '<small class="text-muted">Cicilan belum mencapai kelipatan asuransi (tidak ada asuransi)</small>';
+        }
+      }
+    }
+
+    // Update preview when inputs change
+    if (angsuranInput && satuanWaktuSelect) {
+      angsuranInput.addEventListener('input', updateAsuransiPreview);
+      angsuranInput.addEventListener('change', updateAsuransiPreview);
+      satuanWaktuSelect.addEventListener('change', updateAsuransiPreview);
+      
+      // Initial update
+      updateAsuransiPreview();
     }
   });
 });
