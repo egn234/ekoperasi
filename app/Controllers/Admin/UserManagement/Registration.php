@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Admin;
+namespace App\Controllers\Admin\UserManagement;
 
 use CodeIgniter\Controller;
 
@@ -8,9 +8,9 @@ use App\Models\M_deposit;
 use App\Models\M_monthly_report;
 use App\Models\M_pinjaman;
 
-use App\Controllers\Admin\Notifications;
+use App\Controllers\Admin\Core\Notifications;
 
-class Registrasi extends Controller
+class Registration extends Controller
 {
     protected $m_user, $m_deposit, $m_monthly_report, $m_pinjaman;
     protected $notification;

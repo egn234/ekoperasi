@@ -49,109 +49,122 @@ $routes->add('maintenance', 'Maintenance::index');
 //GROUP ADMIN
 $routes->group('admin', static function ($routes)
 {   
-    $routes->get('dashboard', 'Admin\Dashboard::index', ['as' => 'dashboard_admin']);
-    $routes->get('dashboard/getChartData', 'Admin\Dashboard::getChartData', ['as' => 'admin_chart_data']);
-    $routes->get('profile', 'Admin\Profile::index');
+    $routes->get('dashboard', 'Admin\Core\Dashboard::index', ['as' => 'dashboard_admin']);
+    $routes->get('dashboard/getChartData', 'Admin\Core\Dashboard::getChartData', ['as' => 'admin_chart_data']);
+    $routes->get('profile', 'Admin\Profile\ProfileController::index');
     
-    $routes->post('profile/edit_proc', 'Admin\Profile::update_proc');
-    $routes->post('profile/edit_pass', 'Admin\Profile::update_pass');
+    $routes->post('profile/edit_proc', 'Admin\Profile\ProfileController::update_proc');
+    $routes->post('profile/edit_pass', 'Admin\Profile\ProfileController::update_pass');
     
-    $routes->add('user/(:num)', 'Admin\User::detail_user/$1', ['as' => 'user_detail']);
-    $routes->add('user/update/(:num)', 'Admin\User::update_proc/$1', ['as' => 'update_user']);
+    $routes->add('user/(:num)', 'Admin\UserManagement\UserManagement::detail_user/$1', ['as' => 'user_detail']);
+    $routes->add('user/update/(:num)', 'Admin\UserManagement\UserUpdate::update_proc/$1', ['as' => 'update_user']);
     
     //GROUP KELOLA USER DI ADMIN
     $routes->group('user', static function ($routes)
     {
-        $routes->get('list', 'Admin\User::list');
-        $routes->get('closebook-list', 'Admin\User::list_closebook');
-        $routes->get('add', 'Admin\User::add_user');
-        $routes->get('export_table', 'Admin\User::export_table');
-
-        $routes->post('add_user_proccess', 'Admin\User::add_user_proc');
-        $routes->post('switch_user_confirm', 'Admin\User::konfirSwitch');
-        $routes->post('tab_upload', 'Admin\User::get_table_upload');
+        // User Management Routes (List & Detail)
+        $routes->get('list', 'Admin\UserManagement\UserManagement::list');
+        $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook');
+        $routes->add('data_user', 'Admin\UserManagement\UserManagement::data_user');
+        $routes->post('switch_user_confirm', 'Admin\UserManagement\UserManagement::konfirSwitch');
         
-        $routes->add('data_user', 'Admin\User::data_user');
-        $routes->add('switch_usr/(:num)', 'Admin\User::flag_switch/$1');
+        // User Creation Routes
+        $routes->get('add', 'Admin\UserManagement\UserCreation::add_user');
+        $routes->post('add_user_proccess', 'Admin\UserManagement\UserCreation::add_user_proc');
+        
+        // User Import/Export Routes
+        $routes->get('export_table', 'Admin\UserManagement\UserExport::export_table');
+        $routes->post('tab_upload', 'Admin\UserManagement\UserImport::get_table_upload');
+        
+        // User Closebook Routes
+        $routes->add('switch_usr/(:num)', 'Admin\UserManagement\UserClosebook::flag_switch/$1');
     });
 
     $routes->group('register', static function ($routes)
     {
-        $routes->get('list', 'Admin\Registrasi::list');
-        $routes->add('data_user', 'Admin\Registrasi::data_user');
-        $routes->add('detail_user', 'Admin\Registrasi::detail_user');
-        $routes->add('verify_user/(:num)', 'Admin\Registrasi::verify_user/$1', ['as' => 'admin_verify_user']);
+        $routes->get('list', 'Admin\UserManagement\Registration::list');
+        $routes->add('data_user', 'Admin\UserManagement\Registration::data_user');
+        $routes->add('detail_user', 'Admin\UserManagement\Registration::detail_user');
+        $routes->add('verify_user/(:num)', 'Admin\UserManagement\Registration::verify_user/$1', ['as' => 'admin_verify_user']);
     });
 
     //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)
     {
-        $routes->get('list', 'Admin\Deposits::index');
-        $routes->get('list_transaksi', 'Admin\Deposits::list_transaksi');
-        $routes->get('edit/(:num)', 'Admin\Deposits::edit_mutasi/$1');
+        // Member Deposit Routes
+        $routes->get('list', 'Admin\DepositManagement\MemberDeposit::index');
+        $routes->get('user/(:num)', 'Admin\DepositManagement\MemberDeposit::detail_anggota/$1', ['as' => 'anggota_detail']);
+        $routes->post('add_req', 'Admin\DepositManagement\MemberDeposit::add_proc');
+        $routes->add('data_user', 'Admin\DepositManagement\MemberDeposit::data_user');
 
-        $routes->post('detail_mutasi', 'Admin\Deposits::detail_mutasi');
-        $routes->post('add_req', 'Admin\Deposits::add_proc');
-        $routes->post('update_mutasi/(:num)', 'Admin\Deposits::update_mutasi/$1');
-        $routes->post('create_param_manasuka', 'Admin\Deposits::create_param_manasuka');
+        // Transaction Deposit Routes
+        $routes->get('list_transaksi', 'Admin\DepositManagement\TransactionDeposit::index');
+        $routes->get('edit/(:num)', 'Admin\DepositManagement\TransactionDeposit::edit_mutasi/$1');
+        $routes->post('detail_mutasi', 'Admin\DepositManagement\TransactionDeposit::detail_mutasi');
+        $routes->post('update_mutasi/(:num)', 'Admin\DepositManagement\TransactionDeposit::update_mutasi/$1');
+        $routes->post('cancel-mnsk', 'Admin\DepositManagement\TransactionDeposit::cancel_mnsk');
+        $routes->post('approve-mnsk', 'Admin\DepositManagement\TransactionDeposit::approve_mnsk');
+        $routes->add('data_transaksi', 'Admin\DepositManagement\TransactionDeposit::data_transaksi');
+        $routes->add('data_transaksi_filter', 'Admin\DepositManagement\TransactionDeposit::data_transaksi_filter');
+        $routes->add('confirm/(:num)', 'Admin\DepositManagement\TransactionDeposit::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
+        $routes->add('cancel/(:num)', 'Admin\DepositManagement\TransactionDeposit::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
         
-        $routes->post('cancel-mnsk', 'Admin\Deposits::cancel_mnsk');
-        $routes->post('approve-mnsk', 'Admin\Deposits::approve_mnsk');
-
-        $routes->add('set_param_manasuka/(:num)', 'Admin\Deposits::set_param_manasuka/$1', ['as' => 'admin_set_parameter_manasuka']);
-        $routes->add('cancel_param_manasuka/(:num)', 'Admin\Deposits::cancel_param_manasuka/$1', ['as' => 'admin_cancel_parameter_manasuka']);
-        $routes->add('user/(:num)', 'Admin\Deposits::detail_anggota/$1', ['as' => 'anggota_detail']);
-
-        $routes->add('data_user', 'Admin\Deposits::data_user');
-        $routes->add('data_transaksi', 'Admin\Deposits::data_transaksi');
-        $routes->add('data_transaksi_filter', 'Admin\Deposits::data_transaksi_filter');
-        $routes->add('confirm/(:num)', 'Admin\Deposits::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
-        $routes->add('cancel/(:num)', 'Admin\Deposits::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
+        // Manasuka Parameter Routes
+        $routes->post('create_param_manasuka', 'Admin\DepositManagement\ManasukaParameter::create');
+        $routes->add('set_param_manasuka/(:num)', 'Admin\DepositManagement\ManasukaParameter::update/$1', ['as' => 'admin_set_parameter_manasuka']);
+        $routes->add('cancel_param_manasuka/(:num)', 'Admin\DepositManagement\ManasukaParameter::cancel/$1', ['as' => 'admin_cancel_parameter_manasuka']);
     });
 
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)
     {
-        $routes->get('list', 'Admin\Pinjaman::index');
-        $routes->get('list_pelunasan', 'Admin\Pinjaman::list_pelunasan');
-        $routes->get('get_asuransi/(:num)', 'Admin\Pinjaman::get_asuransi/$1');
+        // Loan Application Routes
+        $routes->get('list', 'Admin\LoanManagement\LoanApplication::index');
+        $routes->post('cancel-pinjaman', 'Admin\LoanManagement\LoanApplication::cancel_loan');
+        $routes->post('approve-pinjaman', 'Admin\LoanManagement\LoanApplication::approve_loan');
+        $routes->post('detail-pinjaman', 'Admin\LoanManagement\LoanApplication::detail_pinjaman');
+        $routes->add('data_pinjaman', 'Admin\LoanManagement\LoanApplication::data_pinjaman');
+        $routes->add('data_pinjaman_filter', 'Admin\LoanManagement\LoanApplication::data_pinjaman_filter');
+        $routes->add('approve-pinjaman/(:num)', 'Admin\LoanManagement\LoanApplication::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
+        $routes->add('cancel-pinjaman/(:num)', 'Admin\LoanManagement\LoanApplication::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
 
-        $routes->post('cancel-pinjaman', 'Admin\Pinjaman::cancel_loan');
-        $routes->post('approve-pinjaman', 'Admin\Pinjaman::approve_loan');
-        $routes->post('detail-pinjaman', 'Admin\Pinjaman::detail_pinjaman');
-        $routes->post('approve-pelunasan', 'Admin\Pinjaman::pengajuan_lunas');
-        $routes->post('cancel-pelunasan', 'Admin\Pinjaman::tolak_pengajuan_lunas');
-        $routes->post('lunasi-partial', 'Admin\Pinjaman::pelunasan_partial');
-
-        $routes->add('data_pinjaman', 'Admin\Pinjaman::data_pinjaman');
-        $routes->add('data_pelunasan', 'Admin\Pinjaman::data_pelunasan');
-        $routes->add('data_pinjaman_filter', 'Admin\Pinjaman::data_pinjaman_filter');
-        $routes->add('approve-pinjaman/(:num)', 'Admin\Pinjaman::approve_proc/$1', ['as' => 'admin_approve_pinjaman']);
-        $routes->add('cancel-pinjaman/(:num)', 'Admin\Pinjaman::cancel_proc/$1', ['as' => 'admin_cancel_pinjaman']);
-        $routes->add('lunasi-pinjaman/(:num)', 'Admin\Pinjaman::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
-        $routes->add('tolak-lunasi-pinjaman/(:num)', 'Admin\Pinjaman::tolak_pelunasan_proc/$1', ['as' => 'admin_tolak_lunas']);
-        $routes->add('lunasi-partial/(:num)', 'Admin\Pinjaman::pelunasan_partial_proc/$1', ['as' => 'admin_lunasi_partial']);
+        // Loan Settlement Routes
+        $routes->get('list_pelunasan', 'Admin\LoanManagement\LoanSettlement::index');
+        $routes->post('approve-pelunasan', 'Admin\LoanManagement\LoanSettlement::pengajuan_lunas');
+        $routes->post('cancel-pelunasan', 'Admin\LoanManagement\LoanSettlement::tolak_pengajuan_lunas');
+        $routes->post('lunasi-partial', 'Admin\LoanManagement\LoanSettlement::pelunasan_partial');
+        $routes->add('data_pelunasan', 'Admin\LoanManagement\LoanSettlement::data_pelunasan');
+        $routes->add('lunasi-pinjaman/(:num)', 'Admin\LoanManagement\LoanSettlement::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
+        $routes->add('tolak-lunasi-pinjaman/(:num)', 'Admin\LoanManagement\LoanSettlement::tolak_pelunasan_proc/$1', ['as' => 'admin_tolak_lunas']);
+        $routes->add('lunasi-partial/(:num)', 'Admin\LoanManagement\LoanSettlement::pelunasan_partial_proc/$1', ['as' => 'admin_lunasi_partial']);
+        
+        // Loan Insurance Routes
+        $routes->get('get_asuransi/(:num)', 'Admin\LoanManagement\LoanInsurance::get_asuransi/$1');
     });
 
     //GROUP LAPORAN
     $routes->group('report', static function ($routes)
     {
-        $routes->get('list', 'Admin\Report::index');
-        $routes->get('generate-monthly-report', 'Admin\Report::gen_report');
-
-        $routes->post('print-potongan-pinjaman', 'Admin\Report::print_potongan_pinjaman');
-        $routes->post('print-rekap-tahunan', 'Admin\Report::generateReportTahunan');
-        $routes->post('print-rekening-koran', 'Admin\Report::print_rekening_koran');
+        // Report Management Routes
+        $routes->get('list', 'Admin\ReportManagement\ReportManagement::index');
+        
+        // Monthly Report Generator Routes
+        $routes->get('generate-monthly-report', 'Admin\ReportManagement\MonthlyReportGenerator::gen_report');
+        
+        // Report Export Routes
+        $routes->post('print-potongan-pinjaman', 'Admin\ReportManagement\ReportExport::print_potongan_pinjaman');
+        $routes->post('print-rekap-tahunan', 'Admin\ReportManagement\ReportExport::generateReportTahunan');
+        $routes->post('print-rekening-koran', 'Admin\ReportManagement\ReportExport::print_rekening_koran');
     });
 
     //GROUP NOTIFICATION
     $routes->group('notification', static function ($routes)
     {
-        $routes->get('list', 'Admin\Notifications::notification_list');
-        $routes->get('mark-all-read', 'Admin\Notifications::mark_all_read');
-        $routes->post('mark-as-read', 'Admin\Notifications::mark_as_read');
-        $routes->get('tbl/mark-all-read', 'Admin\Notifications::mark_all_read_table');
-        $routes->post('tbl/mark-as-read', 'Admin\Notifications::mark_as_read_table');
+        $routes->get('list', 'Admin\Core\Notifications::notification_list');
+        $routes->get('mark-all-read', 'Admin\Core\Notifications::mark_all_read');
+        $routes->post('mark-as-read', 'Admin\Core\Notifications::mark_as_read');
+        $routes->get('tbl/mark-all-read', 'Admin\Core\Notifications::mark_all_read_table');
+        $routes->post('tbl/mark-as-read', 'Admin\Core\Notifications::mark_as_read_table');
     });
 });
 

@@ -1,5 +1,5 @@
 <?php
-namespace App\Controllers\Admin;
+namespace App\Controllers\Admin\Core;
 
 use CodeIgniter\Controller;
 

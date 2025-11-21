@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Admin;
+namespace App\Controllers\Admin\Core;
 
 use CodeIgniter\Controller;
 
@@ -8,7 +8,7 @@ use App\Models\M_deposit;
 use App\Models\M_monthly_report;
 use App\Models\M_pinjaman;
 
-use App\Controllers\Admin\Notifications;
+use App\Controllers\Admin\Core\Notifications;
 
 class Dashboard extends Controller
 {
