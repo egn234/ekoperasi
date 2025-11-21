@@ -283,6 +283,53 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <?php if($det_user->user_flag == 0 && $det_user->closebook_last_updated): ?>
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
+                                                            <h5 class="font-size-15">Status Akun :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <span class="badge bg-danger">Nonaktif (Closebook)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
+                                                            <h5 class="font-size-15">Tanggal Closebook :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?= date('d F Y H:i:s', strtotime($det_user->closebook_last_updated)) ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="py-3">
+                                                <div class="row">
+                                                    <div class="col-xl-2">
+                                                        <div>
+                                                            <h5 class="font-size-15">Jumlah Closebook :</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl">
+                                                        <div class="text-muted">
+                                                            <?= $det_user->closebook_param_count ?> kali
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <!-- end card body -->

@@ -49,6 +49,23 @@
                             </div>
                             <div class="card-body">
                                 <?= session()->getFlashdata('notif') ?>
+                                
+                                <?php if ($jumlah_pinjaman_aktif > 0): ?>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-triangle"></i> <strong>Perhatian!</strong>
+                                    <p class="mb-0">Anda masih memiliki <strong><?= $jumlah_pinjaman_aktif ?> pinjaman aktif</strong> yang belum lunas. Silakan lunasi semua pinjaman terlebih dahulu sebelum mengajukan closebook.</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                <?php endif; ?>
+
+                                <?php if ($jumlah_deposit_pending > 0): ?>
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-circle"></i> <strong>Peringatan!</strong>
+                                    <p class="mb-0">Anda masih memiliki <strong><?= $jumlah_deposit_pending ?> transaksi deposit</strong> yang sedang diproses. Tunggu hingga semua transaksi selesai diproses sebelum mengajukan closebook.</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                <?php endif; ?>
+
                                 <div class="row">
                                     <div class="col-sm-3">
                                         <div class="mb-3">
@@ -89,9 +106,15 @@
                                             Batalkan Tutup Buku
                                         </a>
                                     <?php }else{ ?>
-                                        <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reqCloseBook">
-                                            Ajukan Tutup Buku untuk Akun Ini
-                                        </a>
+                                        <?php if ($jumlah_pinjaman_aktif > 0 || $jumlah_deposit_pending > 0): ?>
+                                            <button class="btn btn-danger" disabled title="Tidak dapat mengajukan closebook karena masih ada pinjaman aktif atau deposit yang sedang diproses">
+                                                <i class="fas fa-lock"></i> Ajukan Tutup Buku untuk Akun Ini
+                                            </button>
+                                        <?php else: ?>
+                                            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reqCloseBook">
+                                                Ajukan Tutup Buku untuk Akun Ini
+                                            </a>
+                                        <?php endif; ?>
                                     <?php } ?>
                                 </div>
                             </div>

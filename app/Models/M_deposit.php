@@ -200,6 +200,18 @@ class m_deposit extends Model
         return $this->db->query($sql)->getResult();
     }
 
+    function countDepositPendingByUser($iduser)
+    {
+        $sql = "
+            SELECT COUNT(iddeposit) AS hitung 
+            FROM tb_deposit 
+            WHERE idanggota = $iduser 
+            AND status IN ('diproses', 'diproses admin', 'diproses bendahara')
+        ";
+
+        return $this->db->query($sql)->getResult();
+    }
+
     function getDepositMemberReport()
     {
         $sql = "

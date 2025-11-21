@@ -65,6 +65,34 @@ class UserClosebook extends BaseUserController
 
         }elseif ($user->user_flag == 1) {
 
+            // VALIDASI KETAT SEBELUM CLOSEBOOK
+            
+            // Validasi 1: Cek apakah ada pinjaman aktif
+            $pinjaman_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($iduser);
+            if (!empty($pinjaman_aktif) && $pinjaman_aktif[0]->hitung > 0) {
+                $alert = view('partials/notification-alert', 
+                    [
+                        'notif_text' => 'Tidak dapat menonaktifkan user. User masih memiliki ' . $pinjaman_aktif[0]->hitung . ' pinjaman aktif yang belum lunas.',
+                        'status' => 'danger'
+                    ]
+                );
+                session()->setFlashdata('notif', $alert);
+                return redirect()->back();
+            }
+
+            // Validasi 2: Cek apakah ada deposit yang masih diproses
+            $deposit_pending = $this->m_deposit->countDepositPendingByUser($iduser);
+            if (!empty($deposit_pending) && $deposit_pending[0]->hitung > 0) {
+                $alert = view('partials/notification-alert', 
+                    [
+                        'notif_text' => 'Tidak dapat menonaktifkan user. User masih memiliki ' . $deposit_pending[0]->hitung . ' transaksi deposit yang belum diproses.',
+                        'status' => 'danger'
+                    ]
+                );
+                session()->setFlashdata('notif', $alert);
+                return redirect()->back();
+            }
+
             $saldo_r = [
                 $this->m_deposit->getSaldoWajibByUserId($iduser)[0]->saldo,
                 $this->m_deposit->getSaldoPokokByUserId($iduser)[0]->saldo,
@@ -96,6 +124,13 @@ class UserClosebook extends BaseUserController
 
             $this->m_param_manasuka->setParamManasukaByUser($iduser, $param_r);
             $this->m_deposit->setStatusProses($iduser);
+            
+            // Update closebook_last_updated timestamp
+            $dataset_user = [
+                'closebook_last_updated' => date('Y-m-d H:i:s')
+            ];
+            $this->m_user->updateUser($iduser, $dataset_user);
+            
             $this->m_user->nonaktifkanUser($iduser);
 
             if ($user->closebook_param_count == 0) {
@@ -108,7 +143,7 @@ class UserClosebook extends BaseUserController
             $alert = view(
                 'partials/notification-alert', 
                 [
-                    'notif_text' => 'User Dinonaktifkan',
+                    'notif_text' => 'User berhasil dinonaktifkan (Closebook completed)',
                     'status' => 'success'
                 ]
             );
