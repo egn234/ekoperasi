@@ -28,6 +28,27 @@ class login extends Controller
 
     public function login_proc()
     {
+        // Load reCAPTCHA helper
+        helper('recaptcha');
+        
+        // Validate reCAPTCHA
+        $recaptchaToken = request()->getPost('recaptcha_token');
+        $validation = validate_recaptcha($recaptchaToken);
+        
+        if (!$validation['success']) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Captcha tidak sesuai',
+                    'status' => 'warning'
+                ]
+            );
+            
+            $error = ['notif_login' => $alert];
+            session()->setFlashdata($error);
+            return redirect()->to('/');
+        }
+
         $username = request()->getPost('username');
         $pass = md5(request()->getPost('password'));
         $status = $this->m_user->countUsername($username)[0]->hitung;
@@ -139,9 +160,34 @@ class login extends Controller
         $nik = request()->getPost('nik');
         $email = request()->getPost('email');
         $nomor_telepon = request()->getPost('nomor_telepon');
-
-        // TODO: CAPTCHA here
         
+        // Load reCAPTCHA helper
+        helper('recaptcha');
+        
+        // Validate reCAPTCHA
+        $recaptchaToken = request()->getPost('recaptcha_token');
+        $validation = validate_recaptcha($recaptchaToken);
+        
+        if (!$validation['success']) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Captcha tidak sesuai',
+                    'status' => 'warning'
+                ]
+            );
+
+            $dataset['notif'] = $alert;
+            $dataset['username'] = $username;
+            $dataset['nik'] = $nik;
+            $dataset['nomor_telepon'] = $nomor_telepon;
+            $dataset['email'] = $email;
+
+            $dataset += ['notif' => $alert];
+            session()->setFlashdata($dataset);
+            return redirect()->back();
+        }
+
         $cek_data = $this->m_user
             ->where('username', $username)
             ->where('nik', $nik)
@@ -223,6 +269,27 @@ class login extends Controller
 
     public function update_password($token)
     {
+        // Load reCAPTCHA helper
+        helper('recaptcha');
+        
+        // Validate reCAPTCHA
+        $recaptchaToken = request()->getPost('recaptcha_token');
+        $validation = validate_recaptcha($recaptchaToken);
+        
+        if (!$validation['success']) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Captcha tidak sesuai',
+                    'status' => 'warning'
+                ]
+            );
+
+            $error = ['notif' => $alert];
+            session()->setFlashdata($error);
+            return redirect()->back();
+        }
+
         $pass = request()->getPost('pass');
         $pass2 = request()->getPost('pass2');
 

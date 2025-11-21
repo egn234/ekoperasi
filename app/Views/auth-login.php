@@ -103,6 +103,24 @@
       </div>
     </div>
 
+    <?php if (ENVIRONMENT !== 'development'): ?>
+    <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+    <script>
+      grecaptcha.ready(function() {
+        grecaptcha.execute("<?= getenv('RECAPTCHA_SITE_KEY') ?>", {action: 'login'})
+        .then(function(token) {
+          // Simpan token dalam input tersembunyi
+          document.getElementById('g-recaptcha-response').value = token;
+        });
+      });
+    </script>
+    <?php else: ?>
+    <script>
+      // Development mode - skip reCAPTCHA
+      document.getElementById('g-recaptcha-response').value = 'dev-bypass-token';
+    </script>
+    <?php endif; ?>
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const passwordInput = document.getElementById("password");

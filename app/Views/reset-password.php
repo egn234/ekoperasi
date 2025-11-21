@@ -79,6 +79,37 @@
   <!-- validation init -->
   <script src="assets/js/pages/validation.init.js"></script>
 
-  <!-- TODO: CAPTCHA here for main branch -->
+  <?php if (ENVIRONMENT !== 'development'): ?>
+  <!-- Google reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
+  <script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = this;
+      grecaptcha.ready(function() {
+        grecaptcha.execute('<?= getenv('RECAPTCHA_SITE_KEY') ?>', {action: 'reset_password'}).then(function(token) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'recaptcha_token';
+          input.value = token;
+          form.appendChild(input);
+          form.submit();
+        });
+      });
+    });
+  </script>
+  <?php else: ?>
+  <script>
+    // Development mode: bypass reCAPTCHA
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'recaptcha_token';
+      input.value = 'dev-bypass-token';
+      this.appendChild(input);
+    });
+  </script>
+  <?php endif; ?>
+
 </body>
 </html>

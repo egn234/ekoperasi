@@ -81,6 +81,33 @@ class register extends Controller
             'idgroup' => 4
         ];
 
+        // Load reCAPTCHA helper
+        helper('recaptcha');
+        
+        // Validate reCAPTCHA
+        $recaptchaToken = request()->getPost('recaptcha_token');
+        $validation = validate_recaptcha($recaptchaToken);
+        
+        if (!$validation['success']) {
+            $alert = view(
+                'partials/notification-alert', 
+                [
+                    'notif_text' => 'Captcha tidak sesuai',
+                    'status' => 'warning'
+                ]
+            );
+            
+            $dataset['notif'] = $alert;
+            $dataset['nik'] = $nik;
+            $dataset['alamat'] = $alamat;
+            $dataset['nomor_telepon'] = $nomor_telepon;
+            $dataset['no_rek'] = $no_rek;
+
+            $dataset += ['notif' => $alert];
+            session()->setFlashdata($dataset);
+            return redirect()->to('registrasi');
+        }
+
         if ($dataset['instansi'] == "") {
             $alert = view(
                 'partials/notification-alert', 
