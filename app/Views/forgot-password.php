@@ -98,6 +98,8 @@
 
   <!-- validation init -->
   <script src="assets/js/pages/validation.init.js"></script>
+  
+  <?php if (ENVIRONMENT !== 'development'): ?>
   <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
   <script>
     setInterval(()=> {
@@ -119,6 +121,12 @@
       });
     });
   </script>
+  <?php else: ?>
+  <script>
+    // Development mode - skip reCAPTCHA
+    document.getElementById('g-recaptcha-response').value = 'dev-bypass-token';
+  </script>
+  <?php endif; ?>
 
 </body>
 </html>

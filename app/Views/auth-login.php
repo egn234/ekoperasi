@@ -108,6 +108,7 @@
       </div>
     </div>
 
+    <?php if (ENVIRONMENT !== 'development'): ?>
     <script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('RECAPTCHA_SITE_KEY') ?>"></script>
     <script>
       grecaptcha.ready(function() {
@@ -118,6 +119,12 @@
         });
       });
     </script>
+    <?php else: ?>
+    <script>
+      // Development mode - skip reCAPTCHA
+      document.getElementById('g-recaptcha-response').value = 'dev-bypass-token';
+    </script>
+    <?php endif; ?>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
