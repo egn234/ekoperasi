@@ -32,6 +32,8 @@ class m_deposit extends Model
                 tb_user.email 
             FROM tb_deposit 
             JOIN tb_user ON tb_deposit.idanggota = tb_user.iduser
+            WHERE tb_user.flag = 1
+            AND tb_user.deleted IS NULL
             ORDER BY tb_deposit.date_created DESC
         ";
 
@@ -49,6 +51,8 @@ class m_deposit extends Model
             FROM tb_deposit 
             JOIN tb_user ON tb_deposit.idanggota = tb_user.iduser 
             WHERE tb_deposit.status = 'diproses admin'
+            AND tb_user.flag = 1
+            AND tb_user.deleted IS NULL
             ORDER BY tb_deposit.date_created DESC
         ";
         
@@ -66,6 +70,8 @@ class m_deposit extends Model
             FROM tb_deposit 
             JOIN tb_user ON tb_deposit.idanggota = tb_user.iduser 
             WHERE tb_deposit.status = 'diproses bendahara'
+            AND tb_user.flag = 1
+            AND tb_user.deleted IS NULL
             ORDER BY tb_deposit.date_created DESC
         ";
         
@@ -93,7 +99,8 @@ class m_deposit extends Model
                 tb_user.nik AS nik_admin
             FROM tb_deposit 
             LEFT JOIN tb_user ON tb_user.iduser = tb_deposit.idadmin
-            WHERE iddeposit = $iddeposit;
+            WHERE iddeposit = $iddeposit
+            AND (tb_user.deleted IS NULL OR tb_deposit.idadmin IS NULL);
         ";
         
         return $this->db->query($sql)->getResult();  
@@ -235,6 +242,8 @@ class m_deposit extends Model
                 ) AS manasuka,
                 IFNULL((SUM(tb_deposit.cash_in) - SUM(tb_deposit.cash_out)), 0) AS total_saldo
             FROM tb_deposit JOIN tb_user ON tb_user.iduser = tb_deposit.idanggota
+            WHERE tb_user.flag = 1
+            AND tb_user.deleted IS NULL
             GROUP BY tb_user.iduser;
         ";
         return $this->db->query($sql)->getResult();

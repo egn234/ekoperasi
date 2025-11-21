@@ -40,7 +40,8 @@ class M_user extends Model
         'verified',
         'idgroup',
         'created',
-        'updated'
+        'updated',
+        'deleted'
     ];
 
     protected $useTimestamps = false;
@@ -51,21 +52,31 @@ class M_user extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
     
+    /**
+     * Override countAll to exclude soft deleted users
+     */
+    public function countAll(bool $reset = true, bool $test = false): int
+    {
+        $builder = $this->builder();
+        $builder->where('deleted', null);
+        return $builder->countAllResults($reset);
+    }
+    
     function getUser($username)
     {
-    	$sql = "SELECT * FROM tb_user WHERE username = '$username'";
+    	$sql = "SELECT * FROM tb_user WHERE username = '$username' AND deleted IS NULL";
     	return $this->db->query($sql)->getResult();
     }
     
     function countUser($username)
     {
-        $sql = "SELECT count(username) AS hitung FROM tb_user WHERE username = '$username'";
+        $sql = "SELECT count(username) AS hitung FROM tb_user WHERE username = '$username' AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
     
     function countNIK($nik)
     {
-        $sql = "SELECT count(nik) AS hitung FROM tb_user WHERE nik = '$nik'";
+        $sql = "SELECT count(nik) AS hitung FROM tb_user WHERE nik = '$nik' AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
     
@@ -102,6 +113,7 @@ class M_user extends Model
                 tb_group.flag AS group_flag
             FROM tb_user 
             JOIN tb_group USING (idgroup)
+            WHERE tb_user.deleted IS NULL
         ";
         return $this->db->query($sql)->getResult();
     }
@@ -140,6 +152,7 @@ class M_user extends Model
             FROM tb_user 
             JOIN tb_group USING (idgroup)
             WHERE tb_user.closebook_request = 'closebook'
+            AND tb_user.deleted IS NULL
         ";
         return $this->db->query($sql)->getResult();
     }
@@ -180,6 +193,7 @@ class M_user extends Model
             FROM tb_user 
             JOIN tb_group USING (idgroup)
             WHERE iduser = $iduser
+            AND tb_user.deleted IS NULL
         ";
         return $this->db->query($sql)->getResult();
     }
@@ -225,25 +239,27 @@ class M_user extends Model
             FROM tb_user
             JOIN tb_group USING (idgroup)
             WHERE idgroup = 4
+            AND tb_user.flag = 1
+            AND tb_user.deleted IS NULL
         ";
         return $this->db->query($sql)->getResult();
     }
 
     function getPassword($iduser)
     {
-        $sql = "SELECT pass FROM tb_user WHERE iduser = $iduser";
+        $sql = "SELECT pass FROM tb_user WHERE iduser = $iduser AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
 
     function countUsername($username)
     {
-        $sql = "SELECT count(iduser) as hitung FROM tb_user WHERE username = '$username'";
+        $sql = "SELECT count(iduser) as hitung FROM tb_user WHERE username = '$username' AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
 
     function countAnggotaAKtif()
     {
-        $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1";
+        $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1 AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
 
@@ -251,7 +267,7 @@ class M_user extends Model
     {
         $month = date('m');
         $year = date('Y');
-        $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1 AND MONTH(created) = $month AND YEAR(created) = $year";
+        $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1 AND MONTH(created) = $month AND YEAR(created) = $year AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
     
@@ -289,6 +305,30 @@ class M_user extends Model
     {
         $builder = $this->db->table('tb_user');
         $builder->set('flag', 0);
+        $builder->where('iduser', $iduser);
+        $builder->update();
+    }
+
+    function softDeleteUser($iduser)
+    {
+        // Validasi: hanya bisa soft delete jika flag = 0 (nonaktif)
+        $user = $this->getUserById($iduser);
+        if (!empty($user) && $user[0]->user_flag == 0) {
+            $builder = $this->db->table('tb_user');
+            $builder->set('deleted', date('Y-m-d H:i:s'));
+            $builder->set('updated', date('Y-m-d H:i:s'));
+            $builder->where('iduser', $iduser);
+            $builder->update();
+            return true;
+        }
+        return false;
+    }
+
+    function restoreUser($iduser)
+    {
+        $builder = $this->db->table('tb_user');
+        $builder->set('deleted', null);
+        $builder->set('updated', date('Y-m-d H:i:s'));
         $builder->where('iduser', $iduser);
         $builder->update();
     }
@@ -353,6 +393,8 @@ class M_user extends Model
             FROM tb_user
                 LEFT JOIN tb_deposit ON tb_user.iduser = tb_deposit.idanggota
             WHERE tb_user.idgroup = 4
+            AND tb_user.flag = 1
+            AND tb_user.deleted IS NULL
             GROUP BY tb_user.iduser
         ";
 
@@ -361,7 +403,7 @@ class M_user extends Model
 
     function getUsernameGiat()
     {
-        $sql = "SELECT username from tb_user WHERE username LIKE 'GIAT%' ORDER BY username DESC LIMIT 1";
+        $sql = "SELECT username from tb_user WHERE username LIKE 'GIAT%' AND deleted IS NULL ORDER BY username DESC LIMIT 1";
         return $this->db->query($sql)->getResult();
     }
 
@@ -375,6 +417,7 @@ class M_user extends Model
                 DATE_FORMAT(date_created, '%M %Y') AS month_name
             FROM tb_user
             WHERE verified = 1
+            AND deleted IS NULL
             AND date_created >= DATE_SUB(NOW(), INTERVAL ? MONTH)
             GROUP BY month
             ORDER BY month ASC
@@ -393,6 +436,7 @@ class M_user extends Model
                 DATE_FORMAT(date_created, '%M %Y') AS month_name
             FROM tb_user
             WHERE verified = 1
+            AND deleted IS NULL
             AND DATE(date_created) BETWEEN ? AND ?
             GROUP BY month
             ORDER BY month ASC

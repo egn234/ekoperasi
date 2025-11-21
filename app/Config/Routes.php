@@ -67,6 +67,9 @@ $routes->group('admin', static function ($routes)
         $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook');
         $routes->add('data_user', 'Admin\UserManagement\UserManagement::data_user');
         $routes->post('switch_user_confirm', 'Admin\UserManagement\UserManagement::konfirSwitch');
+        $routes->post('delete_user_confirm', 'Admin\UserManagement\UserManagement::delete_user_confirm');
+        $routes->get('delete_user/(:num)', 'Admin\UserManagement\UserManagement::delete_user/$1');
+        $routes->get('clean_inactive_users', 'Admin\UserManagement\UserManagement::clean_inactive_users');
         
         // User Creation Routes
         $routes->get('add', 'Admin\UserManagement\UserCreation::add_user');

@@ -55,6 +55,7 @@ class Registration extends Controller
 
         // Start building the query for filtering
         $model->where('verified', 0)
+            ->where('deleted', null)
             ->groupStart()
             ->like('username', $searchValue)
                 ->orLike('nama_lengkap', $searchValue)

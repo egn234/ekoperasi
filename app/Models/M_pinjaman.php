@@ -42,6 +42,10 @@ class m_pinjaman extends Model
             JOIN tb_pinjaman b ON a.iduser = b.idanggota
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
             LEFT JOIN tb_user d ON d.iduser = b.idbendahara
+            WHERE a.flag = 1
+            AND a.deleted IS NULL
+            AND (c.deleted IS NULL OR b.idadmin IS NULL)
+            AND (d.deleted IS NULL OR b.idbendahara IS NULL)
         ";
     	return $this->db->query($sql)->getResult();    
     }
@@ -64,6 +68,9 @@ class m_pinjaman extends Model
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
             LEFT JOIN tb_user d ON d.iduser = b.idbendahara
             WHERE b.idpinjaman = $idpinjaman
+            AND a.deleted IS NULL
+            AND (c.deleted IS NULL OR b.idadmin IS NULL)
+            AND (d.deleted IS NULL OR b.idbendahara IS NULL)
         ";
 
         return $this->db->query($sql)->getResult();
@@ -87,6 +94,10 @@ class m_pinjaman extends Model
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
             LEFT JOIN tb_user d ON d.iduser = b.idbendahara
             WHERE b.status = $status
+            AND a.flag = 1
+            AND a.deleted IS NULL
+            AND (c.deleted IS NULL OR b.idadmin IS NULL)
+            AND (d.deleted IS NULL OR b.idbendahara IS NULL)
         ";
 
         return $this->db->query($sql)->getResult();
@@ -108,6 +119,9 @@ class m_pinjaman extends Model
             LEFT JOIN tb_user c ON c.iduser = b.idadmin
             LEFT JOIN tb_user d ON d.iduser = b.idbendahara
             WHERE b.idanggota = $iduser
+            AND a.deleted IS NULL
+            AND (c.deleted IS NULL OR b.idadmin IS NULL)
+            AND (d.deleted IS NULL OR b.idbendahara IS NULL)
         ";
 
         return $this->db->query($sql)->getResult();
@@ -147,6 +161,8 @@ class m_pinjaman extends Model
                 JOIN tb_user ON tb_user.iduser = tb_pinjaman.idanggota
                 LEFT JOIN tb_cicilan USING (idpinjaman)
             WHERE status = 4
+            AND tb_user.flag = 1
+            AND tb_user.deleted IS NULL
             GROUP BY tb_user.iduser;
         ";
 

@@ -46,7 +46,7 @@ class m_monthly_report extends Model
 
     function getAllIdAnggotaAktif()
     {
-        $sql = "SELECT * FROM tb_user WHERE idgroup = 4 AND flag = 1";
+        $sql = "SELECT * FROM tb_user WHERE idgroup = 4 AND flag = 1 AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
 
@@ -211,6 +211,8 @@ class m_monthly_report extends Model
             FROM tb_user 
             JOIN tb_pinjaman ON tb_user.iduser = tb_pinjaman.idanggota 
             WHERE status = 4
+            AND tb_user.flag = 1
+            AND tb_user.deleted IS NULL
         ";
 
         return $this->db->query($sql)->getResult();

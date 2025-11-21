@@ -283,8 +283,6 @@ CREATE TABLE `tb_user`  (
   `no_rek` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `profil_pic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `ktp_file` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `pass_reset_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `pass_reset_status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `closebook_request` enum('closebook') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -294,6 +292,9 @@ CREATE TABLE `tb_user`  (
   `verified` int NULL DEFAULT 0,
   `flag` int NOT NULL,
   `idgroup` int NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`iduser`) USING BTREE,
   INDEX `idgroup`(`idgroup` ASC) USING BTREE,
   CONSTRAINT `tb_user_ibfk_1` FOREIGN KEY (`idgroup`) REFERENCES `tb_group` (`idgroup`) ON DELETE RESTRICT ON UPDATE RESTRICT

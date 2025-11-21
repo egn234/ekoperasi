@@ -48,6 +48,9 @@
                                             <a class="btn btn-success" href="<?= url_to('admin/user/export_table') ?>" target="_blank">
                                                 Ekspor user
                                             </a>
+                                            <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#cleanUserModal">
+                                                <i class="fas fa-broom"></i> Clean User Nonaktif
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -79,6 +82,44 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <span class="fetched-data"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="deleteUser" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span class="fetched-data-delete"></span>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<div id="cleanUserModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Clean User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Peringatan!</strong>
+                </div>
+                <p>Fitur ini akan menghapus <strong>semua user yang berstatus NONAKTIF</strong> secara permanen dari sistem.</p>
+                <p>User yang dihapus:</p>
+                <ul>
+                    <li>Tidak akan muncul di admin management</li>
+                    <li>Tidak akan muncul di laporan</li>
+                    <li>Hanya tersimpan di database untuk keperluan audit</li>
+                </ul>
+                <p class="text-danger"><strong>Apakah Anda yakin ingin melanjutkan?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <a href="<?= base_url() ?>/admin/user/clean_inactive_users" class="btn btn-danger">
+                    <i class="fas fa-broom"></i> Ya, Clean User Nonaktif
+                </a>
+            </div>
         </div>
     </div>
 </div><!-- /.modal -->
@@ -192,6 +233,7 @@
 
                         if (row.flag === "0") {
                             button_status = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="'+row.iduser+'">Aktifkan</a>'
+                            button_status += '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUser" data-id="'+row.iduser+'"><i class="fas fa-trash"></i> Hapus</a>'
                         }else{
                             button_status = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#switchUser" data-id="'+row.iduser+'">Nonaktifkan</a>'
                         }
@@ -210,6 +252,18 @@
                 data: 'rowid=' + rowid,
                 success: function(data) {
                     $('.fetched-data').html(data); //menampilkan data ke dalam modal
+                }
+            });
+        });
+
+        $('#deleteUser').on('show.bs.modal', function(e) {
+            var rowid = $(e.relatedTarget).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url() ?>/admin/user/delete_user_confirm',
+                data: 'rowid=' + rowid,
+                success: function(data) {
+                    $('.fetched-data-delete').html(data);
                 }
             });
         });
