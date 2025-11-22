@@ -127,8 +127,13 @@ class Pinjaman extends BaseController
         }
 
         $dataset = [];
+        
+        // Ambil parameter batas minimal sesuai status pegawai
+        // ID 10: Batas Bulan Minimal Pinjaman Kontrak
+        // ID 11: Batas Bulan Minimal Pinjaman Tetap
+        $param_id = ($cek_pegawai == 'tetap') ? 11 : 10;
         $param_minimal_bulan = $this->m_param
-            ->where('idparameter', 10)
+            ->where('idparameter', $param_id)
             ->get()
             ->getResult()[0]->nilai;
 
@@ -247,8 +252,10 @@ class Pinjaman extends BaseController
             $last_pinjaman_id = $this->m_pinjaman->db->insertID();
 
             // Calculate and insert insurance
-            $bulan_kelipatan = (int)$this->m_param->getParamById(11)[0]->nilai;
-            $nominal_asuransi = (float)$this->m_param->getParamById(12)[0]->nilai;
+            // ID 12: Bulan Kelipatan Asuransi
+            // ID 13: Nominal Asuransi
+            $bulan_kelipatan = (int)$this->m_param->getParamById(12)[0]->nilai;
+            $nominal_asuransi = (float)$this->m_param->getParamById(13)[0]->nilai;
 
             log_message('info', 'Insurance calculation - Angsuran: ' . $angsuran_bulanan . ', Kelipatan: ' . $bulan_kelipatan . ', Nominal: ' . $nominal_asuransi);
 

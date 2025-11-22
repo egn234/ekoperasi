@@ -203,9 +203,10 @@ INSERT INTO `tb_parameter` VALUES (6, 'Penalty (%)', 5, 'persentase untuk pemoto
 INSERT INTO `tb_parameter` VALUES (7, 'Bulan Minimal bebas penalty', 6, 'tanggal tetap untuk pemotongan penalty', '2022-09-20 03:28:52', '2022-12-15 10:23:30');
 INSERT INTO `tb_parameter` VALUES (8, 'Tanggal cut-off', 10, 'tanggal untuk cut-off', '2022-09-20 03:28:52', '2023-03-15 11:08:07');
 INSERT INTO `tb_parameter` VALUES (9, 'Bunga (%)', 1, 'Parameter pemotongan bunga umum', '2022-10-22 07:28:01', NULL);
-INSERT INTO `tb_parameter` VALUES (10, 'Batas Bulan Minimal Pinjaman', 6, 'Parameter untuk batas minimal pinjaman setelah akun dibuat', '2025-11-16 06:39:20', NULL);
-INSERT INTO `tb_parameter` VALUES (11, 'Bulan Kelipatan Asuransi', 12, 'Parameter untuk bulan kelipatan asuransi', '2025-11-16 06:42:51', NULL);
-INSERT INTO `tb_parameter` VALUES (12, 'Nominal Asuransi', 50000, 'Parameter untuk nominal asuransi per kelipatan bulan', '2025-11-16 06:42:54', NULL);
+INSERT INTO `tb_parameter` VALUES (10, 'Batas Bulan Minimal Pinjaman Kontrak', 6, 'Parameter untuk batas minimal pinjaman setelah akun tipe kontrak dibuat', '2025-11-16 06:39:20', NULL);
+INSERT INTO `tb_parameter` VALUES (11, 'Batas Bulan Minimal Pinjaman Tetap', 12, 'Parameter untuk batas minimal pinjaman setelah akun tipe tetap dibuat', '2025-11-16 06:39:20', NULL);
+INSERT INTO `tb_parameter` VALUES (12, 'Bulan Kelipatan Asuransi', 12, 'Parameter untuk bulan kelipatan asuransi', '2025-11-16 06:42:51', NULL);
+INSERT INTO `tb_parameter` VALUES (13, 'Nominal Asuransi', 50000, 'Parameter untuk nominal asuransi per kelipatan bulan', '2025-11-16 06:42:54', NULL);
 
 -- ----------------------------
 -- Table structure for tb_parameter_history
