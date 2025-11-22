@@ -122,40 +122,45 @@
     <?php endif; ?>
 
     <!-- KTP Preview -->
-    <?php if (!empty($b->ktp_file)) : ?>
-      <div class="mb-4">
-        <h6 class="fw-semibold mb-3"><i class="fas fa-id-card me-2 text-info"></i>Preview KTP</h6>
+    <div class="mb-4">
+      <h6 class="fw-semibold mb-3"><i class="fas fa-id-card me-2 text-info"></i>Preview KTP</h6>
+      <?php if (!empty($b->ktp_file)) : ?>
+        <?php 
+        $ktp_path = base_url('uploads/user/' . $b->username . '/ktp/' . $b->ktp_file);
+        $ktp_ext = strtolower(pathinfo($b->ktp_file, PATHINFO_EXTENSION));
+        ?>
         <div class="card border-0">
-          <div class="card-body p-3">
-            <?php if (in_array(pathinfo($b->ktp_file, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png'])) : ?>
-              <div class="text-center">
-                <img src="<?= base_url('uploads/user/' . $b->username . '/ktp/' . $b->ktp_file) ?>" 
-                     alt="KTP Preview" 
-                     class="img-fluid rounded" 
-                     style="max-height: 200px; border: 1px solid #dee2e6;">
-              </div>
-            <?php elseif (pathinfo($b->ktp_file, PATHINFO_EXTENSION) === 'pdf') : ?>
-              <div class="text-center">
-                <embed src="<?= base_url('uploads/user/' . $b->username . '/ktp/' . $b->ktp_file) ?>" 
-                       type="application/pdf" 
-                       width="100%" 
-                       height="300px" 
-                       class="rounded">
+          <div class="card-body p-3 text-center">
+            <?php if (in_array($ktp_ext, ['jpg', 'jpeg', 'png'])) : ?>
+              <img src="<?= $ktp_path ?>" 
+                   alt="KTP Thumbnail" 
+                   class="img-fluid rounded mb-2" 
+                   style="max-height: 120px; border: 1px solid #dee2e6; cursor: pointer;"
+                   onclick="previewKTPLoan('<?=$ktp_path?>', '<?=$ktp_ext?>')">
+            <?php elseif ($ktp_ext === 'pdf') : ?>
+              <div class="mb-2">
+                <i class="fas fa-file-pdf text-danger" style="font-size: 48px;"></i>
               </div>
             <?php endif; ?>
+            <div>
+              <button type="button" class="btn btn-sm btn-primary" onclick="previewKTPLoan('<?=$ktp_path?>', '<?=$ktp_ext?>')">
+                <i class="fas fa-eye"></i> Lihat KTP Lengkap
+              </button>
+              <a href="<?=$ktp_path?>" target="_blank" class="btn btn-sm btn-outline-secondary ms-1">
+                <i class="fa fa-download"></i> Download
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    <?php else : ?>
-      <div class="mb-4">
+      <?php else : ?>
         <div class="alert alert-warning d-flex align-items-center">
           <i class="fas fa-exclamation-triangle me-2"></i>
           <div>
             <strong>Perhatian!</strong> Tidak ada file KTP yang diunggah.
           </div>
         </div>
-      </div>
-    <?php endif; ?>
+      <?php endif; ?>
+    </div>
 
     <!-- Form -->
     <form action="<?= url_to('admin_approve_pinjaman', $a->idpinjaman)?>"
@@ -194,3 +199,150 @@
     <i class="fas fa-check me-1"></i>Setujui Pinjaman
   </button>
 </div>
+
+<!-- Modal Preview KTP untuk Loan -->
+<div class="modal fade" id="ktpPreviewModalLoan" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title"><i class="fas fa-id-card me-2"></i>Preview KTP - Detail Lengkap</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0 position-relative" style="min-height: 400px; background: #f8f9fa;">
+        <div id="ktpImageContainerLoan" class="text-center p-3" style="overflow: hidden;">
+          <!-- Image will be loaded here -->
+        </div>
+        <div id="ktpPdfContainerLoan" class="d-none">
+          <!-- PDF will be loaded here -->
+        </div>
+        
+        <!-- Zoom Controls -->
+        <div id="zoomControlsLoan" class="position-absolute bottom-0 start-50 translate-middle-x mb-3">
+          <div class="btn-group shadow-sm" role="group">
+            <button type="button" class="btn btn-light btn-sm" onclick="zoomKTPLoan('out')" title="Zoom Out">
+              <i class="fas fa-search-minus"></i>
+            </button>
+            <button type="button" class="btn btn-light btn-sm" onclick="resetZoomKTPLoan()" title="Reset">
+              <i class="fas fa-sync-alt"></i> <span id="zoomLevelLoan">100%</span>
+            </button>
+            <button type="button" class="btn btn-light btn-sm" onclick="zoomKTPLoan('in')" title="Zoom In">
+              <i class="fas fa-search-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <small class="text-muted me-auto"><i class="fas fa-info-circle me-1"></i>Klik dan drag untuk menggeser gambar</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentZoomLoan = 1;
+let isDraggingLoan = false;
+let startXLoan, startYLoan, scrollLeftLoan, scrollTopLoan;
+
+function previewKTPLoan(path, ext) {
+  const modal = new bootstrap.Modal(document.getElementById('ktpPreviewModalLoan'));
+  const imageContainer = document.getElementById('ktpImageContainerLoan');
+  const pdfContainer = document.getElementById('ktpPdfContainerLoan');
+  const zoomControls = document.getElementById('zoomControlsLoan');
+  
+  // Reset
+  imageContainer.innerHTML = '';
+  pdfContainer.innerHTML = '';
+  currentZoomLoan = 1;
+  
+  if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+    // Show image
+    imageContainer.classList.remove('d-none');
+    pdfContainer.classList.add('d-none');
+    zoomControls.classList.remove('d-none');
+    
+    const img = document.createElement('img');
+    img.src = path;
+    img.id = 'ktpImageLoan';
+    img.className = 'img-fluid';
+    img.style.cursor = 'move';
+    img.style.transition = 'transform 0.2s ease';
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    
+    imageContainer.appendChild(img);
+    
+    // Enable drag
+    imageContainer.style.cursor = 'grab';
+    imageContainer.addEventListener('mousedown', startDragLoan);
+    imageContainer.addEventListener('mousemove', dragLoan);
+    imageContainer.addEventListener('mouseup', stopDragLoan);
+    imageContainer.addEventListener('mouseleave', stopDragLoan);
+    
+  } else if (ext === 'pdf') {
+    // Show PDF
+    imageContainer.classList.add('d-none');
+    pdfContainer.classList.remove('d-none');
+    zoomControls.classList.add('d-none');
+    
+    pdfContainer.innerHTML = `
+      <embed src="${path}" type="application/pdf" width="100%" height="600px" />
+    `;
+  }
+  
+  modal.show();
+}
+
+function zoomKTPLoan(direction) {
+  const img = document.getElementById('ktpImageLoan');
+  if (!img) return;
+  
+  if (direction === 'in') {
+    currentZoomLoan = Math.min(currentZoomLoan + 0.25, 3);
+  } else if (direction === 'out') {
+    currentZoomLoan = Math.max(currentZoomLoan - 0.25, 0.5);
+  }
+  
+  img.style.transform = `scale(${currentZoomLoan})`;
+  document.getElementById('zoomLevelLoan').textContent = Math.round(currentZoomLoan * 100) + '%';
+}
+
+function resetZoomKTPLoan() {
+  const img = document.getElementById('ktpImageLoan');
+  if (!img) return;
+  
+  currentZoomLoan = 1;
+  img.style.transform = 'scale(1)';
+  document.getElementById('zoomLevelLoan').textContent = '100%';
+  
+  const container = document.getElementById('ktpImageContainerLoan');
+  container.scrollLeft = 0;
+  container.scrollTop = 0;
+}
+
+function startDragLoan(e) {
+  isDraggingLoan = true;
+  const container = e.currentTarget;
+  container.style.cursor = 'grabbing';
+  startXLoan = e.pageX - container.offsetLeft;
+  startYLoan = e.pageY - container.offsetTop;
+  scrollLeftLoan = container.scrollLeft;
+  scrollTopLoan = container.scrollTop;
+}
+
+function dragLoan(e) {
+  if (!isDraggingLoan) return;
+  e.preventDefault();
+  const container = e.currentTarget;
+  const x = e.pageX - container.offsetLeft;
+  const y = e.pageY - container.offsetTop;
+  const walkX = (x - startXLoan) * 2;
+  const walkY = (y - startYLoan) * 2;
+  container.scrollLeft = scrollLeftLoan - walkX;
+  container.scrollTop = scrollTopLoan - walkY;
+}
+
+function stopDragLoan(e) {
+  isDraggingLoan = false;
+  e.currentTarget.style.cursor = 'grab';
+}
+</script>
