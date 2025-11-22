@@ -1,5 +1,5 @@
 <?php
-namespace App\Controllers\Anggota;
+namespace App\Controllers\Anggota\Core;
 
 use App\Controllers\BaseController;
 

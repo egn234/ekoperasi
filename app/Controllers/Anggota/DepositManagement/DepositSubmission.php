@@ -1,0 +1,181 @@
+<?php 
+namespace App\Controllers\Anggota\DepositManagement;
+
+class DepositSubmission extends BaseDepositController
+{
+
+    public function add_proc()
+    {
+        $jenis_pengajuan = $this->request->getPost('jenis_pengajuan');
+        if ($jenis_pengajuan == "") {
+            $this->sendAlert('Gagal membuat pengajuan: Pilih jenis pengajuan terlebih dahulu', 'warning');
+            return redirect()->to('anggota/deposit/list');
+        }
+
+        $jenis_deposit = 'manasuka free';
+
+        $nominal = filter_var($this->request->getPost('nominal'), FILTER_SANITIZE_NUMBER_INT);
+        $deskripsi = $this->request->getPost('description');
+
+        $cash_in = 0;
+        $cash_out = 0;
+        $status = false;
+
+        if ($jenis_pengajuan == 'penyimpanan') {
+            if ($nominal < 300000) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'Gagal membuat pengajuan: Penyimpanan tidak boleh kurang dari Rp 300.000',
+                        'status' => 'warning'
+                    ]
+                );
+                
+                $dataset = ['notif' => $alert];
+                session()->setFlashdata($dataset);
+                return redirect()->back();
+            }
+
+            $cash_in = $nominal;
+            $status = 'upload bukti';
+        } else {
+            $cek_saldo = $this->m_deposit->cekSaldoManasukaByUser($this->account->iduser)[0]->saldo_manasuka;
+
+            if ($cek_saldo < $nominal) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'Gagal membuat pengajuan: Saldo manasuka kurang untuk membuat pengajuan',
+                        'status' => 'warning'
+                    ]
+                );
+                
+                $dataset = ['notif' => $alert];
+                session()->setFlashdata($dataset);
+                return redirect()->back();
+            }
+
+            if ($nominal < 300000) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'Gagal membuat pengajuan: Penarikan tidak boleh kurang dari Rp 300.000',
+                        'status' => 'warning'
+                    ]
+                );
+                
+                $dataset = ['notif' => $alert];
+                session()->setFlashdata($dataset);
+                return redirect()->back();
+            }
+
+            $cek_status_penarikan = $this->m_deposit->select('COUNT(iddeposit) AS hitung')
+                ->where('status LIKE "diproses%"')
+                ->where('jenis_pengajuan', 'penarikan')
+                ->where('idanggota', $this->account->iduser)
+                ->where('jenis_deposit LIKE "manasuka%"')
+                ->get()->getResult()[0]
+                ->hitung;
+
+            if ($cek_status_penarikan > 0) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'Gagal membuat pengajuan: Selesaikan dahulu pengajuan sebelumnya',
+                        'status' => 'warning'
+                    ]
+                );
+                
+                $dataset = ['notif' => $alert];
+                session()->setFlashdata($dataset);
+                return redirect()->back();
+            }
+
+            $cash_out = $nominal;
+            $status = 'diproses admin';
+        }
+
+        $dataset = [
+            'jenis_pengajuan' => $jenis_pengajuan,
+            'jenis_deposit' => $jenis_deposit,
+            'cash_in' => $cash_in,
+            'cash_out' => $cash_out,
+            'deskripsi' => $deskripsi,
+            'status' => $status,
+            'date_created' => date('Y-m-d H:i:s'),
+            'idanggota' => $this->account->iduser
+        ];
+
+        $this->m_deposit->insertDeposit($dataset);
+
+        $new_deposit = $this->m_deposit->orderBy('date_created', 'DESC')
+            ->limit(1)
+            ->get()
+            ->getResult()[0];
+
+        if ($new_deposit->status == 'diproses admin') {
+            $this->createNotification(
+                $new_deposit->iddeposit,
+                null,
+                'Pengajuan penarikan manasuka dari anggota '. $this->account->nama_lengkap,
+                1
+            );
+        }
+
+        $this->sendAlert('Pengajuan berhasil dibuat', 'success');
+        return redirect()->to('anggota/deposit/list');
+    }
+
+    public function upload_bukti_transfer($iddeposit = false)
+    {
+        $img = $this->request->getFile('bukti_transfer');
+
+        if ($img->isValid()) {
+            $allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
+
+            if (!in_array($img->getMimeType(), $allowed_types)) {
+                $alert = view(
+                    'partials/notification-alert', 
+                    [
+                        'notif_text' => 'Tipe file tidak diizinkan', 
+                        'status' => 'danger'
+                    ]
+                );
+                
+                $data_session = ['notif' => $alert];
+                session()->setFlashdata($data_session);
+                return redirect()->back();
+            }
+            
+            $cek_bukti = $this->m_deposit->getDepositById($iddeposit)[0]->bukti_transfer;
+            
+            if ($cek_bukti) {
+                unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/tf/', $cek_bukti);
+            }
+
+            $newName = $img->getRandomName();
+            $img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/tf/', $newName);
+            $bukti_transfer = $img->getName();
+
+            $insertData = [
+                'bukti_transfer' => $bukti_transfer,
+                'status' => 'diproses admin',
+                'date_updated' => date('Y-m-d H:i:s')
+            ];
+
+            $this->m_deposit->updateBuktiTransfer($iddeposit, $insertData);
+
+            $this->createNotification(
+                $iddeposit,
+                null,
+                'Pengajuan penyimpanan manasuka dari anggota '. $this->account->nama_lengkap,
+                1
+            );
+            
+            $this->sendAlert('Bukti bayar berhasil diunggah', 'success');
+        } else {
+            $this->sendAlert('Bukti bayar gagal diunggah', 'danger');
+        }
+        return redirect()->back();
+    }
+}

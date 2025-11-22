@@ -1,8 +1,8 @@
 <?php 
-namespace App\Controllers\Anggota;
+namespace App\Controllers\Anggota\AccountManagement;
 
 use App\Controllers\BaseController;
-use App\Controllers\Anggota\Notifications;
+use App\Controllers\Anggota\Core\Notifications;
 
 use App\Models\M_user;
 use App\Models\M_group;

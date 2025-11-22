@@ -278,53 +278,69 @@ $routes->group('ketua', static function ($routes)
 //GROUP ANGGOTA
 $routes->group('anggota', static function ($routes)
 {
-    $routes->get('dashboard', 'Anggota\Dashboard::index');
-    $routes->get('profile', 'Anggota\Profile::index');
-    $routes->get('profile/set-manasuka', 'Anggota\Profile::set_manasuka');
-    $routes->get('closebook', 'Anggota\Closebook::index');
-    $routes->get('closebook-request', 'Anggota\Closebook::closebook_proc');
-    $routes->get('closebook-cancel', 'Anggota\Closebook::closebook_cancel');
-    $routes->get('notification/mark-all-read', 'Anggota\Notifications::mark_all_read');
+    // Core Routes
+    $routes->get('dashboard', 'Anggota\Core\Dashboard::index');
+    $routes->get('notification/mark-all-read', 'Anggota\Core\Notifications::mark_all_read');
+    $routes->post('notification/mark-as-read', 'Anggota\Core\Notifications::mark_as_read');
 
-    $routes->post('profile/set-manasuka-proc', 'Anggota\Profile::set_manasuka_proc');
-    $routes->post('profile/edit_proc', 'Anggota\Profile::update_proc');
-    $routes->post('profile/edit_pass', 'Anggota\Profile::update_pass');
-    $routes->post('notification/mark-as-read', 'Anggota\Notifications::mark_as_read');
+    // Account Management - Profile Routes
+    $routes->get('profile', 'Anggota\AccountManagement\Profile::index');
+    $routes->get('profile/set-manasuka', 'Anggota\AccountManagement\Profile::set_manasuka');
+    $routes->post('profile/set-manasuka-proc', 'Anggota\AccountManagement\Profile::set_manasuka_proc');
+    $routes->post('profile/edit_proc', 'Anggota\AccountManagement\Profile::update_proc');
+    $routes->post('profile/edit_pass', 'Anggota\AccountManagement\Profile::update_pass');
+
+    // Account Management - Closebook Routes
+    $routes->get('closebook', 'Anggota\AccountManagement\Closebook::index');
+    $routes->get('closebook-request', 'Anggota\AccountManagement\Closebook::closebook_proc');
+    $routes->get('closebook-cancel', 'Anggota\AccountManagement\Closebook::closebook_cancel');
 
     //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)
     {
-        $routes->get('list', 'Anggota\Deposits::index');
+        // Deposit List Routes
+        $routes->get('list', 'Anggota\DepositManagement\DepositList::index');
+        $routes->post('detail_mutasi', 'Anggota\DepositManagement\DepositList::detail_mutasi');
+        $routes->post('up_mutasi', 'Anggota\DepositManagement\DepositList::up_mutasi');
         
-        $routes->post('add_req', 'Anggota\Deposits::add_proc');
-        $routes->post('detail_mutasi', 'Anggota\Deposits::detail_mutasi');
-        $routes->post('up_mutasi', 'Anggota\Deposits::up_mutasi');
-        $routes->post('create_param_manasuka', 'Anggota\Deposits::create_param_manasuka');
+        // Deposit Submission Routes
+        $routes->post('add_req', 'Anggota\DepositManagement\DepositSubmission::add_proc');
+        $routes->add('upload_bukti_transfer/(:num)', 'Anggota\DepositManagement\DepositSubmission::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
         
-        $routes->add('set_param_manasuka/(:num)', 'Anggota\Deposits::set_param_manasuka/$1', ['as' => 'anggota_set_parameter_manasuka']);
-        $routes->add('cancel_param_manasuka/(:num)', 'Anggota\Deposits::cancel_param_manasuka/$1', ['as' => 'anggota_cancel_parameter_manasuka']);
-        $routes->add('upload_bukti_transfer/(:num)', 'Anggota\Deposits::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
+        // Manasuka Parameter Routes
+        $routes->post('create_param_manasuka', 'Anggota\DepositManagement\ManasukaParameter::create_param_manasuka');
+        $routes->add('set_param_manasuka/(:num)', 'Anggota\DepositManagement\ManasukaParameter::set_param_manasuka/$1', ['as' => 'anggota_set_parameter_manasuka']);
+        $routes->add('cancel_param_manasuka/(:num)', 'Anggota\DepositManagement\ManasukaParameter::cancel_param_manasuka/$1', ['as' => 'anggota_cancel_parameter_manasuka']);
     });
 
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)
     {
-        $routes->get('list', 'Anggota\Pinjaman::index');
+        // Loan List Routes
+        $routes->get('list', 'Anggota\LoanManagement\LoanList::index');
+        $routes->add('detail/(:num)', 'Anggota\LoanManagement\LoanList::detail/$1', ['as' => 'anggota_pin_detail']);
 
-        $routes->post('add-req', 'Anggota\Pinjaman::add_proc');
-        $routes->post('up_form', 'Anggota\Pinjaman::up_form');
-        $routes->post('lunasi_pinjaman', 'Anggota\Pinjaman::lunasi_pinjaman');
-        $routes->post('detail_tolak', 'Anggota\Pinjaman::detail_tolak');
-        $routes->post('add_pengajuan', 'Anggota\Pinjaman::add_pengajuan');
-        $routes->post('top-up', 'Anggota\Pinjaman::top_up');
+        // Loan Submission Routes
+        $routes->post('add-req', 'Anggota\LoanManagement\LoanSubmission::add_proc');
+        $routes->add('generate-form/(:num)', 'Anggota\LoanManagement\LoanSubmission::generate_form/$1', ['as' => 'anggota_print_form']);
+        $routes->add('upload_form_persetujuan/(:num)', 'Anggota\LoanManagement\LoanSubmission::upload_form/$1', ['as' => 'an_de_upfrmprstjn']);
 
-        $routes->add('data_pinjaman', 'Anggota\Pinjaman::data_pinjaman');
-        $routes->add('riwayat_penolakan', 'Anggota\Pinjaman::riwayat_penolakan');
-        $routes->get('get_asuransi/(:num)', 'Anggota\Pinjaman::get_asuransi/$1');
-        $routes->add('detail/(:num)', 'Anggota\Pinjaman::detail/$1', ['as' => 'anggota_pin_detail']);
-        $routes->add('lunasi_proc/(:num)', 'Anggota\Pinjaman::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
-        $routes->add('generate-form/(:num)', 'Anggota\Pinjaman::generate_form/$1', ['as' => 'anggota_print_form']);
-        $routes->add('upload_form_persetujuan/(:num)', 'Anggota\Pinjaman::upload_form/$1', ['as' => 'an_de_upfrmprstjn']);
-        $routes->add('top-up-req/(:num)', 'Anggota\Pinjaman::top_up_proc/$1', ['as' => 'anggota_pinjaman_topup']);
+        // Loan Top Up Routes
+        $routes->post('top-up', 'Anggota\LoanManagement\LoanTopUp::top_up');
+        $routes->add('top-up-req/(:num)', 'Anggota\LoanManagement\LoanTopUp::top_up_proc/$1', ['as' => 'anggota_pinjaman_topup']);
+
+        // Loan Payment Routes
+        $routes->post('lunasi_pinjaman', 'Anggota\LoanManagement\LoanPayment::lunasi_pinjaman');
+        $routes->add('lunasi_proc/(:num)', 'Anggota\LoanManagement\LoanPayment::lunasi_proc/$1', ['as' => 'anggota_pin_lunasi']);
+
+        // Loan Insurance Routes
+        $routes->get('get_asuransi/(:num)', 'Anggota\LoanManagement\LoanInsurance::get_asuransi/$1');
+
+        // Loan Data Service Routes (Ajax/DataTable endpoints)
+        $routes->add('data_pinjaman', 'Anggota\DataServices\LoanDataService::data_pinjaman');
+        $routes->add('riwayat_penolakan', 'Anggota\DataServices\LoanDataService::riwayat_penolakan');
+        $routes->post('up_form', 'Anggota\DataServices\LoanDataService::up_form');
+        $routes->post('detail_tolak', 'Anggota\DataServices\LoanDataService::detail_tolak');
+        $routes->post('add_pengajuan', 'Anggota\DataServices\LoanDataService::add_pengajuan');
     });
 });
