@@ -87,6 +87,7 @@ $(function() {
           let button_b = '';
           let button_c = '';
           let button_d = '';
+          let button_cancel = '';
           let tail = '</div>';
 
           if(row.status >= 4){
@@ -102,7 +103,12 @@ $(function() {
             button_d = '<a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#lunasiPinjaman" data-id="'+row.idpinjaman+'"> Lunasi Pinjaman</a>';
           }
 
-          return head + button_a + button_b + button_c + button_d + tail;
+          // Tambah tombol batal untuk status 1, 2, 3
+          if(row.status == 1 || row.status == 2 || row.status == 3){
+            button_cancel = '<a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelLoan" data-id="'+row.idpinjaman+'"><i class="fa fa-times"></i> Batalkan</a>';
+          }
+
+          return head + button_a + button_b + button_c + button_d + button_cancel + tail;
         }
       }
     ]
@@ -276,7 +282,19 @@ $(function() {
         $('#fetched-data-addPengajuan').html(data);
       }
     });
-  })
+  });
+
+  $('#cancelLoan').on('show.bs.modal', function(e) {
+    var rowid = $(e.relatedTarget).data('id');
+    $.ajax({
+      type: 'POST',
+      url: BASE_URL + 'anggota/pinjaman/cancel-modal',
+      data: 'rowid=' + rowid,
+      success: function(data) {
+        $('#fetched-data-cancelLoan').html(data);
+      }
+    });
+  });
 });
 
 document.addEventListener('DOMContentLoaded', function () {

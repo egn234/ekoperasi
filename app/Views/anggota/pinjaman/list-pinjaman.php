@@ -114,6 +114,14 @@
   </div>
 </div>
 
+<div id="cancelLoan" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <span id="fetched-data-cancelLoan"></span>
+    </div>
+  </div>
+</div>
+
 <?= $this->include('anggota/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->

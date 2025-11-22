@@ -319,6 +319,8 @@ $routes->group('anggota', static function ($routes)
         // Loan List Routes
         $routes->get('list', 'Anggota\LoanManagement\LoanList::index');
         $routes->add('detail/(:num)', 'Anggota\LoanManagement\LoanList::detail/$1', ['as' => 'anggota_pin_detail']);
+        $routes->post('cancel-modal', 'Anggota\LoanManagement\LoanList::cancel_modal');
+        $routes->post('cancel-proc/(:num)', 'Anggota\LoanManagement\LoanList::cancel_proc/$1', ['as' => 'anggota_cancel_pinjaman']);
 
         // Loan Submission Routes
         $routes->post('add-req', 'Anggota\LoanManagement\LoanSubmission::add_proc');

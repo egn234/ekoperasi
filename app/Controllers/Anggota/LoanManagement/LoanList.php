@@ -65,4 +65,67 @@ class LoanList extends BaseLoanController
         
         return view('anggota/pinjaman/list-cicilan', $data);	
     }
+
+    /**
+     * Show cancel loan modal
+     */
+    public function cancel_modal()
+    {
+        if ($this->request->getPost('rowid')) {
+            $id = $this->request->getPost('rowid');
+            $pinjaman = $this->m_pinjaman->getPinjamanById($id)[0];
+            
+            $data = [
+                'pinjaman' => $pinjaman,
+                'duser' => $this->account
+            ];
+            
+            return view('anggota/pinjaman/part-cancel-modal', $data);
+        }
+    }
+
+    /**
+     * Process loan cancellation
+     */
+    public function cancel_proc($idpinjaman)
+    {
+        $pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman);
+        
+        if (empty($pinjaman)) {
+            $this->sendAlert('Pinjaman tidak ditemukan', 'danger');
+            return redirect()->to('anggota/pinjaman/list');
+        }
+        
+        $pinjaman = $pinjaman[0];
+        
+        // Validasi: hanya bisa membatalkan jika status 1, 2, atau 3
+        // Status 1: Upload Kelengkapan Form
+        // Status 2: Menunggu Verifikasi
+        // Status 3: Menunggu Approval Sekretariat
+        if (!in_array($pinjaman->status, [1, 2, 3])) {
+            $this->sendAlert('Pinjaman tidak dapat dibatalkan. Status pinjaman sudah melewati tahap approval.', 'danger');
+            return redirect()->to('anggota/pinjaman/list');
+        }
+        
+        // Validasi: hanya pemilik pinjaman yang bisa membatalkan
+        if ($pinjaman->idanggota != $this->account->iduser) {
+            $this->sendAlert('Anda tidak memiliki akses untuk membatalkan pinjaman ini', 'danger');
+            return redirect()->to('anggota/pinjaman/list');
+        }
+        
+        // Update status pinjaman menjadi 0 (ditolak/dibatalkan)
+        $data = [
+            'status' => 0,
+            'alasan_tolak' => 'Dibatalkan oleh anggota',
+            'date_updated' => date('Y-m-d H:i:s')
+        ];
+        
+        $this->m_pinjaman->updatePinjaman($idpinjaman, $data);
+        
+        // Hapus data asuransi terkait
+        $this->m_asuransi->where('idpinjaman', $idpinjaman)->delete();
+        
+        $this->sendAlert('Pengajuan pinjaman berhasil dibatalkan', 'success');
+        return redirect()->to('anggota/pinjaman/list');
+    }
 }
