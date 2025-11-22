@@ -58,9 +58,10 @@
                       <div class="mb-3">
                         <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Log In</button>
                       </div>
-                      <div class="mt-5 text-center">
+                      <!-- FITUR LUPA PASSWORD - DINONAKTIFKAN -->
+                      <!-- <div class="mt-5 text-center">
                         <p class="text-muted mb-0">Lupa Password? <a href="<?= url_to('forgot_password') ?>" class="text-primary fw-semibold"> Klik Disini </a> </p>
-                      </div>
+                      </div> -->
                     </form>
 
                     <div class="md-5 text-center">

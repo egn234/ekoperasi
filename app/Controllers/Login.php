@@ -148,6 +148,11 @@ class login extends Controller
         return redirect()->to('/');
     }
 
+    // ============================================
+    // FITUR LUPA PASSWORD - DINONAKTIFKAN
+    // ============================================
+    
+    /*
     public function forgot_password()
     {
         $data = ['title_meta' => view('partials/title-meta', ['title' => 'Lupa Password'])];
@@ -347,4 +352,5 @@ class login extends Controller
         session()->setFlashdata($data_session);
         return redirect()->to('/');
     }
+    */
 }
