@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Bendahara;
+namespace App\Controllers\Bendahara\Core;
 
 use CodeIgniter\Controller;
 
@@ -8,8 +8,12 @@ use App\Models\M_deposit;
 use App\Models\M_monthly_report;
 use App\Models\M_pinjaman;
 
-use App\Controllers\Bendahara\Notifications;
+use App\Controllers\Bendahara\Core\Notifications;
 
+/**
+ * Dashboard Controller
+ * Handles dashboard display and chart data for Bendahara role
+ */
 class Dashboard extends Controller
 {
     protected $m_user, $m_deposit, $m_monthly_report, $m_pinjaman;

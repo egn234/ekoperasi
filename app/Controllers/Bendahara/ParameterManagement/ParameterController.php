@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Bendahara;
+namespace App\Controllers\Bendahara\ParameterManagement;
 
 use CodeIgniter\Controller;
 
@@ -7,9 +7,13 @@ use App\Models\M_user;
 use App\Models\M_param;
 use App\Models\M_param_hist;
 
-use App\Controllers\Bendahara\Notifications;
+use App\Controllers\Bendahara\Core\Notifications;
 
-class Kelola_param extends Controller
+/**
+ * ParameterController handles system parameter management for Bendahara role
+ * This module is unique to Bendahara - manages deposit parameters and other system settings
+ */
+class ParameterController extends Controller
 {
     protected $m_user, $m_param, $m_param_hist;
     protected $notification, $account;
@@ -24,6 +28,10 @@ class Kelola_param extends Controller
         $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
 
+    /**
+     * Display parameter management page
+     * Shows deposit parameters and other system parameters
+     */
     public function index()
     {
         $param_simp = $this->m_param->getParamSimp();
@@ -42,6 +50,10 @@ class Kelola_param extends Controller
         return view('bendahara/param/set-parameter', $data);
     }
 
+    /**
+     * Process deposit parameter updates
+     * Updates deposit-related parameters and logs changes in history
+     */
     public function set_param_simp()
     {
         $count_param = count($this->m_param->getParamSimp());
@@ -78,6 +90,10 @@ class Kelola_param extends Controller
         return redirect()->to('bendahara/parameter');
     }
 
+    /**
+     * Process other parameter updates
+     * Updates system parameters and logs changes in history
+     */
     public function set_param_other()
     {
         $count_param = count($this->m_param->getParamOther());
@@ -109,7 +125,7 @@ class Kelola_param extends Controller
             ]
         );
         
-        $dataset = ['notif_oth' => $alert];
+        $dataset = ['notif_other' => $alert];
         session()->setFlashdata($dataset);
         return redirect()->to('bendahara/parameter');
     }

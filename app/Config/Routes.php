@@ -174,104 +174,112 @@ $routes->group('admin', static function ($routes)
 //GROUP BENDAHARA
 $routes->group('bendahara', static function ($routes)
 {
-    $routes->get('dashboard', 'Bendahara\Dashboard::index', ['as' => 'dashboard_bendahara']);
-    $routes->get('dashboard/getChartData', 'Bendahara\Dashboard::getChartData', ['as' => 'bendahara_chart_data']);
-    $routes->get('profile', 'Bendahara\Profile::index');
-    $routes->get('parameter', 'Bendahara\Kelola_param::index');
-    $routes->get('notification/mark-all-read', 'Bendahara\Notifications::mark_all_read');
-
-    $routes->post('profile/edit_proc', 'Bendahara\Profile::update_proc');
-    $routes->post('profile/edit_pass', 'Bendahara\Profile::update_pass');
-    $routes->post('parameter/set_param_simp', 'Bendahara\Kelola_param::set_param_simp');
-    $routes->post('parameter/set_param_oth', 'Bendahara\Kelola_param::set_param_other');
-    $routes->post('notification/mark-as-read', 'Bendahara\Notifications::mark_as_read');
+    // Core Routes
+    $routes->get('dashboard', 'Bendahara\Core\Dashboard::index', ['as' => 'dashboard_bendahara']);
+    $routes->get('dashboard/getChartData', 'Bendahara\Core\Dashboard::getChartData', ['as' => 'bendahara_chart_data']);
+    $routes->get('notification/mark-all-read', 'Bendahara\Core\Notifications::mark_all_read');
+    $routes->post('notification/mark-as-read', 'Bendahara\Core\Notifications::mark_as_read');
+    
+    // Profile Routes
+    $routes->get('profile', 'Bendahara\Profile\ProfileController::index');
+    $routes->post('profile/edit_proc', 'Bendahara\Profile\ProfileController::update_proc');
+    $routes->post('profile/edit_pass', 'Bendahara\Profile\ProfileController::update_pass');
+    
+    // Parameter Management Routes (UNIQUE to Bendahara)
+    $routes->get('parameter', 'Bendahara\ParameterManagement\ParameterController::index');
+    $routes->post('parameter/set_param_simp', 'Bendahara\ParameterManagement\ParameterController::set_param_simp');
+    $routes->post('parameter/set_param_oth', 'Bendahara\ParameterManagement\ParameterController::set_param_other');
     
     //GRUP DAFTAR SIMPANAN
     $routes->group('deposit', static function ($routes)
     {
-        $routes->get('list', 'Bendahara\Deposits::index');
-        $routes->get('list_transaksi', 'Bendahara\Deposits::list_transaksi');
-
-        $routes->post('detail_mutasi', 'Bendahara\Deposits::detail_mutasi');
-        $routes->post('add_req', 'Bendahara\Deposits::add_proc');
+        // Member Deposit Routes
+        $routes->get('list', 'Bendahara\DepositManagement\MemberDeposit::index');
+        $routes->add('user/(:num)', 'Bendahara\DepositManagement\MemberDeposit::detail_anggota/$1', ['as' => 'b_anggota_detail']);
+        $routes->add('data_user', 'Bendahara\DepositManagement\MemberDeposit::data_user');
         
-        $routes->post('cancel-mnsk', 'Bendahara\Deposits::cancel_mnsk');
-        $routes->post('approve-mnsk', 'Bendahara\Deposits::approve_mnsk');
-
-        $routes->add('data_user', 'Bendahara\Deposits::data_user');
-        $routes->add('data_transaksi', 'Bendahara\Deposits::data_transaksi');
-        $routes->add('data_transaksi_filter', 'Bendahara\Deposits::data_transaksi_filter');
-        $routes->add('user/(:num)', 'Bendahara\Deposits::detail_anggota/$1', ['as' => 'b_anggota_detail']);
-        $routes->add('confirm/(:num)', 'Bendahara\Deposits::konfirmasi_mutasi/$1', ['as' => 'bendahara_konfirmasi_simpanan']);
-        $routes->add('cancel/(:num)', 'Bendahara\Deposits::batalkan_mutasi/$1', ['as' => 'bendahara_batalkan_simpanan']);
+        // Transaction Deposit Routes
+        $routes->get('list_transaksi', 'Bendahara\DepositManagement\TransactionDeposit::list_transaksi');
+        $routes->post('detail_mutasi', 'Bendahara\DepositManagement\TransactionDeposit::detail_mutasi');
+        $routes->post('cancel-mnsk', 'Bendahara\DepositManagement\TransactionDeposit::cancel_mnsk');
+        $routes->post('approve-mnsk', 'Bendahara\DepositManagement\TransactionDeposit::approve_mnsk');
+        $routes->add('data_transaksi', 'Bendahara\DepositManagement\TransactionDeposit::data_transaksi');
+        $routes->add('data_transaksi_filter', 'Bendahara\DepositManagement\TransactionDeposit::data_transaksi_filter');
+        $routes->add('confirm/(:num)', 'Bendahara\DepositManagement\TransactionDeposit::konfirmasi_mutasi/$1', ['as' => 'bendahara_konfirmasi_simpanan']);
+        $routes->add('cancel/(:num)', 'Bendahara\DepositManagement\TransactionDeposit::batalkan_mutasi/$1', ['as' => 'bendahara_batalkan_simpanan']);
     });
 
     //GROUP DAFTAR PINJAMAN
     $routes->group('pinjaman', static function ($routes)
     {
-        $routes->get('list', 'Bendahara\Pinjaman::index');
-        $routes->get('get_asuransi/(:num)', 'Bendahara\Pinjaman::get_asuransi/$1');
+        // Loan Application Routes
+        $routes->get('list', 'Bendahara\LoanManagement\LoanApplication::index');
+        $routes->post('cancel-pinjaman', 'Bendahara\LoanManagement\LoanApplication::cancel_loan');
+        $routes->post('approve-pinjaman', 'Bendahara\LoanManagement\LoanApplication::approve_loan');
+        $routes->post('detail-pinjaman', 'Bendahara\LoanManagement\LoanApplication::detail_pinjaman');
+        $routes->add('data_pinjaman', 'Bendahara\LoanManagement\LoanApplication::data_pinjaman');
+        $routes->add('approve-pinjaman/(:num)', 'Bendahara\LoanManagement\LoanApplication::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
+        $routes->add('cancel-pinjaman/(:num)', 'Bendahara\LoanManagement\LoanApplication::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
 
-        $routes->post('cancel-pinjaman', 'Bendahara\Pinjaman::cancel_loan');
-        $routes->post('approve-pinjaman', 'Bendahara\Pinjaman::approve_loan');
-        $routes->post('detail-pinjaman', 'Bendahara\Pinjaman::detail_pinjaman');
-        $routes->post('approve-pelunasan', 'Bendahara\Pinjaman::pengajuan_lunas');
-        $routes->post('cancel-pelunasan', 'Bendahara\Pinjaman::tolak_pengajuan_lunas');
-
-        $routes->add('data_pinjaman', 'Bendahara\Pinjaman::data_pinjaman');
-        $routes->add('data_pelunasan', 'Bendahara\Pinjaman::data_pelunasan');
-        $routes->add('approve-pinjaman/(:num)', 'Bendahara\Pinjaman::approve_proc/$1', ['as' => 'bendahara_approve_pinjaman']);
-        $routes->add('cancel-pinjaman/(:num)', 'Bendahara\Pinjaman::cancel_proc/$1', ['as' => 'bendahara_cancel_pinjaman']);
-        $routes->add('lunasi-pinjaman/(:num)', 'Bendahara\Pinjaman::pelunasan_proc/$1', ['as' => 'bendahara_konfirmasi_lunas']);
-        $routes->add('tolak-lunasi-pinjaman/(:num)', 'Bendahara\Pinjaman::tolak_pelunasan_proc/$1', ['as' => 'bendahara_tolak_lunas']);
+        // Loan Settlement Routes
+        $routes->post('approve-pelunasan', 'Bendahara\LoanManagement\LoanSettlement::pengajuan_lunas');
+        $routes->post('cancel-pelunasan', 'Bendahara\LoanManagement\LoanSettlement::tolak_pengajuan_lunas');
+        $routes->add('data_pelunasan', 'Bendahara\LoanManagement\LoanSettlement::data_pelunasan');
+        $routes->add('lunasi-pinjaman/(:num)', 'Bendahara\LoanManagement\LoanSettlement::pelunasan_proc/$1', ['as' => 'bendahara_konfirmasi_lunas']);
+        $routes->add('tolak-lunasi-pinjaman/(:num)', 'Bendahara\LoanManagement\LoanSettlement::tolak_pelunasan_proc/$1', ['as' => 'bendahara_tolak_lunas']);
+        
+        // Loan Insurance Routes
+        $routes->get('get_asuransi/(:num)', 'Bendahara\LoanManagement\LoanInsurance::get_asuransi/$1');
     });
 
     //GROUP LAPORAN
     $routes->group('report', static function ($routes)
     {
-        $routes->get('list', 'Bendahara\Report::index');
-        $routes->get('generate-monthly-report', 'Bendahara\Report::gen_report');
+        // Report Management Routes
+        $routes->get('list', 'Bendahara\ReportManagement\ReportManagement::index');
         
-        $routes->post('print-potongan-pinjaman', 'Bendahara\Report::print_potongan_pinjaman');
-        $routes->post('print-rekap-tahunan', 'Bendahara\Report::generateReportTahunan');
-        $routes->post('print-rekening-koran', 'Bendahara\Report::print_rekening_koran');
+        // Report Export Routes
+        $routes->post('print-potongan-pinjaman', 'Bendahara\ReportManagement\ReportExport::print_potongan_pinjaman');
+        $routes->post('print-rekap-tahunan', 'Bendahara\ReportManagement\ReportExport::print_rekap_tahunan');
+        $routes->post('print-rekening-koran', 'Bendahara\ReportManagement\ReportExport::print_rekening_koran');
     });
 });
 
 //GROUP KETUA
 $routes->group('ketua', static function ($routes)
 {
-    $routes->get('dashboard', 'Ketua\Dashboard::index', ['as' => 'dashboard_ketua']);
-    $routes->get('dashboard/getChartData', 'Ketua\Dashboard::getChartData', ['as' => 'ketua_chart_data']);
-    $routes->get('profile', 'Ketua\Profile::index');
-    $routes->get('notification/mark-all-read', 'Ketua\Notifications::mark_all_read');
+    // Core Routes
+    $routes->get('dashboard', 'Ketua\Core\Dashboard::index', ['as' => 'dashboard_ketua']);
+    $routes->get('dashboard/getChartData', 'Ketua\Core\Dashboard::getChartData', ['as' => 'ketua_chart_data']);
+    $routes->get('notification/mark-all-read', 'Ketua\Core\Notifications::mark_all_read');
+    $routes->post('notification/mark-as-read', 'Ketua\Core\Notifications::mark_as_read');
     
-    $routes->post('profile/edit_proc', 'Ketua\Profile::update_proc');
-    $routes->post('profile/edit_pass', 'Ketua\Profile::update_pass');
-    $routes->post('notification/mark-as-read', 'Ketua\Notifications::mark_as_read');
+    // Profile Routes
+    $routes->get('profile', 'Ketua\Profile\ProfileController::index', ['as' => 'ketua/profile']);
+    $routes->post('profile/edit_proc', 'Ketua\Profile\ProfileController::update_proc', ['as' => 'ketua/profile/edit_proc']);
+    $routes->post('profile/edit_pass', 'Ketua\Profile\ProfileController::update_pass', ['as' => 'ketua/profile/edit_pass']);
     
-    //GROUP DAFTAR PINJAMAN
+    // Loan Management Routes
     $routes->group('pinjaman', static function ($routes)
     {
-        $routes->get('list', 'Ketua\Pinjaman::index');
-        $routes->get('get_asuransi/(:num)', 'Ketua\Pinjaman::get_asuransi/$1');
+        $routes->get('list', 'Ketua\LoanManagement\LoanApplication::index', ['as' => 'ketua/pinjaman/list']);
+        $routes->get('get_asuransi/(:num)', 'Ketua\LoanManagement\LoanInsurance::get_asuransi/$1');
 
-        $routes->post('cancel-pinjaman', 'Ketua\Pinjaman::cancel_loan');
-        $routes->post('approve-pinjaman', 'Ketua\Pinjaman::approve_loan');
+        $routes->post('cancel-pinjaman', 'Ketua\LoanManagement\LoanApplication::cancel_loan');
+        $routes->post('approve-pinjaman', 'Ketua\LoanManagement\LoanApplication::approve_loan');
 
-        $routes->add('approve-pinjaman/(:num)', 'Ketua\Pinjaman::approve_proc/$1', ['as' => 'ketua_approve_pinjaman']);
-        $routes->add('cancel-pinjaman/(:num)', 'Ketua\Pinjaman::cancel_proc/$1', ['as' => 'ketua_cancel_pinjaman']);
+        $routes->add('approve-pinjaman/(:num)', 'Ketua\LoanManagement\LoanApplication::approve_proc/$1', ['as' => 'ketua_approve_pinjaman']);
+        $routes->add('cancel-pinjaman/(:num)', 'Ketua\LoanManagement\LoanApplication::cancel_proc/$1', ['as' => 'ketua_cancel_pinjaman']);
     });
 
-    //GROUP LAPORAN
+    // Report Management Routes
     $routes->group('report', static function ($routes)
     {
-        $routes->get('list', 'Ketua\Report::index');
-        $routes->get('generate-monthly-report', 'Ketua\Report::gen_report');
+        $routes->get('list', 'Ketua\ReportManagement\ReportManagement::index', ['as' => 'ketua/report/list']);
 
-        $routes->post('print-potongan-pinjaman', 'Ketua\Report::print_potongan_pinjaman');
-        $routes->post('print-rekap-tahunan', 'Ketua\Report::generateReportTahunan');
-        $routes->post('print-rekening-koran', 'Ketua\Report::print_rekening_koran');
+        $routes->post('print-potongan-pinjaman', 'Ketua\ReportManagement\ReportExport::print_potongan_pinjaman', ['as' => 'ketua/report/print-potongan-pinjaman']);
+        $routes->post('print-rekap-tahunan', 'Ketua\ReportManagement\ReportExport::print_rekap_tahunan', ['as' => 'ketua/report/print-rekap-tahunan']);
+        $routes->post('print-rekening-koran', 'Ketua\ReportManagement\ReportExport::print_rekening_koran', ['as' => 'ketua/report/print-rekening-koran']);
     });
 });
 

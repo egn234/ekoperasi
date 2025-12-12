@@ -1,5 +1,5 @@
 <?php 
-namespace App\Controllers\Ketua;
+namespace App\Controllers\Ketua\Core;
 
 use CodeIgniter\Controller;
 
@@ -8,8 +8,12 @@ use App\Models\M_deposit;
 use App\Models\M_monthly_report;
 use App\Models\M_pinjaman;
 
-use App\Controllers\Ketua\Notifications;
+use App\Controllers\Ketua\Core\Notifications;
 
+/**
+ * Dashboard Controller
+ * Handles dashboard display and chart data for Ketua role
+ */
 class Dashboard extends Controller
 {
     protected $m_user, $m_deposit, $m_monthly_report, $m_pinjaman;

@@ -194,25 +194,6 @@
 </div>
 <!-- END layout-wrapper -->
 
-<div id="konfGenerate" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Konfirmasi Generate Laporan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Buat Laporan untuk bulan ini?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Batal</button>
-                <a href="<?=url_to('bendahara/report/generate-monthly-report')?>" class="btn btn-success">Ya</a>
-            </div>
-        </div>
-    </div>
-</div><!-- /.modal -->
-
-
 <?= $this->include('bendahara/partials/right-sidebar') ?>
 
 <!-- JAVASCRIPT -->

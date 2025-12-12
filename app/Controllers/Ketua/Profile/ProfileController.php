@@ -1,15 +1,19 @@
 <?php 
 
-namespace App\Controllers\Bendahara;
+namespace App\Controllers\Ketua\Profile;
 
 use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_group;
 
-use App\Controllers\Bendahara\Notifications;
+use App\Controllers\Ketua\Core\Notifications;
 
-class Profile extends Controller
+/**
+ * ProfileController
+ * Handles profile display and update operations for Ketua role
+ */
+class ProfileController extends Controller
 {
     protected $m_user;
     protected $m_group;
@@ -18,8 +22,8 @@ class Profile extends Controller
 
     function __construct()
     {
-        $this->m_user = new M_user();
-        $this->m_group = new M_group();
+        $this->m_user = model(M_user::class);
+        $this->m_group = model(M_group::class);
         $this->notification = new Notifications();
         $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
@@ -27,14 +31,14 @@ class Profile extends Controller
     public function index()
     {
         $data = [
-            'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Profile']),
-            'page_title' => view('bendahara/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+            'title_meta' => view('ketua/partials/title-meta', ['title' => 'Profile']),
+            'page_title' => view('ketua/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
             'notification_list' => $this->notification->index()['notification_list'],
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
         
-        return view('bendahara/prof/prof-detail', $data);
+        return view('ketua/prof/prof-detail', $data);
     }
 
     public function update_proc()
@@ -53,7 +57,7 @@ class Profile extends Controller
             'unit_kerja' => request()->getPost('unit_kerja')
         ];
         
-        //check duplicate nip
+        // Check duplicate nip
         $nip_baru = request()->getPost('nip');
 
         if($nip_baru != null || $nip_baru != ''){
@@ -82,7 +86,7 @@ class Profile extends Controller
             }
         }
 
-        //check duplicate nik
+        // Check duplicate nik
         $nik_baru = request()->getPost('nik');
         $nik_awal = $this->account->nik;
 
@@ -93,7 +97,7 @@ class Profile extends Controller
 
             if ($cek_nik == 0) {
                 $dataset += ['nik' => $nik_baru];
-            }else{
+            } else {
                 $alert = view(
                     'partials/notification-alert', 
                     [
@@ -111,7 +115,7 @@ class Profile extends Controller
         $img = request()->getFile('profil_pic');
 
         if ($img->isValid()) {
-            // cek tipe
+            // Validate image type
             $allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
             if (!in_array($img->getMimeType(), $allowed_types)) {
                 $alert = view(
@@ -123,12 +127,11 @@ class Profile extends Controller
                 );
 
                 $data_session = ['notif' => $alert];
-
                 session()->setFlashdata($data_session);
                 return redirect()->back();
             }
             
-            // cek ukuran
+            // Validate image size (max 1MB)
             if ($img->getSize() > 1000000) {
                 $alert = view(
                     'partials/notification-alert', 
@@ -143,11 +146,11 @@ class Profile extends Controller
                 return redirect()->back();
             }
 
-            $oldFile = ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic;
-            if (file_exists($oldFile)) {
-                unlink($oldFile);
-            }
-
+            // Delete old file if exists
+            $oldFile = ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic ;
+            if (file_exists($oldFile)) { unlink($oldFile); }
+            
+            // Upload new file
             $newName = $img->getRandomName();
             $img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
             $profile_pic = $img->getName();
@@ -165,9 +168,12 @@ class Profile extends Controller
             ]
         );
         
-        $data_session = ['notif' => $alert];
+        $data_session = [
+            'notif' => $alert
+        ];
+
         session()->setFlashdata($data_session);
-        return redirect()->to('bendahara/profile');
+        return redirect()->to('ketua/profile');
     }
 
     public function update_pass()
@@ -175,10 +181,10 @@ class Profile extends Controller
         $old_pass = md5(request()->getPost('old_pass'));
         $pass = md5(request()->getPost('pass'));
         $pass2 = md5(request()->getPost('pass2'));
-
         $dataset = [];
         $cek_pass = $this->m_user->getPassword($this->account->iduser)[0]->pass;
 
+        // Verify old password
         if (!password_verify($old_pass, $cek_pass))
         {
             $alert = view(
@@ -191,9 +197,10 @@ class Profile extends Controller
             
             $dataset += ['notif' => $alert];
             session()->setFlashdata($dataset);
-            return redirect()->to('bendahara/profile');
+            return redirect()->to('ketua/profile');
         }
 
+        // Validate password confirmation
         if ($pass != $pass2)
         {
             $alert = view(
@@ -206,11 +213,11 @@ class Profile extends Controller
             
             $dataset += ['notif' => $alert];
             session()->setFlashdata($dataset);
-            return redirect()->to('bendahara/profile');
+            return redirect()->to('ketua/profile');
         }
 
+        // Update password
         $dataset = ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
-
         $this->m_user->updateUser($this->account->iduser, $dataset);
 
         $alert = view(
@@ -223,6 +230,6 @@ class Profile extends Controller
         
         $dataset += ['notif' => $alert];
         session()->setFlashdata($dataset);
-        return redirect()->to('bendahara/profile');
+        return redirect()->to('ketua/profile');
     }
 }

@@ -1,15 +1,19 @@
 <?php 
 
-namespace App\Controllers\Ketua;
+namespace App\Controllers\Bendahara\Profile;
 
 use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_group;
 
-use App\Controllers\Ketua\Notifications;
+use App\Controllers\Bendahara\Core\Notifications;
 
-class Profile extends Controller
+/**
+ * ProfileController handles user profile management for Bendahara role
+ * Manages profile view, update profile data, and password changes
+ */
+class ProfileController extends Controller
 {
     protected $m_user;
     protected $m_group;
@@ -18,25 +22,32 @@ class Profile extends Controller
 
     function __construct()
     {
-        $this->m_user = model(M_user::class);
-        $this->m_group = model(M_group::class);
+        $this->m_user = new M_user();
+        $this->m_group = new M_group();
         $this->notification = new Notifications();
         $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
 
+    /**
+     * Display profile page
+     */
     public function index()
     {
         $data = [
-            'title_meta' => view('ketua/partials/title-meta', ['title' => 'Profile']),
-            'page_title' => view('ketua/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+            'title_meta' => view('bendahara/partials/title-meta', ['title' => 'Profile']),
+            'page_title' => view('bendahara/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
             'notification_list' => $this->notification->index()['notification_list'],
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
         
-        return view('ketua/prof/prof-detail', $data);
+        return view('bendahara/prof/prof-detail', $data);
     }
 
+    /**
+     * Process profile update
+     * Handles profile information updates including NIP, NIK, and profile picture
+     */
     public function update_proc()
     {
         $alamat = request()->getPost('alamat');
@@ -93,7 +104,7 @@ class Profile extends Controller
 
             if ($cek_nik == 0) {
                 $dataset += ['nik' => $nik_baru];
-            } else {
+            }else{
                 $alert = view(
                     'partials/notification-alert', 
                     [
@@ -123,6 +134,7 @@ class Profile extends Controller
                 );
 
                 $data_session = ['notif' => $alert];
+
                 session()->setFlashdata($data_session);
                 return redirect()->back();
             }
@@ -142,9 +154,11 @@ class Profile extends Controller
                 return redirect()->back();
             }
 
-            $oldFile = ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic ;
-            if (file_exists($oldFile)) { unlink($oldFile); }
-            
+            $oldFile = ROOTPATH . "public/uploads/user/" . $this->account->username . "/profil_pic/" . $this->account->profil_pic;
+            if (file_exists($oldFile)) {
+                unlink($oldFile);
+            }
+
             $newName = $img->getRandomName();
             $img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
             $profile_pic = $img->getName();
@@ -162,19 +176,21 @@ class Profile extends Controller
             ]
         );
         
-        $data_session = [
-            'notif' => $alert
-        ];
-
+        $data_session = ['notif' => $alert];
         session()->setFlashdata($data_session);
-        return redirect()->to('ketua/profile');
+        return redirect()->to('bendahara/profile');
     }
 
+    /**
+     * Process password update
+     * Validates old password and updates with new password
+     */
     public function update_pass()
     {
         $old_pass = md5(request()->getPost('old_pass'));
         $pass = md5(request()->getPost('pass'));
         $pass2 = md5(request()->getPost('pass2'));
+
         $dataset = [];
         $cek_pass = $this->m_user->getPassword($this->account->iduser)[0]->pass;
 
@@ -190,7 +206,7 @@ class Profile extends Controller
             
             $dataset += ['notif' => $alert];
             session()->setFlashdata($dataset);
-            return redirect()->to('ketua/profile');
+            return redirect()->to('bendahara/profile');
         }
 
         if ($pass != $pass2)
@@ -198,18 +214,17 @@ class Profile extends Controller
             $alert = view(
                 'partials/notification-alert', 
                 [
-                    'notif_text' => 'Konfirmasi password tidak sesuai',
+                    'notif_text' => 'Password baru tidak sama',
                     'status' => 'danger'
                 ]
             );
             
             $dataset += ['notif' => $alert];
             session()->setFlashdata($dataset);
-            return redirect()->to('ketua/profile');
+            return redirect()->to('bendahara/profile');
         }
 
-        $dataset = ['pass' => password_hash($pass, PASSWORD_DEFAULT)];
-        $this->m_user->updateUser($this->account->iduser, $dataset);
+        $this->m_user->update($this->account->iduser, ['pass' => password_hash($pass, PASSWORD_DEFAULT)]);
 
         $alert = view(
             'partials/notification-alert', 
@@ -221,6 +236,6 @@ class Profile extends Controller
         
         $dataset += ['notif' => $alert];
         session()->setFlashdata($dataset);
-        return redirect()->to('ketua/profile');
+        return redirect()->to('bendahara/profile');
     }
 }

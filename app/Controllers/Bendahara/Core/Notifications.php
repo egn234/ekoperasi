@@ -1,12 +1,16 @@
 <?php
-namespace App\Controllers\Ketua;
+namespace App\Controllers\Bendahara\Core;
 
-use App\Controllers\BaseController;
+use CodeIgniter\Controller;
 
 use App\Models\M_user;
 use App\Models\M_notification;
 
-class Notifications extends BaseController
+/**
+ * Notifications Controller
+ * Handles notification operations for Bendahara role
+ */
+class Notifications extends Controller
 {
     protected $m_user, $m_notification;
     protected $account;
@@ -14,17 +18,19 @@ class Notifications extends BaseController
     function __construct(){
         $this->m_user = model(M_user::class);
         $this->m_notification = model(M_notification::class);
-        $this->account = $this->m_user->getUserById(session()->get('iduser'));
+        $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
 
     public function index()
     {
-        $notification_list = $this->m_notification->where('group_type', '3')
+        $notification_list = $this->m_notification
+            ->where('group_type', '2')
             ->orderBy('timestamp', 'DESC')
             ->get()
             ->getResult();
 
-        $notification_badges = $this->m_notification->where('group_type', '3')
+        $notification_badges = $this->m_notification
+            ->where('group_type', '2')
             ->where('status', 'unread')
             ->get()
             ->getResult();
@@ -39,7 +45,7 @@ class Notifications extends BaseController
 
     public function mark_all_read()
     {
-        $this->m_notification->where('group_type', '3')
+        $this->m_notification->where('group_type', '2')
             ->where('status', 'unread')
             ->set('status', 'read')
             ->update();
