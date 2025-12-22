@@ -39,7 +39,7 @@ abstract class BaseLoanController extends Controller
         $this->m_param = model(M_param::class);
         $this->m_notification = model(M_notification::class);
         $this->m_asuransi = model(M_asuransi::class);
-        
+
         $this->notification = new Notifications();
         $this->account = $this->m_user->getUserById(session()->get('iduser'))[0];
     }
@@ -72,7 +72,7 @@ abstract class BaseLoanController extends Controller
             'notif_text' => $message,
             'status' => $status
         ]);
-        
+
         if ($returnView) {
             session()->setFlashdata('notif', $alert);
             return null;
@@ -103,7 +103,7 @@ abstract class BaseLoanController extends Controller
     protected function getEmployeeLimits(): array
     {
         $status_pegawai = $this->account->status_pegawai;
-        
+
         if ($status_pegawai == 'tetap') {
             return [
                 'batas_bulanan' => 24,
@@ -128,6 +128,22 @@ abstract class BaseLoanController extends Controller
         // ID 13: Nominal Asuransi
         $bulan_kelipatan = (int)$this->m_param->getParamById(12)[0]->nilai;
         $nominal_asuransi = (float)$this->m_param->getParamById(13)[0]->nilai;
+        // ID 8: Tanggal Cut-off
+        $cutoff_day = (int)$this->m_param->getParamById(8)[0]->nilai;
+
+        // Calculate Start Date and End Date
+        $today_day = (int)date('d');
+        $current_month = (int)date('m');
+        $current_year = (int)date('Y');
+
+        if ($today_day <= $cutoff_day) {
+            $start_date_ts = mktime(0, 0, 0, $current_month, $cutoff_day, $current_year);
+        } else {
+            $start_date_ts = mktime(0, 0, 0, $current_month + 1, $cutoff_day, $current_year);
+        }
+
+        $start_date = date('Y-m-d H:i:s', $start_date_ts);
+        $end_date = date('Y-m-d H:i:s', strtotime('+1 year', $start_date_ts));
 
         log_message('info', 'Insurance calculation - Angsuran: ' . $angsuranBulanan . ', Kelipatan: ' . $bulan_kelipatan . ', Nominal: ' . $nominal_asuransi);
 
@@ -140,9 +156,11 @@ abstract class BaseLoanController extends Controller
                 'idpinjaman' => $pinjamanId,
                 'bulan_kumulatif' => $asuransi['bulan_kumulatif'],
                 'nilai_asuransi' => $asuransi['nilai_asuransi'],
-                'status' => 'aktif'
+                'status' => 'aktif',
+                'start_date' => $start_date,
+                'end_date' => $end_date
             ];
-            
+
             log_message('info', 'Inserting asuransi: ' . json_encode($asuransi_insert_data));
             $this->m_asuransi->insertAsuransi($asuransi_insert_data);
         }

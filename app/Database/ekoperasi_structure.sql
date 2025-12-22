@@ -61,6 +61,8 @@ CREATE TABLE `tb_asuransi_pinjaman`  (
   `bulan_kumulatif` int NOT NULL,
   `nilai_asuransi` decimal(20, 2) NOT NULL,
   `status` enum('aktif','klaim','hangus') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT 'aktif',
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
   `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`idasuransi`) USING BTREE,
   INDEX `idpinjaman`(`idpinjaman` ASC) USING BTREE,
