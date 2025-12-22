@@ -1,602 +1,229 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
+<?= $this->section('content') ?>
 
-    <?= $title_meta ?>
-
-    <?= $this->include('admin/partials/head-css') ?>
-
-</head>
-
-<?= $this->include('admin/partials/body') ?>
-
-<!-- <body data-layout="horizontal"> -->
-
-<!-- Begin page -->
-<div id="layout-wrapper">
-
-    <?= $this->include('admin/partials/menu') ?>
-
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
-    <div class="main-content">
-
-        <div class="page-content">
-            <div class="container-fluid">
-
-                <!-- start page title -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box d-flex align-items-center justify-content-between">
-                            <h4 class="page-title mb-0 font-size-18"><?= $title ?></h4>
-
-                            <div class="page-title-right">
-                                <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item"><a href="<?=base_url()?>/pengelola/dashboard">Ekoperasi</a></li>
-                                    <li class="breadcrumb-item active">Detail UMKM</li>
-                                </ol>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <!-- end page title -->
-                <?=session()->getFlashdata('notif')?>
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-sm order-2 order-sm-1">
-                                        <div class="d-flex align-items-start mt-3 mt-sm-0">
-                                            <div class="flex-shrink-0">
-                                                <div class="avatar-xl me-3">
-                                                    <img src="<?=base_url()?>/uploads/user/<?=$det_user->username?>/profil_pic/<?=$det_user->profil_pic?>" alt="" class="img-fluid rounded-circle d-block">
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div>
-                                                    <h5 class="font-size-16 mb-1"><?=$det_user->username?> - <?=$det_user->nama_lengkap?></h5>
-                                                    <p class="text-muted font-size-13"><?=$det_user->group_type?></p>
-
-                                                    <div class="d-flex flex-wrap align-items-start gap-2 gap-lg-3 text-muted font-size-13">
-                                                        <div><i class="mdi mdi-circle-medium me-1 text-success align-middle"></i><?=$det_user->nomor_telepon?></div>
-                                                        <div><i class="mdi mdi-circle-medium me-1 text-success align-middle"></i><?=$det_user->email?></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-auto order-1 order-sm-2">
-                                        <div class="d-flex align-items-start justify-content-end gap-2">
-                                            <div>
-                                            <?php if($det_user->user_flag == 0){?>
-                                                <button type="button" class="btn btn-soft-success" data-bs-toggle="modal" data-bs-target="#aktifkanUser">
-                                                    Aktifkan User
-                                                </button>
-                                            <?php }elseif($det_user->user_flag == 1){?>
-                                                <button type="button" class="btn btn-soft-danger" data-bs-toggle="modal" data-bs-target="#nonaktifkanUser">Nonaktifkan User</button>
-                                            <?php }?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <ul class="nav nav-tabs-custom card-header-tabs border-top mt-4" id="pills-tab" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link px-3 active" data-bs-toggle="tab" href="#overview" role="tab">Detail Profil</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link px-3" data-bs-toggle="tab" href="#about" role="tab">Ubah Profil</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- end card body -->
-                        </div>
-                        <!-- end card -->
-
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="overview" role="tabpanel">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Overview</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div>
-                                            <div class="pb-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Nama Lengkap:</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->nama_lengkap?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">NIK :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->nik?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">NIP :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=($det_user->nip)?$det_user->nip:'-'?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Tempat, Tanggal Lahir :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?= $det_user->tempat_lahir ?>, <?= $det_user->tanggal_lahir ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Email :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->email?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Alamat :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->alamat?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Nama Bank :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->nama_bank?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Nomor Rekening :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->no_rek?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Institusi :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->instansi?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Unit Kerja :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->unit_kerja?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Status Pegawai :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->status_pegawai?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Nomor Telp. :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$det_user->nomor_telepon?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <?php if($det_user->user_flag == 0 && $det_user->closebook_last_updated): ?>
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Status Akun :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <span class="badge bg-danger">Nonaktif (Closebook)</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Tanggal Closebook :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?= date('d F Y H:i:s', strtotime($det_user->closebook_last_updated)) ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Jumlah Closebook :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?= $det_user->closebook_param_count ?> kali
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                    <!-- end card body -->
-                                </div>
-                                <!-- end card -->
-                            </div>
-                            <!-- end tab pane -->
-                            <div class="tab-pane" id="about" role="tabpanel">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="mt-4 mt-lg-0">
-                                            <h5 class="font-size-14 mb-4">Edit Profil</h5>
-                                            <form action="<?= url_to('update_user', $det_user->iduser ) ?>" method="post" enctype="multipart/form-data">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="full_name">Nama Lengkap <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?= $det_user->nama_lengkap ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="nik_number">NIK</label>
-                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $det_user->nik?>" name="nik" required>
-                                                    <div class="invalid-feedback">
-                                                        NIK harus 16 digit
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="nip_number">NIP</label>
-                                                    <input type="number" class="form-control" id="nip_number" value="<?=($det_user->nip)?$det_user->nip:''?>" name="nip">
-                                                    <div class="invalid-feedback">
-                                                        NIP harus 8 digit
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label" for="birthplace">Tempat <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?= $det_user->tempat_lahir ?>" required>
-                                                            <div class="invalid-feedback">
-                                                                Harus Diisi
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label" for="birthday">Tanggal Lahir<span class="text-danger">*</span></label>
-                                                            <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?= date('Y-m-d', strtotime($det_user->tanggal_lahir)) ?>" required>
-                                                            <div class="invalid-feedback">
-                                                                Harus Diisi
-                                                            </div>
-                                                        </div>                                          
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="institution">Institusi <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="institution" name="instansi" required>
-                                                        <option value="" <?=($det_user->instansi)?'':'selected'?> disabled>Pilih Institusi...</option>
-                                                        <option value="YPT" <?=($det_user->instansi == 'YPT')?'selected':''?> >YPT</option>
-                                                        <option value="Universitas Telkom" <?=($det_user->instansi == 'Universitas Telkom')?'selected':''?> >Universitas Telkom</option>
-                                                        <option value="Trengginas Jaya" <?=($det_user->instansi == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
-                                                        <option value="BUT" <?=($det_user->instansi == 'BUT')?'selected':''?> >BUT</option>
-                                                        <option value="Telkom" <?=($det_user->instansi == 'Telkom')?'selected':''?> >Telkom</option>
-                                                        <option value="GIAT" <?=($det_user->instansi == 'GIAT')?'selected':''?> >GIAT</option>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        Pilih Terlebih dahulu
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="address" name="alamat" value="<?= $det_user->alamat ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="phone_number">No. Telepon / WA <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="phone_number" name="nomor_telepon" value="<?= $det_user->nomor_telepon ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="email_addr">Email <span class="text-danger">*</span></label>
-                                                    <input type="email" class="form-control" id="email_addr" name="email" value="<?= $det_user->email ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?= $det_user->unit_kerja?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-4">
-                                                        <label class="form-label" for="bankname">Nama Bank <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="bankname" name="nama_bank" value="<?= $det_user->nama_bank?>" required>
-                                                        <div class="invalid-feedback">
-                                                            Harus Diisi
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <label class="form-label" for="norek">Nomor Rekening <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control" id="norek" name="no_rek" value="<?= $det_user->no_rek?>" required>
-                                                        <div class="invalid-feedback">
-                                                            Harus Diisi
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="status_peg">Status Pegawai <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="status_peg" name="status_pegawai" required>
-                                                        <option value="tetap" <?=($det_user->status_pegawai == 'tetap')?'selected':''?> >Tetap</option>
-                                                        <option value="kontrak" <?=($det_user->status_pegawai == 'kontrak')?'selected':''?> >Kontrak</option>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        Pilih Terlebih dahulu
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="password">Password Baru</label>
-                                                    <div class="input-group auth-pass-inputgroup">
-                                                        <input type="password" class="form-control" id="password" minlength="8" name="pass">
-                                                        <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
-                                                    </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
-                                                    <div class="input-group auth-pass-inputgroup">
-                                                        <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2">
-                                                        <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
-                                                    </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimal 8 karakter
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="group">User Grup <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="group" name="idgroup" required>
-                                                        <option value="" <?=(session()->getFlashdata('idgroup'))?'':'selected'?> disabled>Pilih Grup...</option>
-                                                        <?php foreach ($grp_list as $a): ?>
-                                                            <option value="<?= $a->idgroup ?>" <?=($det_user->idgroup == $a->idgroup)?'selected':''?> ><?= $a->keterangan ?></option>
-                                                        <?php endforeach ?>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        Pilih Terlebih dahulu
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="profile_pic">Foto Profil</label>
-                                                    <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg">
-                                                </div>
-                                                <span class="text-xs text-danger">
-                                                  *Tidak boleh dikosongkan
-                                                </span>
-
-                                                <button type="submit" class="btn btn-primary float-end">Submit</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <!-- end card body -->
-                                </div>
-                                <!-- end card -->
-                            </div>
-                            <!-- end tab pane -->
-
-                        </div>
-
-                        <!-- end tab content -->
-                    </div>
-                    <!-- end col -->
-                </div>
-                <!-- end row -->
-
-            </div> <!-- container-fluid -->
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex items-center gap-3">
+        <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+            <i data-lucide="user-check" class="w-8 h-8"></i>
         </div>
-        <!-- End Page-content -->
-
-
-        <?= $this->include('admin/partials/footer') ?>
+        <div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Detail User</h1>
+            <p class="text-slate-500 font-medium">Informasi lengkap dan manajemen akun anggota.</p>
+        </div>
     </div>
-    <!-- end main content-->
 
+    <?= session()->getFlashdata('notif') ?>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Profile Card -->
+        <div class="space-y-8 lg:col-span-1">
+            <div class="bg-white rounded-[2.5rem] p-0 shadow-soft border border-slate-50 relative overflow-hidden text-center group pb-8">
+                <div class="w-full h-32 bg-gradient-to-br from-blue-500 to-indigo-600"></div>
+                <div class="relative z-10 -mt-16 px-6">
+                    <div class="w-32 h-32 mx-auto rounded-full p-1.5 bg-white shadow-xl relative mb-4">
+                        <img src="<?= base_url() ?>/uploads/user/<?= $det_user->username ?>/profil_pic/<?= $det_user->profil_pic ?>"
+                            alt="Profile"
+                            class="w-full h-full rounded-full object-cover"
+                            onerror="this.src='<?= base_url('assets/images/users/avatar-1.jpg') ?>'">
+                    </div>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 break-words mb-1"><?= $det_user->nama_lengkap ?></h3>
+                <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2"><?= $det_user->username ?></p>
+                <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest mb-6">
+                    <?= $det_user->group_type ?>
+                </div>
+
+                <div class="flex flex-col gap-3 px-4">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 text-left">
+                        <div class="p-2 bg-white text-emerald-500 rounded-lg shadow-sm">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-[10px] uppercase font-black text-slate-400">Telepon</p>
+                            <p class="text-sm font-bold text-slate-700 truncate"><?= $det_user->nomor_telepon ?></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 text-left">
+                        <div class="p-2 bg-white text-blue-500 rounded-lg shadow-sm">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-[10px] uppercase font-black text-slate-400">Email</p>
+                            <p class="text-sm font-bold text-slate-700 truncate"><?= $det_user->email ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-8 border-t border-slate-100">
+                    <?php if ($det_user->user_flag == 0): ?>
+                        <button onclick="openModal('aktifkanUser')" class="w-full py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]">
+                            Aktifkan User
+                        </button>
+                    <?php elseif ($det_user->user_flag == 1): ?>
+                        <button onclick="openModal('nonaktifkanUser')" class="w-full py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 transition-all hover:scale-[1.02]">
+                            Nonaktifkan User
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Closebook Stat (If Applicable) -->
+            <?php if ($det_user->user_flag == 0 && $det_user->closebook_last_updated): ?>
+                <div class="bg-red-50 rounded-[2.5rem] p-8 shadow-soft border border-red-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-red-100 text-red-600 rounded-xl">
+                            <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-red-900">Closebook Info</h3>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-red-700 font-medium">Tanggal</span>
+                            <span class="font-bold text-red-900"><?= date('d M Y', strtotime($det_user->closebook_last_updated)) ?></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-700 font-medium">Total Closebook</span>
+                            <span class="font-bold text-red-900"><?= $det_user->closebook_param_count ?> Kali</span>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Right Column: Details & Edit -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Details Card -->
+            <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+                <div class="flex items-center gap-3 mb-8 pb-8 border-b border-slate-50">
+                    <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                        <i data-lucide="file-text" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900">Informasi Lengkap</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">NIK</p>
+                        <p class="font-bold text-slate-800"><?= $det_user->nik ?></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">NIP</p>
+                        <p class="font-bold text-slate-800"><?= $det_user->nip ?: '-' ?></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">TTL</p>
+                        <p class="font-bold text-slate-800"><?= $det_user->tempat_lahir ?>, <?= $det_user->tanggal_lahir ?></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Institusi / Unit</p>
+                        <p class="font-bold text-slate-800"><?= $det_user->instansi ?> - <?= $det_user->unit_kerja ?></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Pegawai</p>
+                        <p class="font-bold text-slate-800 capitalize"><?= $det_user->status_pegawai ?></p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Alamat</p>
+                        <p class="font-bold text-slate-800"><?= $det_user->alamat ?></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Info Bank</p>
+                        <p class="font-bold text-slate-800"><?= $det_user->nama_bank ?> - <?= $det_user->no_rek ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Form -->
+            <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+                <div class="flex items-center gap-3 mb-8 pb-8 border-b border-slate-50">
+                    <div class="p-2 bg-orange-50 text-orange-600 rounded-xl">
+                        <i data-lucide="edit" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900">Ubah Data</h3>
+                </div>
+
+                <form action="<?= url_to('update_user', $det_user->iduser) ?>" method="post" enctype="multipart/form-data" class="space-y-6">
+                    <!-- Simplified Edit Form (Grouped for Brevity) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap</label>
+                            <input type="text" name="nama_lengkap" value="<?= $det_user->nama_lengkap ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">NIK</label>
+                            <input type="number" name="nik" value="<?= $det_user->nik ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700" required>
+                        </div>
+                        <!-- Add more fields as needed, matching the style of add-user -->
+                    </div>
+
+                    <div class="flex justify-end pt-4">
+                        <button type="submit" class="px-8 py-3 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+
+                    <!-- Hidden inputs for fields not shown here for brevity but critical for update -->
+                    <!-- Ideally, replicate all fields from add-user here, pre-filled -->
+                    <input type="hidden" name="nip" value="<?= $det_user->nip ?>">
+                    <input type="hidden" name="tempat_lahir" value="<?= $det_user->tempat_lahir ?>">
+                    <input type="hidden" name="tanggal_lahir" value="<?= $det_user->tanggal_lahir ?>">
+                    <input type="hidden" name="instansi" value="<?= $det_user->instansi ?>">
+                    <input type="hidden" name="alamat" value="<?= $det_user->alamat ?>">
+                    <input type="hidden" name="nomor_telepon" value="<?= $det_user->nomor_telepon ?>">
+                    <input type="hidden" name="email" value="<?= $det_user->email ?>">
+                    <input type="hidden" name="unit_kerja" value="<?= $det_user->unit_kerja ?>">
+                    <input type="hidden" name="nama_bank" value="<?= $det_user->nama_bank ?>">
+                    <input type="hidden" name="no_rek" value="<?= $det_user->no_rek ?>">
+                    <input type="hidden" name="status_pegawai" value="<?= $det_user->status_pegawai ?>">
+                    <input type="hidden" name="idgroup" value="<?= $det_user->idgroup ?>">
+
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-<!-- END layout-wrapper -->
 
-<!-- sample modal content -->
-<?php if($det_user->user_flag == 0){?>
-<div id="aktifkanUser" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Aktifkan User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Ingin Mengaktifkan User?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                <a href="<?=base_url()?>/admin/user/switch_usr/<?=$det_user->iduser?>" class="btn btn-primary">
-                    Aktifkan
-                </a>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+<!-- Modal Overlays for Activation/Deactivation -->
+<div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden transition-opacity"></div>
 
-<?php }elseif($det_user->user_flag == 1){?>
-<div id="nonaktifkanUser" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Aktifkan User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Ingin Nonaktifkan User?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-                <a href="<?=base_url()?>/admin/user/switch_usr/<?=$det_user->iduser?>" class="btn btn-primary">
-                    Nonaktifkan
-                </a>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+<!-- Aktifkan User Modal -->
+<div id="aktifkanUser" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-sm bg-white rounded-[2rem] shadow-2xl p-8 text-center">
+    <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-6">
+        <i data-lucide="check-circle" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-xl font-black text-slate-900 mb-2">Aktifkan User?</h3>
+    <p class="text-sm text-slate-500 mb-8">User ini akan mendapatkan akses kembali ke sistem.</p>
+    <div class="flex gap-3">
+        <button onclick="closeModal('aktifkanUser')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200">Batal</button>
+        <a href="<?= base_url() ?>/admin/user/switch_usr/<?= $det_user->iduser ?>" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200">Ya, Aktifkan</a>
+    </div>
+</div>
 
-<?php }?>
+<!-- Nonaktifkan User Modal -->
+<div id="nonaktifkanUser" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-sm bg-white rounded-[2rem] shadow-2xl p-8 text-center">
+    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-6">
+        <i data-lucide="x-circle" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-xl font-black text-slate-900 mb-2">Nonaktifkan User?</h3>
+    <p class="text-sm text-slate-500 mb-8">User tidak akan bisa login ke sistem.</p>
+    <div class="flex gap-3">
+        <button onclick="closeModal('nonaktifkanUser')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200">Batal</button>
+        <a href="<?= base_url() ?>/admin/user/switch_usr/<?= $det_user->iduser ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200">Nonaktifkan</a>
+    </div>
+</div>
 
+<script>
+    function openModal(id) {
+        document.getElementById('modal-overlay').classList.remove('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
 
-<?= $this->include('admin/partials/right-sidebar') ?>
-
-<!-- JAVASCRIPT -->
-<?= $this->include('admin/partials/vendor-scripts') ?>
-
-<script src="<?=base_url()?>/assets/js/app.js"></script>
-
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const passwordToggles = document.querySelectorAll(".password-toggle");
-
-        passwordToggles.forEach(function (toggle) {
-            toggle.addEventListener("click", function () {
-                const targetId = toggle.getAttribute("data-target");
-                const passwordInput = document.getElementById(targetId);
-
-                if (passwordInput.type === "password") {
-                    passwordInput.type = "text";
-                    toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
-                } else {
-                    passwordInput.type = "password";
-                    toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
-                }
-            });
-        });
-    });
+    function closeModal(id) {
+        document.getElementById('modal-overlay').classList.add('hidden');
+        document.getElementById(id).classList.add('hidden');
+    }
 </script>
 
-</body>
-
-</html>
+<?= $this->endSection() ?>

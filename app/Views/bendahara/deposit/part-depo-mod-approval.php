@@ -1,130 +1,92 @@
 <?php if ($flag == 1) : ?>
-<!-- MODAL APPROVE -->
-<div class="modal-header bg-gradient-success text-white border-0">
-  <h5 class="modal-title text-white d-flex align-items-center" id="myModalLabel">
-    <i class="fas fa-check-circle me-2"></i>Konfirmasi Persetujuan
-  </h5>
-  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
-<div class="modal-body p-0">
-  <!-- Main Question -->
-  <div class="px-4 py-4">
-    <div class="text-center mb-4">
-      <div class="mb-3">
-        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" 
-             style="width: 60px; height: 60px; font-size: 24px;">
-          <i class="fas fa-question"></i>
-        </div>
-      </div>
-      <h6 class="mb-2">Terima Pengajuan Manasuka?</h6>
-      <p class="text-muted mb-0">Pastikan semua data telah sesuai sebelum menyetujui</p>
+  <!-- MODAL APPROVE -->
+  <div class="text-center mb-6">
+    <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="check-circle" class="w-8 h-8"></i>
     </div>
-
-    <!-- Warnings -->
-    <?php if ($confirmation) : ?>
-      <div class="alert alert-danger d-flex align-items-start mb-3">
-        <div class="me-2">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div>
-          <strong>Peringatan Saldo!</strong><br>
-          <small>Pemohon tidak mempunyai cukup saldo untuk pengajuan penarikan transaksi ini</small><br>
-          <small><strong>Saldo Pemohon saat ini:</strong> Rp <?= number_format($total_saldo, 0, ',', '.')?></small>
-        </div>
-      </div>
-    <?php endif; ?>
-
-    <!-- Bukti Transfer -->
-    <?php if ($a->jenis_pengajuan == "penyimpanan" && $a->bukti_transfer) : ?>
-      <div class="card bg-light border-0 mb-3">
-        <div class="card-body p-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h6 class="mb-1">Bukti Transfer</h6>
-              <small class="text-muted">Dokumen yang diunggah pemohon</small>
-            </div>
-            <div>
-              <a href="<?=base_url()?>/uploads/user/<?=$duser->username?>/tf/<?=$a->bukti_transfer?>" 
-                 target="_blank" 
-                 class="btn btn-outline-primary btn-sm">
-                <i class="fas fa-file-image me-1"></i>Lihat Bukti
-                <i class="fas fa-external-link-alt ms-1"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    <?php endif; ?>
-
-    <!-- Form -->
-    <form action="<?= url_to('bendahara_konfirmasi_simpanan', $a->iddeposit)?>" id="formTerima" method="post">
-      <div class="card border-0 bg-light">
-        <div class="card-body">
-          <p>Anda yakin akan menyetujui deposit ini?</p>
-        </div>
-      </div>
-    </form>
+    <h3 class="text-xl font-black text-slate-900">Konfirmasi Persetujuan</h3>
+    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Terima Pengajuan Manasuka?</p>
   </div>
-</div>
-<div class="modal-footer border-top-0 bg-light">
-  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-    <i class="fas fa-times me-1"></i>Batal
-  </button>
-  <button type="submit" form="formTerima" class="btn btn-success">
-    <i class="fas fa-check me-1"></i>Terima Pengajuan
-  </button>
-</div>
-<?php else : ?>
-<!-- MODAL CANCEL -->
-<div class="modal-header bg-gradient-danger text-white border-0">
-	<h5 class="modal-title text-white d-flex align-items-center" id="myModalLabel">
-		<i class="fas fa-times-circle me-2"></i>Konfirmasi Penolakan
-	</h5>
-	<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
-<div class="modal-body p-0">
-	<!-- Main Question -->
-	<div class="px-4 py-4">
-		<div class="text-center mb-4">
-			<div class="mb-3">
-				<div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" 
-					 style="width: 60px; height: 60px; font-size: 24px;">
-					<i class="fas fa-exclamation-triangle"></i>
-				</div>
-			</div>
-			<h6 class="mb-2">Tolak Pengajuan Manasuka?</h6>
-			<p class="text-muted mb-0">Pengajuan yang ditolak tidak dapat dibatalkan</p>
-		</div>
 
-		<!-- Form -->
-		<form action="<?= url_to('bendahara_batalkan_simpanan', $a->iddeposit)?>" id="formTolak" method="post">
-			<div class="card border-0 bg-light">
-				<div class="card-body">
-					<label class="form-label fw-semibold" for="alasan_tolak">
-						<i class="fas fa-comment-alt me-2 text-danger"></i>Alasan Penolakan
-					</label>
-					<textarea 
-						class="form-control" 
-						id="alasan_tolak" 
-						name="alasan_tolak" 
-						rows="3"
-						placeholder="Jelaskan alasan mengapa pengajuan ini ditolak..."
-						required
-					></textarea>
-					<div class="form-text text-muted">
-						<i class="fas fa-info-circle me-1"></i>Alasan ini akan dikirim ke pemohon sebagai notifikasi
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
-<div class="modal-footer border-top-0 bg-light">
-	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-		<i class="fas fa-arrow-left me-1"></i>Kembali
-	</button>
-	<button type="submit" form="formTolak" class="btn btn-danger">
-		<i class="fas fa-times me-1"></i>Tolak Pengajuan
-	</button>
-</div>
+  <?php if ($confirmation) : ?>
+    <div class="bg-red-50 border border-red-100 rounded-xl p-4 mb-4 flex gap-3">
+      <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600 shrink-0 mt-0.5"></i>
+      <div>
+        <h6 class="text-xs font-black text-red-700 uppercase tracking-wide mb-1">Peringatan Saldo!</h6>
+        <p class="text-sm font-medium text-red-600">Pemohon tidak mempunyai cukup saldo untuk penarikan ini.</p>
+        <p class="text-[10px] text-red-500 mt-1 font-bold">Saldo saat ini: Rp <?= number_format($total_saldo, 0, ',', '.') ?></p>
+      </div>
+    </div>
+  <?php endif; ?>
+
+  <!-- Bukti Transfer -->
+  <?php if ($a->jenis_pengajuan == "penyimpanan" && $a->bukti_transfer) : ?>
+    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-blue-100 rounded-lg text-blue-600"><i data-lucide="image" class="w-5 h-5"></i></div>
+        <div>
+          <h6 class="text-sm font-bold text-blue-900">Bukti Transfer</h6>
+          <p class="text-[10px] text-blue-500 font-medium">Dokumen Pendukung</p>
+        </div>
+      </div>
+      <a href="<?= base_url() ?>/uploads/user/<?= $duser->username ?>/tf/<?= $a->bukti_transfer ?>" target="_blank" class="px-3 py-2 bg-white text-blue-600 rounded-lg text-xs font-bold uppercase tracking-wide shadow-sm hover:shadow-md transition-shadow">
+        Lihat
+      </a>
+    </div>
+  <?php endif; ?>
+
+  <form action="<?= url_to('bendahara_konfirmasi_simpanan', $a->iddeposit) ?>" id="formTerima" method="post">
+    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center mb-6">
+      <p class="text-sm font-bold text-slate-600">Anda yakin akan menyetujui transaksi ini?</p>
+    </div>
+  </form>
+
+  <div class="flex gap-3 pt-4 border-t border-slate-100">
+    <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+      Batal
+    </button>
+    <button type="submit" form="formTerima" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]">
+      Terima Pengajuan
+    </button>
+  </div>
+
+<?php else : ?>
+
+  <!-- MODAL CANCEL -->
+  <div class="text-center mb-6">
+    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="x-circle" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-xl font-black text-slate-900">Konfirmasi Penolakan</h3>
+    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Tolak Pengajuan Manasuka?</p>
+  </div>
+
+  <div class="bg-red-50 border border-red-100 p-3 rounded-xl mb-6 text-center">
+    <p class="text-[10px] font-bold text-red-500 uppercase tracking-wide">Tindakan ini tidak dapat dibatalkan</p>
+  </div>
+
+  <form action="<?= url_to('bendahara_batalkan_simpanan', $a->iddeposit) ?>" id="formTolak" method="post">
+    <div class="mb-6">
+      <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Alasan Penolakan</label>
+      <textarea
+        class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-red-500 focus:border-red-500 block w-full p-3 font-medium placeholder-slate-400"
+        id="alasan_tolak"
+        name="alasan_tolak"
+        rows="3"
+        placeholder="Jelaskan alasan penolakan..."
+        required></textarea>
+      <p class="text-[10px] text-slate-400 font-bold mt-2 flex items-center gap-1">
+        <i data-lucide="info" class="w-3 h-3"></i> Alasan akan dikirim ke pemohon.
+      </p>
+    </div>
+  </form>
+
+  <div class="flex gap-3 pt-4 border-t border-slate-100">
+    <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+      Batal
+    </button>
+    <button type="submit" form="formTolak" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 transition-all hover:scale-[1.02]">
+      Tolak Pengajuan
+    </button>
+  </div>
 <?php endif; ?>

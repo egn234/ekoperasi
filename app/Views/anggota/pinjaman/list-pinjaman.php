@@ -1,143 +1,90 @@
-<?= $this->include('anggota/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
-  <?= $title_meta ?>
-  <?= $this->include('anggota/partials/head-css') ?>
+<?= $this->section('styles') ?>
+<!-- DataTables CSS -->
+<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<?= $this->endSection() ?>
 
-  <style type="text/css">
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  </style>
-</head>
+<?= $this->section('content') ?>
 
-<?= $this->include('anggota/partials/body') ?>
+<div class="space-y-8 pb-20 animate-fade-in-up">
 
-<div id="layout-wrapper">
-  <?= $this->include('anggota/partials/menu') ?>
-  <div class="main-content">
-    <div class="page-content">
-      <div class="container-fluid">
-      <?= $page_title ?>
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <h4 class="card-title">Daftar Pengajuan Pinjaman</h4>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="btn-group float-end">
-                      <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
-                        Tambah Pengajuan
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <?=session()->getFlashdata('notif');?>
-                <?=session()->getFlashdata('notif_bulanan');?>
-                <?=session()->getFlashdata('notif_gaji');?>
-                <?=session()->getFlashdata('notif_kontrak');?>
-                <div class="row mb-2">
-                  <table id="dataTable" class="table table-sm table-striped nowrap w-100"></table>
-                </div>
-                <div class="row mb-2">
-                  <div class="float-end ms-2">
-                    <button class="btn btn-danger btn-sm" id="btn-riwayat" data-bs-toggle="collapse" data-bs-target="#wrapper-riwayat" aria-expanded="false" aria-controls="wrapper-riwayat">
-                      Riwayat Penolakan
-                    </button>
-                  </div>
-                </div>
-                <div id="wrapper-riwayat" class="collapse">
-                  <table id="riwayat_penolakan" class="table table-sm table-striped nowrap w-100"></table>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-black text-slate-800 tracking-tight">Pengajuan Pinjaman</h1>
+      <p class="text-slate-500 font-medium">Kelola pinjaman dan lihat riwayat status pengajuan Anda.</p>
+    </div>
+    <button id="btnAddPengajuan" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] flex items-center gap-2">
+      <i data-lucide="plus-circle" class="w-5 h-5"></i>
+      Buat Pengajuan
+    </button>
+  </div>
+
+  <?= session()->getFlashdata('notif'); ?>
+  <?= session()->getFlashdata('notif_bulanan'); ?>
+  <?= session()->getFlashdata('notif_gaji'); ?>
+  <?= session()->getFlashdata('notif_kontrak'); ?>
+
+  <!-- Active Loans Table Card -->
+  <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+    <div class="mb-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+          <i data-lucide="file-text" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-slate-900 tracking-tight">Daftar Pengajuan</h3>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Status Pinjaman Anda</p>
         </div>
       </div>
+      <!-- Toggle Riwayat -->
+      <button class="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase tracking-wider flex items-center gap-2" id="toggleRiwayatBtn">
+        <i data-lucide="history" class="w-4 h-4"></i> Riwayat Penolakan
+      </button>
     </div>
-    <?= $this->include('anggota/partials/footer') ?>
-  </div>
-</div>
 
-<div id="uploadBT" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="fetched-data-uploadBT"></span>
-    </div>
-  </div>
-</div>
-
-<div id="lunasiPinjaman" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="fetched-data-lunasiPinjaman"></span>
+    <div class="overflow-hidden">
+      <table id="dataTable" class="w-full whitespace-nowrap"></table>
     </div>
   </div>
-</div>
 
-<div id="detailTolak" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="fetched-data-detailTolak"></span>
-    </div>
-  </div>
-</div>
-
-<div id="addPengajuan" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="fetched-data-addPengajuan"></span>
-    </div>
-  </div>
-</div>
-
-<div id="detailAsuransi" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-md">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detail Asuransi</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- Rejected History Section (Collapsible) -->
+  <div id="wrapper-riwayat" class="hidden transition-all duration-300">
+    <div class="bg-red-50 rounded-[2.5rem] p-8 shadow-inner border border-red-100 mt-6">
+      <div class="mb-4">
+        <h3 class="text-lg font-black text-red-800 tracking-tight flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-5 h-5"></i> Riwayat Penolakan
+        </h3>
       </div>
-      <div class="modal-body">
-        <div id="fetched-data-asuransi">
-          <p class="text-center">Memuat data...</p>
-        </div>
+      <div class="overflow-hidden">
+        <table id="riwayat_penolakan" class="w-full whitespace-nowrap"></table>
       </div>
     </div>
   </div>
+
 </div>
 
-<div id="cancelLoan" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="fetched-data-cancelLoan"></span>
-    </div>
-  </div>
-</div>
+<?= $this->endSection() ?>
 
-<?= $this->include('anggota/partials/right-sidebar') ?>
+<?= $this->section('scripts') ?>
+<!-- Dependencies -->
+<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
+<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="<?= base_url() ?>/assets/libs/imask/imask.min.js"></script>
 
-<!-- JAVASCRIPT -->
-<?= $this->include('anggota/partials/vendor-scripts') ?>
+<!-- Native Modal Logic -->
+<script src="<?= base_url('js/modal-native.js') ?>"></script>
 
-<!-- Required datatable js -->
-<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Custom JS for this page -->
+<script src="<?= base_url() ?>/assets/js/pages/anggota/pinjaman/list-pinjaman-custom.js"></script>
+<script>
+  // Simple Toggle for Riwayat
+  $('#toggleRiwayatBtn').on('click', function() {
+    $('#wrapper-riwayat').toggleClass('hidden');
+  });
 
-<!-- form mask -->
-<script src="<?=base_url()?>/assets/libs/imask/imask.min.js"></script>
-
-<script src="<?=base_url()?>/assets/js/app.js"></script>
-
-<script src="<?=base_url()?>/assets/js/pages/anggota/pinjaman/list-pinjaman.js"></script>
-
-</body>
-
-</html>
+  if (window.lucide) window.lucide.createIcons();
+</script>
+<?= $this->endSection() ?>

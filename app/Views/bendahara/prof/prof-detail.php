@@ -1,443 +1,399 @@
-<?= $this->include('bendahara/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
+<?= $this->section('content') ?>
 
-    <?= $title_meta ?>
-
-    <?= $this->include('bendahara/partials/head-css') ?>
-
-</head>
-
-<?= $this->include('bendahara/partials/body') ?>
-
-<!-- <body data-layout="horizontal"> -->
-
-<!-- Begin page -->
-<div id="layout-wrapper">
-
-    <?= $this->include('bendahara/partials/menu') ?>
-
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
-    <div class="main-content">
-
-        <div class="page-content">
-            <div class="container-fluid">
-
-                <!-- start page title -->
-                <?= $page_title ?>
-                <!-- end page title -->
-
-                <?=session()->getFlashdata('notif')?>
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-sm order-2 order-sm-1">
-                                        <div class="d-flex align-items-start mt-3 mt-sm-0">
-                                            <div class="flex-shrink-0">
-                                                <div class="avatar-xl me-3">
-                                                    <img style="object-fit: cover; object-position: top; width: 100%; height: 100%;" src="<?=base_url()?>/uploads/user/<?=$duser->username?>/profil_pic/<?=$duser->profil_pic?>" alt="" class="img-fluid rounded-circle d-block">
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div>
-                                                    <h5 class="font-size-16 mb-1"><?=$duser->username?> - <?=$duser->nama_lengkap?></h5>
-                                                    <p class="text-muted font-size-13">Bendahara</p>
-
-                                                    <div class="d-flex flex-wrap align-items-start gap-2 gap-lg-3 text-muted font-size-13">
-                                                        <div><i class="mdi mdi-circle-medium me-1 text-success align-middle"></i><?=$duser->nomor_telepon?></div>
-                                                        <div><i class="mdi mdi-circle-medium me-1 text-success align-middle"></i><?=$duser->email?></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <ul class="nav nav-tabs-custom card-header-tabs border-top mt-4" id="pills-tab" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link px-3 active" data-bs-toggle="tab" href="#overview" role="tab">Detail Profil</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link px-3" data-bs-toggle="tab" href="#about" role="tab">Ubah Profil</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link px-3" data-bs-toggle="tab" href="#cpass" role="tab">Ubah Password</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- end card body -->
-                        </div>
-                        <!-- end card -->
-
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="overview" role="tabpanel">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Overview</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div>
-                                            <div class="pb-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Nama Lengkap:</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->nama_lengkap?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">NIK :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->nik?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">NIP :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=($duser->nip)?$duser->nip:'-'?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Tempat, Tanggal Lahir :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?= $duser->tempat_lahir ?>, <?= date('d F Y', strtotime($duser->tanggal_lahir)) ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Email :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->email?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Alamat :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->alamat?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Institusi :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->instansi?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Unit Kerja :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->unit_kerja?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="py-3">
-                                                <div class="row">
-                                                    <div class="col-xl-2">
-                                                        <div>
-                                                            <h5 class="font-size-15">Nomor Telp. :</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl">
-                                                        <div class="text-muted">
-                                                            <?=$duser->nomor_telepon?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- end card body -->
-                                </div>
-                                <!-- end card -->
-                            </div>
-                            <!-- end tab pane -->
-                            <div class="tab-pane" id="about" role="tabpanel">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="mt-4 mt-lg-0">
-                                            <h5 class="font-size-14 mb-4">Edit Profil</h5>
-                                            <form action="<?= url_to('bendahara/profile/edit_proc')?>" method="post" enctype="multipart/form-data">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="full_name">Nama Lengkap <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?= $duser->nama_lengkap ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="nik_number">NIK</label>
-                                                    <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?= $duser->nik?>" name="nik" required>
-                                                    <div class="invalid-feedback">
-                                                        NIK harus 16 digit
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="nip_number">NIP</label>
-                                                    <input type="number" class="form-control" id="nip_number" value="<?=($duser->nip)?$duser->nip:''?>" name="nip">
-                                                    <div class="invalid-feedback">
-                                                        NIP harus 8 digit
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label" for="birthplace">Tempat <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?= $duser->tempat_lahir ?>" required>
-                                                            <div class="invalid-feedback">
-                                                                Harus Diisi
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label" for="birthday">Tanggal Lahir<span class="text-danger">*</span></label>
-                                                            <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?= date('Y-m-d', strtotime($duser->tanggal_lahir)) ?>" required>
-                                                            <div class="invalid-feedback">
-                                                                Harus Diisi
-                                                            </div>
-                                                        </div>                                          
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="institution">Institusi <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="institution" name="instansi" required>
-                                                        <option value="" <?=($duser->instansi)?'':'selected'?> disabled>Pilih Institusi...</option>
-                                                        <option value="YPT" <?=($duser->instansi == 'YPT')?'selected':''?> >YPT</option>
-                                                        <option value="Universitas Telkom" <?=($duser->instansi == 'Universitas Telkom')?'selected':''?> >Universitas Telkom</option>
-                                                        <option value="Trengginas Jaya" <?=($duser->instansi == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
-                                                        <option value="BUT" <?=($duser->instansi == 'BUT')?'selected':''?> >BUT</option>
-                                                        <option value="Telkom" <?=($duser->instansi == 'Telkom')?'selected':''?> >Telkom</option>
-                                                        <option value="GIAT" <?=($duser->instansi == 'GIAT')?'selected':''?> >GIAT</option>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        Pilih Terlebih dahulu
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="address" name="alamat" value="<?= $duser->alamat ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="phone_number">No. Telepon / WA <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" id="phone_number" name="nomor_telepon" value="<?= $duser->nomor_telepon ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="email_addr">Email <span class="text-danger">*</span></label>
-                                                    <input type="email" class="form-control" id="email_addr" name="email" value="<?= $duser->email ?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?= $duser->unit_kerja?>" required>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="username" name="username" value="<?= $duser->username?>" disabled>
-                                                    <div class="invalid-feedback">
-                                                        Harus Diisi
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="profile_pic">Foto Profil</label>
-                                                    <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg">
-                                                </div>
-                                                <span class="text-xs text-danger">
-                                                  *Tidak boleh dikosongkan
-                                                </span>
-
-                                                <button type="submit" class="btn btn-primary float-end">Submit</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <!-- end card body -->
-                                </div>
-                                <!-- end card -->
-                            </div>
-                            <!-- end tab pane -->
-                            <div class="tab-pane" id="cpass" role="tabpanel">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="mt-4 mt-lg-0">
-                                            <h5 class="font-size-14 mb-4">Ubah Password</h5>
-                                            <form action="<?=url_to('bendahara/profile/edit_pass') ?>" method="post">
-
-                                                <div class="row mb-4">
-                                                    <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Lama</label>
-                                                    <div class="col-sm-9">
-                                                        <div class="input-group auth-pass-inputgroup">
-                                                            <input type="password" name="old_pass" class="form-control" id="horizontal-password-input-old" required>
-                                                            <button class="btn btn-light ms-0 password-toggle" type="button" data-target="horizontal-password-input-old"><i class="mdi mdi-eye-outline"></i></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row mb-4">
-                                                    <label for="horizontal-password-input" class="col-sm-3 col-form-label">Password Baru</label>
-                                                    <div class="col-sm-9">
-                                                        <div class="input-group auth-pass-inputgroup">
-                                                            <input type="password" name="pass" class="form-control" id="horizontal-password-input-new" required>
-                                                            <button class="btn btn-light ms-0 password-toggle" type="button" data-target="horizontal-password-input-new"><i class="mdi mdi-eye-outline"></i></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row mb-4">
-                                                    <label for="horizontal-password-input" class="col-sm-3 col-form-label">Ulang Password Baru</label>
-                                                    <div class="col-sm-9">
-                                                        <div class="input-group auth-pass-inputgroup">
-                                                            <input type="password" name="pass2" class="form-control" id="horizontal-password-input-confirm" required>
-                                                            <button class="btn btn-light ms-0 password-toggle" type="button" data-target="horizontal-password-input-confirm"><i class="mdi mdi-eye-outline"></i></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row justify-content-end">
-                                                    <div class="col-sm-9">
-                                                        <div><button type="submit" class="btn btn-primary w-md">Submit</button></div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <!-- end card body -->
-                                </div>
-                                <!-- end card -->
-                            </div>
-                            <!-- end tab pane -->
-                        </div>
-
-                        <!-- end tab content -->
-                    </div>
-                    <!-- end col -->
-                </div>
-                <!-- end row -->
-
-            </div> <!-- container-fluid -->
-        </div>
-        <!-- End Page-content -->
-
-
-        <?= $this->include('bendahara/partials/footer') ?>
-    </div>
-    <!-- end main content-->
-
+<!-- Page Header -->
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-800"><?= $page_title ?? 'Profil Bendahara' ?></h1>
+    <p class="text-slate-500 text-sm mt-1">Kelola informasi pribadi dan keamanan akun Anda</p>
 </div>
-<!-- END layout-wrapper -->
 
+<!-- Flash Notifications -->
+<?php if (session()->getFlashdata('notif')): ?>
+    <div class="mb-6">
+        <?= session()->getFlashdata('notif') ?>
+    </div>
+<?php endif; ?>
 
-<?= $this->include('bendahara/partials/right-sidebar') ?>
+<div class="grid grid-cols-1 gap-8">
+    <!-- Profile Card (Header) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="h-32 bg-gradient-to-r from-emerald-600 to-teal-700"></div>
+        <div class="px-6 pb-6 relative">
+            <div class="flex flex-col sm:flex-row items-center sm:items-end -mt-12 sm:-mt-10 gap-6">
+                <div class="relative shrink-0">
+                    <div class="w-32 h-32 rounded-full border-4 border-white shadow-md overflow-hidden bg-white">
+                        <?php
+                        $avatarPath = 'uploads/user/' . $duser->username . '/profil_pic/' . $duser->profil_pic;
+                        $avatarSrc = (!empty($duser->profil_pic) && file_exists($avatarPath)) ? base_url($avatarPath) : 'https://ui-avatars.com/api/?name=' . urlencode($duser->nama_lengkap) . '&background=random';
+                        ?>
+                        <img src="<?= $avatarSrc ?>" alt="Profile Picture" class="w-full h-full object-cover">
+                    </div>
+                </div>
 
-<!-- JAVASCRIPT -->
-<?= $this->include('bendahara/partials/vendor-scripts') ?>
+                <div class="flex-1 text-center sm:text-left mb-2">
+                    <h2 class="text-2xl font-bold text-slate-800"><?= $duser->nama_lengkap ?></h2>
+                    <p class="text-slate-500 font-medium"><?= $duser->username ?> &bull; Bendahara</p>
 
-<script src="<?=base_url()?>/assets/js/app.js"></script>
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-3 text-sm text-slate-500">
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="phone" class="w-4 h-4 text-emerald-500"></i>
+                            <span><?= $duser->nomor_telepon ?></span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="mail" class="w-4 h-4 text-emerald-500"></i>
+                            <span><?= $duser->email ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<script type="text/javascript">
-    
-    document.addEventListener("DOMContentLoaded", function () {
+        <!-- Navigation Tabs -->
+        <div class="px-6 border-t border-slate-100">
+            <nav class="flex space-x-6 overflow-x-auto scroller-none" id="profileTabs">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active-tab py-4 text-sm font-semibold text-emerald-600 border-b-2 border-emerald-600 transition-colors whitespace-nowrap">
+                    Detail Profil
+                </button>
+                <button onclick="switchTab('edit')" id="tab-edit" class="tab-btn py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent hover:border-slate-300 transition-colors whitespace-nowrap">
+                    Ubah Profil
+                </button>
+                <button onclick="switchTab('password')" id="tab-password" class="tab-btn py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent hover:border-slate-300 transition-colors whitespace-nowrap">
+                    Ubah Password
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="tab-content relative">
+
+        <!-- Overview Tab -->
+        <div id="content-overview" class="tab-pane block fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-5 h-5 text-emerald-600"></i>
+                    Informasi Pribadi
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Nama Lengkap</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->nama_lengkap ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">NIK</label>
+                        <div class="text-base font-medium text-slate-800 font-mono"><?= $duser->nik ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">NIP</label>
+                        <div class="text-base font-medium text-slate-800 font-mono"><?= ($duser->nip) ? $duser->nip : '-' ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Tempat, Tanggal Lahir</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->tempat_lahir ?>, <?= date('d M Y', strtotime($duser->tanggal_lahir)) ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Email</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->email ?></div>
+                    </div>
+
+                    <div class="md:col-span-2 group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Alamat Domisili</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->alamat ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Nomor Telepon</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->nomor_telepon ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Institusi</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->instansi ?></div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Unit Kerja</label>
+                        <div class="text-base font-medium text-slate-800"><?= $duser->unit_kerja ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Tab -->
+        <div id="content-edit" class="tab-pane hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-5 h-5 text-emerald-600"></i>
+                    Edit Data Profil
+                </h3>
+
+                <form action="<?= url_to('bendahara/profile/edit_proc') ?>" method="post" enctype="multipart/form-data" class="space-y-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Nama Lengkap -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_lengkap" value="<?= $duser->nama_lengkap ?>" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                        </div>
+
+                        <!-- NIK -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">NIK <span class="text-red-500">*</span></label>
+                            <input type="number" name="nik" value="<?= $duser->nik ?>" min="1000000000000000" max="9999999999999999" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Harus 16 digit</p>
+                        </div>
+
+                        <!-- NIP -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">NIP</label>
+                            <input type="number" name="nip" value="<?= ($duser->nip) ? $duser->nip : '' ?>"
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                            <p class="text-xs text-slate-400 mt-1">Harus 8 digit (opsional)</p>
+                        </div>
+
+                        <!-- Tempat Lahir -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tempat Lahir <span class="text-red-500">*</span></label>
+                            <input type="text" name="tempat_lahir" value="<?= $duser->tempat_lahir ?>" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                        </div>
+
+                        <!-- Tanggal Lahir -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Lahir <span class="text-red-500">*</span></label>
+                            <input type="date" name="tanggal_lahir" value="<?= date('Y-m-d', strtotime($duser->tanggal_lahir)) ?>" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                        </div>
+
+                        <!-- Institusi -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Institusi <span class="text-red-500">*</span></label>
+                            <select name="instansi" required class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                                <option value="" disabled <?= (!$duser->instansi) ? 'selected' : '' ?>>Pilih Institusi...</option>
+                                <?php
+                                $institutions = ['YPT', 'Universitas Telkom', 'Trengginas Jaya', 'BUT', 'Telkom', 'GIAT'];
+                                foreach ($institutions as $inst) : ?>
+                                    <option value="<?= $inst ?>" <?= ($duser->instansi == $inst) ? 'selected' : '' ?>><?= $inst ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Unit Kerja -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Unit Kerja <span class="text-red-500">*</span></label>
+                            <input type="text" name="unit_kerja" value="<?= $duser->unit_kerja ?>" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Alamat -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Domisili <span class="text-red-500">*</span></label>
+                        <textarea name="alamat" rows="3" required class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm"><?= $duser->alamat ?></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon / WA <span class="text-red-500">*</span></label>
+                            <input type="number" name="nomor_telepon" value="<?= $duser->nomor_telepon ?>" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                        </div>
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Email <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" value="<?= $duser->email ?>" required
+                                class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm">
+                        </div>
+                        <!-- Username (Disabled) -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Username <span class="text-red-500">*</span></label>
+                            <input type="text" value="<?= $duser->username ?>" disabled
+                                class="w-full rounded-xl border-slate-200 bg-slate-50 text-slate-500 transition-all text-sm cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Foto Profil</label>
+                            <input type="file" name="profil_pic" accept="image/jpg, image/jpeg"
+                                class="block w-full text-sm text-slate-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-full file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-emerald-50 file:text-emerald-700
+                                  hover:file:bg-emerald-100 transition-all">
+                            <p class="text-xs text-slate-400 mt-2">Pilih file baru untuk mengganti. JPG/JPEG saja.</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-100 flex justify-end">
+                        <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-200 transition-all transform active:scale-95 shadow-lg shadow-emerald-600/30">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password Tab -->
+        <div id="content-password" class="tab-pane hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i data-lucide="lock" class="w-5 h-5 text-emerald-600"></i>
+                    Keamanan Akun
+                </h3>
+
+                <form action="<?= url_to('bendahara/profile/edit_pass') ?>" method="post" class="max-w-2xl">
+                    <div class="space-y-6">
+                        <!-- Old Pass -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Password Lama</label>
+                            <div class="relative">
+                                <input type="password" name="old_pass" id="old_pass" required
+                                    class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm pr-12">
+                                <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 p-1" data-target="old_pass">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- New Pass -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Password Baru</label>
+                            <div class="relative">
+                                <input type="password" name="pass" id="new_pass" required
+                                    class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm pr-12">
+                                <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 p-1" data-target="new_pass">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Pass -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Konfirmasi Password Baru</label>
+                            <div class="relative">
+                                <input type="password" name="pass2" id="confirm_pass" required
+                                    class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-500/20 transition-all text-sm pr-12">
+                                <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 p-1" data-target="confirm_pass">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-8 border-t border-slate-100 flex justify-end mt-8">
+                        <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-200 transition-all transform active:scale-95 shadow-lg shadow-emerald-600/30">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    // Tab Switching Logic
+    function switchTab(tabName) {
+        // Reset all tabs styles
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active-tab', 'text-emerald-600', 'border-emerald-600');
+            btn.classList.add('text-slate-500', 'border-transparent');
+        });
+
+        // Hide all contents
+        document.querySelectorAll('.tab-pane').forEach(content => {
+            content.classList.add('hidden');
+            content.classList.remove('block', 'fade-in');
+        });
+
+        // Activate clicked tab
+        const activeBtn = document.getElementById('tab-' + tabName);
+        activeBtn.classList.remove('text-slate-500', 'border-transparent');
+        activeBtn.classList.add('active-tab', 'text-emerald-600', 'border-emerald-600');
+
+        // Show content
+        const activeContent = document.getElementById('content-' + tabName);
+        activeContent.classList.remove('hidden');
+        activeContent.classList.add('block', 'fade-in');
+
+        // Refresh Lucide icons in case the new tab has icons that weren't rendered
+        lucide.createIcons();
+    }
+
+    // Password Visibility Toggle
+    document.addEventListener("DOMContentLoaded", function() {
         const passwordToggles = document.querySelectorAll(".password-toggle");
 
-        passwordToggles.forEach(function (toggle) {
-            toggle.addEventListener("click", function () {
+        passwordToggles.forEach(function(toggle) {
+            toggle.addEventListener("click", function() {
                 const targetId = toggle.getAttribute("data-target");
                 const passwordInput = document.getElementById(targetId);
+                const icon = toggle.querySelector("i") || toggle.querySelector("svg");
 
                 if (passwordInput.type === "password") {
                     passwordInput.type = "text";
-                    toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
+                    // Change icon to eye-off
+                    if (icon) {
+                        icon.setAttribute('data-lucide', 'eye-off');
+                        lucide.createIcons(); // Updates the specific icon
+                    }
                 } else {
                     passwordInput.type = "password";
-                    toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
+                    // Change icon back to eye
+                    if (icon) {
+                        icon.setAttribute('data-lucide', 'eye');
+                        lucide.createIcons();
+                    }
                 }
             });
         });
-    });
 
+        // Initial icon create
+        lucide.createIcons();
+    });
 </script>
 
-</body>
+<style>
+    /* Simple Fade In Animation */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
 
-</html>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Hide scrollbar for tabs but keep functionality */
+    .scroller-none::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroller-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+<?= $this->endSection() ?>

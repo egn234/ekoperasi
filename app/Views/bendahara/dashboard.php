@@ -1,425 +1,355 @@
-<?= $this->include('bendahara/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
+<?= $this->section('styles') ?>
+<!-- ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-  <?= $title_meta ?>
-  <link href="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
-  <!-- Dashboard specific CSS -->
-  <link href="<?= base_url() ?>/assets/css/admin/dashboard.css" rel="stylesheet" type="text/css" />
-  <?= $this->include('bendahara/partials/head-css') ?>
-
-</head>
-
-<?= $this->include('bendahara/partials/body') ?>
-
-<div id="layout-wrapper">
-  <?= $this->include('bendahara/partials/menu') ?>
-  <div class="main-content">
-
-    <div class="page-content">
-      <div class="container-fluid">
-        <?= $page_title ?>
-        
-        <!-- Welcome Section -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="welcome-alert alert fade show" role="alert">
-              <div class="d-flex align-items-center">
-                <div class="alert-icon me-3">
-                  <i class="fas fa-calculator"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <h5 class="alert-heading mb-2">Dashboard Bendahara Koperasi</h5>
-                  <p class="mb-0">Kelola keuangan koperasi dengan presisi tinggi. Pantau arus kas dan verifikasi transaksi dengan mudah.</p>
-                </div>
-                <div class="ms-auto">
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div><!-- end row-->
-        
-        <!-- Statistics Cards -->
-        <div class="row quick-stats">
-          <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-            <div class="admin-stat-card stat-primary fade-in-up">
-              <div class="card-body">
-                <div class="stat-icon">
-                  <i class="fas fa-users"></i>
-                </div>
-                <span class="stat-label">Total Anggota Koperasi</span>
-                <h3 class="stat-value"><?=$total_anggota?> orang</h3>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-            <div class="admin-stat-card stat-success fade-in-up">
-              <div class="card-body">
-                <div class="stat-icon">
-                  <i class="fas fa-user-plus"></i>
-                </div>
-                <span class="stat-label">Anggota Baru Bulan Ini</span>
-                <h3 class="stat-value"><?=$monthly_user?> orang</h3>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-            <div class="admin-stat-card stat-warning fade-in-up">
-              <div class="card-body">
-                <div class="stat-icon">
-                  <i class="fas fa-hand-holding-usd"></i>
-                </div>
-                <span class="stat-label">Anggota Dengan Pinjaman</span>
-                <h3 class="stat-value"><?=$anggota_pinjaman?> orang</h3>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-            <div class="admin-stat-card stat-info fade-in-up">
-              <div class="card-body">
-                <div class="stat-icon">
-                  <i class="fas fa-piggy-bank"></i>
-                </div>
-                <span class="stat-label">Total Deposit GIAT</span>
-                <h3 class="stat-value">Rp <?=number_format($uang_giat, 0, ',', '.')?></h3>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-            <div class="admin-stat-card stat-success fade-in-up">
-              <div class="card-body">
-                <div class="stat-icon">
-                  <i class="fas fa-arrow-up"></i>
-                </div>
-                <span class="stat-label">Income Bulan Ini</span>
-                <h3 class="stat-value">Rp <?=number_format($monthly_income, 0, ',', '.')?></h3>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
-            <div class="admin-stat-card stat-danger fade-in-up">
-              <div class="card-body">
-                <div class="stat-icon">
-                  <i class="fas fa-arrow-down"></i>
-                </div>
-                <span class="stat-label">Outcome Bulan Ini</span>
-                <h3 class="stat-value">Rp <?=number_format($monthly_outcome, 0, ',', '.')?></h3>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Chart Section -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="chart-card">
-              <div class="card-header">
-                <div class="row align-items-center">
-                  <div class="col-md-6">
-                    <h4 class="card-title mb-0">Grafik Trends Koperasi</h4>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="d-flex gap-2 justify-content-md-end mt-2 mt-md-0">
-                      <!-- Chart Type Selector -->
-                      <select id="chartType" class="form-select form-select-sm" style="width: auto;">
-                        <option value="deposit">Deposit</option>
-                        <option value="loan">Pinjaman</option>
-                        <option value="member">Anggota</option>
-                      </select>
-                      
-                      <!-- Range Selector -->
-                      <select id="chartRange" class="form-select form-select-sm" style="width: auto;">
-                        <option value="3months">3 Bulan</option>
-                        <option value="6months" selected>6 Bulan</option>
-                        <option value="12months">12 Bulan</option>
-                        <option value="2years">2 Tahun</option>
-                        <option value="custom">Custom Range</option>
-                      </select>
-                      
-                      <!-- Refresh Button -->
-                      <button id="refreshChart" class="btn btn-sm btn-outline-primary" title="Refresh Chart">
-                        <i class="fas fa-sync-alt"></i>
-                      </button>
-                    </div>
-                    
-                    <!-- Custom Date Range (Hidden by default) -->
-                    <div id="customDateRange" class="row mt-2" style="display: none;">
-                      <div class="col-6">
-                        <input type="date" id="startDate" class="form-control form-control-sm" placeholder="Start Date">
-                      </div>
-                      <div class="col-6">
-                        <input type="date" id="endDate" class="form-control form-control-sm" placeholder="End Date">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body pb-2">
-                <!-- Loading Indicator -->
-                <div id="chartLoading" class="text-center py-4" style="display: none;">
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                  <p class="mt-2 mb-0 text-muted">Memuat data grafik...</p>
-                </div>
-                
-                <!-- Chart Container -->
-                <div id="spline_area" data-colors='["#1e40af", "#10b981", "#f59e0b"]' class="apex-charts" dir="ltr"></div>
-                
-                <!-- Chart Info -->
-                <div id="chartInfo" class="mt-3">
-                  <div class="row text-center">
-                    <div class="col-4">
-                      <div class="border-end">
-                        <h6 class="mb-1 text-muted">Total Data Points</h6>
-                        <p id="totalDataPoints" class="mb-0 fw-bold">-</p>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="border-end">
-                        <h6 class="mb-1 text-muted">Highest Value</h6>
-                        <p id="highestValue" class="mb-0 fw-bold text-success">-</p>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div>
-                        <h6 class="mb-1 text-muted">Average Value</h6>
-                        <p id="averageValue" class="mb-0 fw-bold text-info">-</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Table Section -->
-        <div class="row">
-          <div class="col-12">
-            <div class="modern-table-card">
-              <div class="card-header">
-                <h4 class="card-title mb-0">Verifikasi Pengajuan Pinjaman</h4>
-              </div>
-              <div class="card-body">
-                <?=session()->getFlashdata('notif');?>
-                <?=session()->getFlashdata('notif_tf');?>
-                <div class="table-responsive">
-                  <table id="dt_list_filter" class="table table-hover nowrap w-100">
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- container-fluid -->
-    </div>
-    <!-- End Page-content -->
-
-    <?= $this->include('bendahara/partials/footer') ?>
-  </div>
-  <!-- end main content-->
-
-</div>
-<!-- END layout-wrapper -->
-
-<div id="tolakPinjaman" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="tolak-data"></span>
-    </div>
-  </div>
-</div><!-- /.modal -->
-
-<div id="approvePinjaman" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span id="terima-data"></span>
-    </div>
-  </div>
-</div><!-- /.modal -->
-
-<?= $this->include('bendahara/partials/right-sidebar') ?>
-
-<?= $this->include('bendahara/partials/vendor-scripts') ?>
-
-<!-- apexcharts -->
-<script src="<?=base_url()?>/assets/libs/apexcharts/apexcharts.min.js"></script>
-
-<!-- Plugins js-->
-<script src="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js"></script>
-<script src="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-world-mill-en.js"></script>
-
-<!-- Required datatable js -->
-<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-
-<!-- App js -->
-<script src="<?=base_url()?>/assets/js/app.js"></script>
-
-<!-- Dashboard Chart Script -->
-<script src="<?=base_url()?>/assets/js/pages/dashboard-chart.js"></script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-  function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
-    number = parseFloat(number).toFixed(decimals);
-    number = number.replace('.', decimalSeparator);
-    var parts = number.split(decimalSeparator);
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
-    return parts.join(decimalSeparator);
+<!-- DataTables CSS -->
+<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<style>
+  /* Custom DataTable Styling to Match Tailwind */
+  div.dataTables_wrapper div.dataTables_filter input {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
   }
 
-  $('#dt_list_filter').DataTable({
-    ajax: {
-      url: "<?= base_url() ?>bendahara/pinjaman/data_pinjaman",
-      type: "POST",
-      data: function (d) {
-        d.length = d.length || 10;
-      }
-    },
-    autoWidth: false,
-    scrollX: true,
-    serverSide: true,
-    searching: true,
-    responsive: true,
-    pageLength: 10,
-    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
-    language: {
-      search: "Cari Pengajuan:",
-      lengthMenu: "Tampilkan _MENU_ data per halaman",
-      info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ pengajuan",
-      infoEmpty: "Menampilkan 0 sampai 0 dari 0 pengajuan",
-      infoFiltered: "(difilter dari _MAX_ total pengajuan)",
-      paginate: {
-        first: "Pertama",
-        last: "Terakhir",
-        next: "Selanjutnya",
-        previous: "Sebelumnya"
-      },
-      emptyTable: "Tidak ada pengajuan pinjaman yang tersedia"
-    },
-    columnDefs: [{
-      orderable: false,
-      targets: "_all",
-      defaultContent: "-",
-    }],
-    columns: [
-      {
-        title: "No",
-        render: function(data, type, row, meta) {
-          return '<span class="badge bg-primary">' + (meta.row + 1) + '</span>';
-        }
-      },
-      {
-        title: "Nama Lengkap",
-        render: function(data, type, row, meta) {
-          return '<div class="d-flex align-items-center">'+
-                 '<div class="avatar-sm me-2">'+
-                 '<div class="avatar-title bg-soft-info text-info rounded-circle">'+
-                 row.nama_peminjam.charAt(0).toUpperCase() +
-                 '</div></div>'+
-                 '<div><h6 class="mb-0">'+row.nama_peminjam+'</h6>'+
-                 '<small class="text-muted">'+row.username_peminjam+'</small></div></div>';
-        }
-      },
-      {
-        title: "Tipe",
-        render: function(data, type, row, meta) {
-          return '<span class="badge bg-info">'+row.tipe_permohonan+'</span>';
-        }
-      },
-      {
-        title: "Nominal",
-        render: function(data, type, row, meta) {
-          return '<strong class="text-success">Rp '+numberFormat(row.nominal, 0)+'</strong>';
-        }
-      },
-      {
-        title: "Tanggal",
-        render: function(data, type, row, meta) {
-          let date = new Date(row.date_created);
-          return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-        }
-      },
-      {
-        title: "Angsuran",
-        render: function(data, type, row, meta) {
-          return '<span class="badge bg-warning">'+row.angsuran_bulanan+' bulan</span>';
-        }
-      },
-      {
-        title: "Dokumen",
-        render: function(data, type, row, full) {
-          let links = '<div class="btn-group-vertical btn-group-sm">';
-          links += '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.form_bukti+'" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fas fa-download me-1"></i>Form SDM</a>';
-          links += '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.slip_gaji+'" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fas fa-download me-1"></i>Slip Gaji</a>';
-          
-          if (row.status_pegawai === 'kontrak') {
-            links += '<a href="<?=base_url()?>/uploads/user/'+row.username_peminjam+'/pinjaman/'+row.form_kontrak+'" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fas fa-download me-1"></i>Bukti Kontrak</a>';
-          }
-          links += '</div>';
-          return links;
-        }
-      },
-      {
-        title: "Aksi",
-        render: function(data, type, row, full) {
-          return '<div class="btn-group">'+
-                 '<button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#tolakPinjaman" data-id="'+row.idpinjaman+'">'+
-                 '<i class="fas fa-times me-1"></i>Tolak</button>'+
-                 '<button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approvePinjaman" data-id="'+row.idpinjaman+'">'+
-                 '<i class="fas fa-check me-1"></i>Setujui</button></div>';
-        }
-      }
-    ]
-  });
+  div.dataTables_wrapper div.dataTables_length select {
+    border-radius: 0.5rem;
+    padding: 0.25rem 2rem 0.25rem 0.5rem;
+    border: 1px solid #e2e8f0;
+  }
 
-  $('#tolakPinjaman').on('show.bs.modal', function(e) {
-    var rowid = $(e.relatedTarget).data('id');
-    $.ajax({
-      type: 'POST',
-      url: '<?= base_url() ?>/bendahara/pinjaman/cancel-pinjaman',
-      data: 'rowid=' + rowid,
-      beforeSend: function() {
-        $('#tolak-data').html('<div class="text-center p-4"><div class="spinner-border" role="status"></div></div>');
-      },
-      success: function(data) {
-        $('#tolak-data').html(data);
-      },
-      error: function() {
-        $('#tolak-data').html('<div class="alert alert-danger">Error loading data</div>');
-      }
-    });
-  });
-  
-  $('#approvePinjaman').on('show.bs.modal', function(e) {
-    var rowid = $(e.relatedTarget).data('id');
-    $.ajax({
-      type: 'POST',
-      url: '<?= base_url() ?>/bendahara/pinjaman/approve-pinjaman',
-      data: 'rowid=' + rowid,
-      beforeSend: function() {
-        $('#terima-data').html('<div class="text-center p-4"><div class="spinner-border" role="status"></div></div>');
-      },
-      success: function(data) {
-        $('#terima-data').html(data);
-      },
-      error: function() {
-        $('#terima-data').html('<div class="alert alert-danger">Error loading data</div>');
-      }
-    });
-  });
-});
+  table.dataTable thead th {
+    border-bottom: 1px solid #e2e8f0 !important;
+    color: #94a3b8;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+
+  table.dataTable tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f8fafc;
+  }
+</style>
+<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+
+<div class="space-y-8">
+
+  <!-- Welcome Section -->
+  <div class="bg-indigo-gradient rounded-[2rem] p-8 md:p-10 relative overflow-hidden shadow-xl shadow-indigo-200/50 text-white">
+    <!-- Background Decor -->
+    <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+      <i data-lucide="calculator" class="w-64 h-64"></i>
+    </div>
+
+    <div class="relative z-10">
+      <h1 class="text-3xl font-black tracking-tight mb-2">Dashboard Bendahara</h1>
+      <p class="font-medium text-indigo-100 max-w-2xl">
+        Kelola keuangan koperasi dengan presisi. Verifikasi transaksi dan pantau arus kas secara real-time.
+      </p>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Card 1 -->
+    <div class="bg-white rounded-[2rem] p-6 shadow-soft hover:shadow-lg transition-shadow border border-slate-100 group">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-blue-50 rounded-2xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <span class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg">TOTAL</span>
+      </div>
+      <h3 class="text-3xl font-black text-slate-800 mb-1"><?= $total_anggota ?></h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Anggota Koperasi</p>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="bg-white rounded-[2rem] p-6 shadow-soft hover:shadow-lg transition-shadow border border-slate-100 group">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-emerald-50 rounded-2xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+          <i data-lucide="user-plus" class="w-6 h-6"></i>
+        </div>
+        <span class="bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg">+<?= $monthly_user ?></span>
+      </div>
+      <h3 class="text-3xl font-black text-slate-800 mb-1"><?= $monthly_user ?></h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Anggota Baru (Bln Ini)</p>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="bg-white rounded-[2rem] p-6 shadow-soft hover:shadow-lg transition-shadow border border-slate-100 group">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-orange-50 rounded-2xl text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+          <i data-lucide="hand-coins" class="w-6 h-6"></i>
+        </div>
+        <span class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg">AKTIF</span>
+      </div>
+      <h3 class="text-3xl font-black text-slate-800 mb-1"><?= $anggota_pinjaman ?></h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Peminjam Aktif</p>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="bg-white rounded-[2rem] p-6 shadow-soft hover:shadow-lg transition-shadow border border-slate-100 group">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-indigo-50 rounded-2xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+          <i data-lucide="wallet" class="w-6 h-6"></i>
+        </div>
+      </div>
+      <h3 class="text-2xl font-black text-slate-800 mb-1">Rp <?= number_format($uang_giat, 0, ',', '.') ?></h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Deposit GIAT</p>
+    </div>
+
+    <!-- Card 5 (Income) -->
+    <div class="bg-white rounded-[2rem] p-6 shadow-soft hover:shadow-lg transition-shadow border border-slate-100 group">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-emerald-100 rounded-2xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+          <i data-lucide="trending-up" class="w-6 h-6"></i>
+        </div>
+      </div>
+      <h3 class="text-2xl font-black text-slate-800 mb-1">Rp <?= number_format($monthly_income, 0, ',', '.') ?></h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Income Bulan Ini</p>
+    </div>
+
+    <!-- Card 6 (Outcome) -->
+    <div class="bg-white rounded-[2rem] p-6 shadow-soft hover:shadow-lg transition-shadow border border-slate-100 group">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-3 bg-rose-100 rounded-2xl text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+          <i data-lucide="trending-down" class="w-6 h-6"></i>
+        </div>
+      </div>
+      <h3 class="text-2xl font-black text-slate-800 mb-1">Rp <?= number_format($monthly_outcome, 0, ',', '.') ?></h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Outcome Bulan Ini</p>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-100">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div>
+        <h3 class="text-xl font-black text-slate-900 tracking-tight">Grafik Trends</h3>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Analisis Data Koperasi</p>
+      </div>
+
+      <div class="flex flex-wrap gap-3 items-center">
+        <select id="chartType" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="deposit">Deposit</option>
+          <option value="loan">Pinjaman</option>
+          <option value="member">Anggota</option>
+        </select>
+
+        <select id="chartRange" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="3months">3 Bulan</option>
+          <option value="6months" selected>6 Bulan</option>
+          <option value="12months">12 Bulan</option>
+          <option value="2years">2 Tahun</option>
+        </select>
+
+        <button id="refreshChart" class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-colors">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="chartLoading" class="hidden text-center py-12">
+      <div class="w-8 h-8 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3"></div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Memuat Grafik...</p>
+    </div>
+
+    <div id="spline_area" data-colors='["#6366f1", "#10b981", "#f59e0b"]' class="w-full min-h-[350px]"></div>
+  </div>
+
+  <!-- Table Section with DataTable -->
+  <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-100">
+    <div class="mb-6">
+      <h3 class="text-xl font-black text-slate-900 tracking-tight">Verifikasi Pengajuan Pinjaman</h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Kelola Pengajuan yang Masuk</p>
+    </div>
+
+    <?= session()->getFlashdata('notif'); ?>
+    <?= session()->getFlashdata('notif_tf'); ?>
+
+    <div class="overflow-x-auto">
+      <table id="dt_list_filter" class="w-full whitespace-nowrap">
+        <!-- Header will be generated by DataTable -->
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Container (Native/jQuery Hybrid) -->
+<div id="dynamic-modal-overlay" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+<div id="dynamic-modal-content" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+  <div id="modal-container"></div>
+  <button id="close-modal-btn" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
+    <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
+  </button>
+</div>
+
+<!-- Legacy Modals needed for DataTable triggers if we don't rewrite 100% -->
+<!-- We will use custom logic to intercept the clicks from DataTable -->
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<!-- Dependencies for DataTable -->
+<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
+<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Chart Logic -->
+<script type="text/javascript">
+  window.baseUrl = '<?= base_url() ?>';
 </script>
+<script src="<?= base_url() ?>/assets/js/pages/dashboard-chart.js"></script>
 
-</body>
+<script>
+  $(document).ready(function() {
+    function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+      number = parseFloat(number).toFixed(decimals);
+      number = number.replace('.', decimalSeparator);
+      var parts = number.split(decimalSeparator);
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+      return parts.join(decimalSeparator);
+    }
 
-</html>
+    // Initialize DataTable
+    var table = $('#dt_list_filter').DataTable({
+      ajax: {
+        url: "<?= base_url() ?>bendahara/pinjaman/data_pinjaman",
+        type: "POST",
+        data: function(d) {
+          d.length = d.length || 10;
+        }
+      },
+      autoWidth: false,
+      scrollX: true,
+      serverSide: true,
+      searching: true,
+      responsive: true,
+      pageLength: 10,
+      lengthMenu: [
+        [10, 25, 50, -1],
+        [10, 25, 50, "Semua"]
+      ],
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Cari pengajuan...",
+        lengthMenu: "_MENU_",
+        paginate: {
+          first: "First",
+          last: "Last",
+          next: "Next",
+          previous: "Prev"
+        }
+      },
+      columnDefs: [{
+        orderable: false,
+        targets: "_all",
+        defaultContent: "-"
+      }],
+      columns: [{
+          title: "No",
+          render: function(data, type, row, meta) {
+            return '<span class="bg-blue-50 text-blue-600 px-2 py-1 rounded-lg text-xs font-black">' + (meta.row + 1) + '</span>';
+          }
+        },
+        {
+          title: "Nama",
+          render: function(data, type, row) {
+            return '<div class="flex items-center gap-2"><div><p class="text-sm font-bold text-slate-900">' + row.nama_peminjam + '</p><p class="text-[10px] text-slate-400 font-bold uppercase">' + row.username_peminjam + '</p></div></div>';
+          }
+        },
+        {
+          title: "Tipe",
+          render: function(data, type, row) {
+            return '<span class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase">' + row.tipe_permohonan + '</span>';
+          }
+        },
+        {
+          title: "Nominal",
+          render: function(data, type, row) {
+            return '<strong class="text-emerald-600 font-black">Rp ' + numberFormat(row.nominal, 0) + '</strong>';
+          }
+        },
+        {
+          title: "Tanggal",
+          render: function(data, type, row) {
+            let date = new Date(row.date_created);
+            return date.toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            });
+          }
+        },
+        {
+          title: "Tenor",
+          render: function(data, type, row) {
+            return '<span class="font-bold text-slate-700">' + row.angsuran_bulanan + ' Bln</span>';
+          }
+        },
+        {
+          title: "Dokumen",
+          render: function(data, type, row) {
+            let links = '<div class="flex flex-col gap-1 w-fit">';
+            links += '<a href="<?= base_url() ?>/uploads/user/' + row.username_peminjam + '/pinjaman/' + row.form_bukti + '" target="_blank" class="flex items-center gap-1 px-2 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-500 hover:text-blue-600"><i data-lucide="file-text" class="w-3 h-3"></i> Form</a>';
+            return links + '</div>';
+          }
+        },
+        {
+          title: "Aksi",
+          render: function(data, type, row) {
+            return '<div class="flex gap-2 justify-end">' +
+              '<button class="action-btn-tolak p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm" data-id="' + row.idpinjaman + '"><i data-lucide="x" class="w-4 h-4"></i></button>' +
+              '<button class="action-btn-terima p-2 rounded-xl bg-emerald-50 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all shadow-sm" data-id="' + row.idpinjaman + '"><i data-lucide="check" class="w-4 h-4"></i></button>' +
+              '</div>';
+          }
+        }
+      ],
+      drawCallback: function() {
+        lucide.createIcons(); // Re-init icons
+
+        // Re-bind click events
+        $('.action-btn-tolak').off('click').on('click', function() {
+          openNativeModal('tolak', $(this).data('id'));
+        });
+        $('.action-btn-terima').off('click').on('click', function() {
+          openNativeModal('terima', $(this).data('id'));
+        });
+      }
+    });
+
+    // Native Modal Logic adapted for jQuery triggers
+    function openNativeModal(type, id) {
+      $('#dynamic-modal-overlay, #dynamic-modal-content').removeClass('hidden');
+      $('#modal-container').html('<div class="text-center py-12"><div class="w-10 h-10 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin mx-auto"></div></div>');
+
+      let url = (type === 'terima') ? '<?= base_url() ?>/bendahara/pinjaman/approve-pinjaman' : '<?= base_url() ?>/bendahara/pinjaman/cancel-pinjaman';
+
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+          rowid: id
+        },
+        success: function(data) {
+          $('#modal-container').html(data);
+        },
+        error: function() {
+          $('#modal-container').html('<p class="text-red-500 font-bold text-center">Gagal memuat data</p>');
+        }
+      });
+    }
+
+    $('#close-modal-btn, #dynamic-modal-overlay').on('click', function() {
+      $('#dynamic-modal-overlay, #dynamic-modal-content').addClass('hidden');
+    });
+  });
+</script>
+<?= $this->endSection() ?>

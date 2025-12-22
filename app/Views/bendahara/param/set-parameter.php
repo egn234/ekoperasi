@@ -1,104 +1,113 @@
-<?= $this->include('bendahara/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
-  <?= $title_meta ?>
-  <link href="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />\
-  <?= $this->include('bendahara/partials/head-css') ?>
-  <style type="text/css">
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  </style>
-</head>
+<?= $this->section('content') ?>
 
-<?= $this->include('bendahara/partials/body') ?>
+<div class="space-y-8">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-black text-slate-800 tracking-tight">Pengaturan Parameter</h1>
+      <p class="text-slate-500 font-medium">Atur nilai parameter simpanan dan konfigurasi lainnya.</p>
+    </div>
+  </div>
 
-<!-- Begin page -->
-<div id="layout-wrapper">
-  <?= $this->include('bendahara/partials/menu') ?>
-  <div class="main-content">
-    <div class="page-content">
-      <div class="container-fluid">
-        <?= $page_title ?>
-        <div class="row">
-          <div class="col-xl-12 col-lg-12">
-            <div class="card">
-              <div class="card-header">
-                <h4 class="card-title">Set Parameter Simpanan</h4>
-              </div>
-              <div class="card-body">
-                <?=session()->getFlashdata('notif_simp');?>
-                <form action="<?= url_to('bendahara/parameter/set_param_simp') ?>" id="simpanan_param" method="post">
-                  <div class="row">
-                    <?php foreach($param_simp as $a){?>
-                      <div class="mb-3 col-4">
-                        <label class="form-label" for="param_simp<?=$a->idparameter?>"><?= $a->parameter ?></label>
-                        <input type="number" class="form-control" id="param_simp<?=$a->idparameter?>" name="param_nilai_simp[]" value="<?= $a->nilai ?>" required>
-                        <input type="number" class="form-control" name="param_id[]" value="<?= $a->idparameter ?>" hidden required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                    <?php }?>
-                  </div>
-                  <div class="row">
-                    <div class="col-12">
-                      <button type="submit" class="btn btn-primary">Set Parameter</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header">
-                <h4 class="card-title">Set Parameter Lainnya</h4>
-              </div>
-              <div class="card-body">
-                <?=session()->getFlashdata('notif_oth');?>
-                <form action="<?= url_to('bendahara/parameter/set_param_oth') ?>" id="other_param" method="post">
-                  <div class="row">
-                    <?php foreach($param_other as $a){?>
-                      <div class="mb-3 col-4">
-                        <label class="form-label" for="param_oth<?=$a->idparameter?>"><?= $a->parameter ?></label>
-                        <input type="number" class="form-control" id="param_oth<?=$a->idparameter?>" name="param_nilai_oth[]" value="<?= $a->nilai ?>" required>
-                        <input type="number" name="param_id[]" value="<?= $a->idparameter ?>" hidden required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                    <?php }?>
-                  </div>
-                  <div class="row">
-                    <div class="col-12">
-                      <button type="submit" class="btn btn-primary">Set Parameter</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <!-- Parameter Simpanan Card -->
+    <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+      <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <i data-lucide="piggy-bank" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-slate-900 tracking-tight">Parameter Simpanan</h3>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Nilai Wajib & Pokok</p>
         </div>
       </div>
+
+      <?= session()->getFlashdata('notif_simp'); ?>
+
+      <form action="<?= url_to('bendahara/parameter/set_param_simp') ?>" id="simpanan_param" method="post" class="space-y-6">
+        <div class="space-y-5">
+          <?php foreach ($param_simp as $a) : ?>
+            <div class="group">
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2" for="param_simp<?= $a->idparameter ?>">
+                <?= $a->parameter ?>
+              </label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">Rp</span>
+                <input type="number"
+                  class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                  id="param_simp<?= $a->idparameter ?>"
+                  name="param_nilai_simp[]"
+                  value="<?= $a->nilai ?>"
+                  required>
+              </div>
+              <input type="hidden" name="param_id[]" value="<?= $a->idparameter ?>">
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" class="w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+            <i data-lucide="save" class="w-4 h-4"></i> Simpan Perubahan
+          </button>
+        </div>
+      </form>
     </div>
-    <?= $this->include('bendahara/partials/footer') ?>
+
+    <!-- Parameter Lainnya Card -->
+    <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+      <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <i data-lucide="sliders" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-black text-slate-900 tracking-tight">Parameter Lainnya</h3>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Konfigurasi Tambahan</p>
+        </div>
+      </div>
+
+      <?= session()->getFlashdata('notif_oth'); ?>
+
+      <form action="<?= url_to('bendahara/parameter/set_param_oth') ?>" id="other_param" method="post" class="space-y-6">
+        <div class="space-y-5">
+          <?php foreach ($param_other as $a) : ?>
+            <div class="group">
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2" for="param_oth<?= $a->idparameter ?>">
+                <?= $a->parameter ?>
+              </label>
+              <div class="relative">
+                <input type="number"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-500 transition-all outline-none"
+                  id="param_oth<?= $a->idparameter ?>"
+                  name="param_nilai_oth[]"
+                  value="<?= $a->nilai ?>"
+                  required>
+              </div>
+              <input type="hidden" name="param_id[]" value="<?= $a->idparameter ?>">
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" class="w-full py-3.5 bg-slate-800 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg shadow-slate-200 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+            <i data-lucide="save" class="w-4 h-4"></i> Simpan Parameter
+          </button>
+        </div>
+      </form>
+    </div>
+
   </div>
 </div>
 
-<?= $this->include('bendahara/partials/right-sidebar') ?>
+<?= $this->endSection() ?>
 
-<?= $this->include('bendahara/partials/vendor-scripts') ?>
-
-<!-- apexcharts -->
-<script src="<?=base_url()?>/assets/libs/apexcharts/apexcharts.min.js"></script>
-
-<!-- Plugins js-->
-<script src="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js"></script>
-<script src="<?=base_url()?>/assets/libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-world-mill-en.js"></script>
-<!-- App js -->
-<script src="<?=base_url()?>/assets/js/app.js"></script>
-
-</body>
-
-</html>
+<?= $this->section('scripts') ?>
+<script>
+  // Simple check to ensure icons are loaded if handled dynamically
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+</script>
+<?= $this->endSection() ?>

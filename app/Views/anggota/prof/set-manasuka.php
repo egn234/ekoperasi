@@ -1,134 +1,134 @@
-<?= $this->include('partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-    <head>
+<?= $this->section('styles') ?>
+<script src="<?= base_url() ?>/assets/libs/imask/imask.min.js"></script>
+<?= $this->endSection() ?>
 
-        <meta charset="utf-8" />
-        <title>Register | Ekoperasi</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-        <meta content="Themesbrand" name="author" />
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
+<?= $this->section('content') ?>
 
-            <?= $this->include('partials/head-css') ?>
-
-</head>
-
-<?= $this->include('partials/body') ?>
-
-    <!-- <body data-layout="horizontal"> -->
-        <div class="auth-page">
-            <div class="container-fluid p-0">
-                <div class="row g-0">
-                    <div class="col-xxl-3 col-lg-2 col-md-2">
-                    </div>
-                    <div class="col-xxl-6 col-lg-8 col-md-8">
-                        <div class="auth-full-page-content d-flex p-sm-5 p-4">
-                            <div class="card card-body">
-                                <div class="w-100">
-                                    <div class="d-flex flex-column h-100">
-                                        <div class="mb-4 mb-md-5 text-center">
-                                            <a href="/" class="d-block auth-logo">
-                                                <img src="<?= base_url() ?>/assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Ekoperasi</span>
-                                            </a>
-                                        </div>
-                                        <div class="auth-content my-auto">
-                                            <div class="text-center">
-                                                <h5 class="mb-0">Pembuatan Nominal Manasuka Bulanan</h5>
-                                                <p class="text-muted mt-2">. : .</p>
-                                            </div>
-                                            <form action="<?= url_to('anggota/profile/set-manasuka-proc') ?>" method="post" class="needs-validation" id="set_manasuka_form" enctype="multipart/form-data">
-                                                <div class="mb-3">
-                                                    <label for="nominal_param">Besarnya Nominal (Rp)</label>
-                                                    <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?= $default_param ?>" required>
-                                                    <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
-                                                </div>
-                                                <a class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#konfirmasi">
-                                                    Simpan
-                                                </a>
-                                            </form>
-                                        </div>
-                                        <div class="mt-4 mt-md-5 text-center">
-                                            <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Ekoperasi   . Crafted with <i class="mdi mdi-heart text-danger"></i> by Ko+Lab</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- end auth full page content -->
-                    </div>
-                    <!-- end col -->
-
-                </div>
-                <!-- end row -->
-            </div>
-            <!-- end container fluid -->
+<div class="min-h-[80vh] flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Brand/Logo (Optional if not in sidebar, but good for focus) -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-slate-800">Simpanan Manasuka</h1>
+            <p class="text-slate-500 mt-2 text-sm">Tentukan nominal simpanan sukarela bulanan Anda</p>
         </div>
 
-        <div id="konfirmasi" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="myModalLabel">PAKTA</h5>
-                        <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden relative">
+            <!-- Decorative top bar -->
+            <div class="h-2 bg-gradient-to-r from-blue-500 to-indigo-600 w-full"></div>
+
+            <div class="p-8">
+                <form action="<?= url_to('anggota/profile/set-manasuka-proc') ?>" method="post" id="set_manasuka_form" class="space-y-6">
+                    <input type="hidden" name="iduser" value="<?= $duser->iduser ?>">
+
+                    <div>
+                        <label for="nominal_param" class="block text-sm font-semibold text-slate-700 mb-2">Besarnya Nominal (Rp)</label>
+                        <div class="relative">
+                            <i data-lucide="banknote" class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input type="text"
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-mono text-lg font-medium text-slate-800 placeholder:text-slate-300"
+                                id="nominal_param"
+                                name="nilai"
+                                value="<?= $default_param ?>"
+                                required
+                                placeholder="0">
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Masukkan nominal tanpa titik/koma manually (otomatis diformat).</p>
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <p>
-                                dengan ini saya setuju dan sadar untuk mengajukan simpanan manasuka sebesar nominal berikut
-                            </p>
-                            <div class="mb-4">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="konfirmasi_check" form="set_manasuka_form" required>
-                                    <label class="form-check-label" for="konfirmasi_check">
-                                        <p class="mb-0">Bersedia dengan peraturan yang tertera </p>
-                                    </label>
-                                </div>
+
+                    <button type="button" onclick="showConfirmation()" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 group">
+                        <span>Simpan Perubahan</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <p class="text-slate-400 text-sm">© <?= date('Y') ?> Ekoperasi</p>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize IMask
+        var currencyMask = IMask(document.getElementById('nominal_param'), {
+            mask: 'num',
+            blocks: {
+                num: {
+                    mask: Number,
+                    thousandsSeparator: '.'
+                }
+            }
+        });
+    });
+
+    // Function to trigger the native confirmation modal
+    function showConfirmation() {
+        const nominal = document.getElementById('nominal_param').value;
+
+        // Define modal content
+        const content = `
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-2">Konfirmasi Simpanan</h3>
+                <p class="text-slate-600 mb-6">
+                    Anda akan mengatur simpanan manasuka bulanan sebesar <br>
+                    <span class="font-bold text-xl text-blue-600">Rp ${nominal}</span>
+                </p>
+                
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left mb-6">
+                    <label class="flex gap-3 cursor-pointer group">
+                        <div class="relative flex items-start">
+                            <input type="checkbox" id="agree_check" class="peer sr-only">
+                            <div class="w-5 h-5 border-2 border-slate-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all flex items-center justify-center mt-0.5">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100"></i>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</a>
-                        <button type="submit" id="confirm_button" form="set_manasuka_form" class="btn btn-primary" disabled>Simpan</button>
-                    </div>
+                        <span class="text-sm text-slate-600 group-hover:text-slate-800 transition-colors select-none">
+                            Saya setuju dan sadar untuk mengajukan simpanan manasuka sebesar nominal tersebut sesuai peraturan yang berlaku.
+                        </span>
+                    </label>
+                </div>
 
+                <div class="flex gap-3">
+                    <button onclick="ModalHelper.close('confirm-modal')" class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-50 transition-colors">
+                        Batal
+                    </button>
+                    <button onclick="submitForm()" id="btn-submit-real" disabled class="flex-1 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Konfirmasi & Simpan
+                    </button>
                 </div>
             </div>
-        </div><!-- /.modal -->
+        `;
 
-        <!-- JAVASCRIPT -->
-        <?= $this->include('partials/vendor-scripts') ?>
+        // Opens the modal
+        ModalHelper.open('confirm-modal', 'Konfirmasi', content);
 
-        <!-- validation init -->
-        <script src="<?=base_url()?>/assets/libs/imask/imask.min.js"></script>
-        <script src="<?= base_url() ?>/assets/js/pages/validation.init.js"></script>
+        // Re-initialize icons inside modal
+        lucide.createIcons();
 
-        <script type="text/javascript">
-            document.addEventListener("DOMContentLoaded", function () {
-                var currencyMask = IMask(document.getElementById('nominal_param'), {
-                    mask: 'num',
-                    blocks: {
-                    num: {
-                            // nested masks are available!
-                            mask: Number,
-                            thousandsSeparator: '.'
-                        }
-                    }
+        // Add event listener to the checkbox inside the modal
+        setTimeout(() => {
+            const check = document.getElementById('agree_check');
+            const btn = document.getElementById('btn-submit-real');
+            if (check && btn) {
+                check.addEventListener('change', function() {
+                    btn.disabled = !this.checked;
                 });
-            });
+            }
+        }, 100);
+    }
 
-            $('#konfirmasi_check').click(function(){
-                //If the checkbox is checked.
-                if($(this).is(':checked')){
-                    //Enable the submit button.
-                    $('#confirm_button').attr("disabled", false);
-                } else{
-                    //If it is not checked, disable the button.
-                    $('#confirm_button').attr("disabled", true);
-                }
-            });
-        </script>
-
-    </body>
-
-</html>
+    function submitForm() {
+        document.getElementById('set_manasuka_form').submit();
+    }
+</script>
+<?= $this->endSection() ?>

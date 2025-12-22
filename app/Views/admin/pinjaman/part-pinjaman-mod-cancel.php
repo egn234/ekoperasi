@@ -1,45 +1,25 @@
-<div class="modal-body p-0">
-  <!-- Main Question -->
-  <div class="px-4 py-4">
-    <div class="text-center mb-4">
-      <div class="mb-3">
-        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" 
-             style="width: 60px; height: 60px; font-size: 24px;">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-      </div>
-      <h6 class="mb-2">Tolak Pengajuan Pinjaman?</h6>
-      <p class="text-muted mb-0">Pengajuan yang ditolak tidak dapat dibatalkan</p>
-    </div>
-
-    <!-- Form -->
-    <form action="<?= url_to('admin_cancel_pinjaman', $a->idpinjaman) ?>" id="formTolak" method="post">
-      <div class="card border-0 bg-light">
-        <div class="card-body">
-          <label class="form-label fw-semibold" for="alasan_tolak">
-            <i class="fas fa-comment-alt me-2 text-danger"></i>Alasan Penolakan
-          </label>
-          <textarea 
-            class="form-control" 
-            id="alasan_tolak" 
-            name="alasan_tolak" 
-            rows="3"
-            placeholder="Jelaskan alasan mengapa pengajuan ini ditolak..."
-            required
-          ></textarea>
-          <div class="form-text text-muted">
-            <i class="fas fa-info-circle me-1"></i>Alasan ini akan dikirim ke pemohon sebagai notifikasi
-          </div>
-        </div>
-      </div>
-    </form>
+<div class="text-center mb-6">
+  <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4">
+    <i data-lucide="x-circle" class="w-8 h-8"></i>
   </div>
+  <h3 class="text-xl font-black text-slate-900">Tolak Pinjaman</h3>
+  <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+    Tolak pengajuan dari <?= $a->nama_lengkap ?>
+  </p>
 </div>
-<div class="modal-footer border-top-0 bg-light">
-  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-    <i class="fas fa-arrow-left me-1"></i>Kembali
+
+<form action="<?= url_to('admin_cancel_pinjaman', $a->idpinjaman) ?>" id="formReject" method="post">
+  <div class="mb-6">
+    <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Alasan Penolakan</label>
+    <textarea name="alasan_tolak" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-red-500 focus:border-red-500 block w-full p-4 font-medium placeholder-slate-400 resize-none h-32" placeholder="Jelaskan alasan penolakan secara singkat..." required></textarea>
+  </div>
+</form>
+
+<div class="flex gap-3 pt-2 border-t border-slate-100">
+  <button onclick="closeNativeModal()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+    Batal
   </button>
-  <button type="submit" form="formTolak" class="btn btn-danger">
-    <i class="fas fa-times me-1"></i>Tolak Pengajuan
+  <button type="submit" form="formReject" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 transition-all hover:scale-[1.02]">
+    Konfirmasi Tolak
   </button>
 </div>

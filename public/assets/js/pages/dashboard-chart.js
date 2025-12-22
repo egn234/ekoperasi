@@ -10,7 +10,7 @@ class DashboardChart {
   init() {
     // Set base URL from global variable or current location
     this.baseUrl = window.baseUrl || window.location.origin;
-    
+
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this.initializeChart());
@@ -24,7 +24,7 @@ class DashboardChart {
     const chartContainer = document.getElementById('spline_area');
     const chartTypeEl = document.getElementById('chartType');
     const chartRangeEl = document.getElementById('chartRange');
-    
+
     if (!chartContainer || !chartTypeEl || !chartRangeEl) {
       console.log('Required chart elements not found');
       return;
@@ -135,17 +135,17 @@ class DashboardChart {
   updateChartStats(dataArray) {
     // Calculate stats from chart data
     if (!dataArray || dataArray.length === 0) return;
-    
+
     const totalDataPoints = dataArray.length;
     const highestValue = Math.max(...dataArray);
     const averageValue = Math.round(dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length);
-    
+
     // Indonesian number formatting function
     const formatIndonesian = (num) => {
       const isNegative = num < 0;
       const absNum = Math.abs(num);
       let formatted = '';
-      
+
       if (absNum >= 1000000000) {
         formatted = 'Rp ' + (absNum / 1000000000).toFixed(1).replace('.', ',') + ' Miliar';
       } else if (absNum >= 1000000) {
@@ -155,22 +155,22 @@ class DashboardChart {
       } else {
         formatted = 'Rp ' + absNum.toLocaleString('id-ID');
       }
-      
+
       return isNegative ? '-' + formatted : formatted;
     };
-    
+
     // Update total data points
     const totalDataPointsEl = document.getElementById('totalDataPoints');
     if (totalDataPointsEl) {
       totalDataPointsEl.textContent = totalDataPoints.toLocaleString('id-ID');
     }
-    
+
     // Update highest value
     const highestValueEl = document.getElementById('highestValue');
     if (highestValueEl) {
       highestValueEl.textContent = formatIndonesian(highestValue);
     }
-    
+
     // Update average value
     const averageValueEl = document.getElementById('averageValue');
     if (averageValueEl) {
@@ -214,7 +214,7 @@ class DashboardChart {
     // Check if we have negative values for gradient color
     const hasNegativeValues = series[0] && series[0].data && series[0].data.some(value => value < 0);
     const chartColors = hasNegativeValues ? ['#ef4444', '#dc2626'] : colors;
-    
+
     console.log('Chart data:', series[0]?.data);
     console.log('Has negative values:', hasNegativeValues);
     console.log('Using colors:', chartColors);
@@ -252,7 +252,7 @@ class DashboardChart {
             },
             {
               offset: 100,
-              color: '#dc2626', 
+              color: '#dc2626',
               opacity: 0.8
             }
           ] : []
@@ -300,20 +300,21 @@ class DashboardChart {
       }
     };
 
-    // Destroy existing chart if exists
-    if (this.currentChart) {
-      this.currentChart.destroy();
-    }
+    // Show chart container BEFORE rendering so ApexCharts can calculate dimensions
+    const chartEl = document.querySelector('#spline_area');
+    chartEl.style.display = 'block';
 
     // Create new chart
-    this.currentChart = new ApexCharts(document.querySelector('#spline_area'), options);
+    this.currentChart = new ApexCharts(chartEl, options);
     this.currentChart.render();
 
     // Update chart info
     this.updateChartStats(series[0].data);
 
-    // Show chart
-    document.getElementById('spline_area').style.display = 'block';
+    // Trigger a resize event to ensure correct width calculation
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
   }
 
   getChartColorsArray(elementId) {
@@ -322,13 +323,13 @@ class DashboardChart {
       console.log('Chart element not found:', elementId);
       return [];
     }
-    
+
     const colors = element.getAttribute('data-colors');
     if (!colors) {
       console.log('Chart colors attribute not found');
       return [];
     }
-    
+
     try {
       const colorArray = JSON.parse(colors);
       return colorArray.map(function (value) {
@@ -371,11 +372,11 @@ class DashboardChart {
 }
 
 // Auto-initialize for backward compatibility
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Try to detect role from URL
   const path = window.location.pathname;
   let role = 'admin'; // default
-  
+
   if (path.includes('/ketua/')) {
     role = 'ketua';
   } else if (path.includes('/bendahara/')) {
@@ -383,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
   } else if (path.includes('/anggota/')) {
     role = 'anggota';
   }
-  
+
   // Initialize chart with detected role
   window.dashboardChart = new DashboardChart(role);
 });

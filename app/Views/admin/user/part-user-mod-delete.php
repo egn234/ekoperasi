@@ -1,51 +1,22 @@
-<div class="modal-header">
-    <h5 class="modal-title" id="myModalLabel">Konfirmasi Hapus User</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="text-center mb-6">
+    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="trash-2" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-xl font-black text-slate-900">Hapus User?</h3>
+    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+        Konfirmasi penghapusan akun <strong><?= $user[0]['username'] ?></strong>
+    </p>
 </div>
-<div class="modal-body">
-    <?php if($a->user_flag == 1): ?>
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-triangle"></i> <strong>Tidak Dapat Menghapus!</strong>
-        </div>
-        <p>User dengan status <strong>AKTIF</strong> tidak dapat dihapus.</p>
-        <p>Silakan <strong>nonaktifkan user terlebih dahulu</strong> sebelum menghapus.</p>
-    <?php else: ?>
-        <div class="alert alert-warning">
-            <i class="fas fa-exclamation-triangle"></i> <strong>Peringatan!</strong>
-        </div>
-        <p>Anda akan menghapus user:</p>
-        <table class="table table-sm">
-            <tr>
-                <td width="150"><strong>Username</strong></td>
-                <td>: <?= $a->username ?></td>
-            </tr>
-            <tr>
-                <td><strong>Nama Lengkap</strong></td>
-                <td>: <?= $a->nama_lengkap ?></td>
-            </tr>
-            <tr>
-                <td><strong>NIK</strong></td>
-                <td>: <?= $a->nik ?></td>
-            </tr>
-            <tr>
-                <td><strong>Email</strong></td>
-                <td>: <?= $a->email ?></td>
-            </tr>
-        </table>
-        <p class="text-danger"><strong>User yang dihapus:</strong></p>
-        <ul>
-            <li>Tidak akan muncul di daftar user admin</li>
-            <li>Tidak akan muncul di laporan sistem</li>
-            <li>Hanya tersimpan di database untuk audit</li>
-        </ul>
-        <p class="text-danger"><strong>Apakah Anda yakin ingin menghapus user ini?</strong></p>
-    <?php endif; ?>
+
+<div class="bg-red-50 border border-red-100 rounded-xl p-4 mb-6 text-center">
+    <p class="text-xs font-bold text-red-600 uppercase tracking-wide">Tindakan ini tidak dapat dibatalkan</p>
 </div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Tutup</button>
-    <?php if($a->user_flag == 0): ?>
-        <a href="<?=base_url()?>/admin/user/delete_user/<?=$a->iduser?>" class="btn btn-danger">
-            <i class="fas fa-trash"></i> Ya, Hapus User
-        </a>
-    <?php endif; ?>
+
+<div class="flex gap-3">
+    <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+        Batal
+    </button>
+    <a href="<?= url_to('admin_delete_user', $iduser) ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 text-center transition-all hover:scale-[1.02]">
+        Ya, Hapus
+    </a>
 </div>

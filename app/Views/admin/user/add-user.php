@@ -1,302 +1,176 @@
-<?= $this->include('admin/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
-  <?= $title_meta ?>
-  <style type="text/css">
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  </style>
+<?= $this->section('content') ?>
 
-  <?= $this->include('admin/partials/head-css') ?>
-</head>
+<div class="space-y-8 pb-20">
+  <!-- Header -->
+  <div class="flex items-center gap-3">
+    <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+      <i data-lucide="user-plus" class="w-8 h-8"></i>
+    </div>
+    <div>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight">Tambah User Baru</h1>
+      <p class="text-slate-500 font-medium">Buat akun baru untuk anggota atau staf koperasi.</p>
+    </div>
+  </div>
 
-<?= $this->include('admin/partials/body') ?>
+  <?= session()->getFlashdata('notif'); ?>
 
-<div id="layout-wrapper">
-  <?= $this->include('admin/partials/menu') ?>
-  <div class="main-content">
-    <div class="page-content">
-      <div class="container-fluid">
-        <?= $page_title ?>
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
+  <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+    <div class="flex items-center gap-3 mb-8 pb-8 border-b border-slate-50">
+      <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+        <i data-lucide="file-input" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-xl font-black text-slate-900">Formulir Pendaftaran</h3>
+    </div>
 
-              <div class="card-header">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <h4 class="card-title">Tambah user baru</h4>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="card-body">
-                <form action="<?= url_to('admin/user/add_user_proccess') ?>" method="post" class="needs-validation" enctype="multipart/form-data">
-                  <div class="row">
-                    <div class="col-lg-2"></div>
-                    <div class="col-lg-8 col-md-12">
-                      <?=session()->getFlashdata('notif');?>
-                      <div class="mb-3">
-                        <label class="form-label" for="full_name">Nama Lengkap <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="full_name" name="nama_lengkap" value="<?=session()->getFlashdata('nama_lengkap')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="nik_number">NIK <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="nik_number" min="1000000000000000" max="9999999999999999" value="<?=session()->getFlashdata('nik')?>" name="nik" required>
-                        <div class="invalid-feedback">
-                          NIK harus 16 digit
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="nip_number">NIP</label>
-                        <input type="number" class="form-control" id="nip_number" value="<?=session()->getFlashdata('nik')?>" name="nip">
-                        <div class="invalid-feedback">
-                          NIP harus 8 digit
-                        </div>
-                      </div>
-                      
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <div class="mb-3">
-                            <label class="form-label" for="birthplace">Tempat <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="birthplace" name="tempat_lahir" value="<?=session()->getFlashdata('tempat_lahir')?>" required>
-                            <div class="invalid-feedback">
-                              Harus Diisi
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-sm-6">
-                          <div class="mb-3">
-                            <label class="form-label" for="birthday">Tanggal Lahir<span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="birthday" name="tanggal_lahir" value="<?=session()->getFlashdata('tanggal_lahir')?>" required>
-                            <div class="invalid-feedback">
-                              Harus Diisi
-                            </div>
-                          </div>                                          
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="institution">Institusi <span class="text-danger">*</span></label>
-                        <select class="form-select" id="institution" name="instansi" required>
-                          <option value="" <?=(session()->getFlashdata('instansi'))?'':'selected'?> disabled>Pilih Institusi...</option>
-                          <option value="YPT" <?=(session()->getFlashdata('instansi') == 'YPT')?'selected':''?> >YPT</option>
-                          <option value="Universitas Telkom" <?=(session()->getFlashdata('instansi') == 'Universitas Telkom')?'selected':''?> >Universitas Telkom</option>
-                          <option value="Trengginas Jaya" <?=(session()->getFlashdata('instansi') == 'Trengginas Jaya')?'selected':''?> >Trengginas Jaya</option>
-                          <option value="BUT" <?=(session()->getFlashdata('instansi') == 'BUT')?'selected':''?> >BUT</option>
-                          <option value="Telkom" <?=(session()->getFlashdata('instansi') == 'Telkom')?'selected':''?> >Telkom</option>
-                          <option value="GIAT" <?=(session()->getFlashdata('instansi') == 'GIAT')?'selected':''?> >GIAT</option>
-                        </select>
-                        <div class="invalid-feedback">
-                          Pilih Terlebih dahulu
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="address">Alamat <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="address" name="alamat" value="<?=session()->getFlashdata('alamat')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="phone_number">No. Telepon / WA <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="phone_number" name="nomor_telepon" value="<?=session()->getFlashdata('nomor_telepon')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="email_addr">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="email_addr" name="email" value="<?=session()->getFlashdata('email')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="job_unit">Unit Kerja <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="job_unit" name="unit_kerja" value="<?=session()->getFlashdata('unit_kerja')?>" required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                      
-                      <div class="row mb-3">
-                        <div class="col-4">
-                          <label class="form-label" for="bankname">Nama Bank <span class="text-danger">*</span></label>
-                          <input type="text" class="form-control" id="bankname" name="nama_bank" value="<?=session()->getFlashdata('nama_bank')?>" required>
-                          <div class="invalid-feedback">
-                            Harus Diisi
-                          </div>
-                        </div>
-                        <div class="col-8">
-                          <label class="form-label" for="norek">Nomor Rekening <span class="text-danger">*</span></label>
-                          <input type="number" class="form-control" id="norek" name="no_rek" value="<?=session()->getFlashdata('no_rek')?>" required>
-                          <div class="invalid-feedback">
-                            Harus Diisi
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="status_peg">Status Pegawai <span class="text-danger">*</span></label>
-                        <select class="form-select" id="status_peg" name="status_pegawai" required>
-                          <option value="tetap" <?=(session()->getFlashdata('unit_kerja') == 'tetap')?'selected':''?> >Tetap</option>
-                          <option value="kontrak" <?=(session()->getFlashdata('unit_kerja') == 'kontrak')?'selected':''?> >Kontrak</option>
-                        </select>
-                        <div class="invalid-feedback">
-                          Pilih Terlebih dahulu
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="username">Username <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="username" name="username" value="<?= $username ?>" Readonly required>
-                        <div class="invalid-feedback">
-                          Harus Diisi
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
-                        <div class="input-group auth-pass-inputgroup">
-                          <input type="password" class="form-control" id="password" minlength="8" name="pass" required>
-                          <button class="btn btn-light ms-0 password-toggle" type="button" data-target="password"><i class="mdi mdi-eye-outline"></i></button>
-                        </div>
-                        <div class="invalid-feedback">
-                          Minimal 8 karakter
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="retype_pass">Masukkan Ulang Password </label>
-                        <div class="input-group auth-pass-inputgroup">
-                          <input type="password" class="form-control" id="retype_pass" minlength="8" name="pass2" required>
-                          <button class="btn btn-light ms-0 password-toggle" type="button" data-target="retype_pass"><i class="mdi mdi-eye-outline"></i></button>
-                        </div>
-                        <div class="invalid-feedback">
-                          Minimal 8 karakter
-                        </div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="profile_pic">
-                          Upload Foto Profil <span class="text-danger">*</span></br>
-                          <small class="text-muted">Format File: jpg, jpeg</small></br>
-                          <small class="text-muted">Ukuran File: Minimal 129kb, Maksimal 2MB</small></br>
-                          <small class="text-muted">Resolusi: Minimal 300x300px</small>
-                        </label>
-                        <input type="file" name="profil_pic" id="profile_pic" class="form-control" accept="image/jpg, image/jpeg" required>
-                      </div>
-                      
-                      <!-- NEW: KTP upload -->
-                      <div class="mb-3">
-                        <label class="form-label" for="ktp_file">
-                          File KTP / Identitas <span class="text-danger">*</span></br>
-                          <small class="text-muted">Format: JPG, PNG, atau PDF. Maks 4MB.</small>
-                        </label>
-                        <input type="file" name="ktp_file" id="ktp_file" class="form-control" accept="image/jpg, image/jpeg, image/png, application/pdf" required>
-                        <div class="invalid-feedback">Harus Mengupload KTP</div>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label class="form-label" for="group">User Grup <span class="text-danger">*</span></label>
-                        <select class="form-select" id="group" name="idgroup" required>
-                          <option value="" <?=(session()->getFlashdata('idgroup'))?'':'selected'?> disabled>Pilih Grup...</option>
-                          <?php foreach ($grp_list as $a): ?>
-                            <option value="<?= $a->idgroup ?>" <?=(session()->getFlashdata('idgroup') == $a->idgroup)?'selected':''?> ><?= $a->keterangan ?></option>
-                          <?php endforeach ?>
-                        </select>
-                        <div class="invalid-feedback">
-                          Pilih Terlebih dahulu
-                        </div>
-                      </div>
+    <form action="<?= url_to('admin_user_create_proc') ?>" method="post" enctype="multipart/form-data" class="space-y-6">
 
-                      <span class="text-xs text-danger">
-                        *Tidak boleh dikosongkan
-                      </span>
+      <!-- Personal Info Section -->
+      <div class="space-y-6">
+        <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Informasi Pribadi</h4>
 
-                      <button type="submit" class="btn btn-primary float-end">Buat User</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input type="text" name="nama_lengkap" value="<?= session()->getFlashdata('nama_lengkap') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="Masukkan nama lengkap">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">NIK <span class="text-red-500">*</span></label>
+            <input type="number" name="nik" value="<?= session()->getFlashdata('nik') ?>" min="1000000000000000" max="9999999999999999" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="16 Digit NIK">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">NIP</label>
+            <input type="number" name="nip" value="<?= session()->getFlashdata('nip') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional for Non-PNS">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tempat Lahir <span class="text-red-500">*</span></label>
+            <input type="text" name="tempat_lahir" value="<?= session()->getFlashdata('tempat_lahir') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Lahir <span class="text-red-500">*</span></label>
+            <input type="date" name="tanggal_lahir" value="<?= session()->getFlashdata('tanggal_lahir') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat <span class="text-red-500">*</span></label>
+            <textarea name="alamat" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="Alamat lengkap sesuai KTP"><?= session()->getFlashdata('alamat') ?></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">No. Telepon / WA <span class="text-red-500">*</span></label>
+            <input type="number" name="nomor_telepon" value="<?= session()->getFlashdata('nomor_telepon') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email <span class="text-red-500">*</span></label>
+            <input type="email" name="email" value="<?= session()->getFlashdata('email') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
           </div>
         </div>
       </div>
-    </div>
 
-    <?= $this->include('admin/partials/footer') ?>
+      <!-- Employment Info -->
+      <div class="space-y-6 pt-6">
+        <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Informasi Pekerjaan</h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Institusi <span class="text-red-500">*</span></label>
+            <select name="instansi" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              <option value="" disabled selected>Pilih Institusi...</option>
+              <?php
+              $instansi = ['YPT', 'Universitas Telkom', 'Trengginas Jaya', 'BUT', 'Telkom', 'GIAT'];
+              foreach ($instansi as $ins):
+              ?>
+                <option value="<?= $ins ?>" <?= (session()->getFlashdata('instansi') == $ins) ? 'selected' : '' ?>><?= $ins ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Unit Kerja <span class="text-red-500">*</span></label>
+            <input type="text" name="unit_kerja" value="<?= session()->getFlashdata('unit_kerja') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Pegawai <span class="text-red-500">*</span></label>
+            <select name="status_pegawai" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              <option value="tetap" <?= (session()->getFlashdata('status_pegawai') == 'tetap') ? 'selected' : '' ?>>Tetap</option>
+              <option value="kontrak" <?= (session()->getFlashdata('status_pegawai') == 'kontrak') ? 'selected' : '' ?>>Kontrak</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-1">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Bank <span class="text-red-500">*</span></label>
+            <input type="text" name="nama_bank" value="<?= session()->getFlashdata('nama_bank') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Rekening <span class="text-red-500">*</span></label>
+            <input type="number" name="no_rek" value="<?= session()->getFlashdata('no_rek') ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Info -->
+      <div class="space-y-6 pt-6">
+        <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Informasi Akun</h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Username <span class="text-red-500">*</span></label>
+            <input type="text" name="username" value="<?= $username ?>" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-500 cursor-not-allowed">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">User Group <span class="text-red-500">*</span></label>
+            <select name="idgroup" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              <option value="" disabled selected>Pilih Grup...</option>
+              <?php foreach ($grp_list as $a): ?>
+                <option value="<?= $a->idgroup ?>" <?= (session()->getFlashdata('idgroup') == $a->idgroup) ? 'selected' : '' ?>><?= $a->keterangan ?></option>
+              <?php endforeach ?>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password <span class="text-red-500">*</span></label>
+            <input type="password" name="pass" minlength="8" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi Password <span class="text-red-500">*</span></label>
+            <input type="password" name="pass2" minlength="8" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Upload Foto Profil <span class="text-red-500">*</span></label>
+            <input type="file" name="profil_pic" accept="image/jpg, image/jpeg" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:uppercase file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100" required>
+            <p class="text-[10px] text-slate-400 mt-1">Min 300x300px, Max 2MB, JPG Only.</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">File KTP / Identitas <span class="text-red-500">*</span></label>
+            <input type="file" name="ktp_file" accept="image/jpg, image/jpeg, image/png, application/pdf" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:uppercase file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100" required>
+            <p class="text-[10px] text-slate-400 mt-1">JPG/PNG/PDF, Max 4MB.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-6 border-t border-slate-100">
+        <button type="submit" class="px-8 py-4 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] flex items-center gap-2">
+          <i data-lucide="save" class="w-4 h-4"></i>
+          Simpan User Baru
+        </button>
+      </div>
+
+    </form>
   </div>
 </div>
 
-<?= $this->include('admin/partials/right-sidebar') ?>
-
-<!-- JAVASCRIPT -->
-<?= $this->include('admin/partials/vendor-scripts') ?>
-
-<!-- Required datatable js -->
-<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-
-<script src="<?=base_url()?>/assets/js/app.js"></script>
-
-<!-- Form Validation -->
-<script type="text/javascript">
-  (function () {
-    'use strict';
-    window.addEventListener('load', function () {
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      var forms = document.getElementsByClassName('needs-validation');
-      // Loop over them and prevent submission
-      var validation = Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-          if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-    }, false);
-  })();
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const passwordToggles = document.querySelectorAll(".password-toggle");
-
-    passwordToggles.forEach(function (toggle) {
-      toggle.addEventListener("click", function () {
-        const targetId = toggle.getAttribute("data-target");
-        const passwordInput = document.getElementById(targetId);
-
-        if (passwordInput.type === "password") {
-          passwordInput.type = "text";
-          toggle.innerHTML = '<i class="mdi mdi-eye-off-outline"></i>';
-        } else {
-          passwordInput.type = "password";
-          toggle.innerHTML = '<i class="mdi mdi-eye-outline"></i>';
-        }
-      });
-    });
-  });
-
-  window.onload = () => {
-    const myInput = document.getElementById('retype_pass');
-    myInput.onpaste = e => e.preventDefault();
-  }
-</script>
-
-</body>
-</html>
+<?= $this->endSection() ?>

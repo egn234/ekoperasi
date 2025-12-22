@@ -1,570 +1,354 @@
-<?= $this->include('anggota/partials/head-main') ?>
+<?= $this->extend('layout/main') ?>
 
-<head>
-  <?= $title_meta ?>
-  <?= $this->include('anggota/partials/head-css') ?>
-  
-  <!-- Custom CSS for Deposit List -->
-  <link href="<?= base_url() ?>/assets/css/anggota/deposit-list.css" rel="stylesheet" type="text/css" />
-  
-  <style type="text/css">
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  </style>
-</head>
+<?= $this->section('styles') ?>
+<style type="text/css">
+  /* Custom scroll for horizontal elements */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-<?= $this->include('anggota/partials/body') ?>
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+<?= $this->endSection() ?>
 
-<!-- Begin page -->
-<div id="layout-wrapper">
-  <?= $this->include('anggota/partials/menu') ?>
-  <div class="main-content">
-    <div class="page-content">
-      <div class="container-fluid">
-        <?= $page_title ?>
-        <div class="row">
-          <div class="col-md-9 col-sm-12">
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white border-bottom">
-                <div class="row align-items-center">
-                  <div class="col-md-6 col-sm-12">
-                    <div class="d-flex align-items-center">
-                      <div class="me-3">
-                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                          <i class="fas fa-list-alt"></i>
-                        </div>
-                      </div>
-                      <div>
-                        <h4 class="card-title mb-1">Riwayat Transaksi</h4>
-                        <p class="text-muted small mb-0">Daftar pengajuan dan mutasi simpanan Anda</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="float-md-end mt-3 mt-md-0">
-                      <button class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addPengajuan">
-                        <i class="fas fa-plus me-2"></i>Tambah Pengajuan
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <?=session()->getFlashdata('notif');?>
-                
-                <!-- Transaction List Style -->
-                <div class="transaction-container">
-                  <?php $i = 1 + (10 * ($currentpage - 1)); ?>
-                  <?php foreach ($deposit_list2 as $k) : ?>
-                    <div class="transaction-card mb-3 border rounded-3 p-3 <?= 
-                      $k['status'] == 'diproses' ||
-                      $k['status'] == 'diproses bendahara' ||
-                      $k['status'] == 'diproses admin' ||
-                      $k['status'] == 'upload bukti' ? 'bg-light border-warning' 
-                      : ($k['status'] == 'diterima' ? 'bg-success bg-opacity-10 border-success' 
-                      : ($k['status'] == 'ditolak' ? 'bg-danger bg-opacity-10 border-danger' : '')) 
-                    ?>">
-                      <!-- Mobile Layout -->
-                      <div class="d-flex d-md-none">
-                        <div class="me-3">
-                          <div class="transaction-icon rounded-circle d-flex align-items-center justify-content-center" 
-                               style="width: 48px; height: 48px; <?= $k['cash_in'] == 0 ? 'background-color: #fee2e2; color: #dc2626;' : 'background-color: #dcfce7; color: #16a34a;' ?>">
-                            <?php if ($k['cash_in'] == 0) : ?>
-                              <i class="fas fa-arrow-up"></i>
-                            <?php else : ?>
-                              <i class="fas fa-arrow-down"></i>
-                            <?php endif; ?>
-                          </div>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                              <h6 class="mb-1 fw-semibold"><?= ucwords($k['jenis_pengajuan']) ?></h6>
-                              <p class="mb-0 text-muted small"><?= ucwords($k['jenis_deposit']) ?></p>
-                            </div>
-                            <div class="text-end">
-                              <?php if ($k['cash_in'] == 0) : ?>
-                                <div class="amount text-danger fw-bold mb-1">
-                                  <small>Rp</small> <?= number_format($k['cash_out'], 0, ',', '.') ?>
-                                </div>
-                                <small class="text-muted">Keluar</small>
-                              <?php else : ?>
-                                <div class="amount text-success fw-bold mb-1">
-                                  <small>Rp</small> <?= number_format($k['cash_in'], 0, ',', '.') ?>
-                                </div>
-                                <small class="text-muted">Masuk</small>
-                              <?php endif; ?>
-                            </div>
-                          </div>
-                          <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-2">
-                              <span class="badge rounded-pill <?= 
-                                $k['status'] == 'diproses' ||
-                                $k['status'] == 'diproses bendahara' ||
-                                $k['status'] == 'diproses admin' ||
-                                $k['status'] == 'upload bukti' ? 'bg-warning' 
-                                : ($k['status'] == 'diterima' ? 'bg-success' 
-                                : 'bg-danger') 
-                              ?> small">
-                                <?= ucwords($k['status']) ?>
-                              </span>
-                              <small class="text-muted"><?= date('d M Y', strtotime($k['date_created'])) ?></small>
-                            </div>
-                            <div class="dropdown">
-                              <button class="btn btn-link text-muted p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v"></i>
-                              </button>
-                              <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                  <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
-                                    <i class="fas fa-file-alt me-2"></i> Lihat Detail
-                                  </a>
-                                </li>
-                                <?php if (
-                                  !$k['bukti_transfer'] &&
-                                  $k['jenis_deposit'] == 'manasuka free' &&
-                                  $k['jenis_pengajuan'] == 'penyimpanan' &&
-                                  $k['status'] != "diterima" &&
-                                  $k['status'] != "ditolak"
-                                ) : ?>
-                                <li>
-                                  <a class="dropdown-item text-success" href="#" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
-                                    <i class="fas fa-upload me-2"></i> Upload Bukti
-                                  </a>
-                                </li>
-                                <?php endif; ?>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <!-- Desktop Layout -->
-                      <div class="d-none d-md-flex align-items-center">
-                        <!-- Transaction Icon & Type -->
-                        <div class="col-1 text-center">
-                          <div class="transaction-icon rounded-circle d-inline-flex align-items-center justify-content-center" 
-                               style="width: 40px; height: 40px; <?= $k['cash_in'] == 0 ? 'background-color: #fee2e2; color: #dc2626;' : 'background-color: #dcfce7; color: #16a34a;' ?>">
-                            <?php if ($k['cash_in'] == 0) : ?>
-                              <i class="fas fa-arrow-up"></i>
-                            <?php else : ?>
-                              <i class="fas fa-arrow-down"></i>
-                            <?php endif; ?>
-                          </div>
-                        </div>
-                        
-                        <!-- Transaction Details -->
-                        <div class="col-6">
-                          <div class="transaction-info">
-                            <h6 class="mb-1 fw-semibold"><?= ucwords($k['jenis_pengajuan']) ?></h6>
-                            <p class="mb-1 text-muted small"><?= ucwords($k['jenis_deposit']) ?></p>
-                            <div class="d-flex align-items-center gap-2">
-                              <span class="badge rounded-pill <?= 
-                                $k['status'] == 'diproses' ||
-                                $k['status'] == 'diproses bendahara' ||
-                                $k['status'] == 'diproses admin' ||
-                                $k['status'] == 'upload bukti' ? 'bg-warning' 
-                                : ($k['status'] == 'diterima' ? 'bg-success' 
-                                : 'bg-danger') 
-                              ?> small">
-                                <?= ucwords($k['status']) ?>
-                              </span>
-                              <small class="text-muted"><?= date('d M Y', strtotime($k['date_created'])) ?></small>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <!-- Amount -->
-                        <div class="col-3 text-end">
-                          <?php if ($k['cash_in'] == 0) : ?>
-                            <div class="amount text-danger fw-bold">
-                              <span class="small">Rp</span> <?= number_format($k['cash_out'], 0, ',', '.') ?>
-                            </div>
-                            <small class="text-muted">Keluar</small>
-                          <?php else : ?>
-                            <div class="amount text-success fw-bold">
-                              <span class="small">Rp</span> <?= number_format($k['cash_in'], 0, ',', '.') ?>
-                            </div>
-                            <small class="text-muted">Masuk</small>
-                          <?php endif; ?>
-                        </div>
-                        
-                        <!-- Actions -->
-                        <div class="col-2 text-end">
-                          <div class="dropdown">
-                            <button class="btn btn-link text-muted p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                              <li>
-                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#detailMutasi" data-id="<?=$k['iddeposit']?>">
-                                  <i class="fas fa-file-alt me-2"></i> Lihat Detail
-                                </a>
-                              </li>
-                              <?php if (
-                                !$k['bukti_transfer'] &&
-                                $k['jenis_deposit'] == 'manasuka free' &&
-                                $k['jenis_pengajuan'] == 'penyimpanan' &&
-                                $k['status'] != "diterima" &&
-                                $k['status'] != "ditolak"
-                              ) : ?>
-                              <li>
-                                <a class="dropdown-item text-success" href="#" data-bs-toggle="modal" data-bs-target="#uploadBT" data-id="<?=$k['iddeposit']?>">
-                                  <i class="fas fa-upload me-2"></i> Upload Bukti
-                                </a>
-                              </li>
-                              <?php endif; ?>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  <?php endforeach; ?>
-                  
-                  <?php if (empty($deposit_list2)) : ?>
-                    <div class="text-center py-5">
-                      <div class="mb-3">
-                        <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
-                      </div>
-                      <h5 class="text-muted">Belum Ada Transaksi</h5>
-                      <p class="text-muted">Mulai dengan membuat pengajuan simpanan pertama Anda</p>
-                      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPengajuan">
-                        <i class="fas fa-plus me-2"></i>Tambah Pengajuan
-                      </button>
-                    </div>
-                  <?php endif; ?>
-                </div>
-                
-                <!-- Pagination -->
-                <?php if (!empty($deposit_list2)) : ?>
-                <div class="row mt-4">
-                  <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <p class="text-muted small mb-0">
-                        Menampilkan <?= count($deposit_list2) ?> dari <?= $total_rows ?? 0 ?> transaksi
-                      </p>
-                      <div>
-                        <?= $pager->links('grup1', 'default_minia')?>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <?php endif; ?>
-              </div>
+<?= $this->section('content') ?>
+
+<div class="space-y-8 pb-20">
+
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-black text-slate-800 tracking-tight">Riwayat Transaksi</h1>
+      <p class="text-slate-500 font-medium">Kelola simpanan dan pantau arus kas Anda.</p>
+    </div>
+    <button onclick="openAddModal()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] flex items-center gap-2">
+      <i data-lucide="plus-circle" class="w-5 h-5"></i>
+      Tambah Pengajuan
+    </button>
+  </div>
+
+  <?= session()->getFlashdata('notif'); ?>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Left Column: Transaction List -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Filters / Month Selector (Optional, for now just list) -->
+
+      <div class="space-y-4">
+        <?php if (empty($deposit_list2)) : ?>
+          <div class="bg-white rounded-[2rem] p-12 text-center shadow-soft border border-slate-50">
+            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="inbox" class="w-10 h-10 text-slate-300"></i>
             </div>
-          </div> <!-- end col -->
-          <div class="col-md-3 col-sm-12">
-            <!-- Account Summary Card -->
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-header bg-gradient-primary text-white border-0">
-                <h5 class="card-title mb-0 text-white">
-                  <i class="fas fa-wallet me-2"></i>Ringkasan Saldo
-                </h5>
-              </div>
-              <div class="card-body p-0">
-                <!-- Total Balance Highlight -->
-                <div class="bg-light p-4 border-bottom">
-                  <div class="text-center">
-                    <p class="text-muted small mb-1">Total Saldo Simpanan</p>
-                    <h3 class="text-primary fw-bold mb-0">
-                      Rp <?=number_format(($total_saldo_manasuka+$total_saldo_pokok+$total_saldo_wajib), 0, ',','.')?>
-                    </h3>
-                  </div>
-                </div>
-                
-                <!-- Balance Details -->
-                <div class="p-3">
-                  <div class="balance-item d-flex justify-content-between py-3 border-bottom">
-                    <div>
-                      <div class="d-flex align-items-center">
-                        <div class="balance-icon me-2 rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
-                          <i class="fas fa-piggy-bank" style="font-size: 10px;"></i>
-                        </div>
-                        <div>
-                          <p class="mb-0 fw-medium" style="font-size: 13px;">Simpanan Pokok</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-end">
-                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
-                        Rp <?=number_format($total_saldo_pokok, 0, ',','.')?>
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div class="balance-item d-flex justify-content-between py-3 border-bottom">
-                    <div>
-                      <div class="d-flex align-items-center">
-                        <div class="balance-icon me-2 rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
-                          <i class="fas fa-calendar-check" style="font-size: 10px;"></i>
-                        </div>
-                        <div>
-                          <p class="mb-0 fw-medium" style="font-size: 13px;">Simpanan Wajib</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-end">
-                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
-                        Rp <?=number_format($total_saldo_wajib, 0, ',','.')?>
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div class="balance-item d-flex justify-content-between py-3">
-                    <div>
-                      <div class="d-flex align-items-center">
-                        <div class="balance-icon me-2 rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
-                          <i class="fas fa-hand-holding-usd" style="font-size: 10px;"></i>
-                        </div>
-                        <div>
-                          <p class="mb-0 fw-medium" style="font-size: 13px;">Simpanan Manasuka</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-end">
-                      <p class="mb-0 fw-semibold" style="font-size: 13px;">
-                        Rp <?=number_format($total_saldo_manasuka, 0, ',','.')?>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Manasuka Settings Card -->
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white border-bottom">
-                <h6 class="card-title mb-0">
-                  <i class="fas fa-cog me-2 text-muted"></i>Pengaturan Manasuka
-                </h6>
-              </div>
-              <div class="card-body">
-                <div class="mb-4">
-                  <label class="form-label text-muted small">Nominal Setoran Bulanan</label>
-                  <div class="fw-bold text-dark">
-                    <?php if (!$param_manasuka) : ?>
-                      <span class="text-warning">Belum diatur</span>
+            <h3 class="text-lg font-black text-slate-800">Belum Ada Transaksi</h3>
+            <p class="text-slate-400 text-sm mt-1">Pengajuan simpanan Anda akan muncul di sini.</p>
+          </div>
+        <?php else : ?>
+          <?php foreach ($deposit_list2 as $k) : ?>
+            <!-- Transaction Card -->
+            <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 hover:shadow-md transition-all group cursor-pointer relative overflow-hidden">
+              <!-- Status Stripe -->
+              <div class="absolute left-0 top-0 bottom-0 w-1.5 <?=
+                                                                $k['status'] == 'diterima' ? 'bg-emerald-500' : ($k['status'] == 'ditolak' ? 'bg-red-500' : 'bg-amber-400')
+                                                                ?>"></div>
+
+              <div class="flex items-center justify-between pl-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 <?= $k['cash_in'] == 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600' ?>">
+                    <?php if ($k['cash_in'] == 0) : ?>
+                      <i data-lucide="arrow-up" class="w-6 h-6"></i>
                     <?php else : ?>
-                      Rp <?=number_format($param_manasuka[0]->nilai, 0, ',','.')?>
+                      <i data-lucide="arrow-down" class="w-6 h-6"></i>
+                    <?php endif; ?>
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-800 text-sm md:text-base"><?= ucwords($k['jenis_pengajuan']) ?></h4>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1"><?= ucwords($k['jenis_deposit']) ?></p>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500 uppercase tracking-wide">
+                        <?= date('d M Y', strtotime($k['date_created'])) ?>
+                      </span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide <?=
+                                                                                                      $k['status'] == 'diterima' ? 'bg-emerald-100 text-emerald-600' : ($k['status'] == 'ditolak' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600')
+                                                                                                      ?>">
+                        <?= ucwords($k['status']) ?>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <?php if ($k['cash_in'] == 0) : ?>
+                    <p class="font-black text-slate-800 text-sm md:text-lg">- Rp <?= number_format($k['cash_out'], 0, ',', '.') ?></p>
+                  <?php else : ?>
+                    <p class="font-black text-slate-800 text-sm md:text-lg">+ Rp <?= number_format($k['cash_in'], 0, ',', '.') ?></p>
+                  <?php endif; ?>
+
+                  <div class="mt-2 flex justify-end gap-2">
+                    <button onclick="ModalHelper.open('<?= base_url('anggota/deposit/detail_mutasi') ?>', {rowid: '<?= $k['iddeposit'] ?>'})" class="p-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Detail">
+                      <i data-lucide="file-text" class="w-4 h-4"></i>
+                    </button>
+
+                    <?php if (!$k['bukti_transfer'] && $k['jenis_deposit'] == 'manasuka free' && $k['jenis_pengajuan'] == 'penyimpanan' && $k['status'] != "diterima" && $k['status'] != "ditolak") : ?>
+                      <button onclick="ModalHelper.open('<?= base_url('anggota/deposit/up_mutasi') ?>', {rowid: '<?= $k['iddeposit'] ?>'})" class="p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors animate-bounce-slow" title="Upload Bukti">
+                        <i data-lucide="upload" class="w-4 h-4"></i>
+                      </button>
                     <?php endif; ?>
                   </div>
                 </div>
-                
-                <?php 
-                  $datecheck = new DateTime($param_manasuka_cek);
-                  $month = new DateTime('-1 month');
-                  $isRecentlyUpdated = $datecheck >= $month;
-                ?>
-                
-                <?php if ($isRecentlyUpdated) : ?>
-                <div class="alert alert-info py-2 mb-3">
-                  <small>
-                    <i class="fas fa-info-circle me-1"></i>
-                    Tunggu 1 bulan untuk mengubah pengaturan
-                  </small>
-                </div>
-                <?php endif; ?>
-                
-                <div class="d-grid gap-2">
-                  <button class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" 
-                          data-bs-toggle="modal" data-bs-target="#set_param_manasuka" 
-                          <?= $isRecentlyUpdated ? 'disabled' : '' ?>>
-                    <i class="fas fa-edit me-2"></i>Atur Manasuka Bulanan
-                  </button>
-                  <button class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" 
-                          data-bs-toggle="modal" data-bs-target="#batal_manasuka" 
-                          <?= $isRecentlyUpdated ? 'disabled' : '' ?>>
-                    <i class="fas fa-times me-2"></i>Batalkan Manasuka
-                  </button>
-                </div>
               </div>
             </div>
-          </div> <!-- end col -->
-        </div> <!-- end row -->
-      </div> <!-- container-fluid -->
-    </div>
-    <?= $this->include('anggota/partials/footer') ?>
-  </div>
-</div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
 
-<div id="uploadBT" class="modal fade" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <span class="fetched-data"></span>
-    </div>
-  </div>
-</div><!-- /.modal -->
+      <!-- Custom Pagination -->
+      <?php if (!empty($deposit_list2)) : ?>
+        <div class="mt-8">
+          <?= $pager->links('grup1', 'default_minia') ?>
+        </div>
+      <?php endif; ?>
 
-<div id="addPengajuan" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header border-0 pb-0">
-        <div class="d-flex align-items-center">
-          <div class="me-3">
-            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Right Column: Summary & Settings -->
+    <div class="space-y-6">
+
+      <!-- Summary Card -->
+      <div class="bg-indigo-gradient rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-200/50 relative overflow-hidden">
+        <div class="relative z-10">
+          <p class="text-indigo-100 text-xs font-black uppercase tracking-widest mb-1">Total Saldo Simpanan</p>
+          <h2 class="text-3xl font-black tracking-tight mb-8">Rp <?= number_format(($total_saldo_manasuka + $total_saldo_pokok + $total_saldo_wajib), 0, ',', '.') ?></h2>
+
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
+              <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="wallet" class="w-4 h-4"></i></div>
+                <span class="text-xs font-bold uppercase tracking-wider">Pokok</span>
+              </div>
+              <span class="font-bold">Rp <?= number_format($total_saldo_pokok, 0, ',', '.') ?></span>
             </div>
-          </div>
-          <div>
-            <h5 class="modal-title mb-1" id="addPengajuanLabel">Pengajuan Simpanan Manasuka</h5>
-            <p class="text-muted small mb-0">Buat permintaan simpanan atau penarikan saldo manasuka Anda</p>
+            <div class="flex justify-between items-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
+              <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="piggy-bank" class="w-4 h-4"></i></div>
+                <span class="text-xs font-bold uppercase tracking-wider">Wajib</span>
+              </div>
+              <span class="font-bold">Rp <?= number_format($total_saldo_wajib, 0, ',', '.') ?></span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
+              <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="hand-coins" class="w-4 h-4"></i></div>
+                <span class="text-xs font-bold uppercase tracking-wider">Manasuka</span>
+              </div>
+              <span class="font-bold">Rp <?= number_format($total_saldo_manasuka, 0, ',', '.') ?></span>
+            </div>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body pt-4">
-        <form action="<?= url_to('anggota/deposit/add_req') ?>" id="formSheet" method="post">
-          <div class="mb-4">
-            <label class="form-label fw-medium mb-2" for="j_pengajuan">
-              <i class="fas fa-exchange-alt me-2 text-primary"></i>Jenis Pengajuan
-            </label>
-            <select class="form-select" id="j_pengajuan" name="jenis_pengajuan" required>
-              <option value="" <?=(session()->getFlashdata('jenis_pengajuan'))?'':'selected'?> disabled>Pilih Opsi...</option>
-              <option value="penarikan" <?=(session()->getFlashdata('jenis_pengajuan') == 'penarikan')?'selected':''?> >Penarikan</option>
-              <option value="penyimpanan" <?=(session()->getFlashdata('jenis_pengajuan') == 'penyimpanan')?'selected':''?> >Penyimpanan</option>
-            </select>
-            <div class="invalid-feedback">Pilih Terlebih dahulu</div>
-          </div>
-          <div class="mb-4">
-            <label class="form-label fw-medium mb-2" for="nominal">
-              <i class="fas fa-money-bill-wave me-2 text-success"></i>Nominal (Rp.)
-            </label>
-            <input type="number" class="form-control" id="nominal_add" name="nominal" value="<?=session()->getFlashdata('nominal')?>" required>
-            <div class="invalid-feedback">Harus Diisi</div>
-            <small id="preview_nominal1" class="form-text text-muted"></small>
-          </div>
-          <div class="mb-4">
-            <label class="form-label fw-medium mb-2" for="description">
-              <i class="fas fa-align-left me-2 text-info"></i>Deskripsi
-            </label>
-            <input type="text" class="form-control" id="description" name="description" value="<?=session()->getFlashdata('description')?>">
-            <div class="invalid-feedback">Harus Diisi</div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-          <i class="fas fa-times me-2"></i>Tutup
-        </button>
-        <button type="submit" form="formSheet" class="btn btn-primary">
-          <i class="fas fa-paper-plane me-2"></i>Buat Pengajuan
-        </button>
-      </div>
-    </div>
-  </div>
-</div><!-- /.modal -->
 
-<div class="modal fade" id="set_param_manasuka" aria-hidden="true" aria-labelledby="set_param_manasuka" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header border-0 pb-0">
-        <div class="d-flex align-items-center">
-          <div class="me-3">
-            <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="fas fa-edit"></i>
-            </div>
+      <!-- Settings Card -->
+      <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-3 bg-slate-50 text-slate-500 rounded-2xl">
+            <i data-lucide="settings" class="w-6 h-6"></i>
           </div>
           <div>
-            <h5 class="modal-title mb-1 fs-5" id="myModalLabel">Set Nominal Manasuka</h5>
-            <p class="text-muted small mb-0">Tentukan nominal pembayaran manasuka bulanan Anda</p>
+            <h3 class="text-lg font-black text-slate-800">Pengaturan</h3>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Simpanan Manasuka</p>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body pt-4">
-        <form action="<?=($param_manasuka)?url_to('anggota_set_parameter_manasuka', $param_manasuka[0]->idmnskparam):url_to('anggota/deposit/create_param_manasuka')?>" id="formParam" method="post">
-          <div class="mb-4">
-            <label for="nominal_param" class="form-label fw-medium mb-2">
-              <i class="fas fa-money-bill-wave me-2 text-warning"></i>Besarnya Nominal (Rp)
-            </label>
-            <input type="text" class="form-control" id="nominal_param" name="nilai" value="<?=number_format(($param_manasuka)?$param_manasuka[0]->nilai:'', 0, '', '')?>" required>
-            <input type="text" id="iduser" name="iduser" value="<?=$duser->iduser?>" hidden>
-            <small id="preview_nominal2" class="form-text text-muted"></small>
+
+        <div class="mb-6">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Setoran Bulanan</p>
+          <?php if (!$param_manasuka) : ?>
+            <p class="text-xl font-black text-yellow-500">Belum Diatur</p>
+          <?php else : ?>
+            <p class="text-xl font-black text-slate-800">Rp <?= number_format($param_manasuka[0]->nilai, 0, ',', '.') ?></p>
+          <?php endif; ?>
+        </div>
+
+        <?php
+        $datecheck = new DateTime($param_manasuka_cek);
+        $month = new DateTime('-1 month');
+        $isRecentlyUpdated = $datecheck >= $month;
+        ?>
+
+        <?php if ($isRecentlyUpdated) : ?>
+          <div class="bg-blue-50 p-4 rounded-2xl mb-4 border border-blue-100 flex gap-3">
+            <i data-lucide="clock" class="w-5 h-5 text-blue-600 shrink-0"></i>
+            <p class="text-xs font-medium text-blue-800 leading-relaxed">
+              Pengaturan baru saja diubah. Tunggu 1 bulan untuk mengubah kembali.
+            </p>
           </div>
-          <div class="mb-4">
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" id="konfirmasi_check" form="register_form" required>
-              <label class="form-check-label" for="konfirmasi_check">
-                <span class="small">Setuju dan sadar untuk mengajukan simpanan manasuka</span>
-              </label>
-            </div>
-          </div>
-        </form>
+        <?php endif; ?>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="openParamModal()" <?= $isRecentlyUpdated ? 'disabled' : '' ?> class="py-3 px-4 rounded-xl bg-slate-50 text-slate-600 font-bold text-xs uppercase tracking-wide hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Atur Nominal
+          </button>
+          <button onclick="openCancelParamModal()" <?= $isRecentlyUpdated ? 'disabled' : '' ?> class="py-3 px-4 rounded-xl bg-red-50 text-red-600 font-bold text-xs uppercase tracking-wide hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Batalkan
+          </button>
+        </div>
       </div>
-      <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-          <i class="fas fa-times me-2"></i>Tutup
-        </button>
-        <button type="submit" id="confirm_button" form="formParam" class="btn btn-primary" disabled>
-          <i class="fas fa-edit me-2"></i>Set Nominal
-        </button>
-      </div>
+
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="batal_manasuka" aria-hidden="true" aria-labelledby="batal_manasuka" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header border-0 pb-0">
-        <div class="d-flex align-items-center">
-          <div class="me-3">
-            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-              <i class="fas fa-times"></i>
-            </div>
-          </div>
-          <div>
-            <h5 class="modal-title mb-1 fs-5" id="myModalLabel">Konfirmasi Pembatalan Manasuka</h5>
-            <p class="text-muted small mb-0">Anda akan berhenti setoran manasuka bulanan. Lanjutkan pembatalan?</p>
-          </div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Hidden Modal Content Templates -->
+
+<!-- 1. Add Pengajuan Modal Content -->
+<div id="add-modal-content" class="hidden">
+  <div class="text-center mb-6">
+    <div class="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="plus" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-xl font-black text-slate-900">Pengajuan Baru</h3>
+    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Simpanan Manasuka</p>
+  </div>
+
+  <form action="<?= url_to('anggota/deposit/add_req') ?>" id="formSheet" method="post">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Jenis Pengajuan</label>
+        <select class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3 font-bold" name="jenis_pengajuan" required>
+          <option value="" disabled selected>Pilih Opsi...</option>
+          <option value="penarikan">Penarikan Saldo</option>
+          <option value="penyimpanan">Penyimpanan (Top Up)</option>
+        </select>
       </div>
-      <div class="modal-body pt-4">
-        <div class="alert alert-warning mb-0">
-          <i class="fas fa-exclamation-triangle me-2"></i>
-          <span class="small">Setelah pembatalan, Anda tidak akan melakukan setoran manasuka bulanan sampai mengatur ulang nominal.</span>
-        </div>
+
+      <div>
+        <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Nominal (Rp)</label>
+        <input type="number" id="nominal_add" name="nominal" class="bg-slate-50 border border-slate-200 text-slate-900 text-lg rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 font-black placeholder-slate-300" placeholder="0" required oninput="updatePreview(this, 'preview_nominal1')">
+        <p id="preview_nominal1" class="text-xs font-bold text-blue-600 mt-2 text-right h-4"></p>
       </div>
-      <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-          <i class="fas fa-times me-2"></i>Batal
-        </button>
-        <a href="<?= url_to('anggota_cancel_parameter_manasuka', $param_manasuka[0]->idmnskparam) ?>" type="submit" class="btn btn-danger" <?= $isRecentlyUpdated ? 'disabled' : '' ?>>
-          <i class="fas fa-check me-2"></i>Konfirmasi
-        </a>
+
+      <div>
+        <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Deskripsi</label>
+        <input type="text" name="description" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 font-medium" placeholder="Keterangan transaksi...">
       </div>
     </div>
+  </form>
+
+  <div class="mt-8 pt-4 border-t border-slate-100 flex gap-3">
+    <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">Batal</button>
+    <button type="submit" form="formSheet" class="flex-1 py-3 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]">Kirim Pengajuan</button>
   </div>
 </div>
 
-<div id="detailMutasi" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <span class="fetched-data"></span>
+<!-- 2. Set Parameter Modal Content -->
+<div id="param-modal-content" class="hidden">
+  <div class="text-center mb-6">
+    <div class="w-16 h-16 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="settings-2" class="w-8 h-8"></i>
     </div>
+    <h3 class="text-xl font-black text-slate-900">Atur Manasuka</h3>
+    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Setoran Rutin Bulanan</p>
   </div>
-</div><!-- /.modal -->
 
+  <form action="<?= ($param_manasuka) ? url_to('anggota_set_parameter_manasuka', $param_manasuka[0]->idmnskparam) : url_to('anggota/deposit/create_param_manasuka') ?>" id="formParam" method="post">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Nominal Rutin (Rp)</label>
+        <input type="number" id="nominal_param" name="nilai" value="<?= ($param_manasuka) ? $param_manasuka[0]->nilai : '' ?>" class="bg-slate-50 border border-slate-200 text-slate-900 text-lg rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 font-black" required oninput="updatePreview(this, 'preview_nominal2')">
+        <input type="text" name="iduser" value="<?= $duser->iduser ?>" hidden>
+        <p id="preview_nominal2" class="text-xs font-bold text-indigo-600 mt-2 text-right h-4"></p>
+      </div>
 
-<?= $this->include('anggota/partials/right-sidebar') ?>
+      <div class="flex items-start gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+        <input type="checkbox" id="konfirmasi_check" class="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" required onchange="toggleParamSubmit(this)">
+        <label for="konfirmasi_check" class="text-xs font-medium text-slate-600 cursor-pointer select-none">
+          Saya setuju untuk mengubah pengaturan simpanan manasuka bulanan. Perubahan ini akan membatasi perubahan berikutnya selama 1 bulan.
+        </label>
+      </div>
+    </div>
+  </form>
 
-<!-- JAVASCRIPT -->
-<?= $this->include('anggota/partials/vendor-scripts') ?>
+  <div class="mt-8 pt-4 border-t border-slate-100 flex gap-3">
+    <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">Batal</button>
+    <button type="submit" id="confirm_param_btn" form="formParam" disabled class="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">Simpan</button>
+  </div>
+</div>
 
-<!-- Required datatable js -->
-<script src="<?=base_url()?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- 3. Cancel Parameter Modal Content -->
+<div id="cancel-param-content" class="hidden">
+  <div class="text-center mb-6">
+    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+    </div>
+    <h3 class="text-xl font-black text-slate-900">Batalkan Manasuka?</h3>
+    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Konfirmasi Pembatalan</p>
+  </div>
 
-<!-- form mask -->
-<script src="<?=base_url()?>/assets/libs/imask/imask.min.js"></script>
+  <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6">
+    <p class="text-sm text-red-800 font-medium text-center">
+      Anda akan berhenti melakukan setoran manasuka bulanan secara otomatis. Anda dapat mengaktifkannya kembali kapan saja (dengan masa tunggu 1 bulan).
+    </p>
+  </div>
 
-<script src="<?=base_url()?>/assets/js/app.js"></script>
-<script src="<?=base_url()?>/assets/js/pages/anggota/deposit-list.js"></script>
+  <div class="flex gap-3">
+    <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">Urungkan</button>
+    <?php if ($param_manasuka): ?>
+      <a href="<?= url_to('anggota_cancel_parameter_manasuka', $param_manasuka[0]->idmnskparam) ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 transition-all hover:scale-[1.02] text-center flex items-center justify-center">
+        Ya, Batalkan
+      </a>
+    <?php endif; ?>
+  </div>
+</div>
 
-</body>
+<?= $this->endSection() ?>
 
-</html>
+<?= $this->section('scripts') ?>
+<!-- Native Modal Logic (Required) -->
+<script src="<?= base_url('js/modal-native.js') ?>"></script>
+
+<script>
+  // Logic for handling modals
+  function openAddModal() {
+    ModalHelper.openContent(document.getElementById('add-modal-content').innerHTML);
+  }
+
+  function openParamModal() {
+    ModalHelper.openContent(document.getElementById('param-modal-content').innerHTML);
+    // Re-attach listener for checkbox since we just injected HTML
+    // Wait, onclick in HTML works global, but ID lookups inside modal need care if duplicates exist.
+    // Since we are cloning, ensure IDs are not conflicting or just access them via event.
+    // The original IDs (nominal_param) are unique in the page.
+  }
+
+  function openCancelParamModal() {
+    ModalHelper.openContent(document.getElementById('cancel-param-content').innerHTML);
+  }
+
+  // Param Modal Submit Toggle
+  window.toggleParamSubmit = function(checkbox) {
+    // Since this checkbox is now inside the modal container, we need to find the button inside the modal container too.
+    // The 'id' approach works if ids are unique.
+    const btn = document.getElementById('confirm_param_btn');
+    if (btn) btn.disabled = !checkbox.checked;
+  }
+
+  // Currency Formatter
+  window.updatePreview = function(input, previewId) {
+    const val = input.value;
+    const preview = document.getElementById(previewId);
+    if (val) {
+      const formatted = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+      }).format(val);
+      preview.textContent = formatted;
+    } else {
+      preview.textContent = '';
+    }
+  }
+</script>
+<?= $this->endSection() ?>

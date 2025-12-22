@@ -15,7 +15,7 @@ $routes->set404Override();
 $routes->get('/', 'Login::index');
 
 //for testing db only, uncomment this route
-$routes->group('test', static function ($routes){
+$routes->group('test', static function ($routes) {
     // $routes->add('generate-monthly/(:any)', 'Test_field::gen_report/$1');
     // $routes->get('/', 'Test_field::index');
     // $routes->get('test_cicilan', 'Test_field::insert_cicilan');
@@ -47,21 +47,19 @@ $routes->add('logout', 'Login::logout');
 $routes->add('maintenance', 'Maintenance::index');
 
 //GROUP ADMIN
-$routes->group('admin', static function ($routes)
-{   
+$routes->group('admin', static function ($routes) {
     $routes->get('dashboard', 'Admin\Core\Dashboard::index', ['as' => 'dashboard_admin']);
     $routes->get('dashboard/getChartData', 'Admin\Core\Dashboard::getChartData', ['as' => 'admin_chart_data']);
-    $routes->get('profile', 'Admin\Profile\ProfileController::index');
-    
+    $routes->get('profile', 'Admin\Profile\ProfileController::index', ['as' => 'admin_profile']);
+
     $routes->post('profile/edit_proc', 'Admin\Profile\ProfileController::update_proc');
     $routes->post('profile/edit_pass', 'Admin\Profile\ProfileController::update_pass');
-    
+
     $routes->add('user/(:num)', 'Admin\UserManagement\UserManagement::detail_user/$1', ['as' => 'user_detail']);
     $routes->add('user/update/(:num)', 'Admin\UserManagement\UserUpdate::update_proc/$1', ['as' => 'update_user']);
-    
+
     //GROUP KELOLA USER DI ADMIN
-    $routes->group('user', static function ($routes)
-    {
+    $routes->group('user', static function ($routes) {
         // User Management Routes (List & Detail)
         $routes->get('list', 'Admin\UserManagement\UserManagement::list');
         $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook');
@@ -70,21 +68,20 @@ $routes->group('admin', static function ($routes)
         $routes->post('delete_user_confirm', 'Admin\UserManagement\UserManagement::delete_user_confirm');
         $routes->get('delete_user/(:num)', 'Admin\UserManagement\UserManagement::delete_user/$1');
         $routes->get('clean_inactive_users', 'Admin\UserManagement\UserManagement::clean_inactive_users');
-        
+
         // User Creation Routes
-        $routes->get('add', 'Admin\UserManagement\UserCreation::add_user');
-        $routes->post('add_user_proccess', 'Admin\UserManagement\UserCreation::add_user_proc');
-        
+        $routes->get('add', 'Admin\UserManagement\UserCreation::add_user', ['as' => 'admin_user_add']);
+        $routes->post('add_user_proccess', 'Admin\UserManagement\UserCreation::add_user_proc', ['as' => 'admin_user_create_proc']);
+
         // User Import/Export Routes
-        $routes->get('export_table', 'Admin\UserManagement\UserExport::export_table');
-        $routes->post('tab_upload', 'Admin\UserManagement\UserImport::get_table_upload');
-        
+        $routes->get('export_table', 'Admin\UserManagement\UserExport::export_table', ['as' => 'admin_user_export']);
+        $routes->post('tab_upload', 'Admin\UserManagement\UserImport::get_table_upload', ['as' => 'admin_user_import']);
+
         // User Closebook Routes
-        $routes->add('switch_usr/(:num)', 'Admin\UserManagement\UserClosebook::flag_switch/$1');
+        $routes->add('switch_usr/(:num)', 'Admin\UserManagement\UserClosebook::flag_switch/$1', ['as' => 'admin_user_switch']);
     });
 
-    $routes->group('register', static function ($routes)
-    {
+    $routes->group('register', static function ($routes) {
         $routes->get('list', 'Admin\UserManagement\Registration::list');
         $routes->add('data_user', 'Admin\UserManagement\Registration::data_user');
         $routes->add('detail_user', 'Admin\UserManagement\Registration::detail_user');
@@ -92,8 +89,7 @@ $routes->group('admin', static function ($routes)
     });
 
     //GRUP DAFTAR SIMPANAN
-    $routes->group('deposit', static function ($routes)
-    {
+    $routes->group('deposit', static function ($routes) {
         // Member Deposit Routes
         $routes->get('list', 'Admin\DepositManagement\MemberDeposit::index');
         $routes->get('user/(:num)', 'Admin\DepositManagement\MemberDeposit::detail_anggota/$1', ['as' => 'anggota_detail']);
@@ -111,7 +107,7 @@ $routes->group('admin', static function ($routes)
         $routes->add('data_transaksi_filter', 'Admin\DepositManagement\TransactionDeposit::data_transaksi_filter');
         $routes->add('confirm/(:num)', 'Admin\DepositManagement\TransactionDeposit::konfirmasi_mutasi/$1', ['as' => 'admin_konfirmasi_simpanan']);
         $routes->add('cancel/(:num)', 'Admin\DepositManagement\TransactionDeposit::batalkan_mutasi/$1', ['as' => 'admin_batalkan_simpanan']);
-        
+
         // Manasuka Parameter Routes
         $routes->post('create_param_manasuka', 'Admin\DepositManagement\ManasukaParameter::create');
         $routes->add('set_param_manasuka/(:num)', 'Admin\DepositManagement\ManasukaParameter::update/$1', ['as' => 'admin_set_parameter_manasuka']);
@@ -119,8 +115,7 @@ $routes->group('admin', static function ($routes)
     });
 
     //GROUP DAFTAR PINJAMAN
-    $routes->group('pinjaman', static function ($routes)
-    {
+    $routes->group('pinjaman', static function ($routes) {
         // Loan Application Routes
         $routes->get('list', 'Admin\LoanManagement\LoanApplication::index');
         $routes->post('cancel-pinjaman', 'Admin\LoanManagement\LoanApplication::cancel_loan');
@@ -140,20 +135,19 @@ $routes->group('admin', static function ($routes)
         $routes->add('lunasi-pinjaman/(:num)', 'Admin\LoanManagement\LoanSettlement::pelunasan_proc/$1', ['as' => 'admin_konfirmasi_lunas']);
         $routes->add('tolak-lunasi-pinjaman/(:num)', 'Admin\LoanManagement\LoanSettlement::tolak_pelunasan_proc/$1', ['as' => 'admin_tolak_lunas']);
         $routes->add('lunasi-partial/(:num)', 'Admin\LoanManagement\LoanSettlement::pelunasan_partial_proc/$1', ['as' => 'admin_lunasi_partial']);
-        
+
         // Loan Insurance Routes
         $routes->get('get_asuransi/(:num)', 'Admin\LoanManagement\LoanInsurance::get_asuransi/$1');
     });
 
     //GROUP LAPORAN
-    $routes->group('report', static function ($routes)
-    {
+    $routes->group('report', static function ($routes) {
         // Report Management Routes
         $routes->get('list', 'Admin\ReportManagement\ReportManagement::index');
-        
+
         // Monthly Report Generator Routes
         $routes->get('generate-monthly-report', 'Admin\ReportManagement\MonthlyReportGenerator::gen_report');
-        
+
         // Report Export Routes
         $routes->post('print-potongan-pinjaman', 'Admin\ReportManagement\ReportExport::print_potongan_pinjaman');
         $routes->post('print-rekap-tahunan', 'Admin\ReportManagement\ReportExport::generateReportTahunan');
@@ -161,8 +155,7 @@ $routes->group('admin', static function ($routes)
     });
 
     //GROUP NOTIFICATION
-    $routes->group('notification', static function ($routes)
-    {
+    $routes->group('notification', static function ($routes) {
         $routes->get('list', 'Admin\Core\Notifications::notification_list');
         $routes->get('mark-all-read', 'Admin\Core\Notifications::mark_all_read');
         $routes->post('mark-as-read', 'Admin\Core\Notifications::mark_as_read');
@@ -172,32 +165,30 @@ $routes->group('admin', static function ($routes)
 });
 
 //GROUP BENDAHARA
-$routes->group('bendahara', static function ($routes)
-{
+$routes->group('bendahara', static function ($routes) {
     // Core Routes
     $routes->get('dashboard', 'Bendahara\Core\Dashboard::index', ['as' => 'dashboard_bendahara']);
     $routes->get('dashboard/getChartData', 'Bendahara\Core\Dashboard::getChartData', ['as' => 'bendahara_chart_data']);
     $routes->get('notification/mark-all-read', 'Bendahara\Core\Notifications::mark_all_read');
     $routes->post('notification/mark-as-read', 'Bendahara\Core\Notifications::mark_as_read');
-    
+
     // Profile Routes
     $routes->get('profile', 'Bendahara\Profile\ProfileController::index');
     $routes->post('profile/edit_proc', 'Bendahara\Profile\ProfileController::update_proc');
     $routes->post('profile/edit_pass', 'Bendahara\Profile\ProfileController::update_pass');
-    
+
     // Parameter Management Routes (UNIQUE to Bendahara)
     $routes->get('parameter', 'Bendahara\ParameterManagement\ParameterController::index');
     $routes->post('parameter/set_param_simp', 'Bendahara\ParameterManagement\ParameterController::set_param_simp');
     $routes->post('parameter/set_param_oth', 'Bendahara\ParameterManagement\ParameterController::set_param_other');
-    
+
     //GRUP DAFTAR SIMPANAN
-    $routes->group('deposit', static function ($routes)
-    {
+    $routes->group('deposit', static function ($routes) {
         // Member Deposit Routes
         $routes->get('list', 'Bendahara\DepositManagement\MemberDeposit::index');
         $routes->add('user/(:num)', 'Bendahara\DepositManagement\MemberDeposit::detail_anggota/$1', ['as' => 'b_anggota_detail']);
         $routes->add('data_user', 'Bendahara\DepositManagement\MemberDeposit::data_user');
-        
+
         // Transaction Deposit Routes
         $routes->get('list_transaksi', 'Bendahara\DepositManagement\TransactionDeposit::list_transaksi');
         $routes->post('detail_mutasi', 'Bendahara\DepositManagement\TransactionDeposit::detail_mutasi');
@@ -210,8 +201,7 @@ $routes->group('bendahara', static function ($routes)
     });
 
     //GROUP DAFTAR PINJAMAN
-    $routes->group('pinjaman', static function ($routes)
-    {
+    $routes->group('pinjaman', static function ($routes) {
         // Loan Application Routes
         $routes->get('list', 'Bendahara\LoanManagement\LoanApplication::index');
         $routes->post('cancel-pinjaman', 'Bendahara\LoanManagement\LoanApplication::cancel_loan');
@@ -227,17 +217,16 @@ $routes->group('bendahara', static function ($routes)
         $routes->add('data_pelunasan', 'Bendahara\LoanManagement\LoanSettlement::data_pelunasan');
         $routes->add('lunasi-pinjaman/(:num)', 'Bendahara\LoanManagement\LoanSettlement::pelunasan_proc/$1', ['as' => 'bendahara_konfirmasi_lunas']);
         $routes->add('tolak-lunasi-pinjaman/(:num)', 'Bendahara\LoanManagement\LoanSettlement::tolak_pelunasan_proc/$1', ['as' => 'bendahara_tolak_lunas']);
-        
+
         // Loan Insurance Routes
         $routes->get('get_asuransi/(:num)', 'Bendahara\LoanManagement\LoanInsurance::get_asuransi/$1');
     });
 
     //GROUP LAPORAN
-    $routes->group('report', static function ($routes)
-    {
+    $routes->group('report', static function ($routes) {
         // Report Management Routes
         $routes->get('list', 'Bendahara\ReportManagement\ReportManagement::index');
-        
+
         // Report Export Routes
         $routes->post('print-potongan-pinjaman', 'Bendahara\ReportManagement\ReportExport::print_potongan_pinjaman');
         $routes->post('print-rekap-tahunan', 'Bendahara\ReportManagement\ReportExport::print_rekap_tahunan');
@@ -246,22 +235,20 @@ $routes->group('bendahara', static function ($routes)
 });
 
 //GROUP KETUA
-$routes->group('ketua', static function ($routes)
-{
+$routes->group('ketua', static function ($routes) {
     // Core Routes
     $routes->get('dashboard', 'Ketua\Core\Dashboard::index', ['as' => 'dashboard_ketua']);
     $routes->get('dashboard/getChartData', 'Ketua\Core\Dashboard::getChartData', ['as' => 'ketua_chart_data']);
     $routes->get('notification/mark-all-read', 'Ketua\Core\Notifications::mark_all_read');
     $routes->post('notification/mark-as-read', 'Ketua\Core\Notifications::mark_as_read');
-    
+
     // Profile Routes
     $routes->get('profile', 'Ketua\Profile\ProfileController::index', ['as' => 'ketua/profile']);
     $routes->post('profile/edit_proc', 'Ketua\Profile\ProfileController::update_proc', ['as' => 'ketua/profile/edit_proc']);
     $routes->post('profile/edit_pass', 'Ketua\Profile\ProfileController::update_pass', ['as' => 'ketua/profile/edit_pass']);
-    
+
     // Loan Management Routes
-    $routes->group('pinjaman', static function ($routes)
-    {
+    $routes->group('pinjaman', static function ($routes) {
         $routes->get('list', 'Ketua\LoanManagement\LoanApplication::index', ['as' => 'ketua/pinjaman/list']);
         $routes->get('get_asuransi/(:num)', 'Ketua\LoanManagement\LoanInsurance::get_asuransi/$1');
 
@@ -273,8 +260,7 @@ $routes->group('ketua', static function ($routes)
     });
 
     // Report Management Routes
-    $routes->group('report', static function ($routes)
-    {
+    $routes->group('report', static function ($routes) {
         $routes->get('list', 'Ketua\ReportManagement\ReportManagement::index', ['as' => 'ketua/report/list']);
 
         $routes->post('print-potongan-pinjaman', 'Ketua\ReportManagement\ReportExport::print_potongan_pinjaman', ['as' => 'ketua/report/print-potongan-pinjaman']);
@@ -284,8 +270,7 @@ $routes->group('ketua', static function ($routes)
 });
 
 //GROUP ANGGOTA
-$routes->group('anggota', static function ($routes)
-{
+$routes->group('anggota', static function ($routes) {
     // Core Routes
     $routes->get('dashboard', 'Anggota\Core\Dashboard::index');
     $routes->get('notification/mark-all-read', 'Anggota\Core\Notifications::mark_all_read');
@@ -304,17 +289,16 @@ $routes->group('anggota', static function ($routes)
     $routes->get('closebook-cancel', 'Anggota\AccountManagement\Closebook::closebook_cancel');
 
     //GRUP DAFTAR SIMPANAN
-    $routes->group('deposit', static function ($routes)
-    {
+    $routes->group('deposit', static function ($routes) {
         // Deposit List Routes
         $routes->get('list', 'Anggota\DepositManagement\DepositList::index');
         $routes->post('detail_mutasi', 'Anggota\DepositManagement\DepositList::detail_mutasi');
         $routes->post('up_mutasi', 'Anggota\DepositManagement\DepositList::up_mutasi');
-        
+
         // Deposit Submission Routes
         $routes->post('add_req', 'Anggota\DepositManagement\DepositSubmission::add_proc');
         $routes->add('upload_bukti_transfer/(:num)', 'Anggota\DepositManagement\DepositSubmission::upload_bukti_transfer/$1', ['as' => 'an_de_upbkttrf']);
-        
+
         // Manasuka Parameter Routes
         $routes->post('create_param_manasuka', 'Anggota\DepositManagement\ManasukaParameter::create_param_manasuka');
         $routes->add('set_param_manasuka/(:num)', 'Anggota\DepositManagement\ManasukaParameter::set_param_manasuka/$1', ['as' => 'anggota_set_parameter_manasuka']);
@@ -322,8 +306,7 @@ $routes->group('anggota', static function ($routes)
     });
 
     //GROUP DAFTAR PINJAMAN
-    $routes->group('pinjaman', static function ($routes)
-    {
+    $routes->group('pinjaman', static function ($routes) {
         // Loan List Routes
         $routes->get('list', 'Anggota\LoanManagement\LoanList::index');
         $routes->add('detail/(:num)', 'Anggota\LoanManagement\LoanList::detail/$1', ['as' => 'anggota_pin_detail']);

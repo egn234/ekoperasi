@@ -1,52 +1,24 @@
-<!-- MODAL CANCEL -->
-<div class="modal-header bg-gradient-danger text-white border-0">
-	<h5 class="modal-title text-white d-flex align-items-center" id="myModalLabel">
-		<i class="fas fa-times-circle me-2"></i>Konfirmasi Penolakan
-	</h5>
-	<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
-<div class="modal-body p-0">
-	<!-- Main Question -->
-	<div class="px-4 py-4">
-		<div class="text-center mb-4">
-			<div class="mb-3">
-				<div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" 
-					 style="width: 60px; height: 60px; font-size: 24px;">
-					<i class="fas fa-exclamation-triangle"></i>
-				</div>
-			</div>
-			<h6 class="mb-2">Tolak Pengajuan Manasuka?</h6>
-			<p class="text-muted mb-0">Pengajuan yang ditolak tidak dapat dibatalkan</p>
+<div class="text-center">
+	<div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-6">
+		<i data-lucide="x-circle" class="w-8 h-8"></i>
+	</div>
+	<h3 class="text-xl font-black text-slate-900 mb-2">Tolak Pengajuan</h3>
+	<p class="text-slate-500 mb-6 font-medium">Pengajuan ini akan ditolak permanen.</p>
+
+	<form action="<?= url_to('admin_batalkan_simpanan', $a->iddeposit) ?>" method="post" class="text-left space-y-4">
+		<div>
+			<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alasan Penolakan</label>
+			<textarea
+				name="alasan_tolak"
+				rows="3"
+				class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+				placeholder="Jelaskan alasan penolakan..."
+				required></textarea>
 		</div>
 
-		<!-- Form -->
-		<form action="<?= url_to('admin_batalkan_simpanan', $a->iddeposit)?>" id="formTolak" method="post">
-			<div class="card border-0 bg-light">
-				<div class="card-body">
-					<label class="form-label fw-semibold" for="alasan_tolak">
-						<i class="fas fa-comment-alt me-2 text-danger"></i>Alasan Penolakan
-					</label>
-					<textarea 
-						class="form-control" 
-						id="alasan_tolak" 
-						name="alasan_tolak" 
-						rows="3"
-						placeholder="Jelaskan alasan mengapa pengajuan ini ditolak..."
-						required
-					></textarea>
-					<div class="form-text text-muted">
-						<i class="fas fa-info-circle me-1"></i>Alasan ini akan dikirim ke pemohon sebagai notifikasi
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
-<div class="modal-footer border-top-0 bg-light">
-	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-		<i class="fas fa-arrow-left me-1"></i>Kembali
-	</button>
-	<button type="submit" form="formTolak" class="btn btn-danger">
-		<i class="fas fa-times me-1"></i>Tolak Pengajuan
-	</button>
+		<button type="submit" class="w-full py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+			<i data-lucide="x" class="w-4 h-4"></i>
+			Tolak Pengajuan
+		</button>
+	</form>
 </div>
