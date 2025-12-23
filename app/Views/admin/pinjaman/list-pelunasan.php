@@ -1,113 +1,4 @@
-<?= $this->extend('layout/main') ?>
-
-<?= $this->section('styles') ?>
-<!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<style>
-  /* DataTables Tailwind Overrides */
-  div.dataTables_wrapper div.dataTables_filter input {
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-  }
-
-  div.dataTables_wrapper div.dataTables_length select {
-    border-radius: 0.5rem;
-    padding: 0.25rem 2rem 0.25rem 0.5rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-  }
-
-  table.dataTable thead th {
-    border-bottom: 2px solid #e2e8f0 !important;
-    color: #475569;
-    font-weight: 900;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    padding: 1rem !important;
-  }
-
-  table.dataTable tbody td {
-    padding: 1rem !important;
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9;
-    color: #1e293b;
-    font-size: 0.875rem;
-  }
-
-  table.dataTable tr:hover td {
-    background-color: #f8fafc;
-  }
-
-  /* Tailwind-like Pagination Overrides */
-  .dataTables_paginate {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-  }
-
-  .dataTables_paginate .pagination {
-    display: inline-flex;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  }
-
-  .dataTables_paginate .page-item:first-child .page-link {
-    border-top-left-radius: 0.5rem;
-    border-bottom-left-radius: 0.5rem;
-  }
-
-  .dataTables_paginate .page-item:last-child .page-link {
-    border-top-right-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
-  }
-
-  .dataTables_paginate .page-link {
-    position: relative;
-    display: block;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    color: #64748b;
-    /* slate-500 */
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    /* slate-200 */
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
-
-  .dataTables_paginate .page-link:hover {
-    color: #334155;
-    /* slate-700 */
-    background-color: #f1f5f9;
-    /* slate-100 */
-    z-index: 20;
-  }
-
-  .dataTables_paginate .page-item.active .page-link {
-    z-index: 10;
-    color: #2563eb;
-    /* blue-600 */
-    background-color: #eff6ff;
-    /* blue-50 */
-    border-color: #93c5fd;
-    /* blue-300 */
-    font-weight: 700;
-  }
-
-  .dataTables_paginate .page-item.disabled .page-link {
-    color: #cbd5e1;
-    /* slate-300 */
-    pointer-events: none;
-    background-color: #f8fafc;
-    /* slate-50 */
-  }
-</style>
-<?= $this->endSection() ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -150,15 +41,9 @@
   </div>
 </div>
 
-</div>
-
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-
 <script type="text/javascript">
   function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
     number = parseFloat(number).toFixed(decimals);

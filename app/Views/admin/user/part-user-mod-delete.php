@@ -4,7 +4,7 @@
     </div>
     <h3 class="text-xl font-black text-slate-900">Hapus User?</h3>
     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-        Konfirmasi penghapusan akun <strong><?= $user[0]['username'] ?></strong>
+        Konfirmasi penghapusan akun <strong><?= $user[0]->username ?></strong>
     </p>
 </div>
 
@@ -16,7 +16,7 @@
     <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
         Batal
     </button>
-    <a href="<?= url_to('admin_delete_user', $iduser) ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 text-center transition-all hover:scale-[1.02]">
+    <a href="<?= base_url('admin/user/delete_user/' . $user[0]->iduser) ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 text-center transition-all hover:scale-[1.02]">
         Ya, Hapus
     </a>
 </div>

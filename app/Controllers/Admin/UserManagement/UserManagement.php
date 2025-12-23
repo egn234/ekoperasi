@@ -21,36 +21,46 @@ class UserManagement extends BaseUserController
      * DataTable: Get user data
      */
     public function data_user()
-    {	
+    {
         $request = service('request');
         $model = $this->m_user;
 
         $start = $request->getPost('start') ?? 0;
         $length = $request->getPost('length') ?? 10;
         $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value'];
+        $searchValue = $request->getPost('search')['value'] ?? '';
+        $isClosebook = isset($_GET['closebook']);
 
-        $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, closebook_request');
+        // 1. Total records (Base count based on context)
+        $model->where('deleted', null);
+        if ($isClosebook) {
+            $model->where('closebook_request', 'closebook');
+        }
+        $recordsTotal = $model->countAllResults(false);
 
-        // Filter out soft deleted users
+        // 2. Build query for filtered count and data fetch
+        $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, closebook_request, profil_pic');
         $model->where('deleted', null);
 
-        $model->groupStart()
-            ->like('username', $searchValue)
-            ->orLike('nama_lengkap', $searchValue)
-            ->groupEnd();
-
-        // Filter for closebook request
-        if (isset($_GET['closebook'])) {
+        if ($isClosebook) {
             $model->where('closebook_request', 'closebook');
         }
 
+        if (!empty($searchValue)) {
+            $model->groupStart()
+                ->like('username', $searchValue)
+                ->orLike('nama_lengkap', $searchValue)
+                ->groupEnd();
+        }
+
+        // 3. Records after filtering
         $recordsFiltered = $model->countAllResults(false);
+
+        // 4. Fetch data
         $data = $model->asArray()->findAll($length, $start);
-        $recordsTotal = $model->countAll();
 
         $response = [
-            'draw' => $draw,
+            'draw' => (int)$draw,
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data' => $data,
@@ -68,7 +78,7 @@ class UserManagement extends BaseUserController
 
         $data = $this->getBaseViewData('Closebook User', 'Closebook User List');
         $data['usr_list'] = $user_list;
-        
+
         return view('admin/user/user-closebook-list', $data);
     }
 
@@ -83,7 +93,7 @@ class UserManagement extends BaseUserController
         $data = $this->getBaseViewData('Detail User', 'User Detail');
         $data['det_user'] = $detail_user;
         $data['grp_list'] = $group_list;
-        
+
         return view('admin/user/user-detail', $data);
     }
 
@@ -92,11 +102,13 @@ class UserManagement extends BaseUserController
      */
     public function konfirSwitch()
     {
-        if ($_POST['rowid']) {
+        if (isset($_POST['rowid'])) {
             $id = $_POST['rowid'];
-            $user = $this->m_user->getUserById($id)[0];
-            $data = ['a' => $user];
+            $user = $this->m_user->getUserById($id);
+            $data = ['user' => $user];
             echo view('admin/user/part-user-mod-switch', $data);
+        } else {
+            return redirect()->back();
         }
     }
 
@@ -105,11 +117,13 @@ class UserManagement extends BaseUserController
      */
     public function delete_user_confirm()
     {
-        if ($_POST['rowid']) {
+        if (isset($_POST['rowid'])) {
             $id = $_POST['rowid'];
-            $user = $this->m_user->getUserById($id)[0];
-            $data = ['a' => $user];
+            $user = $this->m_user->getUserById($id);
+            $data = ['user' => $user];
             echo view('admin/user/part-user-mod-delete', $data);
+        } else {
+            return redirect()->to(url_to('admin_user_list'));
         }
     }
 
@@ -145,7 +159,7 @@ class UserManagement extends BaseUserController
             'status' => 'success'
         ]);
         session()->setFlashdata('notif', $alert);
-        
+
         return redirect()->back();
     }
 
@@ -155,15 +169,15 @@ class UserManagement extends BaseUserController
     public function clean_inactive_users()
     {
         $db = \Config\Database::connect();
-        
+
         // Get all inactive users (flag = 0 and not deleted yet)
         $builder = $db->table('tb_user');
         $builder->where('flag', 0);
         $builder->where('deleted', null);
         $inactiveUsers = $builder->get()->getResult();
-        
+
         $count = count($inactiveUsers);
-        
+
         if ($count == 0) {
             $alert = view('partials/notification-alert', [
                 'notif_text' => 'Tidak ada user nonaktif yang dapat dihapus',
@@ -183,7 +197,7 @@ class UserManagement extends BaseUserController
             'status' => 'success'
         ]);
         session()->setFlashdata('notif', $alert);
-        
+
         return redirect()->back();
     }
 }

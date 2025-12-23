@@ -65,9 +65,8 @@ $page = $page ?? '';
       }
 
       foreach ($menus as $menu):
-        // Strict check for active state
-        // If $page is set, use it. Otherwise, check if URL is contained in current URI
-        $isActive = ($page === $menu['id']) || (strpos($currentUri, $menu['url']) !== false && $page === '');
+        // Strict check for active state: use exact URI match if $page is not set
+        $isActive = ($page === $menu['id']) || ($currentUri === $menu['url'] && $page === '');
       ?>
         <a href="<?= base_url($menu['url']) ?>"
           class="w-full flex items-center space-x-4 px-6 py-3 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest relative group overflow-hidden

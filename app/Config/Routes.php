@@ -61,11 +61,11 @@ $routes->group('admin', static function ($routes) {
     //GROUP KELOLA USER DI ADMIN
     $routes->group('user', static function ($routes) {
         // User Management Routes (List & Detail)
-        $routes->get('list', 'Admin\UserManagement\UserManagement::list');
-        $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook');
+        $routes->get('list', 'Admin\UserManagement\UserManagement::list', ['as' => 'admin_user_list']);
+        $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook', ['as' => 'admin_user_closebook_list']);
         $routes->add('data_user', 'Admin\UserManagement\UserManagement::data_user');
-        $routes->post('switch_user_confirm', 'Admin\UserManagement\UserManagement::konfirSwitch');
-        $routes->post('delete_user_confirm', 'Admin\UserManagement\UserManagement::delete_user_confirm');
+        $routes->add('switch_user_confirm', 'Admin\UserManagement\UserManagement::konfirSwitch');
+        $routes->add('delete_user_confirm', 'Admin\UserManagement\UserManagement::delete_user_confirm');
         $routes->get('delete_user/(:num)', 'Admin\UserManagement\UserManagement::delete_user/$1');
         $routes->get('clean_inactive_users', 'Admin\UserManagement\UserManagement::clean_inactive_users');
 

@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -56,7 +56,7 @@
                     </div>
                 </div>
 
-                <div class="mt-8 pt-8 border-t border-slate-100">
+                <div class="mt-8 pt-8 border-t border-slate-100 px-8">
                     <?php if ($det_user->user_flag == 0): ?>
                         <button onclick="openModal('aktifkanUser')" class="w-full py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]">
                             Aktifkan User
@@ -141,44 +141,128 @@
                     <div class="p-2 bg-orange-50 text-orange-600 rounded-xl">
                         <i data-lucide="edit" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-xl font-black text-slate-900">Ubah Data</h3>
+                    <h3 class="text-xl font-black text-slate-900">Ubah Data Pengguna</h3>
                 </div>
 
-                <form action="<?= url_to('update_user', $det_user->iduser) ?>" method="post" enctype="multipart/form-data" class="space-y-6">
-                    <!-- Simplified Edit Form (Grouped for Brevity) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" value="<?= $det_user->nama_lengkap ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700" required>
+                <form action="<?= url_to('update_user', $det_user->iduser) ?>" method="post" enctype="multipart/form-data" class="space-y-8">
+
+                    <!-- Section: Identitas -->
+                    <div class="space-y-6">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Identitas Pribadi</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap</label>
+                                <input type="text" name="nama_lengkap" value="<?= $det_user->nama_lengkap ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">NIK</label>
+                                <input type="number" name="nik" value="<?= $det_user->nik ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">NIP</label>
+                                <input type="number" name="nip" value="<?= $det_user->nip ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tempat Lahir</label>
+                                <input type="text" name="tempat_lahir" value="<?= $det_user->tempat_lahir ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Lahir</label>
+                                <input type="date" name="tanggal_lahir" value="<?= $det_user->tanggal_lahir ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Lengkap</label>
+                                <textarea name="alamat" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required><?= $det_user->alamat ?></textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">NIK</label>
-                            <input type="number" name="nik" value="<?= $det_user->nik ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700" required>
-                        </div>
-                        <!-- Add more fields as needed, matching the style of add-user -->
                     </div>
 
-                    <div class="flex justify-end pt-4">
-                        <button type="submit" class="px-8 py-3 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]">
-                            Simpan Perubahan
+                    <!-- Section: Kontak & Pekerjaan -->
+                    <div class="space-y-6 pt-6 border-t border-slate-50">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Kontak & Pekerjaan</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">No. Telepon / WA</label>
+                                <input type="number" name="nomor_telepon" value="<?= $det_user->nomor_telepon ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+                                <input type="email" name="email" value="<?= $det_user->email ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Institusi</label>
+                                <select name="instansi" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                                    <?php
+                                    $instansi_list = ['YPT', 'Universitas Telkom', 'Trengginas Jaya', 'BUT', 'Telkom', 'GIAT'];
+                                    foreach ($instansi_list as $ins):
+                                    ?>
+                                        <option value="<?= $ins ?>" <?= ($det_user->instansi == $ins) ? 'selected' : '' ?>><?= $ins ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Unit Kerja</label>
+                                <input type="text" name="unit_kerja" value="<?= $det_user->unit_kerja ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Pegawai</label>
+                                <select name="status_pegawai" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                                    <option value="tetap" <?= ($det_user->status_pegawai == 'tetap') ? 'selected' : '' ?>>Tetap</option>
+                                    <option value="kontrak" <?= ($det_user->status_pegawai == 'kontrak') ? 'selected' : '' ?>>Kontrak</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">User Group</label>
+                                <select name="idgroup" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                                    <?php foreach ($grp_list as $g): ?>
+                                        <option value="<?= $g->idgroup ?>" <?= ($det_user->idgroup == $g->idgroup) ? 'selected' : '' ?>><?= $g->keterangan ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Perbankan -->
+                    <div class="space-y-6 pt-6 border-t border-slate-50">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Informasi Perbankan</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Bank</label>
+                                <input type="text" name="nama_bank" value="<?= $det_user->nama_bank ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Rekening</label>
+                                <input type="number" name="no_rek" value="<?= $det_user->no_rek ?>" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Keamanan & Foto -->
+                    <div class="space-y-6 pt-6 border-t border-slate-50">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Keamanan & Foto</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ganti Password (Opsional)</label>
+                                <input type="password" name="pass" placeholder="Kosongkan jika tidak diubah" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi Password</label>
+                                <input type="password" name="pass2" placeholder="Ulangi password baru" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Foto Profil Baru (Opsional)</label>
+                                <input type="file" name="profil_pic" accept="image/jpg, image/jpeg" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-black file:uppercase file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100">
+                                <p class="text-[10px] text-slate-400 mt-2 italic">Format: JPG/JPEG. Maksimal 2MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-8 border-t border-slate-50">
+                        <button type="submit" class="px-10 py-4 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-[0.1em] hover:bg-blue-700 shadow-xl shadow-blue-200 active:scale-95 transition-all flex items-center gap-3">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            Simpan Seluruh Perubahan
                         </button>
                     </div>
-
-                    <!-- Hidden inputs for fields not shown here for brevity but critical for update -->
-                    <!-- Ideally, replicate all fields from add-user here, pre-filled -->
-                    <input type="hidden" name="nip" value="<?= $det_user->nip ?>">
-                    <input type="hidden" name="tempat_lahir" value="<?= $det_user->tempat_lahir ?>">
-                    <input type="hidden" name="tanggal_lahir" value="<?= $det_user->tanggal_lahir ?>">
-                    <input type="hidden" name="instansi" value="<?= $det_user->instansi ?>">
-                    <input type="hidden" name="alamat" value="<?= $det_user->alamat ?>">
-                    <input type="hidden" name="nomor_telepon" value="<?= $det_user->nomor_telepon ?>">
-                    <input type="hidden" name="email" value="<?= $det_user->email ?>">
-                    <input type="hidden" name="unit_kerja" value="<?= $det_user->unit_kerja ?>">
-                    <input type="hidden" name="nama_bank" value="<?= $det_user->nama_bank ?>">
-                    <input type="hidden" name="no_rek" value="<?= $det_user->no_rek ?>">
-                    <input type="hidden" name="status_pegawai" value="<?= $det_user->status_pegawai ?>">
-                    <input type="hidden" name="idgroup" value="<?= $det_user->idgroup ?>">
-
                 </form>
             </div>
         </div>
@@ -197,7 +281,7 @@
     <p class="text-sm text-slate-500 mb-8">User ini akan mendapatkan akses kembali ke sistem.</p>
     <div class="flex gap-3">
         <button onclick="closeModal('aktifkanUser')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200">Batal</button>
-        <a href="<?= base_url() ?>/admin/user/switch_usr/<?= $det_user->iduser ?>" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200">Ya, Aktifkan</a>
+        <a href="<?= url_to('admin_user_switch', $det_user->iduser) ?>" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 text-center transition-all">Ya, Aktifkan</a>
     </div>
 </div>
 
@@ -210,7 +294,7 @@
     <p class="text-sm text-slate-500 mb-8">User tidak akan bisa login ke sistem.</p>
     <div class="flex gap-3">
         <button onclick="closeModal('nonaktifkanUser')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200">Batal</button>
-        <a href="<?= base_url() ?>/admin/user/switch_usr/<?= $det_user->iduser ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200">Nonaktifkan</a>
+        <a href="<?= url_to('admin_user_switch', $det_user->iduser) ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-200 text-center transition-all">Nonaktifkan</a>
     </div>
 </div>
 

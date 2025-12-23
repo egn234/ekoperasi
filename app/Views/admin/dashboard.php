@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('styles') ?>
 <!-- ApexCharts -->
@@ -256,9 +256,6 @@
 
 <?= $this->section('scripts') ?>
 <!-- Chart Logic -->
-<script type="text/javascript">
-  window.baseUrl = '<?= base_url() ?>';
-</script>
 <script src="<?= base_url() ?>/assets/js/pages/dashboard-chart.js"></script>
 
 <!-- Modal Logic -->

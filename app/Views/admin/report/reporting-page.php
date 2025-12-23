@@ -1,69 +1,4 @@
-<?= $this->extend('layout/main') ?>
-
-<?= $this->section('styles') ?>
-<!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<style>
-  /* DataTables Tailwind Overrides */
-  div.dataTables_wrapper div.dataTables_filter input {
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-  }
-
-  div.dataTables_wrapper div.dataTables_length select {
-    border-radius: 0.5rem;
-    padding: 0.25rem 2rem 0.25rem 0.5rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-  }
-
-  table.dataTable thead th {
-    border-bottom: 2px solid #e2e8f0 !important;
-    color: #475569;
-    font-weight: 900;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    padding: 1rem !important;
-  }
-
-  table.dataTable tbody td {
-    padding: 1rem !important;
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9;
-    color: #1e293b;
-    font-size: 0.875rem;
-  }
-
-  .dataTables_paginate {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-  }
-
-  .dataTables_paginate .pagination {
-    display: inline-flex;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  }
-
-  .dataTables_paginate .page-item .page-link {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    background: white;
-  }
-
-  .dataTables_paginate .page-item.active .page-link {
-    background: #eff6ff;
-    color: #2563eb;
-    border-color: #93c5fd;
-    font-weight: 700;
-  }
-</style>
-<?= $this->endSection() ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -230,9 +165,7 @@
   </div>
 </div>
 
-<!-- Native Modal Container -->
-<div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden transition-opacity"></div>
-<div id="dynamicModalContainer"></div>
+
 
 <!-- Modal Templates (Hidden) -->
 <template id="tmpl-modal-warning">
@@ -271,46 +204,40 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Native Modal Logic -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
-
 <script type="text/javascript">
   $('.dtable').DataTable({
-    "language": {
-      "paginate": {
-        "previous": "<",
-        "next": ">"
+    autoWidth: false,
+    // Unified DOM Layout
+    dom: '<"flex justify-between items-center gap-4 mb-4"lf><"rounded-xl border border-slate-100"t><"flex justify-between items-center gap-4 mt-4"ip>',
+    language: {
+      search: "",
+      searchPlaceholder: "Cari Log...",
+      lengthMenu: "_MENU_",
+      info: "_START_ - _END_ dari _TOTAL_",
+      paginate: {
+        first: '<<',
+        last: '>>',
+        next: '>',
+        previous: '<'
       }
     },
-    "drawCallback": function() {
-      $('.dataTables_paginate > .pagination').addClass('gap-2');
+    drawCallback: function() {
+      if (window.lucide) window.lucide.createIcons();
+      $('.dataTables_filter input').addClass('px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500');
     }
   });
 
-  // Modal Logic
-  const overlay = document.getElementById('modal-overlay');
-  const container = document.getElementById('dynamicModalContainer');
-
+  // Modal Logic via ModalHelper
   function closeModal() {
-    overlay.classList.add('hidden');
-    container.innerHTML = '';
+    ModalHelper.close();
   }
 
   function showWarningModal() {
-    const tmpl = document.getElementById('tmpl-modal-warning');
-    container.innerHTML = tmpl.innerHTML;
-    overlay.classList.remove('hidden');
-    if (window.lucide) window.lucide.createIcons();
+    ModalHelper.openContent(document.getElementById('tmpl-modal-warning').innerHTML);
   }
 
   function showConfirmModal() {
-    const tmpl = document.getElementById('tmpl-modal-confirm');
-    container.innerHTML = tmpl.innerHTML;
-    overlay.classList.remove('hidden');
-    if (window.lucide) window.lucide.createIcons();
+    ModalHelper.openContent(document.getElementById('tmpl-modal-confirm').innerHTML);
   }
 
   // Bind Button

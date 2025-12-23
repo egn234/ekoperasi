@@ -41,10 +41,11 @@
         name="bulan_bayar"
         min="1"
         max="<?= $sisa_cicilan ?>"
-        class="w-full pl-4 pr-16 py-4 bg-white border-2 border-slate-100 rounded-2xl text-lg font-black text-slate-900 focus:outline-none focus:border-blue-500 transition-colors"
+        class="w-full pl-4 pr-20 py-4 bg-white border-2 border-slate-100 rounded-2xl text-lg font-black text-slate-900 focus:outline-none focus:border-blue-500 transition-colors"
         placeholder="0"
+        oninput="calculatePartial(this, <?= (float)$nominal_cicilan ?>, '<?= $idpinjaman ?>')"
         required>
-      <span class="absolute right-4 top-4.5 text-xs font-black text-slate-400 uppercase tracking-widest">Bulan</span>
+      <span class="absolute right-6 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400 uppercase tracking-widest">Bulan</span>
     </div>
     <p class="text-[10px] text-slate-400 mt-2 italic">*Maksimal <?= $sisa_cicilan ?> bulan</p>
   </div>
@@ -58,7 +59,7 @@
     </div>
     <div>
       <p class="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mb-1">Total Bayar</p>
-      <p class="text-xs font-bold text-white opacity-80">Otomatis Terkalkulasi</p>
+      <p class="text-xs font-bold text-white opacity-80" id="label_kalkulasi_<?= $idpinjaman ?>">Masukkan jumlah bulan</p>
     </div>
   </div>
   <div class="text-right">
@@ -67,19 +68,10 @@
 </div>
 
 <div class="flex gap-3 pt-2 border-t border-slate-100">
-  <button onclick="closeModal()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+  <button onclick="ModalHelper.close()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
     Batal
   </button>
   <button type="submit" form="formPartial" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]">
     Bayar Sekarang
   </button>
 </div>
-
-<script type="text/javascript">
-  $('#bulan_<?= $idpinjaman ?>').on("input", function() {
-    var value = parseFloat($(this).val()) || 0;
-    var calculatedResult = value * <?= $nominal_cicilan ?>;
-    $('#perkalian_<?= $idpinjaman ?>').text(new Intl.NumberFormat('id-ID').format(calculatedResult));
-  });
-  if (window.lucide) window.lucide.createIcons();
-</script>

@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -83,7 +83,6 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
