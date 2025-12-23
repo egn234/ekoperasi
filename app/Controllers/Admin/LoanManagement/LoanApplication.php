@@ -30,7 +30,7 @@ class LoanApplication extends BaseLoanController
         ];
 
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
-        
+
         $anggota_id = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
             ->get()
             ->getResult()[0]
@@ -44,7 +44,7 @@ class LoanApplication extends BaseLoanController
         );
 
         $this->sendAlert('Pengajuan pinjaman berhasil ditolak');
-        return redirect()->back();
+        return redirect()->to(base_url('admin/pinjaman/list'));
     }
 
     /**
@@ -60,7 +60,7 @@ class LoanApplication extends BaseLoanController
         ];
 
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
-        
+
         $idanggota = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
             ->get()
             ->getResult()[0]
@@ -91,7 +91,7 @@ class LoanApplication extends BaseLoanController
         );
 
         $this->sendAlert('Pengajuan pinjaman berhasil disetujui');
-        return redirect()->back();
+        return redirect()->to(base_url('admin/pinjaman/list'));
     }
 
     /**
@@ -124,7 +124,7 @@ class LoanApplication extends BaseLoanController
                 'b' => $user,
                 'flag' => 1
             ];
-            
+
             echo view('admin/pinjaman/part-pinjaman-mod-approval', $data);
         }
     }

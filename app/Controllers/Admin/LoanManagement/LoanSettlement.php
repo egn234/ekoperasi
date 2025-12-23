@@ -30,7 +30,7 @@ class LoanSettlement extends BaseLoanController
         ];
 
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
-        
+
         $idanggota = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
             ->get()
             ->getResult()[0]
@@ -44,7 +44,7 @@ class LoanSettlement extends BaseLoanController
         );
 
         $this->sendAlert('Pengajuan pelunasan berhasil disetujui');
-        return redirect()->back();
+        return redirect()->to(base_url('admin/pinjaman/list_pelunasan'));
     }
 
     /**
@@ -58,7 +58,7 @@ class LoanSettlement extends BaseLoanController
         ];
 
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
-        
+
         $idanggota = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
             ->get()
             ->getResult()[0]
@@ -72,7 +72,7 @@ class LoanSettlement extends BaseLoanController
         );
 
         $this->sendAlert('Pengajuan pelunasan berhasil ditolak');
-        return redirect()->back();
+        return redirect()->to(base_url('admin/pinjaman/list_pelunasan'));
     }
 
     /**
@@ -86,27 +86,26 @@ class LoanSettlement extends BaseLoanController
         for ($i = 0; $i < $bulan_bayar; ++$i) {
             // Check existing installments
             $cek_cicilan = $this->m_cicilan->where('idpinjaman', $idpinjaman)
-                                             ->countAllResults();
-            
+                ->countAllResults();
+
             if ($cek_cicilan == 0) {
                 // First installment
-                $provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai/100;
+                $provisi = $this->m_param->where('idparameter', 5)->get()->getResult()[0]->nilai / 100;
 
                 $dataset_cicilan = [
-                    'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                    'nominal' => ($pin->nominal / $pin->angsuran_bulanan),
                     'bunga' => 0,
-                    'provisi' => ($pin->nominal*($pin->angsuran_bulanan*$provisi))/$pin->angsuran_bulanan,
+                    'provisi' => ($pin->nominal * ($pin->angsuran_bulanan * $provisi)) / $pin->angsuran_bulanan,
                     'tipe_bayar' => 'langsung',
                     'date_created' => date('Y-m-d H:i:s'),
                     'idpinjaman' => $idpinjaman
                 ];
 
                 $this->m_cicilan->insertCicilan($dataset_cicilan);
-                
             } elseif ($cek_cicilan == ($pin->angsuran_bulanan - 1)) {
                 // Last installment
                 $dataset_cicilan = [
-                    'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                    'nominal' => ($pin->nominal / $pin->angsuran_bulanan),
                     'bunga' => 0,
                     'tipe_bayar' => 'langsung',
                     'date_created' => date('Y-m-d H:i:s'),
@@ -117,11 +116,10 @@ class LoanSettlement extends BaseLoanController
 
                 $status_pinjaman = ['status' => 5];
                 $this->m_pinjaman->updatePinjaman($idpinjaman, $status_pinjaman);
-
             } elseif ($cek_cicilan != 0 && $cek_cicilan < $pin->angsuran_bulanan) {
                 // Middle installments
                 $dataset_cicilan = [
-                    'nominal' => ($pin->nominal/$pin->angsuran_bulanan),
+                    'nominal' => ($pin->nominal / $pin->angsuran_bulanan),
                     'bunga' => 0,
                     'tipe_bayar' => 'langsung',
                     'date_created' => date('Y-m-d H:i:s'),
@@ -145,7 +143,7 @@ class LoanSettlement extends BaseLoanController
         );
 
         $this->sendAlert('Berhasil');
-        return redirect()->back();
+        return redirect()->to(base_url('admin/pinjaman/list'));
     }
 
     /**
@@ -168,7 +166,7 @@ class LoanSettlement extends BaseLoanController
                 ->where('idpinjaman', $id)
                 ->get()
                 ->getResult()[0];
-            $penalty = $hitung_cicilan->hitung <= $bebas_penalty ? ($pinjaman->nominal - $hitung_cicilan->total_lunas)*($penalty_percent/100) : 0;
+            $penalty = $hitung_cicilan->hitung <= $bebas_penalty ? ($pinjaman->nominal - $hitung_cicilan->total_lunas) * ($penalty_percent / 100) : 0;
             $data = [
                 'idpinjaman' => $id,
                 'penalty' => $penalty,
@@ -201,7 +199,7 @@ class LoanSettlement extends BaseLoanController
                 ->where('idpinjaman', $id)
                 ->get()
                 ->getResult()[0];
-            $penalty = $hitung_cicilan->hitung <= $bebas_penalty ? ($pinjaman->nominal - $hitung_cicilan->total_lunas)*($penalty_percent/100) : 0;
+            $penalty = $hitung_cicilan->hitung <= $bebas_penalty ? ($pinjaman->nominal - $hitung_cicilan->total_lunas) * ($penalty_percent / 100) : 0;
             $data = [
                 'idpinjaman' => $id,
                 'penalty' => $penalty,
@@ -222,7 +220,7 @@ class LoanSettlement extends BaseLoanController
         if ($_POST['rowid']) {
             $id = $_POST['rowid'];
             $pinjaman = $this->m_pinjaman->getPinjamanById($id)[0];
-            
+
             $info_cicilan = $this->m_cicilan->select('COUNT(idcicilan) AS hitung, sum(nominal) as terbayar')
                 ->where('idpinjaman', $id)
                 ->get()->getResult()[0];
@@ -233,11 +231,11 @@ class LoanSettlement extends BaseLoanController
                 ->join('tb_user', 'tb_user.iduser = tb_pinjaman.idanggota')
                 ->where('idpinjaman', $id)
                 ->findAll();
-            
+
             $sisa_cicilan = $pinjaman->angsuran_bulanan - $info_cicilan->hitung;
             $sisa_pinjaman = $pinjaman->nominal - $info_cicilan->terbayar;
             $nominal_cicilan = $pinjaman->nominal / $pinjaman->angsuran_bulanan;
-            
+
             $data = [
                 'idpinjaman' => $id,
                 'pinjaman' => $pinjaman,
@@ -263,7 +261,7 @@ class LoanSettlement extends BaseLoanController
         $start = $request->getPost('start') ?? 0;
         $length = $request->getPost('length') ?? 10;
         $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value']??'';
+        $searchValue = $request->getPost('search')['value'] ?? '';
 
         $model->select('a.idpinjaman');
         $model->select('b.username');

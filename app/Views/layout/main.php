@@ -60,13 +60,29 @@
 
   <!-- Global Scripts -->
   <script src="/js/utils.js"></script>
+  <script src="<?= base_url('js/modal-native.js') ?>"></script>
   <script>
     // Initialize Icons
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
-
-      // Check for potential flush messages (SweetAlert2 or similar can be added here)
+      // Initialize ModalHelper
+      ModalHelper.init();
     });
+
+    // Global Aliases for Modal Closing (to support old/new partials)
+    window.closeModal = window.closeNativeModal = function() {
+      if (window.ModalHelper) {
+        ModalHelper.close();
+      } else {
+        // Fallback for pages with custom implementations
+        const customModal = document.getElementById('dynamic-modal') || document.getElementById('dynamic-modal-content');
+        const customOverlay = document.getElementById('sidebar-overlay') || document.getElementById('dynamic-modal-overlay') || document.getElementById('modal-overlay');
+
+        if (customModal) customModal.classList.add('hidden');
+        if (customOverlay) customOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    };
   </script>
 
   <?= $this->renderSection('scripts') ?>

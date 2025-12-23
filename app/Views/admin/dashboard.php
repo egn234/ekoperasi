@@ -248,26 +248,9 @@
 
 </div>
 
-<!-- Modal Container (Native) -->
-<div id="dynamic-modal" class="fixed inset-0 z-50 hidden">
-  <!-- Overlay -->
-  <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+<!-- Table Rows simplified... they already call openModal(type, id) -->
 
-  <!-- Modal Content -->
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-    <div id="modal-content-area">
-      <!-- Content Injected Here -->
-      <div class="text-center py-8">
-        <div class="w-8 h-8 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Memuat Data...</p>
-      </div>
-    </div>
-
-    <button onclick="closeModal()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
-      <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-    </button>
-  </div>
-</div>
+<!-- Content ends here, no hardcoded modal container needed anymore since ModalHelper handles it -->
 
 <?= $this->endSection() ?>
 
@@ -281,56 +264,22 @@
 <!-- Modal Logic -->
 <script>
   async function openModal(type, id) {
-    const modal = document.getElementById('dynamic-modal');
-    const contentArea = document.getElementById('modal-content-area');
-
-    // Show modal with loading state
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    contentArea.innerHTML = `
-            <div class="text-center py-12">
-                <div class="w-10 h-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Memuat Data...</p>
-            </div>
-        `;
-
     let url = '';
     if (type === 'approvePinjaman') {
-      url = '<?= base_url() ?>/admin/pinjaman/approve-pinjaman';
+      url = '<?= base_url() ?>admin/pinjaman/approve-pinjaman';
     } else if (type === 'tolakPinjaman') {
-      url = '<?= base_url() ?>/admin/pinjaman/cancel-pinjaman';
+      url = '<?= base_url() ?>admin/pinjaman/cancel-pinjaman';
     }
 
-    try {
-      // Using FormData to mimic the original POST request expected by Controller
-      const formData = new FormData();
-      formData.append('rowid', id);
-
-      const response = await fetch(url, {
-        method: 'POST',
-        body: formData
+    if (url) {
+      ModalHelper.open(url, {
+        rowid: id
+      }, function() {
+        // Re-initialize scripts inside modal
+        const container = document.getElementById(ModalHelper.containerId);
+        initModalScripts(container);
       });
-
-      const html = await response.text();
-      contentArea.innerHTML = html;
-
-      // Re-initialize scripts inside modal if needed (e.g. for automatic calculation)
-      initModalScripts(contentArea);
-
-    } catch (error) {
-      console.error('Modal Error:', error);
-      contentArea.innerHTML = `
-                <div class="text-center py-8 text-red-500">
-                    <p class="font-bold">Gagal memuat data.</p>
-                </div>
-            `;
     }
-  }
-
-  function closeModal() {
-    const modal = document.getElementById('dynamic-modal');
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
   }
 
   function initModalScripts(container) {

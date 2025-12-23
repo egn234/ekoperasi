@@ -1,115 +1,85 @@
-<div class="modal-body p-0">
-  <!-- Main Content -->
-  <div class="px-4 py-4">
-    <div class="text-center mb-4">
-      <div class="mb-3">
-        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
-             style="width: 60px; height: 60px; font-size: 24px;">
-          <i class="fas fa-coins"></i>
-        </div>
-      </div>
-      <h6 class="mb-2">Hitung Pelunasan Sebagian</h6>
-      <p class="text-muted mb-0">Masukkan jumlah cicilan yang akan dilunasi</p>
+<div class="text-center mb-6">
+  <div class="w-16 h-16 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4">
+    <i data-lucide="coins" class="w-8 h-8"></i>
+  </div>
+  <h3 class="text-xl font-black text-slate-900">Pelunasan Sebagian</h3>
+  <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+    <?= $user[0]['nama_lengkap'] ?>
+  </p>
+</div>
+
+<!-- Loan Summary Card -->
+<div class="bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-6">
+  <h6 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Ringkasan Pinjaman</h6>
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-white p-3 rounded-xl border border-slate-200/50">
+      <p class="text-[9px] font-bold text-slate-400 uppercase">Tenor</p>
+      <p class="text-sm font-black text-slate-700"><?= $pinjaman->angsuran_bulanan ?> Bln</p>
     </div>
-
-    <!-- Loan Summary -->
-    <div class="card border-0 bg-light mb-4">
-      <div class="card-body p-3">
-        <h6 class="card-title mb-3"><i class="fas fa-info-circle me-2 text-primary"></i>Informasi Pinjaman</h6>
-        <div class="row g-2">
-          <div class="col-6">
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted small">Lama Cicilan:</span>
-              <span class="fw-medium small"><?= $pinjaman->angsuran_bulanan ?> Bulan</span>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted small">Sisa Cicilan:</span>
-              <span class="fw-medium small"><?= $sisa_cicilan ?> Bulan</span>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="d-flex justify-content-between py-1 border-top pt-2 mt-2">
-              <span class="text-muted">Jumlah Pinjaman:</span>
-              <span class="fw-bold text-primary">Rp <?= number_format($pinjaman->nominal, 0, ',', '.') ?></span>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Sisa Pinjaman:</span>
-              <span class="fw-bold text-warning">Rp <?= number_format($sisa_pinjaman, 0, ',', '.')?></span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="bg-white p-3 rounded-xl border border-slate-200/50 text-right">
+      <p class="text-[9px] font-bold text-slate-400 uppercase">Sisa</p>
+      <p class="text-sm font-black text-slate-700"><?= $sisa_cicilan ?> Bln</p>
     </div>
-
-    <!-- Form -->
-    <form action="<?=base_url()?>admin/pinjaman/lunasi-partial/<?=$idpinjaman?>" 
-          id="pelunasan_partial_<?=$idpinjaman?>" 
-          method="post" 
-          enctype="multipart/form-data">
-      <div class="card border-0 bg-light">
-        <div class="card-body">
-          <label class="form-label fw-semibold" for="bulan_<?=$idpinjaman?>">
-            <i class="fas fa-calendar-alt me-2 text-success"></i>Jumlah Cicilan yang Dilunasi
-          </label>
-          <div class="input-group">
-            <input 
-              type="number" 
-              class="form-control" 
-              id="bulan_<?=$idpinjaman?>" 
-              name="bulan_bayar" 
-              min="1" 
-              max="<?=$sisa_cicilan?>" 
-              placeholder="Masukkan jumlah cicilan"
-              required
-            >
-            <span class="input-group-text bg-white">Bulan</span>
-          </div>
-          <div class="form-text text-muted">
-            <i class="fas fa-info-circle me-1"></i>Maksimal <?=$sisa_cicilan?> bulan sesuai sisa cicilan
-          </div>
-        </div>
+    <div class="col-span-2 bg-white p-4 rounded-xl border border-slate-200/50 flex justify-between items-center">
+      <div>
+        <p class="text-[9px] font-bold text-slate-400 uppercase">Sisa Pinjaman</p>
+        <p class="text-lg font-black text-slate-900">Rp <?= number_format($sisa_pinjaman, 0, ',', '.') ?></p>
       </div>
-    </form>
-
-    <!-- Calculation Result -->
-    <div class="card border-0 bg-success bg-opacity-10 mt-3">
-      <div class="card-body p-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="mb-1 text-success"><i class="fas fa-calculator me-2"></i>Total Pembayaran</h6>
-            <small class="text-muted">Akan diperbarui otomatis saat Anda mengetik</small>
-          </div>
-          <div class="text-end">
-            <h5 class="mb-0 fw-bold text-success">Rp <span id="perkalian_<?=$idpinjaman?>">0</span></h5>
-          </div>
-        </div>
+      <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+        <i data-lucide="wallet" class="w-5 h-5"></i>
       </div>
     </div>
   </div>
 </div>
-<div class="modal-footer border-top-0 bg-light">
-  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-    <i class="fas fa-times me-1"></i>Batal
+
+<form action="<?= base_url() ?>admin/pinjaman/lunasi-partial/<?= $idpinjaman ?>" id="formPartial" method="post">
+  <div class="mb-6">
+    <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Jumlah Cicilan yang Dilunasi</label>
+    <div class="relative">
+      <input type="number"
+        id="bulan_<?= $idpinjaman ?>"
+        name="bulan_bayar"
+        min="1"
+        max="<?= $sisa_cicilan ?>"
+        class="w-full pl-4 pr-16 py-4 bg-white border-2 border-slate-100 rounded-2xl text-lg font-black text-slate-900 focus:outline-none focus:border-blue-500 transition-colors"
+        placeholder="0"
+        required>
+      <span class="absolute right-4 top-4.5 text-xs font-black text-slate-400 uppercase tracking-widest">Bulan</span>
+    </div>
+    <p class="text-[10px] text-slate-400 mt-2 italic">*Maksimal <?= $sisa_cicilan ?> bulan</p>
+  </div>
+</form>
+
+<!-- Calculation Result -->
+<div class="bg-emerald-600 rounded-[2rem] p-6 text-white shadow-lg shadow-emerald-100 mb-8 flex justify-between items-center">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+      <i data-lucide="calculator" class="w-5 h-5"></i>
+    </div>
+    <div>
+      <p class="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mb-1">Total Bayar</p>
+      <p class="text-xs font-bold text-white opacity-80">Otomatis Terkalkulasi</p>
+    </div>
+  </div>
+  <div class="text-right">
+    <h4 class="text-xl font-black tracking-tight">Rp <span id="perkalian_<?= $idpinjaman ?>">0</span></h4>
+  </div>
+</div>
+
+<div class="flex gap-3 pt-2 border-t border-slate-100">
+  <button onclick="closeModal()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+    Batal
   </button>
-  <button type="submit" form="pelunasan_partial_<?=$idpinjaman?>" class="btn btn-success">
-    <i class="fas fa-check me-1"></i>Lunasi Sebagian
+  <button type="submit" form="formPartial" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]">
+    Bayar Sekarang
   </button>
 </div>
 
 <script type="text/javascript">
-    $('#bulan_<?=$idpinjaman?>').on("input", function() {
-        // Get the value of the input
-        var value = parseFloat($('#bulan_<?=$idpinjaman?>').val()); // Parse input as a floating-point number
-        console.log(value); // Debug: Check if value is correctly extracted
-
-        // Perform the calculation
-        var calculatedResult = value * <?= $nominal_cicilan ?>;
-
-        // Update the text element with the calculated result
-        $('#perkalian_<?=$idpinjaman?>').text(numberFormat(calculatedResult, 0));
-    });
+  $('#bulan_<?= $idpinjaman ?>').on("input", function() {
+    var value = parseFloat($(this).val()) || 0;
+    var calculatedResult = value * <?= $nominal_cicilan ?>;
+    $('#perkalian_<?= $idpinjaman ?>').text(new Intl.NumberFormat('id-ID').format(calculatedResult));
+  });
+  if (window.lucide) window.lucide.createIcons();
 </script>

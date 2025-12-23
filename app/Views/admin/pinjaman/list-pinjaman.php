@@ -118,13 +118,6 @@
 
 </div>
 
-<!-- Native Modal Container -->
-<div id="dynamic-modal-overlay" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-<div id="dynamic-modal-content" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-  <div id="modal-container"></div>
-  <button onclick="closeNativeModal()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
-    <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-  </button>
 </div>
 
 <?= $this->endSection() ?>
@@ -133,13 +126,10 @@
 <script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
 <script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Native Modal Logic -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
 
 <script type="text/javascript">
-  function closeNativeModal() {
-    $('#dynamic-modal-overlay, #dynamic-modal-content').addClass('hidden');
-  }
+  // openApproveModal, etc. below...
+
 
   // Open Modal Helpers
   function openApproveModal(id) {

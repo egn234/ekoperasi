@@ -150,9 +150,7 @@
   </div>
 </div>
 
-<!-- Native Modal Container -->
-<div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden transition-opacity"></div>
-<div id="dynamicModalContainer"></div>
+</div>
 
 <?= $this->endSection() ?>
 
@@ -160,8 +158,6 @@
 <script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
 <script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Native Modal Logic -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
 
 <script type="text/javascript">
   function numberFormat(number, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {

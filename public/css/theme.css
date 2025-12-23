@@ -121,3 +121,69 @@ body {
     pointer-events: none;
     background-color: #f8fafc; /* slate-50 */
 }
+
+/* Responsive DataTables Tweaks */
+@media (max-width: 767.98px) {
+    div.dataTables_wrapper div.dataTables_length label,
+    div.dataTables_wrapper div.dataTables_filter label {
+        display: block;
+        text-align: left;
+        margin-bottom: 0;
+        width: 100%;
+        color: #64748b; /* slate-500 */
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    div.dataTables_wrapper div.dataTables_length select {
+        width: 100%;
+        margin: 0.5rem 0 1rem 0;
+        padding: 0.6rem;
+        border-radius: 0.75rem;
+        border-color: #e2e8f0;
+        background-image: none; /* simple fix */
+    }
+
+    div.dataTables_wrapper div.dataTables_filter input {
+        width: 100%;
+        margin-left: 0 !important;
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+        display: block;
+        padding: 0.6rem 1rem;
+        border-radius: 0.75rem;
+    }
+
+    div.dataTables_wrapper div.dataTables_length,
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: left !important;
+        margin-bottom: 0;
+    }
+    
+    /* Hide the 'Search:' text if possible, or style it specifically */
+    
+    div.dataTables_wrapper div.dataTables_info {
+        text-align: center !important;
+        padding-top: 1rem;
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate {
+        justify-content: center !important;
+        margin-top: 1rem;
+    }
+    
+    div.dataTables_wrapper .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    div.dataTables_wrapper .col-md-6,
+    div.dataTables_wrapper .col-sm-12 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
