@@ -112,8 +112,16 @@ if ($idgroup == 1) {
       $isMenu = isset($item['action']);
     ?>
       <?php if ($isMenu): ?>
-        <button onclick="<?= $item['action'] ?>" class="flex flex-col items-center justify-center w-14 h-14 -mt-8 bg-blue-600 rounded-full text-white shadow-lg shadow-blue-300 transition-transform active:scale-95 hover:scale-105">
+        <button onclick="<?= $item['action'] ?>" class="flex flex-col items-center justify-center w-14 h-14 -mt-8 bg-blue-600 rounded-full text-white shadow-lg shadow-blue-300 transition-transform active:scale-95 hover:scale-105 relative">
           <i data-lucide="<?= $item['icon'] ?>" class="w-6 h-6"></i>
+          <?php if (isset($notification_badges) && $notification_badges > 0): ?>
+            <span class="absolute top-0 -right-1 flex h-5 w-5 rounded-full bg-red-500 border-2 border-white shadow-sm ring-1 ring-red-400/20">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span class="relative inline-flex items-center justify-center w-full h-full text-[8px] font-black text-white">
+                <?= $notification_badges > 9 ? '9+' : $notification_badges ?>
+              </span>
+            </span>
+          <?php endif; ?>
         </button>
       <?php else: ?>
         <a href="<?= base_url($item['url']) ?>" class="flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 relative <?= $isActive ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600' ?>">
@@ -151,7 +159,7 @@ if ($idgroup == 1) {
         <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-4 px-2 border-l-4 border-blue-500 pl-3"><?= $category ?></h3>
         <div class="grid grid-cols-3 gap-4">
           <?php foreach ($items as $menu): ?>
-            <a href="<?= base_url($menu['url']) ?>" class="flex flex-col items-center p-4 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-all active:scale-95 group">
+            <a href="<?= base_url($menu['url']) ?>" class="flex flex-col items-center p-4 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-all active:scale-95 group relative">
               <div class="w-12 h-12 flex items-center justify-center rounded-[1rem] mb-3 <?= $menu['color'] ?> group-hover:scale-110 transition-transform duration-300">
                 <i data-lucide="<?= $menu['icon'] ?>" class="w-6 h-6"></i>
               </div>
