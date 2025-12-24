@@ -73,7 +73,13 @@ $page = $page ?? '';
          <?= $isActive ? 'bg-blue-gradient text-white shadow-xl shadow-blue-200/50 scale-[1.02]' : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50' ?>">
 
           <i data-lucide="<?= $menu['icon'] ?>" class="w-4 h-4 relative z-10 transition-colors <?= $isActive ? 'text-white' : 'group-hover:text-blue-600' ?>"></i>
-          <span class="relative z-10"><?= $menu['label'] ?></span>
+          <span class="relative z-10 flex-1"><?= $menu['label'] ?></span>
+
+          <?php if (($menu['id'] === 'notifikasi') && isset($notification_badges) && $notification_badges > 0): ?>
+            <span class="relative z-10 flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[9px] font-black bg-red-500 text-white shadow-sm shadow-red-200">
+              <?= $notification_badges > 99 ? '99+' : $notification_badges ?>
+            </span>
+          <?php endif; ?>
 
           <?php if (!$isActive): ?>
             <div class="absolute inset-0 bg-blue-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left -z-0"></div>

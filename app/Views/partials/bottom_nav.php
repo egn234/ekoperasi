@@ -21,7 +21,7 @@ if ($idgroup == 1) { // Admin
     ],
     'Lainnya' => [
       ['label' => 'Laporan', 'icon' => 'file-bar-chart', 'url' => 'admin/report/list', 'color' => 'bg-slate-50 text-slate-600'],
-      ['label' => 'Notifikasi', 'icon' => 'bell', 'url' => 'admin/notification/list', 'color' => 'bg-orange-50 text-orange-600'],
+      ['label' => 'Notifikasi', 'icon' => 'bell', 'url' => 'admin/notification/list', 'color' => 'bg-orange-50 text-orange-600', 'badge' => true],
       ['label' => 'Profil Saya', 'icon' => 'user-circle', 'url' => 'admin/profile', 'color' => 'bg-pink-50 text-pink-600'],
     ]
   ];
@@ -96,9 +96,15 @@ if ($idgroup == 1) {
           <i data-lucide="<?= $item['icon'] ?>" class="w-6 h-6"></i>
         </button>
       <?php else: ?>
-        <a href="<?= base_url($item['url']) ?>" class="flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 <?= $isActive ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600' ?>">
+        <a href="<?= base_url($item['url']) ?>" class="flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 relative <?= $isActive ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600' ?>">
           <i data-lucide="<?= $item['icon'] ?>" class="<?= $isActive ? 'w-6 h-6 fill-current' : 'w-6 h-6' ?>"></i>
           <?php if ($isActive): ?><span class="block w-1 h-1 bg-blue-600 rounded-full mt-1"></span><?php endif; ?>
+
+          <?php if (($item['id'] === 'notifikasi') && isset($notification_badges) && $notification_badges > 0): ?>
+            <span class="absolute top-2 right-2 flex items-center justify-center w-4 h-4 rounded-full text-[8px] font-black bg-red-500 text-white shadow-sm shadow-red-200 border-2 border-white">
+              <?= $notification_badges > 9 ? '9+' : $notification_badges ?>
+            </span>
+          <?php endif; ?>
         </a>
       <?php endif; ?>
     <?php endforeach; ?>
@@ -130,6 +136,12 @@ if ($idgroup == 1) {
                 <i data-lucide="<?= $menu['icon'] ?>" class="w-6 h-6"></i>
               </div>
               <span class="text-[10px] font-bold text-slate-600 text-center leading-tight group-hover:text-blue-600"><?= $menu['label'] ?></span>
+
+              <?php if (isset($menu['badge']) && $menu['badge'] && isset($notification_badges) && $notification_badges > 0): ?>
+                <span class="absolute top-2 right-2 flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[9px] font-black bg-red-500 text-white shadow-sm shadow-red-200 animate-pulse">
+                  <?= $notification_badges > 99 ? '99+' : $notification_badges ?>
+                </span>
+              <?php endif; ?>
             </a>
           <?php endforeach; ?>
         </div>

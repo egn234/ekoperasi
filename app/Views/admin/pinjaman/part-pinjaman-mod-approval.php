@@ -9,6 +9,7 @@
 </div>
 
 <form action="<?= url_to('admin_approve_pinjaman', $a->idpinjaman) ?>" id="formApprove" method="post">
+  <input type="hidden" name="return_url" value="<?= isset($return_url) ? $return_url : '' ?>">
   <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
     <label class="block text-xs font-black text-indigo-800 uppercase tracking-wider mb-2">Penyesuaian Nominal</label>
     <div class="relative">
@@ -28,3 +29,27 @@
     Setujui Pengajuan
   </button>
 </div>
+
+<script>
+  // Self-executing to avoid scope pollution, logic for realtime currency preview
+  (function() {
+    const nominalInput = document.getElementById('nominal_uang');
+    const previewNominal = document.getElementById('preview_nominal');
+
+    if (nominalInput && previewNominal) {
+      function updatePreview() {
+        const raw = nominalInput.value.replace(/[^\d]/g, ""); // strip non-digits
+        if (raw) {
+          const num = parseInt(raw, 10);
+          const formatted = new Intl.NumberFormat("id-ID", {
+            maximumFractionDigits: 0
+          }).format(num);
+          previewNominal.textContent = `Rp ${formatted}`;
+        } else {
+          previewNominal.textContent = "Rp 0";
+        }
+      }
+      nominalInput.addEventListener('input', updatePreview);
+    }
+  })();
+</script>

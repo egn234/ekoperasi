@@ -32,6 +32,13 @@
     <?php endif; ?>
   </div>
 
+  <!-- Global Notification -->
+  <?php if (session()->getFlashdata('notif')): ?>
+    <div class="animate-fade-in-up">
+      <?= session()->getFlashdata('notif') ?>
+    </div>
+  <?php endif; ?>
+
   <!-- Stats Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <!-- Card 1 -->
@@ -270,7 +277,8 @@
 
     if (url) {
       ModalHelper.open(url, {
-        rowid: id
+        rowid: id,
+        return_url: window.location.href
       }, function() {
         // Re-initialize scripts inside modal
         const container = document.getElementById(ModalHelper.containerId);

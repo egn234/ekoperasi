@@ -61,7 +61,7 @@
       </button>
 
       <div class="mb-10 text-center pt-4">
-        <img src="https://ekop.kopgiat.id//logo_giat.ico" alt="Logo" class="w-14 h-14 mx-auto mb-4 object-contain">
+        <img src="https://ekop.kopgiat.id/logo_giat.ico" alt="Logo" class="w-14 h-14 mx-auto mb-4 object-contain">
         <h2 class="text-3xl font-black text-slate-900 tracking-tight text-center">Login Anggota</h2>
         <p class="text-slate-500 font-bold text-[10px] uppercase tracking-widest mt-1">APLIKASI DIGITAL KOPERASI GIAT</p>
       </div>
@@ -84,7 +84,7 @@
               type="text"
               name="username"
               class="w-full bg-white/50 border border-slate-100 rounded-2xl py-4 pl-14 pr-4 focus:ring-2 focus:ring-orange-500 outline-none transition-all font-bold text-slate-900 placeholder-slate-300"
-              placeholder="KOP-XXXX-XXX"
+              placeholder="GIATXXXX"
               value="<?= old('username') ?>"
               required />
           </div>

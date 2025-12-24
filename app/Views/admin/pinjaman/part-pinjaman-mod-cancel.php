@@ -9,6 +9,7 @@
 </div>
 
 <form action="<?= url_to('admin_cancel_pinjaman', $a->idpinjaman) ?>" id="formReject" method="post">
+  <input type="hidden" name="return_url" value="<?= isset($return_url) ? $return_url : '' ?>">
   <div class="mb-6">
     <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Alasan Penolakan</label>
     <textarea name="alasan_tolak" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-red-500 focus:border-red-500 block w-full p-4 font-medium placeholder-slate-400 resize-none h-32" placeholder="Jelaskan alasan penolakan secara singkat..." required></textarea>

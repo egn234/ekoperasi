@@ -86,13 +86,15 @@
   // Open Modal Helpers
   function openApproveModal(id) {
     ModalHelper.open('<?= base_url() ?>admin/pinjaman/approve-pinjaman', {
-      rowid: id
+      rowid: id,
+      return_url: window.location.href
     });
   }
 
   function openRejectModal(id) {
     ModalHelper.open('<?= base_url() ?>admin/pinjaman/cancel-pinjaman', {
-      rowid: id
+      rowid: id,
+      return_url: window.location.href
     });
   }
 
