@@ -18,7 +18,9 @@
         }
       }
     }
-    window.baseUrl = "<?= base_url() ?>";
+    window.baseUrl = "<?= base_url() ?>"; // Legacy camelCase
+    window.BASE_URL = "<?= base_url() ?>"; // Standard UPPERCASE
+    const BASE_URL = "<?= base_url() ?>"; // Const alias for direct usage
   </script>
 
   <!-- Google Fonts -->
@@ -26,6 +28,13 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- jQuery & DataTables (Critical - Load First) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+  <!-- DataTables CSS - DISABLED, using custom theme only -->
+  <!-- <link href="/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 
   <!-- Custom Theme & Utils -->
   <link rel="stylesheet" href="/css/theme.css">
@@ -60,13 +69,19 @@
 
   <!-- Global Scripts -->
   <script src="/js/utils.js"></script>
-  <script src="<?= base_url('js/modal-native.js') ?>"></script>
+  <script src="/js/modal-native.js"></script>
+
   <script>
     // Initialize Icons
     document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      // Initialize ModalHelper
-      ModalHelper.init();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      // Initialize ModalHelper if available
+      if (window.ModalHelper) {
+        ModalHelper.init();
+      }
     });
 
     // Global Aliases for Modal Closing (to support old/new partials)

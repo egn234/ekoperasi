@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/member') ?>
 
 <?= $this->section('content') ?>
 
@@ -6,16 +6,16 @@
 $total_saldo = $total_saldo_pokok + $total_saldo_wajib + $total_saldo_manasuka;
 ?>
 
-<div class="space-y-8 pb-12 animate-fade-in-up">
+<div class="space-y-8 pb-20 animate-fade-in-up">
 
   <!-- Welcome Header -->
   <div class="flex items-center justify-between px-2">
     <div class="flex items-center space-x-4">
-      <div class="w-12 h-12 rounded-[1.25rem] bg-slate-200 overflow-hidden border-2 border-white shadow-soft group cursor-pointer">
-        <!-- Fallback avatar if no image -->
-        <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">
-          <i data-lucide="user" class="w-6 h-6"></i>
-        </div>
+      <div class="w-12 h-12 rounded-[1.25rem] bg-white overflow-hidden border-2 border-white shadow-soft group cursor-pointer">
+        <img src="<?= base_url() ?>/uploads/user/<?= $duser->username ?>/profil_pic/<?= $duser->profil_pic ?>"
+          alt="Profile"
+          class="w-full h-full object-cover"
+          onerror="this.src='<?= base_url('assets/images/users/avatar-1.jpg') ?>'">
       </div>
       <div>
         <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-0.5">Selamat Datang,</p>
@@ -79,33 +79,41 @@ $total_saldo = $total_saldo_pokok + $total_saldo_wajib + $total_saldo_manasuka;
     </div>
   </section>
 
-  <!-- Quick Actions Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <!-- Buttons -->
-    <section class="bg-white p-10 rounded-[3rem] shadow-soft border border-slate-50 flex justify-around items-center">
-      <a href="<?= url_to('anggota/deposit/list') ?>" class="flex flex-col items-center space-y-2 group">
-        <div class="p-6 rounded-[2rem] bg-blue-50 text-blue-600 transition-all group-hover:scale-110 group-hover:shadow-blue-100 group-hover:shadow-lg">
-          <i data-lucide="history" class="w-7 h-7"></i>
+  <!-- Quick Actions Section -->
+  <section class="bg-white p-10 rounded-[3rem] shadow-soft border border-slate-50">
+    <div class="flex flex-wrap justify-around items-center gap-8">
+      <a href="<?= url_to('anggota/deposit/list') ?>" class="flex flex-col items-center space-y-3 group min-w-[80px]">
+        <div class="p-6 rounded-[2.5rem] bg-blue-50 text-blue-600 transition-all group-hover:scale-110 group-hover:shadow-blue-100 group-hover:shadow-xl group-hover:bg-blue-600 group-hover:text-white">
+          <i data-lucide="history" class="w-8 h-8"></i>
         </div>
-        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-blue-600 transition-colors">Mutasi</span>
+        <span class="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition-colors">Mutasi</span>
       </a>
 
-      <a href="<?= url_to('anggota/pinjaman/list') ?>" class="flex flex-col items-center space-y-2 group">
-        <div class="p-6 rounded-[2rem] bg-slate-50 text-slate-400 transition-all group-hover:scale-110 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:shadow-lg">
-          <i data-lucide="credit-card" class="w-7 h-7"></i>
+      <a href="<?= url_to('anggota/pinjaman/list') ?>" class="flex flex-col items-center space-y-3 group min-w-[80px]">
+        <div class="p-6 rounded-[2.5rem] bg-emerald-50 text-emerald-600 transition-all group-hover:scale-110 group-hover:shadow-emerald-100 group-hover:shadow-xl group-hover:bg-emerald-600 group-hover:text-white">
+          <i data-lucide="credit-card" class="w-8 h-8"></i>
         </div>
-        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-blue-600 transition-colors">Pinjaman</span>
+        <span class="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition-colors">Pinjaman</span>
       </a>
 
-      <a href="#" class="flex flex-col items-center space-y-2 group">
-        <div class="p-6 rounded-[2rem] bg-slate-50 text-slate-400 transition-all group-hover:scale-110 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:shadow-lg">
-          <i data-lucide="info" class="w-7 h-7"></i>
+      <a href="<?= url_to('anggota/profile') ?>" class="flex flex-col items-center space-y-3 group min-w-[80px]">
+        <div class="p-6 rounded-[2.5rem] bg-indigo-50 text-indigo-600 transition-all group-hover:scale-110 group-hover:shadow-indigo-100 group-hover:shadow-xl group-hover:bg-indigo-600 group-hover:text-white">
+          <i data-lucide="user-circle" class="w-8 h-8"></i>
         </div>
-        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-blue-600 transition-colors">Bantuan</span>
+        <span class="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition-colors">Profil</span>
       </a>
-    </section>
 
-    <!-- Simulation -->
+      <a href="#" class="flex flex-col items-center space-y-3 group min-w-[80px]">
+        <div class="p-6 rounded-[2.5rem] bg-rose-50 text-rose-600 transition-all group-hover:scale-110 group-hover:shadow-rose-100 group-hover:shadow-xl group-hover:bg-rose-600 group-hover:text-white">
+          <i data-lucide="help-circle" class="w-8 h-8"></i>
+        </div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition-colors">Bantuan</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Hidden Simulation (Removed from main layout flow) -->
+  <div class="hidden">
     <section class="bg-white p-10 rounded-[3rem] shadow-soft border border-slate-50">
       <h3 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-wider">Simulasi Pinjaman</h3>
       <div class="space-y-4">
@@ -121,6 +129,32 @@ $total_saldo = $total_saldo_pokok + $total_saldo_wajib + $total_saldo_manasuka;
       </div>
     </section>
   </div>
+
+  <!-- Information Section -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between px-4">
+      <h3 class="text-xl font-black text-slate-800 tracking-tight">Tips & Informasi</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2.5rem] text-white relative overflow-hidden group shadow-xl">
+        <div class="relative z-10">
+          <span class="px-3 py-1 bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest mb-4 inline-block">Tips Keamanan</span>
+          <h4 class="text-lg font-bold mb-2">Jaga Rahasia Password Anda</h4>
+          <p class="text-white/70 text-sm leading-relaxed">Jangan pernah memberikan password atau kode OTP kepada siapapun, termasuk pihak koperasi.</p>
+        </div>
+        <i data-lucide="shield-check" class="w-32 h-32 absolute -right-6 -bottom-6 text-white/10 group-hover:scale-110 transition-transform"></i>
+      </div>
+
+      <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-soft relative overflow-hidden group">
+        <div class="relative z-10">
+          <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest mb-4 inline-block">Info Koperasi</span>
+          <h4 class="text-lg font-bold text-slate-800 mb-2">Pencairan Dana Lebih Cepat</h4>
+          <p class="text-slate-500 text-sm leading-relaxed">Ajukan penarikan sebelum jam 12:00 WIB untuk proses pencairan di hari yang sama.</p>
+        </div>
+        <i data-lucide="zap" class="w-32 h-32 absolute -right-6 -bottom-6 text-slate-50 group-hover:scale-110 transition-transform"></i>
+      </div>
+    </div>
+  </section>
 
 </div>
 

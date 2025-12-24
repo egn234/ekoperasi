@@ -46,6 +46,18 @@ if ($idgroup == 1) { // Admin
       ['label' => 'Profil Saya', 'icon' => 'user-circle', 'url' => 'ketua/profile', 'color' => 'bg-pink-50 text-pink-600'],
     ]
   ];
+} elseif ($idgroup == 4) { // Anggota
+  $gridMenus = [
+    'Keuangan' => [
+      ['label' => 'Mutasi', 'icon' => 'history', 'url' => 'anggota/deposit/list', 'color' => 'bg-blue-50 text-blue-600'],
+      ['label' => 'Pinjaman', 'icon' => 'credit-card', 'url' => 'anggota/pinjaman/list', 'color' => 'bg-emerald-50 text-emerald-600'],
+      ['label' => 'Tutup Buku', 'icon' => 'user-x', 'url' => 'anggota/closebook', 'color' => 'bg-rose-50 text-rose-600'],
+    ],
+    'Akun' => [
+      ['label' => 'Notifikasi', 'icon' => 'bell', 'url' => 'anggota/notification/list', 'color' => 'bg-orange-50 text-orange-600', 'badge' => true],
+      ['label' => 'Profil Saya', 'icon' => 'user-circle', 'url' => 'anggota/profile', 'color' => 'bg-indigo-50 text-indigo-600'],
+    ]
+  ];
 }
 
 // Define Bottom Nav Items
@@ -74,8 +86,16 @@ if ($idgroup == 1) {
     ['id' => 'approval', 'icon' => 'check-square', 'url' => 'ketua/pinjaman/list'],
     ['id' => 'profile', 'icon' => 'user', 'url' => 'ketua/profile'],
   ];
+} elseif ($idgroup == 4) { // Anggota (New 5-item layout)
+  $navItems = [
+    ['id' => 'dashboard', 'icon' => 'home', 'url' => 'anggota/dashboard'],
+    ['id' => 'pinjaman', 'icon' => 'credit-card', 'url' => 'anggota/pinjaman/list'],
+    ['id' => 'menu', 'icon' => 'grid-2x2', 'action' => 'toggleMobileMenu()'], // Central Menu
+    ['id' => 'simpanan', 'icon' => 'wallet', 'url' => 'anggota/deposit/list'],
+    ['id' => 'profile', 'icon' => 'user', 'url' => 'anggota/profile'],
+  ];
 } else {
-  // Default fallback for others (can be expanded later)
+  // Default fallback
   $navItems = [
     ['id' => 'dashboard', 'icon' => 'home', 'url' => 'anggota/dashboard'],
     ['id' => 'menu', 'icon' => 'grid-2x2', 'action' => 'toggleMobileMenu()'],

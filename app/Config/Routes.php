@@ -273,8 +273,14 @@ $routes->group('ketua', static function ($routes) {
 $routes->group('anggota', static function ($routes) {
     // Core Routes
     $routes->get('dashboard', 'Anggota\Core\Dashboard::index');
-    $routes->get('notification/mark-all-read', 'Anggota\Core\Notifications::mark_all_read');
-    $routes->post('notification/mark-as-read', 'Anggota\Core\Notifications::mark_as_read');
+    // Notification Routes
+    $routes->group('notification', static function ($routes) {
+        $routes->get('list', 'Anggota\Core\Notifications::notification_list');
+        $routes->get('mark-all-read', 'Anggota\Core\Notifications::mark_all_read');
+        $routes->post('mark-as-read', 'Anggota\Core\Notifications::mark_as_read');
+        $routes->get('tbl/mark-all-read', 'Anggota\Core\Notifications::mark_all_read_table');
+        $routes->post('tbl/mark-as-read', 'Anggota\Core\Notifications::mark_as_read_table');
+    });
 
     // Account Management - Profile Routes
     $routes->get('profile', 'Anggota\AccountManagement\Profile::index');

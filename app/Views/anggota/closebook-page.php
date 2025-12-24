@@ -1,8 +1,8 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/member') ?>
 
 <?= $this->section('content') ?>
 
-<div class="space-y-8 pb-12 animate-fade-in-up">
+<div class="space-y-8 pb-20 animate-fade-in-up">
     <!-- Header -->
     <div>
         <h1 class="text-3xl font-black text-slate-900 tracking-tight">Detail Simpanan & Closebook</h1>
@@ -95,7 +95,7 @@
             <?php if ($duser->closebook_request == 'closebook'): ?>
                 <h3 class="text-2xl font-black text-slate-900">Pengajuan Diproses</h3>
                 <p class="text-slate-500">Anda telah mengajukan penutupan buku. Admin sedang meninjau permintaan Anda.</p>
-                <button onclick="openModal('cancelCloseBook')" class="px-8 py-4 bg-red-50 text-red-600 rounded-xl font-black uppercase tracking-widest hover:bg-red-100 transition-colors inline-flex items-center gap-2">
+                <button onclick="openLocalModal('cancelCloseBook')" class="px-8 py-4 bg-red-50 text-red-600 rounded-xl font-black uppercase tracking-widest hover:bg-red-100 transition-colors inline-flex items-center gap-2">
                     <i data-lucide="x-circle" class="w-5 h-5"></i> Batalkan Pengajuan
                 </button>
 
@@ -110,7 +110,7 @@
                         <i data-lucide="lock" class="w-5 h-5"></i> Tidak Dapat Mengajukan
                     </button>
                 <?php else: ?>
-                    <button onclick="openModal('reqCloseBook')" class="px-8 py-4 bg-red-600 text-white rounded-xl font-black uppercase tracking-widest hover:bg-red-700 shadow-xl shadow-red-200 transition-transform active:scale-95 flex items-center justify-center gap-2 mx-auto">
+                    <button onclick="openLocalModal('reqCloseBook')" class="px-8 py-4 bg-red-600 text-white rounded-xl font-black uppercase tracking-widest hover:bg-red-700 shadow-xl shadow-red-200 transition-transform active:scale-95 flex items-center justify-center gap-2 mx-auto">
                         <i data-lucide="power" class="w-5 h-5"></i> Ajukan Tutup Buku
                     </button>
                 <?php endif; ?>
@@ -140,7 +140,7 @@
     </div>
 
     <div class="flex gap-4">
-        <button onclick="closeModal('reqCloseBook')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold hover:bg-slate-200 transition-colors">Batal</button>
+        <button onclick="closeLocalModal('reqCloseBook')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold hover:bg-slate-200 transition-colors">Batal</button>
         <a href="<?= url_to('anggota/closebook-request') ?>" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 shadow-lg shadow-red-200 transition-transform active:scale-95">Ya, Ajukan</a>
     </div>
 </div>
@@ -156,7 +156,7 @@
     </p>
 
     <div class="flex gap-4">
-        <button onclick="closeModal('cancelCloseBook')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold hover:bg-slate-200 transition-colors">Tidak</button>
+        <button onclick="closeLocalModal('cancelCloseBook')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold hover:bg-slate-200 transition-colors">Tidak</button>
         <a href="<?= url_to('anggota/closebook-cancel') ?>" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-transform active:scale-95">Batalkan</a>
     </div>
 </div>
@@ -165,12 +165,12 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    function openModal(id) {
+    function openLocalModal(id) {
         document.getElementById('modal-overlay').classList.remove('hidden');
         document.getElementById(id).classList.remove('hidden');
     }
 
-    function closeModal(id) {
+    function closeLocalModal(id) {
         document.getElementById('modal-overlay').classList.add('hidden');
         document.getElementById(id).classList.add('hidden');
     }

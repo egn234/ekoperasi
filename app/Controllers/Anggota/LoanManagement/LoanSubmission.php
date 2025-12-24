@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Anggota\LoanManagement;
 
 class LoanSubmission extends BaseLoanController
@@ -9,14 +10,14 @@ class LoanSubmission extends BaseLoanController
         $cek_cicilan_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser)[0]->hitung;
         $cek_cicilan = $this->request->getPost('angsuran_bulanan');
         $satuan_waktu = $this->request->getPost('satuan_waktu');
-        
+
         $limits = $this->getEmployeeLimits();
         $batas_bulanan = $limits['batas_bulanan'];
         $batas_nominal = $limits['batas_nominal'];
         $cek_pegawai = $limits['status_pegawai'];
 
         $dataset = [];
-        
+
         // Ambil parameter batas minimal sesuai status pegawai
         // ID 10: Batas Bulan Minimal Pinjaman Kontrak
         // ID 11: Batas Bulan Minimal Pinjaman Tetap
@@ -43,7 +44,7 @@ class LoanSubmission extends BaseLoanController
 
         if ($selisih_bulan < $param_minimal_bulan) {
             $this->sendAlert(
-                'Tidak dapat mengajukan pinjaman: Pengajuan Pinjaman baru bisa dilakukan setelah '.$param_minimal_bulan.' bulan dari tanggal bergabung',
+                'Tidak dapat mengajukan pinjaman: Pengajuan Pinjaman baru bisa dilakukan setelah ' . $param_minimal_bulan . ' bulan dari tanggal bergabung',
                 'danger'
             );
             return redirect()->back();
@@ -72,7 +73,7 @@ class LoanSubmission extends BaseLoanController
 
         if ($angsuran_bulanan > $batas_bulanan) {
             $this->sendAlert(
-                'Tidak dapat mengajukan cicilan lebih dari '. $angsuran_bulanan .' bulan',
+                'Tidak dapat mengajukan cicilan lebih dari ' . $angsuran_bulanan . ' bulan',
                 'warning'
             );
             $confirmation = false;
@@ -82,14 +83,14 @@ class LoanSubmission extends BaseLoanController
 
         if ($dataset['nominal'] > $batas_nominal) {
             $this->sendAlert(
-                'Tidak dapat mengajukan cicilan lebih dari Rp'. number_format($dataset['nominal'], 0, ',','.'),
+                'Tidak dapat mengajukan cicilan lebih dari Rp' . number_format($dataset['nominal'], 0, ',', '.'),
                 'warning'
             );
             $confirmation = false;
         } else {
             $confirmation = true;
         }
-        
+
         if ($confirmation) {
 
             if ($dataset['tipe_permohonan'] == "") {
@@ -125,8 +126,8 @@ class LoanSubmission extends BaseLoanController
     public function generate_form($idpinjaman)
     {
         $detail_pinjaman = $this->m_pinjaman->getPinjamanById($idpinjaman)[0];
-        $bunga = $this->m_param->getParamById(9)[0]->nilai/100;
-        $provisi = $this->m_param->getParamById(5)[0]->nilai/100;
+        $bunga = $this->m_param->getParamById(9)[0]->nilai / 100;
+        $provisi = $this->m_param->getParamById(5)[0]->nilai / 100;
 
         $detail_pinjaman->nik_peminjam = ($detail_pinjaman->nik_peminjam != null || $detail_pinjaman->nik_peminjam != '')
             ? $detail_pinjaman->nik_peminjam : '';
@@ -140,8 +141,8 @@ class LoanSubmission extends BaseLoanController
             'bunga' => $bunga,
             'provisi' => $provisi
         ];
-        
-        return view('anggota/partials/form-pinjaman', $data);
+
+        return view('anggota/pinjaman/partials/form-pinjaman', $data);
     }
 
     public function upload_form($idpinjaman)
@@ -150,7 +151,7 @@ class LoanSubmission extends BaseLoanController
         $file_2 = $this->request->getFile('slip_gaji');
         $status_pegawai = $this->account->status_pegawai;
         $file_3 = ($status_pegawai == 'kontrak') ? $this->request->getFile('form_kontrak') : false;
-        
+
         $confirmation3 = true;
         $data = [];
         $data_session = [];
@@ -173,9 +174,9 @@ class LoanSubmission extends BaseLoanController
                 $this->sendAlert('Ekstensi file tidak diizinkan', 'danger');
                 return redirect()->back();
             }
-            
+
             $cek_bukti = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_bukti;
-            
+
             if ($cek_bukti) {
                 unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_bukti);
             }
@@ -183,7 +184,7 @@ class LoanSubmission extends BaseLoanController
             $newName = $file_1->getRandomName();
             $file_1->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
             $form_bukti = $file_1->getName();
-            
+
             $alert = $this->sendAlert('Form Persetujuan berhasil diunggah', 'success', false);
             $confirmation = true;
         } else {
@@ -212,7 +213,7 @@ class LoanSubmission extends BaseLoanController
             }
 
             $cek_gaji = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->slip_gaji;
-            
+
             if ($cek_gaji) {
                 unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_gaji);
             }
@@ -220,16 +221,16 @@ class LoanSubmission extends BaseLoanController
             $newName = $file_2->getRandomName();
             $file_2->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
             $slip_gaji = $file_2->getName();
-            
+
             $alert2 = $this->sendAlert('Slip gaji berhasil diunggah', 'success', false);
             $confirmation2 = true;
         } else {
             $alert2 = $this->sendAlert('Slip gaji gagal diunggah', 'danger', false);
             $confirmation2 = false;
         }
-        
-        if ($file_3){
-            if ($file_3->isValid()) {	
+
+        if ($file_3) {
+            if ($file_3->isValid()) {
                 //cek tipe
                 $allowed_types = ['application/pdf'];
                 if (!in_array($file_3->getMimeType(), $allowed_types)) {
@@ -250,13 +251,13 @@ class LoanSubmission extends BaseLoanController
                 }
 
                 $cek_kontrak = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->form_kontrak;
-                
+
                 if ($cek_kontrak) {
                     unlink(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/' . $cek_kontrak);
                 }
-    
+
                 $newName = $file_3->getRandomName();
-                $file_3->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);                
+                $file_3->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/pinjaman/', $newName);
                 $form_kontrak = $file_3->getName();
                 $data += ['form_kontrak' => $form_kontrak];
 
@@ -268,7 +269,7 @@ class LoanSubmission extends BaseLoanController
 
                 $data_session += ['notif_kontrak' => $alert3];
                 $confirmation3 = false;
-            }	
+            }
         }
 
         if (!$confirmation || !$confirmation2 || !$confirmation3) {
@@ -290,16 +291,16 @@ class LoanSubmission extends BaseLoanController
 
             $this->createNotification(
                 $idpinjaman,
-                'Pengajuan pinjaman dari anggota '. $this->account->nama_lengkap,
+                'Pengajuan pinjaman dari anggota ' . $this->account->nama_lengkap,
                 1
             );
-            
+
             $data_session += [
                 'notif' => $alert,
                 'notif_gaji' => $alert2
             ];
         }
-        
+
         session()->setFlashdata($data_session);
         return redirect()->back();
     }

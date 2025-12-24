@@ -7,135 +7,227 @@ $(function () {
     return parts.join(decimalSeparator);
   };
 
-  // --- DataTable Initialization ---
-  // We keep using jQuery DataTables as requested
-  window.mainTable = $('#dataTable').DataTable({
-    ajax: {
-      url: BASE_URL + "anggota/pinjaman/data_pinjaman",
-      type: "POST",
-      data: function (d) { d.length = d.length || 10; }
-    },
-    autoWidth: false,
-    scrollX: true,
-    serverSide: true,
-    searching: false,
-    language: {
-      paginate: { first: "First", last: "Last", next: "Next", previous: "Prev" },
-      emptyTable: "Belum ada pengajuan pinjaman."
-    },
-    columnDefs: [{ orderable: false, targets: "_all", defaultContent: "-" }],
-    columns: [
-      {
-        title: "Tanggal",
-        data: "date_created",
-        render: function (data) {
-          // Tailwind Badge-like or simple text
-          return '<span class="text-xs font-bold text-slate-500">' + data + '</span>';
-        }
-      },
-      {
-        title: "Tipe",
-        data: "tipe_permohonan",
-        render: function (data) {
-          return '<span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-[10px] font-black uppercase tracking-wider">' + data + '</span>';
-        }
-      },
-      {
-        title: "Nominal",
-        data: "nominal",
-        render: function (data) {
-          return '<span class="font-black text-slate-800">Rp ' + numberFormat(data, 0) + '</span>';
-        }
-      },
-      {
-        title: "Status",
-        render: function (data, type, row) {
-          let status = row.status;
-          let text = '';
-          let color = 'bg-slate-100 text-slate-500';
+  // --- Custom Card List Logic ---
+  let currentPage = 0;
+  let pageSize = 10;
+  let searchTimer = null;
 
-          if (status == 0) { text = 'Ditolak'; color = 'bg-red-50 text-red-600'; }
-          else if (status == 1) { text = 'Upload Dokumen'; color = 'bg-yellow-50 text-yellow-600'; }
-          else if (status == 2) { text = 'Verifikasi'; color = 'bg-amber-50 text-amber-600'; }
-          else if (status == 3) { text = 'Acc Sekretariat'; color = 'bg-blue-50 text-blue-600'; }
-          else if (status == 4) { text = 'Berlangsung'; color = 'bg-emerald-50 text-emerald-600'; }
-          else if (status == 5) { text = 'Lunas'; color = 'bg-teal-50 text-teal-600'; }
-          else if (status >= 6) { text = 'Proses Pelunasan'; color = 'bg-cyan-50 text-cyan-600'; }
+  // Initialize
+  fetchLoans();
 
-          return `<span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${color}">${text}</span>`;
-        }
-      },
-      {
-        title: "Tenor",
-        data: "angsuran_bulanan",
-        render: function (data) {
-          return '<span class="font-bold text-slate-700">' + data + ' Bln</span>';
-        }
-      },
-      {
-        title: "Asuransi",
-        render: function (data, type, row) {
-          if (row.status >= 1) {
-            return `<button onclick="openAsuransiModal('${row.idpinjaman}')" class="text-xs font-bold text-blue-500 hover:text-blue-700 underline decoration-blue-200 decoration-2 underline-offset-2">Lihat</button>`;
-          }
-          return '-';
-        }
-      },
-      {
-        title: "Aksi",
-        className: "text-right",
-        render: function (data, type, row) {
-          let btns = '<div class="flex justify-end gap-2">';
+  // Search Listener
+  $('#searchInput').on('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      currentPage = 0;
+      fetchLoans();
+    }, 500);
+  });
 
-          // Detail
-          if (row.status >= 4) {
-            btns += `<a href="${BASE_URL}anggota/pinjaman/detail/${row.idpinjaman}" class="p-2 bg-slate-50 text-slate-500 rounded-lg hover:bg-slate-100 hover:text-blue-600"><i data-lucide="file-text" class="w-4 h-4"></i></a>`;
-          }
-
-          // Upload
-          if (row.status == 1) {
-            btns += `<button onclick="openUploadModal('${row.idpinjaman}')" class="p-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100" title="Upload Form"><i data-lucide="upload" class="w-4 h-4"></i></button>`;
-            btns += `<a href="${BASE_URL}anggota/pinjaman/generate-form/${row.idpinjaman}" target="_blank" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100" title="Download Form"><i data-lucide="printer" class="w-4 h-4"></i></a>`;
-          }
-
-          // Lunasi
-          if (row.status == 4) {
-            btns += `<button onclick="openLunasiModal('${row.idpinjaman}')" class="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100" title="Lunasi"><i data-lucide="check-circle" class="w-4 h-4"></i></button>`;
-          }
-
-          // Cancel
-          if (row.status == 1 || row.status == 2 || row.status == 3) {
-            btns += `<button onclick="openCancelModal('${row.idpinjaman}')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100" title="Batalkan"><i data-lucide="x-circle" class="w-4 h-4"></i></button>`;
-          }
-
-          // Detail Tolak
-          if (row.status == 0) {
-            btns += `<button onclick="openTolakDetail('${row.idpinjaman}')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100" title="Alasan Ditolak"><i data-lucide="alert-circle" class="w-4 h-4"></i></button>`;
-          }
-
-          btns += '</div>';
-          return btns;
-        }
-      }
-    ],
-    drawCallback: function () {
-      if (window.lucide) window.lucide.createIcons();
+  // Pagination Listeners
+  $('#prevBtn').on('click', function () {
+    if (currentPage > 0) {
+      currentPage--;
+      fetchLoans();
     }
   });
 
-  // History Table
-  window.riwayatTable = $('#riwayat_penolakan').DataTable({
-    ajax: { url: BASE_URL + "anggota/pinjaman/riwayat_penolakan", type: "POST" },
-    autoWidth: false, scrollX: true, serverSide: true, searching: false,
-    columnDefs: [{ orderable: false, targets: "_all", defaultContent: "-" }],
-    columns: [
-      { title: "Tanggal", data: "date_created" },
-      { title: "Tipe", data: "tipe_permohonan" },
-      { title: "Nominal", data: "nominal", render: function (d) { return 'Rp ' + numberFormat(d, 0); } },
-      { title: "Status", render: function () { return '<span class="text-red-500 font-bold text-xs uppercase">Ditolak</span>'; } },
-      { title: "Aksi", render: function (d, t, r) { return `<button onclick="openTolakDetail('${r.idpinjaman}')" class="text-xs font-bold text-red-500 underline">Lihat Alasan</button>`; } }
-    ]
+  $('#nextBtn').on('click', function () {
+    currentPage++;
+    fetchLoans();
   });
+
+  function fetchLoans() {
+    // Show Loading
+    $('#loadingState').removeClass('hidden');
+    $('#loanListContainer').addClass('hidden');
+    $('#emptyState').addClass('hidden');
+    $('#paginationContainer').addClass('hidden');
+
+    const searchValue = $('#searchInput').val();
+
+    $.ajax({
+      url: BASE_URL + "anggota/pinjaman/data_pinjaman",
+      type: "POST",
+      data: {
+        start: currentPage * pageSize,
+        length: pageSize,
+        draw: 1, // Dummy draw param for compatibility
+        search: { value: searchValue }
+      },
+      success: function (response) {
+        $('#loadingState').addClass('hidden');
+        renderLoans(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Fetch Error:", error);
+        $('#loadingState').addClass('hidden');
+        // Show error state or simple alert
+        alert("Gagal memuat data. Silakan coba lagi.");
+      }
+    });
+  }
+
+  function renderLoans(data) {
+    const list = data.data;
+    const totalRecords = data.recordsFiltered;
+    const container = $('#loanListContainer');
+
+    container.empty();
+
+    if (!list || list.length === 0) {
+      $('#emptyState').removeClass('hidden');
+      return;
+    }
+
+    list.forEach(loan => {
+      const card = renderLoanCard(loan);
+      container.append(card);
+    });
+
+    // Update Pagination
+    $('#loanListContainer').removeClass('hidden');
+    $('#paginationContainer').removeClass('hidden');
+
+    // Pagination Info
+    const startRecord = (currentPage * pageSize) + 1;
+    const endRecord = Math.min((currentPage + 1) * pageSize, totalRecords);
+    $('#pageInfo').text(`Menampilkan ${startRecord}-${endRecord} dari ${totalRecords} data`);
+
+    // Button states
+    $('#prevBtn').prop('disabled', currentPage === 0);
+    $('#nextBtn').prop('disabled', endRecord >= totalRecords);
+  }
+
+  function renderLoanCard(loan) {
+    // Status Logic
+    let statusColor = 'bg-slate-100 text-slate-500';
+    let statusText = '';
+    let statusStripe = 'bg-slate-300';
+    let statusIcon = 'loader';
+
+    if (loan.status == 0) {
+      statusText = 'Ditolak'; statusColor = 'bg-red-50 text-red-600'; statusStripe = 'bg-red-500'; statusIcon = 'x-circle';
+    } else if (loan.status == 1) {
+      statusText = 'Upload Dokumen'; statusColor = 'bg-yellow-50 text-yellow-600'; statusStripe = 'bg-yellow-500'; statusIcon = 'upload';
+    } else if (loan.status == 2) {
+      statusText = 'Verifikasi'; statusColor = 'bg-amber-50 text-amber-600'; statusStripe = 'bg-amber-500'; statusIcon = 'clock';
+    } else if (loan.status == 3) {
+      statusText = 'Acc Sekretariat'; statusColor = 'bg-blue-50 text-blue-600'; statusStripe = 'bg-blue-500'; statusIcon = 'check-circle-2';
+    } else if (loan.status == 4) {
+      statusText = 'Berlangsung'; statusColor = 'bg-emerald-50 text-emerald-600'; statusStripe = 'bg-emerald-500'; statusIcon = 'play-circle';
+    } else if (loan.status == 5) {
+      statusText = 'Lunas'; statusColor = 'bg-teal-50 text-teal-600'; statusStripe = 'bg-teal-500'; statusIcon = 'check-circle';
+    } else if (loan.status >= 6) {
+      statusText = 'Proses Pelunasan'; statusColor = 'bg-cyan-50 text-cyan-600'; statusStripe = 'bg-cyan-500'; statusIcon = 'refresh-cw';
+    }
+
+    // Money Formatting
+    const nominal = new Intl.NumberFormat('id-ID').format(loan.nominal);
+
+    // Actions Construction
+    let actions = '';
+
+    // Detail Button (Always for > 4 or generic logic)
+    if (loan.status >= 4) {
+      actions += `
+        <a href="${BASE_URL}anggota/pinjaman/detail/${loan.idpinjaman}" class="flex-1 py-2 rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+          <i data-lucide="file-text" class="w-4 h-4"></i> Detail
+        </a>`;
+    }
+
+    // Upload Action
+    if (loan.status == 1) {
+      actions += `
+        <button onclick="openUploadModal('${loan.idpinjaman}')" class="flex-1 py-2 rounded-xl bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition-colors flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest animate-pulse">
+          <i data-lucide="upload" class="w-4 h-4"></i> Upload
+        </button>
+        <a href="${BASE_URL}anggota/pinjaman/generate-form/${loan.idpinjaman}" target="_blank" class="flex-1 py-2 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+          <i data-lucide="printer" class="w-4 h-4"></i> Form
+        </a>`;
+    }
+
+    // Lunasi Action
+    if (loan.status == 4) {
+      actions += `
+        <button onclick="openLunasiModal('${loan.idpinjaman}')" class="flex-1 py-2 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Pelunasan
+        </button>`;
+    }
+
+    // Cancel Action
+    if (loan.status == 1 || loan.status == 2 || loan.status == 3) {
+      actions += `
+        <button onclick="openCancelModal('${loan.idpinjaman}')" class="flex-1 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+          <i data-lucide="x-circle" class="w-4 h-4"></i> Batalkan
+        </button>`;
+    }
+
+    // Reason Button (Ditolak)
+    if (loan.status == 0) {
+      actions += `
+        <button onclick="openTolakDetail('${loan.idpinjaman}')" class="flex-1 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i> Alasan
+        </button>`;
+    }
+
+    // Asuransi Button (Clearer Version)
+    let asuransiSection = '';
+    if (loan.status >= 1) {
+      asuransiSection = `
+        <button onclick="openAsuransiModal('${loan.idpinjaman}')" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cyan-50 text-cyan-600 hover:bg-cyan-100 transition-all text-[10px] font-black uppercase tracking-wider group">
+          <i data-lucide="shield" class="w-3.5 h-3.5 group-hover:scale-110 transition-transform"></i>
+          <span>Rincian Asuransi</span>
+        </button>`;
+    }
+
+    // HTML Template (Single Column Optimized)
+    return `
+      <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all relative overflow-hidden group">
+        <!-- Status Stripe -->
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 ${statusStripe}"></div>
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="flex items-start md:items-center gap-4 flex-1">
+            <div class="w-14 h-14 rounded-2xl ${statusColor} flex items-center justify-center shrink-0 shadow-sm">
+              <i data-lucide="${statusIcon}" class="w-7 h-7"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                 <h4 class="font-black text-slate-800 text-xl tracking-tight">Rp ${nominal}</h4>
+                 <span class="px-2 py-0.5 rounded ${statusColor} text-[10px] font-bold uppercase tracking-wide border border-current opacity-80">${statusText}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                  <i data-lucide="tag" class="w-3 h-3"></i> ${loan.tipe_permohonan}
+                </span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                  <i data-lucide="calendar" class="w-3 h-3"></i> ${loan.date_created}
+                </span>
+                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                  <i data-lucide="clock" class="w-3 h-3"></i> ${loan.angsuran_bulanan} Bln
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:items-end gap-3">
+            ${asuransiSection}
+            <div class="flex gap-2 w-full md:w-auto">
+              ${actions}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Re-init Icons after render
+  const originalRenderLoans = renderLoans;
+  renderLoans = function (data) {
+    originalRenderLoans(data);
+    if (window.lucide) window.lucide.createIcons();
+  }
 
   // --- Modal Actions ---
 

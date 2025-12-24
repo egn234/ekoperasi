@@ -60,6 +60,8 @@ $page = $page ?? '';
           ['id' => 'dashboard', 'label' => 'Beranda', 'icon' => 'home', 'url' => 'anggota/dashboard'],
           ['id' => 'simpanan', 'label' => 'Simpanan', 'icon' => 'wallet', 'url' => 'anggota/deposit/list'],
           ['id' => 'pinjaman', 'label' => 'Pinjaman', 'icon' => 'credit-card', 'url' => 'anggota/pinjaman/list'],
+          ['id' => 'closebook', 'label' => 'Tutup Buku', 'icon' => 'user-x', 'url' => 'anggota/closebook'],
+          ['id' => 'notifikasi', 'label' => 'Notifikasi', 'icon' => 'bell', 'url' => 'anggota/notification/list'],
           ['id' => 'profil', 'label' => 'Profil Saya', 'icon' => 'user-circle', 'url' => 'anggota/profile'],
         ];
       }

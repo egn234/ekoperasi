@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Anggota\DataServices;
 
 use App\Controllers\BaseController;
@@ -37,7 +38,11 @@ class LoanDataService extends BaseController
         // Fetch data from the model using $start and $length
         $model->where('idanggota', $this->account->iduser);
         $model->whereNotIn('status', [0]);
-        $data = $model->asArray()->findAll($length, $start);
+        // Priority 1: Status = 4 (Berlangsung) first
+        // Priority 2: Newest first (idpinjaman DESC)
+        $data = $model->orderBy('status = 4', 'DESC', false)
+            ->orderBy('idpinjaman', 'DESC')
+            ->asArray()->findAll($length, $start);
 
         // Total records (you can also use $model->countAll() for exact total)
         $model->where('idanggota', $this->account->iduser);
@@ -72,7 +77,7 @@ class LoanDataService extends BaseController
         // Fetch data from the model using $start and $length
         $model->where('idanggota', $this->account->iduser);
         $model->where('status', 0);
-        $data = $model->asArray()->findAll($length, $start);
+        $data = $model->orderBy('idpinjaman', 'DESC')->asArray()->findAll($length, $start);
 
         // Total records (you can also use $model->countAll() for exact total)
         $model->where('idanggota', $this->account->iduser);
@@ -118,17 +123,17 @@ class LoanDataService extends BaseController
             echo view('anggota/pinjaman/part-pinj-mod-tolak', $data);
         }
     }
-    
+
     public function add_pengajuan()
     {
         if ($_POST['id']) {
             $id = $_POST['id'];
-            
+
             // Get parameters for display
             $provisi = $this->m_param->getParamById(5)[0]; // Provisi
             $bulan_kelipatan_asuransi = $this->m_param->getParamById(11)[0]; // Bulan kelipatan asuransi
             $nominal_asuransi = $this->m_param->getParamById(12)[0]; // Nominal asuransi
-            
+
             $data = [
                 'duser' => $this->account,
                 'provisi' => $provisi,
