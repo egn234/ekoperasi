@@ -42,7 +42,12 @@
   <?= $this->renderSection('styles') ?>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased overflow-x-hidden">
+<?php
+$idGroup = session()->get('idgroup');
+$themeClass = ($idGroup == 2) ? 'theme-bendahara' : 'theme-admin';
+?>
+
+<body class="<?= $themeClass ?> bg-slate-50 text-slate-800 antialiased overflow-x-hidden">
 
   <!-- Mobile Sidebar Overlay -->
   <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 hidden transition-opacity opacity-0 backdrop-blur-sm"></div>

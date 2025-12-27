@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -18,7 +18,7 @@
 <div class="grid grid-cols-1 gap-8">
     <!-- Profile Card (Header) -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="h-32 bg-gradient-to-r from-emerald-600 to-teal-700"></div>
+        <div class="h-32 bg-theme-gradient"></div>
         <div class="px-6 pb-6 relative">
             <div class="flex flex-col sm:flex-row items-center sm:items-end -mt-12 sm:-mt-10 gap-6">
                 <div class="relative shrink-0">
@@ -37,11 +37,11 @@
 
                     <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-3 text-sm text-slate-500">
                         <div class="flex items-center gap-1.5">
-                            <i data-lucide="phone" class="w-4 h-4 text-emerald-500"></i>
+                            <i data-lucide="phone" class="w-4 h-4 text-theme-main"></i>
                             <span><?= $duser->nomor_telepon ?></span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <i data-lucide="mail" class="w-4 h-4 text-emerald-500"></i>
+                            <i data-lucide="mail" class="w-4 h-4 text-theme-main"></i>
                             <span><?= $duser->email ?></span>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
         <!-- Navigation Tabs -->
         <div class="px-6 border-t border-slate-100">
             <nav class="flex space-x-6 overflow-x-auto scroller-none" id="profileTabs">
-                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active-tab py-4 text-sm font-semibold text-emerald-600 border-b-2 border-emerald-600 transition-colors whitespace-nowrap">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active-tab py-4 text-sm font-semibold text-theme-main border-b-2 border-theme-main transition-colors whitespace-nowrap">
                     Detail Profil
                 </button>
                 <button onclick="switchTab('edit')" id="tab-edit" class="tab-btn py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent hover:border-slate-300 transition-colors whitespace-nowrap">

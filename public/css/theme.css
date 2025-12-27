@@ -5,6 +5,38 @@
 /* -----------------------------------------
    1. BACKGROUND ANIMATIONS & GRADIENTS
    ----------------------------------------- */
+:root {
+  /* Default Admin Theme (Blue) */
+  --theme-primary-start: #2563eb;
+  /* blue-600 */
+  --theme-primary-end: #3b82f6;
+  /* blue-500 */
+  --theme-secondary: #1e40af;
+  /* blue-800 */
+  --theme-accent: #60a5fa;
+  /* blue-400 */
+  --theme-bg-light: #eff6ff;
+  /* blue-50 */
+  --theme-text-main: #2563_eb;
+  /* blue-600 */
+}
+
+/* Bendahara Theme (Indigo/Violet) - Isolated */
+.theme-bendahara {
+  --theme-primary-start: #4338ca;
+  /* indigo-700 */
+  --theme-primary-end: #6366f1;
+  /* indigo-500 */
+  --theme-secondary: #312e81;
+  /* indigo-900 */
+  --theme-accent: #818cf8;
+  /* indigo-400 */
+  --theme-bg-light: #eef2ff;
+  /* indigo-50 */
+  --theme-text-main: #4f46e5;
+  /* indigo-600 */
+}
+
 .aurora-container {
   position: fixed;
   top: 0;
@@ -20,9 +52,36 @@
   background: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
 }
 
-.bg-blue-gradient {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+.bg-blue-gradient,
+.bg-theme-gradient {
+  background: linear-gradient(135deg, var(--theme-primary-start) 0%, var(--theme-primary-end) 100%);
 }
+
+/* Theme Utilities */
+.text-theme-main {
+  color: var(--theme-text-main) !important;
+}
+
+.bg-theme-light {
+  background-color: var(--theme-bg-light) !important;
+}
+
+.border-theme-main {
+  border-color: var(--theme-text-main) !important;
+}
+
+.hover\:text-theme-main:hover {
+  color: var(--theme-text-main) !important;
+}
+
+.hover\:bg-theme-light:hover {
+  background-color: var(--theme-bg-light) !important;
+}
+
+.group:hover .group-hover\:text-theme-main {
+  color: var(--theme-text-main) !important;
+}
+
 
 .bg-animate-blue {
   background: linear-gradient(-45deg, #1e40af, #2563eb, #3b82f6, #60a5fa);

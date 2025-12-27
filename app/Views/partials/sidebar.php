@@ -72,9 +72,9 @@ $page = $page ?? '';
       ?>
         <a href="<?= base_url($menu['url']) ?>"
           class="w-full flex items-center space-x-4 px-6 py-3 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest relative group overflow-hidden
-         <?= $isActive ? 'bg-blue-gradient text-white shadow-xl shadow-blue-200/50 scale-[1.02]' : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50' ?>">
+         <?= $isActive ? 'bg-theme-gradient text-white shadow-xl shadow-blue-200/50 scale-[1.02]' : 'text-slate-400 hover:text-theme-main hover:bg-theme-light' ?>">
 
-          <i data-lucide="<?= $menu['icon'] ?>" class="w-4 h-4 relative z-10 transition-colors <?= $isActive ? 'text-white' : 'group-hover:text-blue-600' ?>"></i>
+          <i data-lucide="<?= $menu['icon'] ?>" class="w-4 h-4 relative z-10 transition-colors <?= $isActive ? 'text-white' : 'group-hover:text-theme-main' ?>"></i>
           <span class="relative z-10 flex-1"><?= $menu['label'] ?></span>
 
           <?php if (($menu['id'] === 'notifikasi') && isset($notification_badges) && $notification_badges > 0): ?>
@@ -84,7 +84,7 @@ $page = $page ?? '';
           <?php endif; ?>
 
           <?php if (!$isActive): ?>
-            <div class="absolute inset-0 bg-blue-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left -z-0"></div>
+            <div class="absolute inset-0 bg-theme-light transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left -z-0"></div>
           <?php endif; ?>
         </a>
       <?php endforeach; ?>

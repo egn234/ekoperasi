@@ -1,31 +1,16 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('styles') ?>
-<!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <style>
-    div.dataTables_wrapper div.dataTables_filter input {
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-    }
-
-    div.dataTables_wrapper div.dataTables_length select {
-        border-radius: 0.5rem;
-        padding: 0.25rem 2rem 0.25rem 0.5rem;
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-    }
-
+    /* Table Styles */
     table.dataTable thead th {
-        border-bottom: 2px solid #e2e8f0 !important;
+        background-color: #f8fafc;
         color: #475569;
-        font-weight: 900;
+        font-weight: 800;
         text-transform: uppercase;
         font-size: 0.7rem;
         letter-spacing: 0.05em;
-        background-color: #f8fafc;
+        border-bottom: 2px solid #e2e8f0 !important;
         padding: 1rem !important;
     }
 
@@ -35,10 +20,6 @@
         border-bottom: 1px solid #f1f5f9;
         color: #1e293b;
         font-size: 0.875rem;
-    }
-
-    table.dataTable tr:hover td {
-        background-color: #f8fafc;
     }
 </style>
 <?= $this->endSection() ?>
