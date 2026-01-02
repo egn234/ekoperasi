@@ -25,21 +25,21 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
+        'csrf' => CSRF::class,
+        'toolbar' => DebugToolbar::class,
+        'honeypot' => Honeypot::class,
+        'invalidchars' => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'admin_auth'    => \App\Filters\AdminFilter::class,
-        'bendahara_auth'=> \App\Filters\BendaharaFilter::class,
-        'ketua_auth'    => \App\Filters\KetuaFilter::class,
-        'anggota_auth'  => \App\Filters\AnggotaFilter::class,
-        'login_auth'    => \App\Filters\LoginFilter::class,
-        'maintenance'   => \App\Filters\MaintenanceFilter::class,
-        'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
-        'pagecache'     => PageCache::class,
-        'performance'   => PerformanceMetrics::class,
+        'admin_auth' => \App\Filters\AdminFilter::class,
+        'bendahara_auth' => \App\Filters\BendaharaFilter::class,
+        'ketua_auth' => \App\Filters\KetuaFilter::class,
+        'anggota_auth' => \App\Filters\AnggotaFilter::class,
+        'login_auth' => \App\Filters\LoginFilter::class,
+        'maintenance' => \App\Filters\MaintenanceFilter::class,
+        'cors' => Cors::class,
+        'forcehttps' => ForceHTTPS::class,
+        'pagecache' => PageCache::class,
+        'performance' => PerformanceMetrics::class,
     ];
 
     /**
@@ -81,6 +81,7 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
+            'maintenance',
         ],
         'after' => [
             // 'honeypot',

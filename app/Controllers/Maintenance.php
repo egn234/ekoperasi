@@ -1,9 +1,9 @@
-<?php 
+<?php
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
 
-class maintenance extends Controller
+class Maintenance extends Controller
 {
     public function index()
     {

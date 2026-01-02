@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
@@ -30,20 +30,20 @@ class login extends Controller
     {
         // Load reCAPTCHA helper
         helper('recaptcha');
-        
+
         // Validate reCAPTCHA
         $recaptchaToken = request()->getPost('recaptcha_token');
         $validation = validate_recaptcha($recaptchaToken);
-        
+
         if (!$validation['success']) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Captcha tidak sesuai',
                     'status' => 'warning'
                 ]
             );
-            
+
             $error = ['notif_login' => $alert];
             session()->setFlashdata($error);
             return redirect()->to('/');
@@ -55,7 +55,7 @@ class login extends Controller
 
         if ($status != 0) {
             $user = $this->m_user->getUser($username)[0];
-            
+
             if (password_verify($pass, $user->pass)) {
                 if ($user->verified == 0) {
                     $alert = '
@@ -68,7 +68,7 @@ class login extends Controller
                     session()->setFlashdata('s_username', $username);
                     return redirect()->to('/');
                 }
-                
+
                 $flag = $user->flag;
                 if ($flag != 0) {
                     $userdata = [
@@ -80,19 +80,19 @@ class login extends Controller
                     ];
                     session()->set($userdata);
 
-                    if(password_needs_rehash($user->pass, PASSWORD_DEFAULT)){
+                    if (password_needs_rehash($user->pass, PASSWORD_DEFAULT)) {
                         $newHash = password_hash($pass, PASSWORD_DEFAULT);
-                        $this->m_user->updateUser($user->iduser, $newHash);
+                        $this->m_user->updateUser($user->iduser, ['pass' => $newHash]);
                     }
-                    
-                    if($user->idgroup == 1){
+
+                    if ($user->idgroup == 1) {
                         return redirect()->to('admin/dashboard');
                         echo session()->get('username');
-                    } elseif($user->idgroup == 2) {
+                    } elseif ($user->idgroup == 2) {
                         return redirect()->to('bendahara/dashboard');
-                    } elseif($user->idgroup == 3) {
+                    } elseif ($user->idgroup == 3) {
                         return redirect()->to('ketua/dashboard');
-                    } elseif($user->idgroup == 4) {
+                    } elseif ($user->idgroup == 4) {
                         $cek_new_user = $this->m_param_manasuka->where('idanggota', $userdata['iduser'])->get()->getResult();
                         if ($cek_new_user != null) {
                             return redirect()->to('anggota/dashboard');
@@ -160,17 +160,17 @@ class login extends Controller
         $nik = request()->getPost('nik');
         $email = request()->getPost('email');
         $nomor_telepon = request()->getPost('nomor_telepon');
-        
+
         // Load reCAPTCHA helper
         helper('recaptcha');
-        
+
         // Validate reCAPTCHA
         $recaptchaToken = request()->getPost('recaptcha_token');
         $validation = validate_recaptcha($recaptchaToken);
-        
+
         if (!$validation['success']) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Captcha tidak sesuai',
                     'status' => 'warning'
@@ -197,7 +197,7 @@ class login extends Controller
 
         if ($cek_data == 0) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'User tidak ditemukan',
                     'status' => 'danger'
@@ -212,8 +212,8 @@ class login extends Controller
             ->where('username', $username)
             ->where('pass_reset_status', 0)
             ->countAllResults();
-        
-        if($cek_token != 0) {
+
+        if ($cek_token != 0) {
             $token = bin2hex(random_bytes(16));
             $db = \Config\Database::connect();
             $builder = $db->table('tb_user');
@@ -224,15 +224,15 @@ class login extends Controller
         } else {
             $token = $this->m_user->where('username', $username)->get()->getResult()[0]->pass_reset_token;
         }
-        
+
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'Permintaan reset password berhasil, tolong buat password baru',
                 'status' => 'success'
             ]
         );
-        
+
         $data_session = [
             'username' => request()->getPost('username'),
             'notif' => $alert
@@ -245,16 +245,16 @@ class login extends Controller
     public function reset_password()
     {
         $token = request()->getGet('token');
-        
+
         if ($token == null) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Forbidden',
                     'status' => 'danger'
                 ]
             );
-            
+
             session()->setFlashdata('notif_login', $alert);
             return redirect()->to('/');
         }
@@ -271,14 +271,14 @@ class login extends Controller
     {
         // Load reCAPTCHA helper
         helper('recaptcha');
-        
+
         // Validate reCAPTCHA
         $recaptchaToken = request()->getPost('recaptcha_token');
         $validation = validate_recaptcha($recaptchaToken);
-        
+
         if (!$validation['success']) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Captcha tidak sesuai',
                     'status' => 'warning'
@@ -300,26 +300,26 @@ class login extends Controller
 
         if ($cek_token == 0) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Forbidden',
                     'status' => 'danger'
                 ]
             );
-            
+
             session()->setFlashdata('notif_login', $alert);
             return redirect()->to('/');
         }
 
         if ($pass != $pass2) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Konfirmasi password tidak sesuai',
                     'status' => 'danger'
                 ]
             );
-            
+
             session()->setFlashdata('notif', $alert);
             return redirect()->back();
         }
@@ -334,13 +334,13 @@ class login extends Controller
         ]);
 
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'Password berhasil diubah',
                 'status' => 'success'
             ]
         );
-        
+
         $data_session = ['notif_login' => $alert];
         session()->setFlashdata($data_session);
         return redirect()->to('/');
