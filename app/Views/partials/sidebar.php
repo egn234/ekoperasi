@@ -26,6 +26,8 @@ $page = $page ?? '';
       if ($idgroup == 1) { // Admin
         $menus = [
           ['id' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard', 'url' => 'admin/dashboard'],
+          ['id' => 'posts', 'label' => 'Postingan / Berita', 'icon' => 'newspaper', 'url' => 'admin/posts'],
+
           // User Management Group
           ['id' => 'user', 'label' => 'Data User', 'icon' => 'users', 'url' => 'admin/user/list'],
           ['id' => 'register', 'label' => 'Member Baru', 'icon' => 'user-plus', 'url' => 'admin/register/list'],
@@ -45,6 +47,8 @@ $page = $page ?? '';
       } elseif ($idgroup == 2) { // Bendahara
         $menus = [
           ['id' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard', 'url' => 'bendahara/dashboard'],
+          ['id' => 'posts', 'label' => 'Postingan / Berita', 'icon' => 'newspaper', 'url' => 'bendahara/posts'],
+
           ['id' => 'deposit', 'label' => 'Simpanan Anggota', 'icon' => 'users', 'url' => 'bendahara/deposit/list'],
           ['id' => 'pinjaman', 'label' => 'Verifikasi Pinjaman', 'icon' => 'check-circle', 'url' => 'bendahara/pinjaman/list'],
           ['id' => 'laporan', 'label' => 'Laporan', 'icon' => 'file-bar-chart', 'url' => 'bendahara/report/list'],
@@ -58,6 +62,8 @@ $page = $page ?? '';
       } else { // Anggota (Default)
         $menus = [
           ['id' => 'dashboard', 'label' => 'Beranda', 'icon' => 'home', 'url' => 'anggota/dashboard'],
+          ['id' => 'informasi', 'label' => 'Pusat Informasi', 'icon' => 'newspaper', 'url' => 'informasi'],
+
           ['id' => 'simpanan', 'label' => 'Simpanan', 'icon' => 'wallet', 'url' => 'anggota/deposit/list'],
           ['id' => 'pinjaman', 'label' => 'Pinjaman', 'icon' => 'credit-card', 'url' => 'anggota/pinjaman/list'],
           ['id' => 'closebook', 'label' => 'Tutup Buku', 'icon' => 'user-x', 'url' => 'anggota/closebook'],

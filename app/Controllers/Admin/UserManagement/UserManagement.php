@@ -200,4 +200,38 @@ class UserManagement extends BaseUserController
 
         return redirect()->back();
     }
+    /**
+     * Search user for Select2
+     */
+    public function search_user()
+    {
+        $term = $this->request->getGet('term') ?? '';
+
+        $model = $this->m_user;
+        $model->select('iduser, nama_lengkap, username, instansi');
+        $model->where('deleted', null);
+        $model->where('flag', 1); // Only active users
+
+        if (!empty($term)) {
+            $model->groupStart()
+                ->like('nama_lengkap', $term)
+                ->orLike('username', $term)
+                ->orLike('instansi', $term)
+                ->groupEnd();
+        }
+
+        $model->orderBy('nama_lengkap', 'ASC');
+        $model->limit(20);
+        $users = $model->asArray()->findAll();
+
+        $results = [];
+        foreach ($users as $user) {
+            $results[] = [
+                'id' => $user['iduser'],
+                'text' => $user['nama_lengkap'] . ' (' . $user['username'] . ') - ' . $user['instansi']
+            ];
+        }
+
+        return $this->response->setJSON(['results' => $results]);
+    }
 }
