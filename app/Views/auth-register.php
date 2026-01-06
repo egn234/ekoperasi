@@ -2,19 +2,15 @@
 
 <?= $this->section('content') ?>
 
-<div class="min-h-screen bg-sunrise-animate relative p-4 md:p-8 flex items-center justify-center">
-  <!-- Vanta Container -->
-  <div id="vanta-bg" class="absolute inset-0 z-0 w-full h-full pointer-events-none"></div>
-  <!-- Overlay -->
-  <div class="absolute inset-0 bg-white/10 z-[1] backdrop-blur-[1px]"></div>
+<div class="min-h-screen bg-slate-50 relative p-4 md:p-8 flex items-center justify-center">
 
-  <div class="relative z-10 w-full max-w-4xl bg-white/90 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/60 overflow-hidden">
+  <div class="relative z-10 w-full max-w-4xl bg-white rounded-[2.5rem] shadow-xl border border-slate-200 overflow-hidden">
 
     <div class="p-8 md:p-12">
       <!-- Header -->
       <div class="text-center mb-10">
         <a href="/" class="inline-block mb-4">
-          <img src="https://ekop.kopgiat.id//logo_giat.ico" alt="" class="h-12 w-auto mx-auto drop-shadow-md">
+          <img src="https://ekop.kopgiat.id//logo_giat.ico" alt="" class="h-12 w-auto mx-auto">
         </a>
         <h2 class="text-3xl font-black text-slate-900 tracking-tight">Registrasi Anggota</h2>
         <p class="text-slate-500 font-bold text-[10px] uppercase tracking-widest mt-2">Bergabung dengan Ekoperasi Giat</p>
@@ -39,34 +35,34 @@
           <div class="space-y-6">
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Nama Lengkap <span class="text-red-500">*</span></label>
-              <input type="text" name="nama_lengkap" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all placeholder:font-normal" value="<?= session()->getFlashdata('nama_lengkap') ?>" required>
+              <input type="text" name="nama_lengkap" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all placeholder:font-normal" value="<?= session()->getFlashdata('nama_lengkap') ?>" required>
             </div>
 
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Nomor KTP/NIK <span class="text-red-500">*</span></label>
-              <input type="number" name="nik" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all placeholder:font-normal" value="<?= session()->getFlashdata('nik') ?>" required>
+              <input type="number" name="nik" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all placeholder:font-normal" value="<?= session()->getFlashdata('nik') ?>" required>
             </div>
 
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">NIP</label>
-              <input type="number" name="nip" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all placeholder:font-normal" value="<?= session()->getFlashdata('nip') ?>">
+              <input type="number" name="nip" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all placeholder:font-normal" value="<?= session()->getFlashdata('nip') ?>">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Tempat Lahir <span class="text-red-500">*</span></label>
-                <input type="text" name="tempat_lahir" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('tempat_lahir') ?>" required>
+                <input type="text" name="tempat_lahir" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('tempat_lahir') ?>" required>
               </div>
               <div>
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Tgl Lahir <span class="text-red-500">*</span></label>
-                <input type="date" name="tanggal_lahir" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('tanggal_lahir') ?>" required>
+                <input type="date" name="tanggal_lahir" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('tanggal_lahir') ?>" required>
               </div>
             </div>
 
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Instansi <span class="text-red-500">*</span></label>
               <div class="relative">
-                <select name="instansi" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 appearance-none bg-none transition-all" required>
+                <select name="instansi" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 appearance-none bg-none transition-all" required>
                   <option value="" disabled selected>Pilih Instansi...</option>
                   <option value="YPT" <?= (session()->getFlashdata('instansi') == 'YPT') ? 'selected' : '' ?>>YPT</option>
                   <option value="Universitas Telkom" <?= (session()->getFlashdata('instansi') == 'Universitas Telkom') ? 'selected' : '' ?>>Universitas Telkom</option>
@@ -84,13 +80,13 @@
           <div class="space-y-6">
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Unit Kerja/Divisi <span class="text-red-500">*</span></label>
-              <input type="text" name="unit_kerja" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('unit_kerja') ?>" required>
+              <input type="text" name="unit_kerja" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('unit_kerja') ?>" required>
             </div>
 
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Jenis Kepegawaian <span class="text-red-500">*</span></label>
               <div class="relative">
-                <select name="status_pegawai" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 appearance-none transition-all" required>
+                <select name="status_pegawai" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 appearance-none transition-all" required>
                   <option value="" disabled selected>Pilih...</option>
                   <option value="tetap" <?= (session()->getFlashdata('status_pegawai') == 'tetap') ? 'selected' : '' ?>>Tetap</option>
                   <option value="kontrak" <?= (session()->getFlashdata('status_pegawai') == 'kontrak') ? 'selected' : '' ?>>Kontrak</option>
@@ -101,17 +97,17 @@
 
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Alamat <span class="text-red-500">*</span></label>
-              <textarea name="alamat" rows="2" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 resize-none transition-all" required><?= session()->getFlashdata('alamat') ?></textarea>
+              <textarea name="alamat" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 resize-none transition-all" required><?= session()->getFlashdata('alamat') ?></textarea>
             </div>
 
             <div class="grid grid-cols-3 gap-4">
               <div class="col-span-1">
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Bank <span class="text-red-500">*</span></label>
-                <input type="text" name="nama_bank" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('nama_bank') ?>" required>
+                <input type="text" name="nama_bank" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('nama_bank') ?>" required>
               </div>
               <div class="col-span-2">
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">No Rekening <span class="text-red-500">*</span></label>
-                <input type="number" name="no_rek" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('no_rek') ?>" required>
+                <input type="number" name="no_rek" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('no_rek') ?>" required>
               </div>
             </div>
           </div>
@@ -124,11 +120,11 @@
           <div class="space-y-6">
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">No. Telepon / WA <span class="text-red-500">*</span></label>
-              <input type="number" name="nomor_telepon" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('nomor_telepon') ?>" required>
+              <input type="number" name="nomor_telepon" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('nomor_telepon') ?>" required>
             </div>
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Email <span class="text-red-500">*</span></label>
-              <input type="email" name="email" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('email') ?>" required>
+              <input type="email" name="email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" value="<?= session()->getFlashdata('email') ?>" required>
             </div>
             <div>
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Username <span class="text-red-500">*</span></label>
@@ -141,7 +137,7 @@
             <div class="relative">
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Password <span class="text-red-500">*</span></label>
               <div class="relative">
-                <input type="password" name="pass" id="pass" minlength="8" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 pl-4 pr-12 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" required>
+                <input type="password" name="pass" id="pass" minlength="8" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-4 pr-12 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" required>
                 <button type="button" onclick="togglePassword('pass', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                   <i data-lucide="eye" class="w-5 h-5"></i>
                 </button>
@@ -151,7 +147,7 @@
             <div class="relative">
               <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block">Ulangi Password <span class="text-red-500">*</span></label>
               <div class="relative">
-                <input type="password" name="pass2" id="pass2" minlength="8" class="w-full bg-white/50 border border-slate-200 rounded-2xl py-3 pl-4 pr-12 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" required>
+                <input type="password" name="pass2" id="pass2" minlength="8" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-4 pr-12 focus:ring-2 focus:ring-orange-500 outline-none font-bold text-slate-800 transition-all" required>
                 <button type="button" onclick="togglePassword('pass2', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                   <i data-lucide="eye" class="w-5 h-5"></i>
                 </button>
@@ -284,7 +280,8 @@
 <?php endif; ?>
 
 <script>
-  // Init Vanta
+  // Init Vanta - DISABLED for performance
+  /*
   document.addEventListener('DOMContentLoaded', () => {
     if (window.VANTA) {
       window.VANTA.WAVES({
@@ -305,6 +302,7 @@
       });
     }
   });
+  */
 
   // Helper functions
   function togglePassword(inputId, btn) {
