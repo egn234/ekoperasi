@@ -106,13 +106,13 @@ class Registration extends Controller
 
         $data_session = ['notif' => $alert];
         session()->setFlashdata($data_session);
-        return redirect()->back();
+        return redirect()->to('admin/register/list');
     }
 
     public function detail_user()
     {
-        if ($_POST['rowid']) {
-            $id = $_POST['rowid'];
+        $id = $this->request->getPost('rowid');
+        if ($id) {
             $user = $this->m_user->getUserById($id)[0];
             $data = ['a' => $user];
             echo view('admin/register/part-verify-mod-detail', $data);

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Controllers\Bendahara\Profile;
 
@@ -40,7 +40,7 @@ class ProfileController extends Controller
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
-        
+
         return view('bendahara/prof/prof-detail', $data);
     }
 
@@ -50,46 +50,52 @@ class ProfileController extends Controller
      */
     public function update_proc()
     {
+        $config = new \Config\Encryption();
+        $encrypter = \Config\Services::encrypter($config);
+
         $alamat = request()->getPost('alamat');
         $nomor_telepon = request()->getPost('nomor_telepon');
+        $no_rek = request()->getPost('no_rek');
 
         $dataset = [
-            'nama_lengkap' => request()->getPost('nama_lengkap'),
+            'nama_lengkap' => strtoupper(request()->getPost('nama_lengkap')),
             'tempat_lahir' => request()->getPost('tempat_lahir'),
             'tanggal_lahir' => request()->getPost('tanggal_lahir'),
             'instansi' => request()->getPost('instansi'),
-            'alamat' => $alamat,
-            'nomor_telepon' => $nomor_telepon,
+            'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
+            'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
+            'nama_bank' => strtoupper(request()->getPost('nama_bank')),
+            'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
             'email' => request()->getPost('email'),
             'unit_kerja' => request()->getPost('unit_kerja')
         ];
-        
+
         //check duplicate nip
         $nip_baru = request()->getPost('nip');
 
-        if($nip_baru != null || $nip_baru != ''){
+        if ($nip_baru != null || $nip_baru != '') {
             $nip_awal = $this->account->nip;
 
-            if($nip_awal != $nip_baru){
+            if ($nip_awal != $nip_baru) {
                 $cek_nip = $this->m_user->select('count(iduser) as hitung')
-                    ->where("nip = '".$nip_baru."' AND iduser != ".$this->account->iduser)
+                    ->where("nip = '" . $nip_baru . "' AND iduser != " . $this->account->iduser)
                     ->get()->getResult()[0]->hitung;
 
                 if ($cek_nip == 0) {
                     $dataset += ['nip' => $nip_baru];
                 } else {
                     $alert = view(
-                        'partials/notification-alert', 
+                        'partials/notification-alert',
                         [
                             'notif_text' => 'NIP telah terdaftar',
                             'status' => 'danger'
                         ]
                     );
-                    
+
                     $data_session = ['notif' => $alert];
                     session()->setFlashdata($data_session);
                     return redirect()->back();
-                }	
+                }
             }
         }
 
@@ -99,20 +105,20 @@ class ProfileController extends Controller
 
         if ($nik_baru != $nik_awal) {
             $cek_nik = $this->m_user->select('count(iduser) as hitung')
-                ->where("nik = '".$nik_baru."' AND iduser != ".$this->account->iduser)
+                ->where("nik = '" . $nik_baru . "' AND iduser != " . $this->account->iduser)
                 ->get()->getResult()[0]->hitung;
 
             if ($cek_nik == 0) {
                 $dataset += ['nik' => $nik_baru];
-            }else{
+            } else {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'NIK telah terdaftar',
                         'status' => 'danger'
                     ]
                 );
-                
+
                 $data_session = ['notif' => $alert];
                 session()->setFlashdata($data_session);
                 return redirect()->back();
@@ -126,9 +132,9 @@ class ProfileController extends Controller
             $allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
             if (!in_array($img->getMimeType(), $allowed_types)) {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
-                        'notif_text' => 'format gambar tidak sesuai', 
+                        'notif_text' => 'format gambar tidak sesuai',
                         'status' => 'danger'
                     ]
                 );
@@ -138,13 +144,13 @@ class ProfileController extends Controller
                 session()->setFlashdata($data_session);
                 return redirect()->back();
             }
-            
+
             // cek ukuran
             if ($img->getSize() > 1000000) {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
-                        'notif_text' => 'ukuran gambar tidak sesuai', 
+                        'notif_text' => 'ukuran gambar tidak sesuai',
                         'status' => 'danger'
                     ]
                 );
@@ -167,15 +173,15 @@ class ProfileController extends Controller
 
         $dataset += ['updated' => date('Y-m-d H:i:s')];
         $this->m_user->updateUser($this->account->iduser, $dataset);
-        
+
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'data pengguna berhasil diubah',
                 'status' => 'success'
             ]
         );
-        
+
         $data_session = ['notif' => $alert];
         session()->setFlashdata($data_session);
         return redirect()->to('bendahara/profile');
@@ -194,31 +200,29 @@ class ProfileController extends Controller
         $dataset = [];
         $cek_pass = $this->m_user->getPassword($this->account->iduser)[0]->pass;
 
-        if (!password_verify($old_pass, $cek_pass))
-        {
+        if (!password_verify($old_pass, $cek_pass)) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Password lama salah',
                     'status' => 'danger'
                 ]
             );
-            
+
             $dataset += ['notif' => $alert];
             session()->setFlashdata($dataset);
             return redirect()->to('bendahara/profile');
         }
 
-        if ($pass != $pass2)
-        {
+        if ($pass != $pass2) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Password baru tidak sama',
                     'status' => 'danger'
                 ]
             );
-            
+
             $dataset += ['notif' => $alert];
             session()->setFlashdata($dataset);
             return redirect()->to('bendahara/profile');
@@ -227,13 +231,13 @@ class ProfileController extends Controller
         $this->m_user->update($this->account->iduser, ['pass' => password_hash($pass, PASSWORD_DEFAULT)]);
 
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'Password berhasil diubah',
                 'status' => 'success'
             ]
         );
-        
+
         $dataset += ['notif' => $alert];
         session()->setFlashdata($dataset);
         return redirect()->to('bendahara/profile');

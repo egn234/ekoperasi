@@ -19,10 +19,12 @@ const ModalHelper = {
 
       const content = document.createElement('div');
       content.id = this.contentId;
-      content.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto animate-fade-in-up';
+      content.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl max-h-[90vh] flex flex-col animate-fade-in-up overflow-hidden';
       content.innerHTML = `
-                <div id="${this.containerId}"></div>
-                <button onclick="ModalHelper.close()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <div class="overflow-y-auto p-6 md:p-8 w-full h-full">
+                    <div id="${this.containerId}"></div>
+                </div>
+                <button onclick="ModalHelper.close()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors z-10 glass-effect">
                     <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
                 </button>
             `;

@@ -40,7 +40,7 @@ $statusMap = [
 $theme = $statusMap[$status] ?? $statusMap['info'];
 ?>
 
-<div class="mb-6 p-4 rounded-2xl border <?= $theme['bg'] ?> <?= $theme['border'] ?> backdrop-blur-sm flex items-start gap-4 shadow-sm relative group overflow-hidden transition-all duration-300 hover:shadow-md animate-fade-in-up">
+<div class="mb-6 p-4 rounded-3xl border <?= $theme['bg'] ?> <?= $theme['border'] ?> backdrop-blur-sm flex items-start gap-4 shadow-sm relative group overflow-hidden transition-all duration-300 hover:shadow-md animate-fade-in-up">
 	<!-- Icon -->
 	<div class="flex-shrink-0 w-10 h-10 rounded-xl <?= $theme['icon_bg'] ?> flex items-center justify-center <?= $theme['icon_text'] ?>">
 		<i data-lucide="<?= $theme['icon'] ?>" class="w-5 h-5"></i>

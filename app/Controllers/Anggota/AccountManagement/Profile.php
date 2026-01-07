@@ -44,6 +44,9 @@ class Profile extends BaseController
 
     public function update_proc()
     {
+        $config = new \Config\Encryption();
+        $encrypter = \Config\Services::encrypter($config);
+
         $alamat = request()->getPost('alamat');
         $nomor_telepon = request()->getPost('nomor_telepon');
         $no_rek = request()->getPost('no_rek');
@@ -54,10 +57,10 @@ class Profile extends BaseController
             'tanggal_lahir' => request()->getPost('tanggal_lahir'),
             'status_pegawai' => request()->getPost('status_pegawai'),
             'instansi' => request()->getPost('instansi'),
-            'alamat' => $alamat,
+            'alamat' => ($alamat != null || $alamat != '') ? base64_encode($encrypter->encrypt($alamat)) : '',
             'nama_bank' => strtoupper(request()->getPost('nama_bank')),
-            'no_rek' => $no_rek,
-            'nomor_telepon' => $nomor_telepon,
+            'no_rek' => ($no_rek != null || $no_rek != '') ? base64_encode($encrypter->encrypt($no_rek)) : '',
+            'nomor_telepon' => ($nomor_telepon != null || $nomor_telepon != '') ? base64_encode($encrypter->encrypt($nomor_telepon)) : '',
             'email' => request()->getPost('email'),
             'unit_kerja' => request()->getPost('unit_kerja')
         ];
@@ -66,15 +69,16 @@ class Profile extends BaseController
         $nip_baru = $this->request->getPost('nip');
 
         if ($nip_baru != null || $nip_baru != '') {
+            $nip_baru_enc = base64_encode($encrypter->encrypt($nip_baru));
             $nip_awal = $this->account->nip;
 
             if ($nip_awal != $nip_baru) {
                 $cek_nip = $this->m_user->select('count(iduser) as hitung')
-                    ->where("nip = '" . $nip_baru . "' AND iduser != " . $this->account->iduser)
+                    ->where("nip = '" . $nip_baru_enc . "' AND iduser != " . $this->account->iduser)
                     ->get()->getResult()[0]->hitung;
 
                 if ($cek_nip == 0) {
-                    $dataset += ['nip' => $nip_baru];
+                    $dataset += ['nip' => $nip_baru_enc];
                 } else {
                     $alert = view(
                         'partials/notification-alert',
@@ -99,12 +103,13 @@ class Profile extends BaseController
         $nik_awal = $this->account->nik;
 
         if ($nik_baru != $nik_awal) {
+            $nik_baru_enc = base64_encode($encrypter->encrypt($nik_baru));
             $cek_nik = $this->m_user->select('count(iduser) as hitung')
-                ->where("nik = '" . $nik_baru . "' AND iduser != " . $this->account->iduser)
+                ->where("nik = '" . $nik_baru_enc . "' AND iduser != " . $this->account->iduser)
                 ->get()->getResult()[0]->hitung;
 
             if ($cek_nik == 0) {
-                $dataset += ['nik' => $nik_baru];
+                $dataset += ['nik' => $nik_baru_enc];
             } else {
                 $alert = view(
                     'partials/notification-alert',

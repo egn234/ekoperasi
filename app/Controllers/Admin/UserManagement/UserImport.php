@@ -105,8 +105,15 @@ class UserImport extends BaseUserController
                             helper('filesystem');
                             $imgSource = FCPATH . 'assets/images/users/image.jpg';
 
-                            mkdir(FCPATH . 'uploads/user/' . $dataset['username'], 0777);
-                            mkdir(FCPATH . 'uploads/user/' . $dataset['username'] . '/profil_pic', 0777);
+                            $userDir = FCPATH . 'uploads/user/' . $dataset['username'];
+                            if (!is_dir($userDir)) {
+                                mkdir($userDir, 0777, true);
+                            }
+
+                            $profilPicDir = $userDir . '/profil_pic';
+                            if (!is_dir($profilPicDir)) {
+                                mkdir($profilPicDir, 0777, true);
+                            }
 
                             $imgDest = FCPATH . 'uploads/user/' . $dataset['username'] . '/profil_pic/image.jpg';
                             copy($imgSource, $imgDest);
