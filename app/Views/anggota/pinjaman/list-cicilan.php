@@ -5,7 +5,7 @@ use App\Models\M_pinjaman;
 $m_pinjaman = new M_pinjaman();
 ?>
 
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/member') ?>
 
 <?= $this->section('content') ?>
 
@@ -56,26 +56,29 @@ $m_pinjaman = new M_pinjaman();
         <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
           <div class="space-y-4">
             <?php foreach ($list_cicilan2 as $k) : ?>
-              <div class="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-lg transition-all group">
+              <div class="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-lg transition-all group">
                 <!-- Icon -->
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
+                  <i data-lucide="check-circle-2" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </div>
 
                 <!-- Main Info -->
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 mb-1">
-                    <h4 class="font-black text-slate-800">Cicilan Ke-<?= $k['counter'] ?></h4>
-                    <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider">Lunas</span>
+                  <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
+                    <h4 class="font-black text-slate-800 text-sm md:text-base">Cicilan Ke-<?= $k['counter'] ?></h4>
+                    <span class="inline-flex w-fit px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-700 text-[9px] md:text-[10px] font-black uppercase tracking-wider">Lunas</span>
                   </div>
-                  <p class="text-xs font-bold text-slate-400 uppercase tracking-wider"><?= $k['date'] ?></p>
+                  <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5"><?= $k['date'] ?></p>
                 </div>
 
                 <!-- Financials -->
-                <div class="text-left md:text-right shrink-0">
-                  <p class="text-sm font-black text-slate-800">Rp <?= number_format($k['total_saldo'], 0, ',', '.') ?></p>
-                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                <div class="text-right shrink-0">
+                  <p class="text-xs md:text-sm font-black text-slate-800 tracking-tight">Rp <?= number_format($k['total_saldo'], 0, ',', '.') ?></p>
+                  <p class="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity hidden md:block">
                     Sisa: Rp <?= number_format(round($detail_pinjaman->nominal - $k['saldo']), 0, ',', '.') ?>
+                  </p>
+                  <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 md:hidden">
+                    Sisa: <?= number_format(round($detail_pinjaman->nominal - $k['saldo']), 0, ',', '.') ?>
                   </p>
                 </div>
               </div>

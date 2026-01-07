@@ -61,11 +61,12 @@ $routes->group('admin', static function ($routes) {
     //GROUP KELOLA USER DI ADMIN
     $routes->group('user', static function ($routes) {
         // User Management Routes (List & Detail)
-        $routes->get('list', 'Admin\UserManagement\UserManagement::list');
-        $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook');
+        $routes->get('search', 'Admin\UserManagement\UserManagement::search_user', ['as' => 'admin_user_search']);
+        $routes->get('list', 'Admin\UserManagement\UserManagement::list', ['as' => 'admin_user_list']);
+        $routes->get('closebook-list', 'Admin\UserManagement\UserManagement::list_closebook', ['as' => 'admin_user_closebook_list']);
         $routes->add('data_user', 'Admin\UserManagement\UserManagement::data_user');
-        $routes->post('switch_user_confirm', 'Admin\UserManagement\UserManagement::konfirSwitch');
-        $routes->post('delete_user_confirm', 'Admin\UserManagement\UserManagement::delete_user_confirm');
+        $routes->add('switch_user_confirm', 'Admin\UserManagement\UserManagement::konfirSwitch');
+        $routes->add('delete_user_confirm', 'Admin\UserManagement\UserManagement::delete_user_confirm');
         $routes->get('delete_user/(:num)', 'Admin\UserManagement\UserManagement::delete_user/$1');
         $routes->get('clean_inactive_users', 'Admin\UserManagement\UserManagement::clean_inactive_users');
 
@@ -154,13 +155,24 @@ $routes->group('admin', static function ($routes) {
         $routes->post('print-rekening-koran', 'Admin\ReportManagement\ReportExport::print_rekening_koran');
     });
 
-    //GROUP NOTIFICATION
+    //GROUP Notification
     $routes->group('notification', static function ($routes) {
         $routes->get('list', 'Admin\Core\Notifications::notification_list');
         $routes->get('mark-all-read', 'Admin\Core\Notifications::mark_all_read');
         $routes->post('mark-as-read', 'Admin\Core\Notifications::mark_as_read');
         $routes->get('tbl/mark-all-read', 'Admin\Core\Notifications::mark_all_read_table');
         $routes->post('tbl/mark-as-read', 'Admin\Core\Notifications::mark_as_read_table');
+    });
+
+    //GROUP POST MANAGEMENT
+    $routes->group('posts', static function ($routes) {
+        $routes->get('/', 'Admin\PostManagement\PostManagement::index');
+        $routes->get('create', 'Admin\PostManagement\PostManagement::create');
+        $routes->post('store', 'Admin\PostManagement\PostManagement::store');
+        $routes->get('edit/(:num)', 'Admin\PostManagement\PostManagement::edit/$1');
+        $routes->post('update/(:num)', 'Admin\PostManagement\PostManagement::update/$1');
+        $routes->get('delete/(:num)', 'Admin\PostManagement\PostManagement::delete/$1');
+        $routes->post('upload-image', 'Admin\PostManagement\PostManagement::uploadImage');
     });
 });
 
@@ -176,6 +188,17 @@ $routes->group('bendahara', static function ($routes) {
     $routes->get('profile', 'Bendahara\Profile\ProfileController::index');
     $routes->post('profile/edit_proc', 'Bendahara\Profile\ProfileController::update_proc');
     $routes->post('profile/edit_pass', 'Bendahara\Profile\ProfileController::update_pass');
+
+    // POSTS (Reusing Admin Controller Logic via inheritance)
+    $routes->group('posts', static function ($routes) {
+        $routes->get('/', 'Bendahara\PostManagement\PostManagement::index');
+        $routes->get('create', 'Bendahara\PostManagement\PostManagement::create');
+        $routes->post('store', 'Bendahara\PostManagement\PostManagement::store');
+        $routes->get('edit/(:num)', 'Bendahara\PostManagement\PostManagement::edit/$1');
+        $routes->post('update/(:num)', 'Bendahara\PostManagement\PostManagement::update/$1');
+        $routes->get('delete/(:num)', 'Bendahara\PostManagement\PostManagement::delete/$1');
+        $routes->post('upload-image', 'Bendahara\PostManagement\PostManagement::uploadImage');
+    });
 
     // Parameter Management Routes (UNIQUE to Bendahara)
     $routes->get('parameter', 'Bendahara\ParameterManagement\ParameterController::index');
@@ -273,8 +296,14 @@ $routes->group('ketua', static function ($routes) {
 $routes->group('anggota', static function ($routes) {
     // Core Routes
     $routes->get('dashboard', 'Anggota\Core\Dashboard::index');
-    $routes->get('notification/mark-all-read', 'Anggota\Core\Notifications::mark_all_read');
-    $routes->post('notification/mark-as-read', 'Anggota\Core\Notifications::mark_as_read');
+    // Notification Routes
+    $routes->group('notification', static function ($routes) {
+        $routes->get('list', 'Anggota\Core\Notifications::notification_list');
+        $routes->get('mark-all-read', 'Anggota\Core\Notifications::mark_all_read');
+        $routes->post('mark-as-read', 'Anggota\Core\Notifications::mark_as_read');
+        $routes->get('tbl/mark-all-read', 'Anggota\Core\Notifications::mark_all_read_table');
+        $routes->post('tbl/mark-as-read', 'Anggota\Core\Notifications::mark_as_read_table');
+    });
 
     // Account Management - Profile Routes
     $routes->get('profile', 'Anggota\AccountManagement\Profile::index');
@@ -336,4 +365,12 @@ $routes->group('anggota', static function ($routes) {
         $routes->post('detail_tolak', 'Anggota\DataServices\LoanDataService::detail_tolak');
         $routes->post('add_pengajuan', 'Anggota\DataServices\LoanDataService::add_pengajuan');
     });
+
+    // POSTS (Informasi)
+    $routes->get('informasi', 'PostController::index');
+    $routes->get('informasi/(:segment)', 'PostController::detail/$1');
 });
+
+// PUBLIC POST Routes (accessible without login if public, but controller checks login for restricted)
+$routes->get('informasi', 'PostController::index');
+$routes->get('informasi/(:segment)', 'PostController::detail/$1');

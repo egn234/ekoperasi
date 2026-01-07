@@ -1,15 +1,10 @@
-<?= $this->extend('layout/main') ?>
-
-<?= $this->section('styles') ?>
-<!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<?= $this->endSection() ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
 <div class="space-y-8 pb-20">
   <!-- Header -->
-  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
     <div>
       <h1 class="text-3xl font-black text-slate-800 tracking-tight">Verifikasi Anggota Baru</h1>
       <p class="text-slate-500 font-medium">Daftar pengguna baru yang menunggu verifikasi admin.</p>
@@ -36,8 +31,8 @@
           <tr>
             <th>No</th>
             <th>User</th>
-            <th>Instansi</th>
             <th>Kontak</th>
+            <th>Instansi</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -47,27 +42,14 @@
   </div>
 </div>
 
-<!-- Native Modal Container -->
-<div id="dynamic-modal-overlay" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-<div id="dynamic-modal-content" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-  <div id="modal-container"></div>
-  <button onclick="closeNativeModal()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
-    <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-  </button>
-</div>
+<!-- Modals managed by modal-native.js -->
 
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Native Modal Logic -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
-
 <script>
   function closeNativeModal() {
-    $('#dynamic-modal-overlay, #dynamic-modal-content').addClass('hidden');
+    ModalHelper.close();
   }
 
   function openDetailModal(id) {
@@ -83,9 +65,14 @@
         type: "POST"
       },
       autoWidth: false,
-      scrollX: true,
       serverSide: true,
+      // Unified DOM Layout
+      dom: '<"flex justify-between items-center gap-4 mb-4"lf><"rounded-xl border border-slate-100"t><"flex justify-between items-center gap-4 mt-4"ip>',
       language: {
+        search: "",
+        searchPlaceholder: "Cari Pendaftar...",
+        lengthMenu: "_MENU_",
+        info: "_START_ - _END_ dari _TOTAL_",
         paginate: {
           first: '<<',
           last: '>>',
@@ -95,57 +82,74 @@
       },
       drawCallback: function() {
         if (window.lucide) window.lucide.createIcons();
-        $('.dataTables_filter input').addClass('focus:ring-2 focus:ring-blue-500 focus:outline-none');
+        $('.dataTables_filter input').addClass('px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500');
       },
       columnDefs: [{
         orderable: false,
-        targets: "_all",
-        defaultContent: "-",
+        targets: [0, 4],
+        searchable: false
       }],
       columns: [{
           title: "No",
-          width: "5%",
+          width: "50px",
+          className: "text-center",
           render: function(data, type, row, meta) {
-            return `<span class="font-bold text-slate-500">${meta.row + 1}</span>`;
+            return `<span class="font-bold text-slate-400 text-xs">${meta.row + 1}</span>`;
           }
         },
         {
           title: "User",
           render: function(data, type, row) {
-            return `<div class="flex items-center gap-3">
-                                  <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
-                                    ${row.username.substring(0,2)}
-                                  </div>
-                                  <div>
-                                    <p class="font-bold text-slate-900 text-sm">${row.nama_lengkap}</p>
-                                    <p class="text-xs text-slate-400">${row.username}</p>
-                                  </div>
-                                </div>`;
+            let profilePic = row.profil_pic ? `<?= base_url() ?>/uploads/user/${row.username}/profil_pic/${row.profil_pic}` : `<?= base_url('assets/images/users/avatar-1.jpg') ?>`;
+            return `<div class="flex items-center gap-4">
+                      <div class="relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full opacity-20 group-hover:opacity-40 transition-opacity blur"></div>
+                        <div class="relative w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                          <img src="${profilePic}" 
+                               alt="${row.username}" 
+                               class="w-full h-full object-cover"
+                               onerror="this.src='<?= base_url('assets/images/users/avatar-1.jpg') ?>'">
+                        </div>
+                      </div>
+                      <div class="flex flex-col">
+                        <p class="font-bold text-slate-900 text-sm leading-tight">${row.nama_lengkap}</p>
+                        <p class="text-[11px] font-medium text-slate-400">@${row.username}</p>
+                      </div>
+                    </div>`;
+          }
+        },
+        {
+          title: "Kontak",
+          render: function(data, type, row) {
+            return `<div class="flex flex-col gap-0.5">
+                      <div class="flex items-center gap-1.5 text-slate-600">
+                        <i data-lucide="mail" class="w-3 h-3"></i>
+                        <p class="text-xs font-medium truncate max-w-[150px]">${row.email || '-'}</p>
+                      </div>
+                      <div class="flex items-center gap-1.5 text-slate-400">
+                        <i data-lucide="phone" class="w-3 h-3 text-slate-300"></i>
+                        <p class="text-[10px] font-bold tracking-tight">${row.nomor_telepon || '-'}</p>
+                      </div>
+                    </div>`;
           }
         },
         {
           title: "Instansi",
           data: "instansi",
           render: function(d) {
-            return `<span class="text-xs font-medium text-slate-600">${d}</span>`;
-          }
-        },
-        {
-          title: "Kontak",
-          render: function(data, type, row) {
-            return `<div>
-                                  <p class="text-xs text-slate-700 break-words">${row.email}</p>
-                                  <p class="text-[10px] text-slate-400">${row.nomor_telepon}</p>
-                                </div>`;
+            return `<div class="flex items-center gap-2">
+                      <div class="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
+                      <span class="text-xs font-bold text-slate-600 tracking-tight">${d || '-'}</span>
+                    </div>`;
           }
         },
         {
           title: "Aksi",
           className: "text-right",
           render: function(data, type, row, full) {
-            return `<button onclick="openDetailModal('${row.iduser}')" class="px-3 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-2 ml-auto">
-                                    <i data-lucide="search" class="w-4 h-4"></i> Detail
-                                </button>`;
+            return `<button onclick="openDetailModal('${row.iduser}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm ml-auto" title="Detail Verifikasi Registration">
+                      <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                    </button>`;
           }
         }
       ]

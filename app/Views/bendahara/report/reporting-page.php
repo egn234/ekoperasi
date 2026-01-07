@@ -1,7 +1,6 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('styles') ?>
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 <style>
     /* Tailwind adaptation for DataTables */
     div.dataTables_wrapper div.dataTables_filter input {

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Anggota\DepositManagement;
 
 use CodeIgniter\Controller;
@@ -46,12 +47,7 @@ abstract class BaseDepositController extends Controller
     protected function getBaseViewData(string $title, string $subtitle = 'Simpanan'): array
     {
         return [
-            'title_meta' => view('anggota/partials/title-meta', ['title' => $title]),
-            'page_title' => view('anggota/partials/page-title', [
-                'title' => $title,
-                'li_1' => 'EKoperasi',
-                'li_2' => $subtitle
-            ]),
+            'title' => $title,
             'notification_list' => $this->notification->index()['notification_list'],
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
@@ -67,7 +63,7 @@ abstract class BaseDepositController extends Controller
             'notif_text' => $message,
             'status' => $status
         ]);
-        
+
         session()->setFlashdata('notif', $alert);
     }
 

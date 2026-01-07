@@ -39,7 +39,7 @@
   <?= $this->renderSection('styles') ?>
 </head>
 
-<body class="bg-white text-slate-800 antialiased overflow-hidden font-sans">
+<body class="bg-white text-slate-800 antialiased font-sans">
 
   <?= $this->renderSection('content') ?>
 

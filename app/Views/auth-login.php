@@ -3,9 +3,9 @@
 <?= $this->section('content') ?>
 
 <!-- SPLASH SCREEN SECTION -->
-<div id="splash-screen" class="flex flex-col h-screen px-10 py-12 justify-between relative z-10 bg-white transition-opacity duration-500 ease-in-out">
+<div id="splash-screen" class="flex flex-col min-h-[100dvh] px-10 py-12 justify-between relative z-10 bg-white transition-opacity duration-500 ease-in-out">
   <div class="flex flex-col items-center animate-fade-in-down">
-    <img src="https://ekop.kopgiat.id//logo_giat.ico" alt="Logo Koperasi" class="w-20 h-20 object-contain drop-shadow-md">
+    <img src="https://ekop.kopgiat.id//logo_giat.ico" alt="Logo Koperasi" class="w-32 h-32 object-contain">
   </div>
 
   <div class="flex-1 flex flex-col items-center justify-center">
@@ -44,7 +44,7 @@
 </div>
 
 <!-- LOGIN SCREEN SECTION -->
-<div id="login-screen" class="hidden opacity-0 flex-col min-h-screen relative overflow-hidden bg-sunrise-animate transition-opacity duration-500 ease-in-out">
+<div id="login-screen" class="hidden opacity-0 flex-col min-h-[100dvh] relative bg-sunrise-animate transition-opacity duration-500 ease-in-out">
 
   <!-- Vanta Container -->
   <div id="vanta-bg" class="absolute inset-0 z-0 w-full h-full pointer-events-none"></div>
@@ -52,7 +52,7 @@
   <!-- Overlay -->
   <div class="absolute inset-0 bg-white/10 z-[1] backdrop-blur-[1px]"></div>
 
-  <div class="flex flex-col min-h-screen p-6 md:p-12 justify-center relative z-10">
+  <div class="flex flex-col min-h-[100dvh] p-6 md:p-12 justify-center relative z-10">
     <div class="max-w-md mx-auto w-full bg-white/90 backdrop-blur-3xl p-10 rounded-[3rem] shadow-2xl border border-white/60 relative">
       <button
         onclick="showSplashScreen()"
@@ -61,7 +61,7 @@
       </button>
 
       <div class="mb-10 text-center pt-4">
-        <img src="https://ekop.kopgiat.id//logo_giat.ico" alt="Logo" class="w-14 h-14 mx-auto mb-4 object-contain">
+        <img src="https://ekop.kopgiat.id/logo_giat.ico" alt="Logo" class="w-14 h-14 mx-auto mb-4 object-contain">
         <h2 class="text-3xl font-black text-slate-900 tracking-tight text-center">Login Anggota</h2>
         <p class="text-slate-500 font-bold text-[10px] uppercase tracking-widest mt-1">APLIKASI DIGITAL KOPERASI GIAT</p>
       </div>
@@ -84,7 +84,7 @@
               type="text"
               name="username"
               class="w-full bg-white/50 border border-slate-100 rounded-2xl py-4 pl-14 pr-4 focus:ring-2 focus:ring-orange-500 outline-none transition-all font-bold text-slate-900 placeholder-slate-300"
-              placeholder="KOP-XXXX-XXX"
+              placeholder="GIATXXXX"
               value="<?= old('username') ?>"
               required />
           </div>
@@ -117,6 +117,12 @@
           <div id="btn-loading" class="hidden w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
         </button>
       </form>
+
+      <div class="mt-8 text-center">
+        <a href="<?= base_url('registrasi') ?>" class="text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
+          Belum punya akun? <span class="text-animate-red-navy font-black underline underline-offset-4">Daftar sekarang</span>
+        </a>
+      </div>
 
       <div class="mt-8 pt-8 border-t border-slate-100 text-center">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">

@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -272,7 +272,9 @@
 <!-- Dynamic Modal Container (for AJAX content) -->
 <div id="dynamicModalContainer"></div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
   function openModal(id) {
     document.getElementById('modal-overlay').classList.remove('hidden');
@@ -318,11 +320,6 @@
   });
 
   // AJAX Modal Loading Wrappers
-  // Note: Since we don't have the partial definitions here, we assume the server returns a partial view.
-  // We will inject it into a container and show it.
-  // IMPORTANT: The returned partial likely relies on Bootstrap classes given the previous code.
-  // We might need to refactor those partials too. 
-  // AJAX to get detail mutasi
   function loadDetailMutasi(id) {
     $.ajax({
       type: 'POST',
@@ -331,9 +328,6 @@
         rowid: id
       },
       success: function(data) {
-        // Determine if we need to wrap it in a modal structure or if data returns the whole modal
-        // Usually these legacy controllers return just the body or the content.
-        // We will create a generic modal structure and inject content.
         showDynamicModal('Detail Transaksi', data);
       }
     });
@@ -372,30 +366,6 @@
     container.innerHTML = ''; // Clear content
     document.getElementById('modal-overlay').classList.add('hidden');
   }
-
-  // Placeholder functions for future implementations of Approve/Cancel/Upload
-  // These likely need specific modal partials or we can just implement them as confirm dialogs if simple.
-  // Check TransactionDeposit controller for routes.
-  // Routes:
-  // agree: admin/deposit/confirm/{id} ? No, wait.
-  // The legacy code used specific modals: #approveMutasi, #cancelMutasi, #uploadBT.
-  // We need to implement these.
-
-  // Simplification: We will just link to the legacy logic or if complex, alert user.
-  // But better: use the same simple modal pattern if the controller supports it.
-
-  // For now, I'll direct them to the detail view if complex logic is needed, or just standard alerts.
-  // Actually, let's implement the AJAX calls for those specific modals if they exist.
-  // The previous code had specific IDs and data-targets.
-
-  // Since I don't see the partials for approve/cancel here, I will assume they are similar to detail.
-  // Or I can hardcode simple confirm modals if the logic is just a form submission.
-
-  // Let's implement simple Confirm Modals for "Setujui" and "Tolak" if appropriate.
-  // Route for approve: admin/deposit/approve-mnsk (POST) ? Check routes.
-  // Route: admin/deposit/approve-mnsk
-  // Route: admin/deposit/cancel-mnsk
-  // These take POST data.
 
   function loadApproveMutasi(id) {
     const content = `
@@ -439,5 +409,4 @@
     showDynamicModal('Tolak Transaksi?', content);
   }
 </script>
-
 <?= $this->endSection() ?>

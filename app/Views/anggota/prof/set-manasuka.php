@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/member') ?>
 
 <?= $this->section('styles') ?>
 <script src="<?= base_url() ?>/assets/libs/imask/imask.min.js"></script>
@@ -110,7 +110,7 @@
         `;
 
         // Opens the modal
-        ModalHelper.open('confirm-modal', 'Konfirmasi', content);
+        ModalHelper.openContent(content);
 
         // Re-initialize icons inside modal
         lucide.createIcons();

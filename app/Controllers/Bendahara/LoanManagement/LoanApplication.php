@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Bendahara\LoanManagement;
 
 /**
@@ -19,7 +20,7 @@ class LoanApplication extends BaseLoanController
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
-        
+
         return view('bendahara/pinjaman/list-pinjaman', $data);
     }
 
@@ -45,14 +46,14 @@ class LoanApplication extends BaseLoanController
         $this->sendAlert(
             $anggota_id,
             $idpinjaman,
-            'Pengajuan pinjaman ditolak oleh bendahara '. $this->account->nama_lengkap,
+            'Pengajuan pinjaman ditolak oleh bendahara ' . $this->account->nama_lengkap,
             'Pengajuan pinjaman berhasil ditolak',
             'success'
         );
-        
+
         $this->markAdminNotificationsRead($idpinjaman);
 
-        return redirect()->back();
+        return redirect()->to(base_url('bendahara/pinjaman/list'));
     }
 
     /**
@@ -72,7 +73,7 @@ class LoanApplication extends BaseLoanController
             ->get()
             ->getResult()[0]
             ->idanggota;
-        
+
         $username_anggota = $this->m_user->where('iduser', $idanggota)
             ->get()
             ->getResult()[0]
@@ -81,20 +82,20 @@ class LoanApplication extends BaseLoanController
         $bukti_tf = request()->getFile('bukti_tf') ? request()->getFile('bukti_tf') : false;
         $data_session = [];
 
-        if($bukti_tf){
-            if ($bukti_tf->isValid()) {	
+        if ($bukti_tf) {
+            if ($bukti_tf->isValid()) {
                 // Validate file type
                 $allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
 
                 if (!in_array($bukti_tf->getMimeType(), $allowed_types)) {
                     $alert = view(
-                        'partials/notification-alert', 
+                        'partials/notification-alert',
                         [
-                            'notif_text' => 'Tipe file tidak diizinkan', 
+                            'notif_text' => 'Tipe file tidak diizinkan',
                             'status' => 'danger'
                         ]
                     );
-                    
+
                     $data_session = ['notif' => $alert];
                     session()->setFlashdata($data_session);
                     return redirect()->back();
@@ -103,13 +104,13 @@ class LoanApplication extends BaseLoanController
                 // Validate file size
                 if ($bukti_tf->getSize() > 1000000) {
                     $alert = view(
-                        'partials/notification-alert', 
+                        'partials/notification-alert',
                         [
-                            'notif_text' => 'Ukuran file tidak diizinkan', 
+                            'notif_text' => 'Ukuran file tidak diizinkan',
                             'status' => 'danger'
                         ]
                     );
-                    
+
                     $data_session = ['notif' => $alert];
                     session()->setFlashdata($data_session);
                     return redirect()->back();
@@ -118,9 +119,9 @@ class LoanApplication extends BaseLoanController
                 // Validate file extension
                 if ($bukti_tf->getExtension() !== 'jpg' && $bukti_tf->getExtension() !== 'jpeg' && $bukti_tf->getExtension() !== 'png') {
                     $alert = view(
-                        'partials/notification-alert', 
+                        'partials/notification-alert',
                         [
-                            'notif_text' => 'Ekstensi file tidak diizinkan', 
+                            'notif_text' => 'Ekstensi file tidak diizinkan',
                             'status' => 'danger'
                         ]
                     );
@@ -132,19 +133,19 @@ class LoanApplication extends BaseLoanController
 
                 // Delete old file if exists
                 $cek_tf = $this->m_pinjaman->getPinjamanById($idpinjaman)[0]->bukti_tf;
-                
+
                 if ($cek_tf) {
                     unlink(ROOTPATH . 'public/uploads/user/' . $username_anggota . '/pinjaman/' . $cek_tf);
                 }
-    
+
                 // Upload new file
                 $newName = $bukti_tf->getRandomName();
                 $bukti_tf->move(ROOTPATH . 'public/uploads/user/' . $username_anggota . '/pinjaman/', $newName);
-                
+
                 $bukti = $bukti_tf->getName();
                 $dataset += ['bukti_tf' => $bukti];
                 $alert3 = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'Bukti transfer berhasil dikirim',
                         'status' => 'success'
@@ -153,7 +154,7 @@ class LoanApplication extends BaseLoanController
                 $data_session += ['notif_tf' => $alert3];
             } else {
                 $alert3 = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'Bukti kontrak gagal diunggah',
                         'status' => 'danger'
@@ -165,13 +166,13 @@ class LoanApplication extends BaseLoanController
                 return redirect()->back();
             }
         }
-        
+
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
 
         $this->sendAlert(
             $idanggota,
             $idpinjaman,
-            'Pengajuan pinjaman diterima oleh bendahara '. $this->account->nama_lengkap,
+            'Pengajuan pinjaman diterima oleh bendahara ' . $this->account->nama_lengkap,
             'Pengajuan pinjaman berhasil disetujui',
             'success'
         );
@@ -233,7 +234,7 @@ class LoanApplication extends BaseLoanController
                 ->where('idpinjaman', $id)
                 ->get()
                 ->getResult()[0];
-            
+
             $data = [
                 'a' => $pinjaman,
                 'b' => $hitung_cicilan,
@@ -273,7 +274,7 @@ class LoanApplication extends BaseLoanController
             ->like('a.nama_lengkap', $searchValue)
             ->orLike('a.username', $searchValue);
         $model->groupEnd();
-        
+
         $model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
         $model->join('tb_user c', 'c.iduser = tb_pinjaman.idadmin', 'left');
         $model->join('tb_user d', 'd.iduser = tb_pinjaman.idbendahara', 'left');
@@ -283,12 +284,12 @@ class LoanApplication extends BaseLoanController
         $recordsTotal = $model->countAllResults();
 
         $model->where('tb_pinjaman.status', 3);
-        
+
         $model->groupStart()
             ->like('a.nama_lengkap', $searchValue)
             ->orLike('a.username', $searchValue);
         $model->groupEnd();
-        
+
         $model->join('tb_user a', 'a.iduser = tb_pinjaman.idanggota');
         $recordsFiltered = $model->countAllResults();
 

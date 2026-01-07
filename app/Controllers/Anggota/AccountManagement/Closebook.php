@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Anggota\AccountManagement;
 
 use App\Controllers\BaseController;
@@ -27,11 +28,11 @@ class Closebook extends BaseController
         $this->m_param = model(M_param::class);
         $this->m_notification = model(M_notification::class);
         $this->m_pinjaman = model(M_pinjaman::class);
-        
+
         $this->notification = new Notifications();
 
         $user = $this->m_user->getUserById(session()->get('iduser'));
-        $this->account = !empty($user) ? $user[0] : null;     
+        $this->account = !empty($user) ? $user[0] : null;
     }
 
     public function index()
@@ -39,18 +40,17 @@ class Closebook extends BaseController
         $total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($this->account->iduser)[0]->saldo;
         $total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($this->account->iduser)[0]->saldo;
         $total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($this->account->iduser)[0]->saldo;
-        
+
         // Cek pinjaman aktif
         $pinjaman_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser);
         $jumlah_pinjaman_aktif = !empty($pinjaman_aktif) ? $pinjaman_aktif[0]->hitung : 0;
-        
+
         // Cek deposit pending
         $deposit_pending = $this->m_deposit->countDepositPendingByUser($this->account->iduser);
         $jumlah_deposit_pending = !empty($deposit_pending) ? $deposit_pending[0]->hitung : 0;
 
         $data = [
-            'title_meta' => view('anggota/partials/title-meta', ['title' => 'Tutup Buku']),
-            'page_title' => view('anggota/partials/page-title', ['title' => 'Tutup Buku', 'li_1' => 'EKoperasi', 'li_2' => 'Tutup Buku']),
+            'title' => 'Tutup Buku',
             'notification_list' => $this->notification->index()['notification_list'],
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account,
@@ -60,7 +60,7 @@ class Closebook extends BaseController
             'jumlah_pinjaman_aktif' => $jumlah_pinjaman_aktif,
             'jumlah_deposit_pending' => $jumlah_deposit_pending
         ];
-        
+
         return view('anggota/closebook-page', $data);
     }
 
@@ -70,7 +70,7 @@ class Closebook extends BaseController
         $pinjaman_aktif = $this->m_pinjaman->countPinjamanAktifByAnggota($this->account->iduser);
         if (!empty($pinjaman_aktif) && $pinjaman_aktif[0]->hitung > 0) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Tidak dapat mengajukan closebook. Anda masih memiliki ' . $pinjaman_aktif[0]->hitung . ' pinjaman aktif yang belum lunas.',
                     'status' => 'danger'
@@ -84,7 +84,7 @@ class Closebook extends BaseController
         $deposit_pending = $this->m_deposit->countDepositPendingByUser($this->account->iduser);
         if (!empty($deposit_pending) && $deposit_pending[0]->hitung > 0) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Tidak dapat mengajukan closebook. Anda masih memiliki ' . $deposit_pending[0]->hitung . ' transaksi deposit yang belum diproses.',
                     'status' => 'danger'
@@ -104,21 +104,21 @@ class Closebook extends BaseController
         $notification_data = [
             'anggota_id' => $this->account->iduser,
             'closebook' => '1',
-            'message' => 'Pengajuan tutup buku dari anggota '. $this->account->nama_lengkap,
+            'message' => 'Pengajuan tutup buku dari anggota ' . $this->account->nama_lengkap,
             'timestamp' => date('Y-m-d H:i:s'),
             'group_type' => 1
         ];
 
         $this->m_notification->insert($notification_data);
-        
+
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'Berhasil mengajukan closebook. Tunggu konfirmasi dari admin.',
                 'status' => 'success'
             ]
         );
-        
+
         session()->setFlashdata('notif', $alert);
         return redirect()->back();
     }
@@ -130,15 +130,15 @@ class Closebook extends BaseController
         ];
 
         $this->m_user->updateUser($this->account->iduser, $dataset);
-        
+
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'closebook dibatalkan',
                 'status' => 'warning'
             ]
         );
-        
+
         session()->setFlashdata('notif', $alert);
         return redirect()->back();
     }

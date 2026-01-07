@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('styles') ?>
 <style>
@@ -21,7 +21,7 @@
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
     <div>
       <div class="flex items-center gap-3 mb-1">
-        <a href="<?= base_url('bendahara/deposit/user') ?>" class="p-2 -ml-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+        <a href="<?= base_url('bendahara/deposit/list') ?>" class="p-2 -ml-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </a>
         <h1 class="text-3xl font-black text-slate-800 tracking-tight">Detail Transaksi</h1>
@@ -127,7 +127,7 @@
 
       <!-- Member Profile Card -->
       <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50 text-center relative overflow-hidden group">
-        <div class="absolute top-0 left-0 w-full h-24 bg-indigo-gradient opacity-10"></div>
+        <div class="absolute top-0 left-0 w-full h-24 bg-theme-gradient opacity-10"></div>
 
         <div class="relative z-10">
           <div class="w-24 h-24 rounded-full bg-white p-1 mx-auto mb-4 shadow-lg border-4 border-indigo-50">

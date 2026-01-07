@@ -286,6 +286,10 @@ class DashboardChart {
         },
         y: {
           formatter: function (val) {
+            if (chartType === 'member') {
+              return val.toLocaleString('id-ID') + ' Anggota';
+            }
+
             if (val >= 1000000000) {
               return 'Rp ' + (val / 1000000000).toFixed(1).replace('.', ',') + ' Miliar';
             } else if (val >= 1000000) {
@@ -303,6 +307,11 @@ class DashboardChart {
     // Show chart container BEFORE rendering so ApexCharts can calculate dimensions
     const chartEl = document.querySelector('#spline_area');
     chartEl.style.display = 'block';
+
+    // Destroy existing chart if it exists
+    if (this.currentChart) {
+      this.currentChart.destroy();
+    }
 
     // Create new chart
     this.currentChart = new ApexCharts(chartEl, options);
@@ -363,6 +372,17 @@ class DashboardChart {
 
   showError(message) {
     console.error('Chart error:', message);
+
+    // Clean up chart instance if it exists
+    if (this.currentChart) {
+      try {
+        this.currentChart.destroy();
+      } catch (e) {
+        console.error('Error destroying chart:', e);
+      }
+      this.currentChart = null;
+    }
+
     const splineAreaEl = document.getElementById('spline_area');
     if (splineAreaEl) {
       splineAreaEl.innerHTML = `<div class="text-center p-4"><p class="text-muted">${message}</p></div>`;

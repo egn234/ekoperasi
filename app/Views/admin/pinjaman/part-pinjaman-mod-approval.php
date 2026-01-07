@@ -4,27 +4,52 @@
   </div>
   <h3 class="text-xl font-black text-slate-900">Setujui Pinjaman</h3>
   <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-    Verifikasi pengajuan dari <?= $a->nama_lengkap ?>
+    Verifikasi pengajuan dari <?= $a->nama_peminjam ?>
   </p>
 </div>
 
 <form action="<?= url_to('admin_approve_pinjaman', $a->idpinjaman) ?>" id="formApprove" method="post">
+  <input type="hidden" name="return_url" value="<?= isset($return_url) ? $return_url : '' ?>">
   <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
-    <label class="block text-xs font-black text-indigo-800 uppercase tracking-wider mb-2">Simulasi Nominal Disetujui</label>
+    <label class="block text-xs font-black text-indigo-800 uppercase tracking-wider mb-2">Penyesuaian Nominal</label>
     <div class="relative">
       <span class="absolute left-4 top-3.5 text-indigo-600 font-bold">Rp</span>
-      <input type="text" id="nominal_uang" name="nominal_uang" class="w-full pl-10 pr-4 py-3 bg-white border border-indigo-200 rounded-xl text-lg font-black text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" value="<?= $a->nominal ?>" required>
+      <input type="text" id="nominal_uang" name="nominal_uang" class="w-full pl-10 pr-4 py-3 bg-white border border-indigo-200 rounded-xl text-lg font-black text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" value="<?= (int)$a->nominal ?>" required>
     </div>
     <p id="preview_nominal" class="text-xs font-bold text-indigo-600 mt-2 text-right">Rp <?= number_format($a->nominal, 0, ',', '.') ?></p>
-    <p class="text-[10px] text-indigo-400 mt-1 italic">*Pastikan nominal sesuai dengan saldo koperasi</p>
+    <p class="text-[10px] text-indigo-400 mt-1 italic">*Ubah jika ada kesalahan input oleh anggota</p>
   </div>
 </form>
 
 <div class="flex gap-3 pt-2 border-t border-slate-100">
-  <button onclick="closeNativeModal()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+  <button onclick="closeModal()" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
     Batal
   </button>
   <button type="submit" form="formApprove" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]">
     Setujui Pengajuan
   </button>
 </div>
+
+<script>
+  // Self-executing to avoid scope pollution, logic for realtime currency preview
+  (function() {
+    const nominalInput = document.getElementById('nominal_uang');
+    const previewNominal = document.getElementById('preview_nominal');
+
+    if (nominalInput && previewNominal) {
+      function updatePreview() {
+        const raw = nominalInput.value.replace(/[^\d]/g, ""); // strip non-digits
+        if (raw) {
+          const num = parseInt(raw, 10);
+          const formatted = new Intl.NumberFormat("id-ID", {
+            maximumFractionDigits: 0
+          }).format(num);
+          previewNominal.textContent = `Rp ${formatted}`;
+        } else {
+          previewNominal.textContent = "Rp 0";
+        }
+      }
+      nominalInput.addEventListener('input', updatePreview);
+    }
+  })();
+</script>

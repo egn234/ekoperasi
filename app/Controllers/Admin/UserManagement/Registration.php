@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Admin\UserManagement;
 
 use CodeIgniter\Controller;
@@ -15,7 +16,7 @@ class Registration extends Controller
     protected $m_user, $m_deposit, $m_monthly_report, $m_pinjaman;
     protected $notification;
     protected $account;
-    
+
     function __construct()
     {
         $this->m_user = model(M_user::class);
@@ -36,50 +37,48 @@ class Registration extends Controller
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
-        
+
         echo view('admin/register/user-list', $data);
     }
 
     public function data_user()
-    {	
+    {
         $request = service('request');
-        $model = $this->m_user; // Replace with your actual model name
+        $model = $this->m_user;
 
         // Parameters from the DataTable
         $start = $request->getPost('start') ?? 0;
         $length = $request->getPost('length') ?? 10;
         $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value'];
+        $searchValue = $request->getPost('search')['value'] ?? '';
 
-        $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, closebook_request');
-
-        // Start building the query for filtering
-        $model->where('verified', 0)
+        // 1. Total records (only unverified members)
+        $recordsTotal = $model->where('verified', 0)
             ->where('deleted', null)
-            ->groupStart()
-            ->like('username', $searchValue)
-                ->orLike('nama_lengkap', $searchValue)
-            ->groupEnd();
+            ->countAllResults();
 
-        // for filtering closebook request
-        if(isset($_GET['closebook'])) {
-            $model->where('closebook_request', 'closebook');
+        // 2. Build query for filtered count and data fetch
+        $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, closebook_request, profil_pic');
+        $model->where('verified', 0)
+            ->where('deleted', null);
+
+        // Apply search filter if present
+        if (!empty($searchValue)) {
+            $model->groupStart()
+                ->like('username', $searchValue)
+                ->orLike('nama_lengkap', $searchValue)
+                ->groupEnd();
         }
 
+        // 3. Records after filtering (if any search term is applied)
         $recordsFiltered = $model->countAllResults(false);
 
-        // Fetch data from the model using $start and $length
+        // 4. Fetch data with pagination
         $data = $model->asArray()->findAll($length, $start);
-
-        // Total records (you can also use $model->countAll() for exact total)
-        $recordsTotal = $model->countAll();
-
-        // Records after filtering (if any)
-        $recordsFiltered = $recordsTotal;
 
         // Prepare the response in the DataTable format
         $response = [
-            'draw' => $draw,
+            'draw' => (int)$draw,
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data' => $data,
@@ -100,12 +99,12 @@ class Registration extends Controller
         $alert = view(
             'partials/notification-alert',
             [
-                'notif_text' => 'Anggota '.$user->nama_lengkap.' telah diverifikasi',
+                'notif_text' => 'Anggota ' . $user->nama_lengkap . ' telah diverifikasi',
                 'status' => 'success',
             ]
         );
-                
-        $data_session = [ 'notif' => $alert ];
+
+        $data_session = ['notif' => $alert];
         session()->setFlashdata($data_session);
         return redirect()->back();
     }

@@ -1,4 +1,4 @@
-<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-[2rem] shadow-2xl p-8 text-center z-50">
+<div class="text-center p-2">
   <!-- Icon -->
   <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-6">
     <i data-lucide="check-circle-2" class="w-8 h-8"></i>

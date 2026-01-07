@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -51,7 +52,7 @@ class M_user extends Model
     protected $validationRules    = [];
     protected $validationMessages = [];
     protected $skipValidation     = false;
-    
+
     /**
      * Override countAll to exclude soft deleted users
      */
@@ -61,27 +62,27 @@ class M_user extends Model
         $builder->where('deleted', null);
         return $builder->countAllResults($reset);
     }
-    
+
     function getUser($username)
     {
-    	$sql = "SELECT * FROM tb_user WHERE username = '$username' AND deleted IS NULL";
-    	return $this->db->query($sql)->getResult();
+        $sql = "SELECT * FROM tb_user WHERE username = '$username' AND deleted IS NULL";
+        return $this->db->query($sql)->getResult();
     }
-    
+
     function countUser($username)
     {
         $sql = "SELECT count(username) AS hitung FROM tb_user WHERE username = '$username' AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
-    
+
     function countNIK($nik)
     {
         $sql = "SELECT count(nik) AS hitung FROM tb_user WHERE nik = '$nik' AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
-    
+
     function getAllUser()
-    {  
+    {
         $sql = "
             SELECT 
                 iduser,
@@ -117,9 +118,9 @@ class M_user extends Model
         ";
         return $this->db->query($sql)->getResult();
     }
-    
+
     function getAllClosebookUser()
-    {  
+    {
         $sql = "
             SELECT 
                 iduser,
@@ -156,9 +157,9 @@ class M_user extends Model
         ";
         return $this->db->query($sql)->getResult();
     }
-    
+
     function getUserById($iduser)
-    {  
+    {
         $sql = "
             SELECT 
                 iduser,
@@ -270,11 +271,11 @@ class M_user extends Model
         $sql = "SELECT count(iduser) AS hitung FROM tb_user WHERE idgroup = 4 AND flag = 1 AND MONTH(created) = $month AND YEAR(created) = $year AND deleted IS NULL";
         return $this->db->query($sql)->getResult();
     }
-    
+
     function insertUser($data)
     {
-      $builder = $this->db->table('tb_user');
-      $builder->insert($data);
+        $builder = $this->db->table('tb_user');
+        $builder->insert($data);
     }
 
     function updateUser($iduser, $dataset)
@@ -413,12 +414,12 @@ class M_user extends Model
             SELECT 
                 COUNT(*) AS count,
                 COUNT(*) AS saldo,
-                DATE_FORMAT(date_created, '%Y-%m') AS month,
-                DATE_FORMAT(date_created, '%M %Y') AS month_name
+                DATE_FORMAT(created, '%Y-%m') AS month,
+                DATE_FORMAT(created, '%M %Y') AS month_name
             FROM tb_user
             WHERE verified = 1
             AND deleted IS NULL
-            AND date_created >= DATE_SUB(NOW(), INTERVAL ? MONTH)
+            AND created >= DATE_SUB(NOW(), INTERVAL ? MONTH)
             GROUP BY month
             ORDER BY month ASC
             LIMIT ?
@@ -432,16 +433,15 @@ class M_user extends Model
             SELECT 
                 COUNT(*) AS count,
                 COUNT(*) AS saldo,
-                DATE_FORMAT(date_created, '%Y-%m') AS month,
-                DATE_FORMAT(date_created, '%M %Y') AS month_name
+                DATE_FORMAT(created, '%Y-%m') AS month,
+                DATE_FORMAT(created, '%M %Y') AS month_name
             FROM tb_user
             WHERE verified = 1
             AND deleted IS NULL
-            AND DATE(date_created) BETWEEN ? AND ?
+            AND DATE(created) BETWEEN ? AND ?
             GROUP BY month
             ORDER BY month ASC
         ";
         return $this->db->query($sql, [$startDate, $endDate])->getResult();
     }
-    
 }

@@ -20,8 +20,13 @@ class LoanApplication extends BaseLoanController
     /**
      * Cancel/reject a loan application
      */
+    /**
+     * Cancel/reject a loan application
+     */
     public function cancel_proc($idpinjaman = false)
     {
+        $returnUrl = request()->getPost('return_url');
+
         $dataset = [
             'idadmin' => $this->account->iduser,
             'alasan_tolak' => request()->getPost('alasan_tolak'),
@@ -30,7 +35,7 @@ class LoanApplication extends BaseLoanController
         ];
 
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
-        
+
         $anggota_id = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
             ->get()
             ->getResult()[0]
@@ -44,6 +49,10 @@ class LoanApplication extends BaseLoanController
         );
 
         $this->sendAlert('Pengajuan pinjaman berhasil ditolak');
+
+        if ($returnUrl) {
+            return redirect()->to($returnUrl);
+        }
         return redirect()->back();
     }
 
@@ -52,6 +61,8 @@ class LoanApplication extends BaseLoanController
      */
     public function approve_proc($idpinjaman = false)
     {
+        $returnUrl = request()->getPost('return_url');
+
         $dataset = [
             'idadmin' => $this->account->iduser,
             'nominal' => request()->getPost('nominal_uang'),
@@ -60,7 +71,7 @@ class LoanApplication extends BaseLoanController
         ];
 
         $this->m_pinjaman->updatePinjaman($idpinjaman, $dataset);
-        
+
         $idanggota = $this->m_pinjaman->where('idpinjaman', $idpinjaman)
             ->get()
             ->getResult()[0]
@@ -91,6 +102,10 @@ class LoanApplication extends BaseLoanController
         );
 
         $this->sendAlert('Pengajuan pinjaman berhasil disetujui');
+
+        if ($returnUrl) {
+            return redirect()->to($returnUrl);
+        }
         return redirect()->back();
     }
 
@@ -99,12 +114,16 @@ class LoanApplication extends BaseLoanController
      */
     public function cancel_loan()
     {
-        if ($_POST['rowid']) {
-            $id = $_POST['rowid'];
+        if ($this->request->getPost('rowid')) {
+            $id = $this->request->getPost('rowid');
+            // Capture return_url passed from AJAX
+            $returnUrl = $this->request->getPost('return_url');
+
             $pinjaman = $this->m_pinjaman->getPinjamanById($id)[0];
             $data = [
                 'a' => $pinjaman,
-                'flag' => 0
+                'flag' => 0,
+                'return_url' => $returnUrl
             ];
             echo view('admin/pinjaman/part-pinjaman-mod-cancel', $data);
         }
@@ -115,16 +134,20 @@ class LoanApplication extends BaseLoanController
      */
     public function approve_loan()
     {
-        if ($_POST['rowid']) {
-            $id = $_POST['rowid'];
+        if ($this->request->getPost('rowid')) {
+            $id = $this->request->getPost('rowid');
+            // Capture return_url passed from AJAX
+            $returnUrl = $this->request->getPost('return_url');
+
             $pinjaman = $this->m_pinjaman->getPinjamanById($id)[0];
             $user = $this->m_user->getUserById($pinjaman->idanggota)[0];
             $data = [
                 'a' => $pinjaman,
                 'b' => $user,
-                'flag' => 1
+                'flag' => 1,
+                'return_url' => $returnUrl
             ];
-            
+
             echo view('admin/pinjaman/part-pinjaman-mod-approval', $data);
         }
     }

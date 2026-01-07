@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Admin\UserManagement;
 
 class UserUpdate extends BaseUserController
@@ -25,34 +26,34 @@ class UserUpdate extends BaseUserController
             'nama_bank' => strtoupper((string) request()->getPost('nama_bank')),
             'no_rek' => $no_rek,
         ];
-        
+
         //check duplicate nip
         $nip_baru = request()->getPost('nip');
 
-        if($nip_baru != null || $nip_baru != ''){
+        if ($nip_baru != null || $nip_baru != '') {
             $nip_awal = $old_user->nip;
 
-            if($nip_awal != $nip_baru){
+            if ($nip_awal != $nip_baru) {
                 $cek_nip = $this->m_user->select('count(iduser) as hitung')
-                    ->where("nip = '".$nip_baru."' AND iduser != ".$iduser)
+                    ->where("nip = '" . $nip_baru . "' AND iduser != " . $iduser)
                     ->get()->getResult()[0]->hitung;
 
                 if ($cek_nip == 0) {
                     $dataset += ['nip' => $nip_baru];
-                }else{
+                } else {
                     $alert = view(
-                        'partials/notification-alert', 
+                        'partials/notification-alert',
                         [
                             'notif_text' => 'NIP telah terdaftar',
                             'status' => 'danger'
                         ]
                     );
-                    
-                    $data_session = [ 'notif' => $alert ];
+
+                    $data_session = ['notif' => $alert];
 
                     session()->setFlashdata($data_session);
                     return redirect()->back();
-                }	
+                }
             }
         }
 
@@ -62,20 +63,20 @@ class UserUpdate extends BaseUserController
 
         if ($nik_baru != $nik_awal) {
             $cek_nik = $this->m_user->select('count(iduser) as hitung')
-                ->where("nik = '".$nik_baru."' AND iduser != ".$iduser)
+                ->where("nik = '" . $nik_baru . "' AND iduser != " . $iduser)
                 ->get()->getResult()[0]->hitung;
 
             if ($cek_nik == 0) {
                 $dataset += ['nik' => $nik_baru];
-            }else{
+            } else {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'NIK telah terdaftar',
                         'status' => 'danger'
                     ]
                 );
-                
+
                 $data_session = [
                     'notif' => $alert
                 ];
@@ -85,31 +86,24 @@ class UserUpdate extends BaseUserController
             }
         }
 
-        $new_pass = md5(request()->getPost('pass'));
-        $cek_pass = md5(request()->getPost('pass2'));
+        $raw_pass = request()->getPost('pass');
+        $raw_pass2 = request()->getPost('pass2');
 
-        if ($new_pass != "" || $new_pass != null)
-        {
-            if ($new_pass == $cek_pass) 
-            {
-                $dataset += ['pass' => password_hash($new_pass, PASSWORD_DEFAULT)];
-            }
-            else
-            {
+        if (!empty($raw_pass)) {
+            if ($raw_pass == $raw_pass2) {
+                $dataset += ['pass' => password_hash(md5($raw_pass), PASSWORD_DEFAULT)];
+            } else {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
-                        'notif_text' => 'konfirmasi password tidak sesuai',
+                        'notif_text' => 'Konfirmasi password tidak sesuai',
                         'status' => 'warning'
                     ]
                 );
-                
-                $data_session = [
-                    'notif' => $alert
-                ];
 
+                $data_session = ['notif' => $alert];
                 session()->setFlashdata($data_session);
-                return redirect()->to('admin/user/'.$iduser);
+                return redirect()->to('admin/user/' . $iduser);
             }
         }
 
@@ -120,19 +114,18 @@ class UserUpdate extends BaseUserController
 
             if (in_array($img->getMimeType(), $allowedTypes)) {
                 $newName = $img->getRandomName();
-                $img->move(ROOTPATH . 'public/uploads/user/' . $dataset['username'] . '/profil_pic/', $newName);
+                $img->move(ROOTPATH . 'public/uploads/user/' . $old_user->username . '/profil_pic/', $newName);
                 $profile_pic = $img->getName();
-                $dataset += ['profil_pic' => $profile_pic];	
-            }
-            else {
+                $dataset += ['profil_pic' => $profile_pic];
+            } else {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
-                        'notif_text' => 'Tipe file tidak diizinkan', 
+                        'notif_text' => 'Tipe file tidak diizinkan',
                         'status' => 'danger'
                     ]
                 );
-                
+
                 $data_session = [
                     'notif' => $alert
                 ];
@@ -143,22 +136,22 @@ class UserUpdate extends BaseUserController
         }
 
         $dataset += ['updated' => date('Y-m-d H:i:s')];
-        
+
         $this->m_user->updateUser($iduser, $dataset);
-        
+
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'data pengguna berhasil diubah',
-                 'status' => 'success'
+                'status' => 'success'
             ]
         );
-        
+
         $data_session = [
             'notif' => $alert
         ];
 
         session()->setFlashdata($data_session);
-        return redirect()->to('admin/user/'.$iduser);
+        return redirect()->to('admin/user/' . $iduser);
     }
 }

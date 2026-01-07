@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Anggota\AccountManagement;
 
 use App\Controllers\BaseController;
@@ -32,13 +33,12 @@ class Profile extends BaseController
     public function index()
     {
         $data = [
-            'title_meta' => view('anggota/partials/title-meta', ['title' => 'Profile']),
-            'page_title' => view('anggota/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+            'title' => 'Profile',
             'notification_list' => $this->notification->index()['notification_list'],
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
-        
+
         return view('anggota/prof/prof-detail', $data);
     }
 
@@ -61,36 +61,36 @@ class Profile extends BaseController
             'email' => request()->getPost('email'),
             'unit_kerja' => request()->getPost('unit_kerja')
         ];
-        
+
         //check duplicate nip
         $nip_baru = $this->request->getPost('nip');
 
-        if($nip_baru != null || $nip_baru != ''){
+        if ($nip_baru != null || $nip_baru != '') {
             $nip_awal = $this->account->nip;
 
-            if($nip_awal != $nip_baru){
+            if ($nip_awal != $nip_baru) {
                 $cek_nip = $this->m_user->select('count(iduser) as hitung')
-                    ->where("nip = '".$nip_baru."' AND iduser != ".$this->account->iduser)
+                    ->where("nip = '" . $nip_baru . "' AND iduser != " . $this->account->iduser)
                     ->get()->getResult()[0]->hitung;
 
                 if ($cek_nip == 0) {
                     $dataset += ['nip' => $nip_baru];
-                }else{
+                } else {
                     $alert = view(
-                        'partials/notification-alert', 
+                        'partials/notification-alert',
                         [
                             'notif_text' => 'NIP telah terdaftar',
-                             'status' => 'danger'
+                            'status' => 'danger'
                         ]
                     );
-                    
+
                     $data_session = [
                         'notif' => $alert
                     ];
 
                     session()->setFlashdata($data_session);
                     return redirect()->back();
-                }	
+                }
             }
         }
 
@@ -100,20 +100,20 @@ class Profile extends BaseController
 
         if ($nik_baru != $nik_awal) {
             $cek_nik = $this->m_user->select('count(iduser) as hitung')
-                ->where("nik = '".$nik_baru."' AND iduser != ".$this->account->iduser)
+                ->where("nik = '" . $nik_baru . "' AND iduser != " . $this->account->iduser)
                 ->get()->getResult()[0]->hitung;
 
             if ($cek_nik == 0) {
                 $dataset += ['nik' => $nik_baru];
-            }else{
+            } else {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'NIK telah terdaftar',
-                         'status' => 'danger'
+                        'status' => 'danger'
                     ]
                 );
-                
+
                 $data_session = [
                     'notif' => $alert
                 ];
@@ -130,10 +130,10 @@ class Profile extends BaseController
             $allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
             if (!in_array($img->getMimeType(), $allowed_types)) {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
-                        'notif_text' => 'format gambar tidak sesuai', 
-                         'status' => 'danger'
+                        'notif_text' => 'format gambar tidak sesuai',
+                        'status' => 'danger'
                     ]
                 );
                 $data_session = [
@@ -143,14 +143,14 @@ class Profile extends BaseController
                 session()->setFlashdata($data_session);
                 return redirect()->back();
             }
-            
+
             // cek ukuran
             if ($img->getSize() > 1000000) {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
-                        'notif_text' => 'ukuran gambar tidak sesuai', 
-                         'status' => 'danger'
+                        'notif_text' => 'ukuran gambar tidak sesuai',
+                        'status' => 'danger'
                     ]
                 );
                 $data_session = [
@@ -165,7 +165,7 @@ class Profile extends BaseController
             if (file_exists($oldFile)) {
                 unlink($oldFile);
             }
-            
+
             $newName = $img->getRandomName();
             $img->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/profil_pic/', $newName);
             $profile_pic = $img->getName();
@@ -174,7 +174,7 @@ class Profile extends BaseController
 
         // Handle KTP file upload
         $ktp = $this->request->getFile('ktp_file');
-        
+
         if ($ktp && $ktp->isValid() && !$ktp->hasMoved()) {
             // Accept jpg/jpeg, png and pdf as KTP formats
             $allowedKtpMime = ['image/jpeg', 'image/png', 'application/pdf'];
@@ -183,7 +183,7 @@ class Profile extends BaseController
 
             if (!in_array($ktp->getMimeType(), $allowedKtpMime) || !in_array(strtolower($ktp->getExtension()), $allowedKtpExt)) {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'File KTP harus JPG/JPEG/PNG/PDF',
                         'status' => 'danger'
@@ -199,7 +199,7 @@ class Profile extends BaseController
 
             if ($ktp->getSize() / 1024 > $maxKtpSize) {
                 $alert = view(
-                    'partials/notification-alert', 
+                    'partials/notification-alert',
                     [
                         'notif_text' => 'File KTP terlalu besar, maksimal 4MB',
                         'status' => 'danger'
@@ -220,7 +220,7 @@ class Profile extends BaseController
                     unlink($oldKtpFile);
                 }
             }
-            
+
             // Move KTP file to user folder
             $ktpNewName = $ktp->getRandomName();
             $ktp->move(ROOTPATH . 'public/uploads/user/' . $this->account->username . '/ktp/', $ktpNewName);
@@ -230,17 +230,17 @@ class Profile extends BaseController
         $dataset += [
             'updated' => date('Y-m-d H:i:s')
         ];
-        
+
         $this->m_user->updateUser($this->account->iduser, $dataset);
-        
+
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'data pengguna berhasil diubah',
-                 'status' => 'success'
+                'status' => 'success'
             ]
         );
-        
+
         $data_session = [
             'notif' => $alert
         ];
@@ -258,31 +258,29 @@ class Profile extends BaseController
 
         $cek_pass = $this->m_user->getPassword($this->account->iduser)[0]->pass;
 
-        if (!password_verify($old_pass, $cek_pass))
-        {
+        if (!password_verify($old_pass, $cek_pass)) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Password lama salah',
-                     'status' => 'danger'
+                    'status' => 'danger'
                 ]
             );
-            
+
             $dataset = ['notif' => $alert];
             session()->setFlashdata($dataset);
             return redirect()->to('anggota/profile');
         }
 
-        if ($pass != $pass2)
-        {
+        if ($pass != $pass2) {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Konfirmasi password tidak sesuai',
-                     'status' => 'danger'
+                    'status' => 'danger'
                 ]
             );
-            
+
             $dataset = ['notif' => $alert];
             session()->setFlashdata($dataset);
             return redirect()->to('anggota/profile');
@@ -293,13 +291,13 @@ class Profile extends BaseController
         $this->m_user->updateUser($this->account->iduser, $dataset);
 
         $alert = view(
-            'partials/notification-alert', 
+            'partials/notification-alert',
             [
                 'notif_text' => 'Password berhasil diubah',
-                 'status' => 'success'
+                'status' => 'success'
             ]
         );
-        
+
         $dataset += ['notif' => $alert];
         session()->setFlashdata($dataset);
         return redirect()->to('anggota/profile');
@@ -310,12 +308,11 @@ class Profile extends BaseController
         $default_param = $this->m_param->getParamById(3)[0]->nilai;
 
         $data = [
-            'title_meta' => view('anggota/partials/title-meta', ['title' => 'Profile']),
-            'page_title' => view('anggota/partials/page-title', ['title' => 'Profile', 'li_1' => 'EKoperasi', 'li_2' => 'Profile']),
+            'title' => 'Profile',
             'duser' => $this->account,
             'default_param' => $default_param
         ];
-        
+
         return view('anggota/prof/set-manasuka', $data);
     }
 

@@ -1,46 +1,4 @@
-<?= $this->extend('layout/main') ?>
-
-<?= $this->section('styles') ?>
-<!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<style>
-  div.dataTables_wrapper div.dataTables_filter input {
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-  }
-
-  div.dataTables_wrapper div.dataTables_length select {
-    border-radius: 0.5rem;
-    padding: 0.25rem 2rem 0.25rem 0.5rem;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-  }
-
-  table.dataTable thead th {
-    border-bottom: 2px solid #e2e8f0 !important;
-    color: #475569;
-    font-weight: 900;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    padding: 1rem !important;
-  }
-
-  table.dataTable tbody td {
-    padding: 1rem !important;
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9;
-    color: #1e293b;
-    font-size: 0.875rem;
-  }
-
-  table.dataTable tr:hover td {
-    background-color: #f8fafc;
-  }
-</style>
-<?= $this->endSection() ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -118,44 +76,65 @@
 
 </div>
 
-<!-- Native Modal Container -->
-<div id="dynamic-modal-overlay" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-<div id="dynamic-modal-content" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-  <div id="modal-container"></div>
-  <button onclick="closeNativeModal()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
-    <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-  </button>
 </div>
 
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Native Modal Logic -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
 
 <script type="text/javascript">
-  function closeNativeModal() {
-    $('#dynamic-modal-overlay, #dynamic-modal-content').addClass('hidden');
-  }
-
   // Open Modal Helpers
   function openApproveModal(id) {
     ModalHelper.open('<?= base_url() ?>admin/pinjaman/approve-pinjaman', {
-      rowid: id
+      rowid: id,
+      return_url: window.location.href
     });
   }
 
   function openRejectModal(id) {
     ModalHelper.open('<?= base_url() ?>admin/pinjaman/cancel-pinjaman', {
-      rowid: id
+      rowid: id,
+      return_url: window.location.href
     });
   }
 
   function openDetailModal(id) {
     ModalHelper.open('<?= base_url() ?>admin/pinjaman/detail-pinjaman', {
+      rowid: id
+    });
+  }
+
+  // Global function for partial payment calculation (called from modal)
+  window.calculatePartial = function(element, nominal, id) {
+    const value = parseFloat(element.value) || 0;
+    const total = value * parseFloat(nominal);
+    const displayTotal = document.getElementById('perkalian_' + id);
+    const displayLabel = document.getElementById('label_kalkulasi_' + id);
+
+    // Format to IDR
+    const formatIDR = (val) => new Intl.NumberFormat('id-ID', {
+      maximumFractionDigits: 0
+    }).format(val);
+
+    if (displayTotal) {
+      displayTotal.textContent = formatIDR(total);
+    }
+
+    if (displayLabel) {
+      if (value > 0) {
+        displayLabel.textContent = value + ' x Rp ' + formatIDR(nominal);
+        displayLabel.classList.remove('opacity-80');
+        displayLabel.classList.add('text-white');
+      } else {
+        displayLabel.textContent = 'Masukkan jumlah bulan';
+        displayLabel.classList.remove('text-white');
+        displayLabel.classList.add('opacity-80');
+      }
+    }
+  };
+
+  function openPartialModal(id) {
+    ModalHelper.open('<?= base_url() ?>admin/pinjaman/lunasi-partial', {
       rowid: id
     });
   }
@@ -168,37 +147,40 @@
         type: "POST"
       },
       autoWidth: false,
-      scrollX: true,
       serverSide: true,
+      // Unified DOM Layout
+      dom: '<"flex justify-between items-center gap-4 mb-4"lf><"rounded-xl border border-slate-100"t><"flex justify-between items-center gap-4 mt-4"ip>',
       language: {
         paginate: {
-          first: "First",
-          last: "Last",
-          next: "Next",
-          previous: "Prev"
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
         }
       },
       columnDefs: [{
         orderable: false,
-        targets: "_all",
-        defaultContent: "-"
+        targets: [0, 6],
+        searchable: false
       }],
       columns: [{
           data: null,
+          width: "50px",
+          className: "text-center",
           render: function(data, type, row, meta) {
-            return `<span class="font-bold text-slate-500">${meta.row + 1}</span>`;
+            return `<span class="font-bold text-slate-400 text-xs">${meta.row + 1}</span>`;
           }
         },
         {
           data: null,
           render: function(data, type, row) {
             return `<div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                      <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs ring-2 ring-white shadow-sm overflow-hidden">
                         <i data-lucide="user" class="w-4 h-4"></i>
                       </div>
                       <div>
-                        <p class="font-bold text-slate-900 text-sm">${row.nama_peminjam}</p>
-                        <p class="text-xs text-slate-400">${row.nik_peminjam}</p>
+                        <p class="font-bold text-slate-900 text-sm leading-tight">${row.nama_peminjam}</p>
+                        <p class="text-[11px] font-medium text-slate-400">@${row.username_peminjam}</p>
                       </div>
                     </div>`;
           }
@@ -206,7 +188,7 @@
         {
           data: "tipe_permohonan",
           render: function(d) {
-            return `<span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-[10px] font-black uppercase tracking-wider">${d}</span>`;
+            return `<span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-indigo-100/50">${d}</span>`;
           }
         },
         {
@@ -218,17 +200,17 @@
         {
           data: "angsuran_bulanan",
           render: function(d) {
-            return `<span class="font-bold text-slate-700">${d} Bulan</span>`;
+            return `<span class="text-xs font-bold text-slate-600">${d} Bulan</span>`;
           }
         },
         {
           data: null,
           render: function(data, type, row) {
             return `<div class="flex flex-col gap-1 w-fit">
-                      <a href="<?= base_url() ?>uploads/user/${row.username_peminjam}/pinjaman/${row.form_bukti}" target="_blank" class="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-50 text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-colors">
+                      <a href="<?= base_url() ?>uploads/user/${row.username_peminjam}/pinjaman/${row.form_bukti}" target="_blank" class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-all border border-slate-100">
                         <i data-lucide="file-text" class="w-3 h-3"></i> Form
                       </a>
-                      <a href="<?= base_url() ?>uploads/user/${row.username_peminjam}/pinjaman/${row.slip_gaji}" target="_blank" class="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-50 text-[10px] font-bold text-slate-500 hover:text-emerald-600 transition-colors">
+                      <a href="<?= base_url() ?>uploads/user/${row.username_peminjam}/pinjaman/${row.slip_gaji}" target="_blank" class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500 hover:text-emerald-600 transition-all border border-slate-100">
                         <i data-lucide="receipt" class="w-3 h-3"></i> Slip
                       </a>
                     </div>`;
@@ -238,11 +220,11 @@
           data: null,
           className: "text-right",
           render: function(data, type, row) {
-            return `<div class="flex justify-end gap-2">
-                      <button onclick="openRejectModal('${row.idpinjaman}')" class="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Tolak">
+            return `<div class="flex justify-end gap-1.5">
+                      <button onclick="openRejectModal('${row.idpinjaman}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center border border-red-100 shadow-sm" title="Tolak">
                         <i data-lucide="x" class="w-4 h-4"></i>
                       </button>
-                      <button onclick="openApproveModal('${row.idpinjaman}')" class="p-2 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors" title="Setujui">
+                      <button onclick="openApproveModal('${row.idpinjaman}')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center border border-emerald-100 shadow-sm" title="Setujui">
                         <i data-lucide="check" class="w-4 h-4"></i>
                       </button>
                     </div>`;
@@ -261,67 +243,76 @@
         type: "POST"
       },
       autoWidth: false,
-      scrollX: true,
       serverSide: true,
+      // Unified DOM Layout
+      dom: '<"flex justify-between items-center gap-4 mb-4"lf><"rounded-xl border border-slate-100"t><"flex justify-between items-center gap-4 mt-4"ip>',
       language: {
         paginate: {
-          first: "First",
-          last: "Last",
-          next: "Next",
-          previous: "Prev"
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
         }
       },
       columnDefs: [{
         orderable: false,
-        targets: "_all",
-        defaultContent: "-"
+        targets: [0, 7],
+        searchable: false
       }],
       columns: [{
           data: null,
+          width: "50px",
+          className: "text-center",
           render: function(data, type, row, meta) {
-            return `<span class="font-bold text-slate-500">${meta.row + 1}</span>`;
+            return `<span class="font-bold text-slate-400 text-xs">${meta.row + 1}</span>`;
           }
         },
         {
           data: null,
           render: function(data, type, row) {
             return `<div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                      <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs ring-2 ring-white shadow-sm overflow-hidden">
                         ${row.nama_peminjam.substring(0,2).toUpperCase()}
                       </div>
                       <div>
-                        <p class="font-bold text-slate-900 text-sm">${row.nama_peminjam}</p>
-                        <p class="text-xs text-slate-400">${row.nik_peminjam}</p>
+                        <p class="font-bold text-slate-900 text-sm leading-tight">${row.nama_peminjam}</p>
+                        <p class="text-[11px] font-medium text-slate-400">@${row.username_peminjam}</p>
                       </div>
                     </div>`;
           }
         },
         {
-          data: "tipe_permohonan"
+          data: "tipe_permohonan",
+          render: function(d) {
+            return `<span class="text-xs font-bold text-slate-600">${d}</span>`;
+          }
         },
         {
           data: "nominal",
           render: function(d) {
-            return `Rp ${parseInt(d).toLocaleString('id-ID')}`;
+            return `<span class="font-bold text-slate-700">Rp ${parseInt(d).toLocaleString('id-ID')}</span>`;
           }
         },
         {
           data: "angsuran_bulanan",
-          render: function(d) {
-            return d + ' Bulan';
+          render: function(d, type, row) {
+            return `<div class="flex flex-col">
+                      <span class="text-xs font-bold text-slate-700">${d} Bulan</span>
+                      <span class="text-[10px] font-medium text-slate-400">Sudah bayar: ${row.sisa_cicilan}x</span>
+                    </div>`;
           }
         },
         {
           data: "status",
           render: function(d) {
             const statusMap = {
-              '0': '<span class="px-2 py-1 bg-red-50 text-red-600 rounded text-[10px] font-black uppercase tracking-wider">Ditolak</span>',
-              '1': '<span class="px-2 py-1 bg-yellow-50 text-yellow-600 rounded text-[10px] font-black uppercase tracking-wider">Upload Dokumen</span>',
-              '2': '<span class="px-2 py-1 bg-amber-50 text-amber-600 rounded text-[10px] font-black uppercase tracking-wider">Verifikasi Admin</span>',
-              '3': '<span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase tracking-wider">Approval Bendahara</span>',
-              '4': '<span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded text-[10px] font-black uppercase tracking-wider">Disetujui</span>',
-              '5': '<span class="px-2 py-1 bg-purple-50 text-purple-600 rounded text-[10px] font-black uppercase tracking-wider">Lunas</span>',
-              '6': '<span class="px-2 py-1 bg-cyan-50 text-cyan-600 rounded text-[10px] font-black uppercase tracking-wider">Konfirmasi Pelunasan</span>'
+              '0': `<span class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-red-100/50">Ditolak</span>`,
+              '1': `<span class="px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-slate-100/50">Upload Dokumen</span>`,
+              '2': `<span class="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-amber-100/50">Verifikasi Admin</span>`,
+              '3': `<span class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-blue-100/50">Approval Bendahara</span>`,
+              '4': `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-emerald-100/50">Disetujui</span>`,
+              '5': `<span class="px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-wider border border-slate-800 shadow-sm">Lunas</span>`,
+              '6': `<span class="px-2.5 py-1 bg-purple-50 text-purple-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-purple-100/50 animate-pulse">Konfirmasi Pelunasan</span>`
             };
             return statusMap[d] || d;
           }
@@ -329,18 +320,34 @@
         {
           data: null,
           render: function(data, type, row) {
-            let admin = row.nama_admin ? `<span class="text-xs text-blue-600 lowercase" title="Admin">@${row.nama_admin}</span>` : '';
-            let bendahara = row.nama_bendahara ? `<span class="text-xs text-emerald-600 lowercase" title="Bendahara">@${row.nama_bendahara}</span>` : '';
-            return `<div class="flex gap-1">${admin} ${bendahara}</div>`;
+            let admin = row.nama_admin ? `<div class="flex items-center gap-1">
+                      <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter" title="Admin">@${row.username_admin || 'admin'}</span>
+                    </div>` : '';
+            let bendahara = row.nama_bendahara ? `<div class="flex items-center gap-1">
+                      <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter" title="Bendahara">@${row.username_bendahara || 'bendahara'}</span>
+                    </div>` : '';
+            return `<div class="flex flex-col gap-0.5">${admin} ${bendahara}</div>`;
           }
         },
         {
           data: null,
           className: "text-right",
           render: function(data, type, row) {
-            return `<button onclick="openDetailModal('${row.idpinjaman}')" class="p-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Detail">
-                      <i data-lucide="search" class="w-4 h-4"></i>
+            let btns = `<div class="flex justify-end gap-1.5">`;
+
+            // Lunasi Sebagian (Only for status 4 - Approved/Active)
+            if (row.status == "4") {
+              btns += `<button onclick="openPartialModal('${row.idpinjaman}')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center border border-emerald-100 shadow-sm" title="Lunasi Sebagian">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i>
+                      </button>`;
+            }
+
+            btns += `<button onclick="openDetailModal('${row.idpinjaman}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm" title="Detail">
+                      <i data-lucide="eye" class="w-4 h-4"></i>
                     </button>`;
+
+            btns += `</div>`;
+            return btns;
           }
         }
       ],

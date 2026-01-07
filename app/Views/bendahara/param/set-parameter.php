@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -16,7 +16,7 @@
     <!-- Parameter Simpanan Card -->
     <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
       <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
-        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+        <div class="w-12 h-12 rounded-2xl bg-theme-light text-theme-main flex items-center justify-center">
           <i data-lucide="piggy-bank" class="w-6 h-6"></i>
         </div>
         <div>
@@ -37,7 +37,7 @@
               <div class="relative">
                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">Rp</span>
                 <input type="number"
-                  class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                  class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
                   id="param_simp<?= $a->idparameter ?>"
                   name="param_nilai_simp[]"
                   value="<?= $a->nilai ?>"
@@ -49,7 +49,7 @@
         </div>
 
         <div class="pt-4">
-          <button type="submit" class="w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+          <button type="submit" class="w-full py-3.5 bg-theme-gradient text-white rounded-xl text-sm font-black uppercase tracking-widest hover:shadow-lg hover:shadow-indigo-200 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
             <i data-lucide="save" class="w-4 h-4"></i> Simpan Perubahan
           </button>
         </div>

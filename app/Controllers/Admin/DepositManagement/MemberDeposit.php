@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Admin\DepositManagement;
 
 /**
@@ -21,12 +22,12 @@ class MemberDeposit extends BaseDepositController
         $data = array_merge($this->getBaseViewData(), [
             'title_meta' => view('admin/partials/title-meta', ['title' => 'Kelola Anggota']),
             'page_title' => view('admin/partials/page-title', [
-                'title' => 'Kelola Anggota', 
-                'li_1' => 'EKoperasi', 
+                'title' => 'Kelola Anggota',
+                'li_1' => 'EKoperasi',
                 'li_2' => 'Kelola Anggota'
             ])
         ]);
-        
+
         return view('admin/deposit/anggota-list', $data);
     }
 
@@ -45,15 +46,15 @@ class MemberDeposit extends BaseDepositController
         $total_saldo_wajib = $this->m_deposit->getSaldoWajibByUserId($iduser)[0]->saldo;
         $total_saldo_pokok = $this->m_deposit->getSaldoPokokByUserId($iduser)[0]->saldo;
         $total_saldo_manasuka = $this->m_deposit->getSaldoManasukaByUserId($iduser)[0]->saldo;
-        
+
         // Get user detail
         $detail_user = $this->m_user->getUserById($iduser)[0];
-        
+
         // Get manasuka parameter
-        $param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser) 
-            ? $this->m_param_manasuka->getParamByUserId($iduser) 
+        $param_manasuka = $this->m_param_manasuka->getParamByUserId($iduser)
+            ? $this->m_param_manasuka->getParamByUserId($iduser)
             : false;
-        
+
         $currentpage = request()->getVar('page_grup1') ? request()->getVar('page_grup1') : 1;
 
         // Get manasuka parameter log
@@ -64,15 +65,15 @@ class MemberDeposit extends BaseDepositController
                 ->get()
                 ->getResult()[0]
                 ->hitung;
-                
+
             $mnsk_param_log = $log_count != 0
                 ? $this->m_param_manasuka_log
                     ->where('idmnskparam', $param_manasuka[0]->idmnskparam)
                     ->limit(1)
                     ->get()
                     ->getResult()[0]
-                    ->created_at 
-                : date('Y-m-d H:i:s', strtotime('-3 months'));			
+                ->created_at
+                : date('Y-m-d H:i:s', strtotime('-3 months'));
         } else {
             $mnsk_param_log = date('Y-m-d H:i:s', strtotime('-3 months'));
         }
@@ -81,8 +82,8 @@ class MemberDeposit extends BaseDepositController
         $deposit_list = $this->m_deposit_pag
             ->where('idanggota', $iduser)
             ->groupStart()
-                ->where('cash_in !=', 0)
-                ->orWhere('cash_out !=', 0)
+            ->where('cash_in !=', 0)
+            ->orWhere('cash_out !=', 0)
             ->groupEnd()
             ->orderBy('date_created', 'DESC')
             ->paginate(10, 'grup1');
@@ -90,8 +91,8 @@ class MemberDeposit extends BaseDepositController
         $data = array_merge($this->getBaseViewData(), [
             'title_meta' => view('admin/partials/title-meta', ['title' => 'Detail Simpanan']),
             'page_title' => view('admin/partials/page-title', [
-                'title' => 'Detail Simpanan', 
-                'li_1' => 'EKoperasi', 
+                'title' => 'Detail Simpanan',
+                'li_1' => 'EKoperasi',
                 'li_2' => 'Detail Simpanan'
             ]),
             'detail_user' => $detail_user,
@@ -104,7 +105,7 @@ class MemberDeposit extends BaseDepositController
             'pager' => $this->m_deposit_pag->pager,
             'currentpage' => $currentpage
         ]);
-        
+
         return view('admin/deposit/anggota-detail', $data);
     }
 
@@ -116,7 +117,7 @@ class MemberDeposit extends BaseDepositController
     {
         $iduser = request()->getPost('iduser');
         $jenis_pengajuan = request()->getPost('jenis_pengajuan');
-        
+
         // Validation
         if (empty($jenis_pengajuan)) {
             $this->sendAlert('Gagal membuat pengajuan: Pilih jenis pengajuan terlebih dahulu', 'warning');
@@ -165,7 +166,7 @@ class MemberDeposit extends BaseDepositController
 
         $this->m_deposit->insertDeposit($dataset);
         $this->sendAlert('Pengajuan berhasil dibuat', 'success');
-        
+
         return redirect()->back();
     }
 
@@ -176,36 +177,33 @@ class MemberDeposit extends BaseDepositController
     public function data_user()
     {
         $request = service('request');
-        $model = $this->m_user;
+        $model = new \App\Models\M_user();
 
         $start = $request->getPost('start') ?? 0;
         $length = $request->getPost('length') ?? 10;
         $draw = $request->getPost('draw');
-        $searchValue = $request->getPost('search')['value'];
+        $search = $request->getPost('search')['value'];
 
-        // Build query
-        $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag')
-            ->where('idgroup', 4)
-            ->groupStart()
-                ->like('username', $searchValue)
-                ->orLike('nama_lengkap', $searchValue)
-                ->orLike('nomor_telepon', $searchValue)
-            ->groupEnd();
+        // 1. Base Query & Total Records
+        $model->where('idgroup', 4);
+        $recordsTotal = $model->countAllResults(false);
 
+        // 2. Apply Search
+        if ($search) {
+            $model->groupStart()
+                ->like('username', $search)
+                ->orLike('nama_lengkap', $search)
+                ->orLike('nomor_telepon', $search)
+                ->groupEnd();
+        }
+
+        // 3. Filtered Records
+        $recordsFiltered = $model->countAllResults(false);
+
+        // 4. Get Data
+        $model->select('iduser, username, nama_lengkap, instansi, email, nomor_telepon, flag, profil_pic');
+        $model->orderBy('nama_lengkap', 'ASC');
         $data = $model->asArray()->findAll($length, $start);
-        
-        // Count records
-        $model->select('iduser')->where('idgroup', 4);
-        $recordsTotal = $model->countAllResults();
-
-        $model->select('iduser')
-            ->where('idgroup', 4)
-            ->groupStart()
-                ->like('username', $searchValue)
-                ->orLike('nama_lengkap', $searchValue)
-                ->orLike('nomor_telepon', $searchValue)
-            ->groupEnd();
-        $recordsFiltered = $model->countAllResults();
 
         return $this->response->setJSON([
             'draw' => $draw,

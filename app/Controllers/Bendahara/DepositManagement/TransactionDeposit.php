@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Bendahara\DepositManagement;
 
 /**
@@ -19,7 +20,7 @@ class TransactionDeposit extends BaseDepositController
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account
         ];
-        
+
         return view('bendahara/deposit/deposit-list', $data);
     }
 
@@ -44,11 +45,11 @@ class TransactionDeposit extends BaseDepositController
         $this->sendAlert(
             $idanggota,
             $iddeposit,
-            'Pengajuan '. $message .' manasuka disetujui oleh bendahara '. $this->account->nama_lengkap,
+            'Pengajuan ' . $message . ' manasuka disetujui oleh bendahara ' . $this->account->nama_lengkap,
             'Permohonan Berhasil Dikonfirmasi',
             'success'
         );
-        
+
         return redirect()->back();
     }
 
@@ -65,7 +66,7 @@ class TransactionDeposit extends BaseDepositController
         ];
 
         $this->m_deposit->setStatus($iddeposit, $dataset);
-        
+
         $idanggota = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->idanggota;
         $jenis_pengajuan = $this->m_deposit->where('iddeposit', $iddeposit)->get()->getResult()[0]->jenis_deposit;
 
@@ -74,7 +75,7 @@ class TransactionDeposit extends BaseDepositController
         $this->sendAlert(
             $idanggota,
             $iddeposit,
-            'Pengajuan '. $message .' manasuka ditolak oleh bendahara '. $this->account->nama_lengkap,
+            'Pengajuan ' . $message . ' manasuka ditolak oleh bendahara ' . $this->account->nama_lengkap,
             'Permohonan Berhasil Ditolak',
             'success'
         );
@@ -151,7 +152,7 @@ class TransactionDeposit extends BaseDepositController
                 'total_saldo' => $total_saldo,
                 'confirmation' => $confirmation
             ];
-            
+
             echo view('bendahara/deposit/part-depo-mod-approval', $data);
         }
     }
@@ -212,14 +213,14 @@ class TransactionDeposit extends BaseDepositController
 
         $model->select('tb_deposit.*, tb_user.username, tb_user.nama_lengkap, tb_user.nik, tb_user.email');
         $model->where('tb_deposit.status', 'diproses bendahara');
-       
+
         $model->groupStart()
             ->like('nama_lengkap', $searchValue)
             ->orLike('username', $searchValue)
             ->orLike('email', $searchValue)
             ->orLike('status', $searchValue);
         $model->groupEnd();
-       
+
         $model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
         $model->orderBy('tb_deposit.date_created', 'DESC');
         $data = $model->asArray()->findAll($length, $start);
@@ -229,14 +230,14 @@ class TransactionDeposit extends BaseDepositController
         $recordsTotal = $model->countAllResults();
 
         $model->where('tb_deposit.status', 'diproses bendahara');
-        
+
         $model->groupStart()
             ->like('nama_lengkap', $searchValue)
             ->orLike('username', $searchValue)
             ->orLike('email', $searchValue)
             ->orLike('status', $searchValue);
         $model->groupEnd();
-        
+
         $model->join('tb_user', 'tb_deposit.idanggota = tb_user.iduser');
         $recordsFiltered = $model->countAllResults();
 

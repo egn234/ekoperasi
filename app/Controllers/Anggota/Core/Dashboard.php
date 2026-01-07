@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controllers\Anggota\Core;
 
 use App\Controllers\BaseController;
@@ -21,7 +22,7 @@ class Dashboard extends BaseController
         $this->m_user = model(M_user::class);
         $this->m_deposit = model(M_deposit::class);
         $this->m_param = model(M_param::class);
-        
+
         $this->notification = new Notifications();
 
         $user = $this->m_user->getUserById(session()->get('iduser'));
@@ -39,19 +40,18 @@ class Dashboard extends BaseController
 
         if ($this->account->closebook_request == 'closebook') {
             $alert = view(
-                'partials/notification-alert', 
+                'partials/notification-alert',
                 [
                     'notif_text' => 'Akun ini sedang dalam masa proses closebook, pengajuan closebook masih dapat dibatalkan',
                     'status' => 'warning'
                 ]
             );
-            
+
             session()->setFlashdata('notif_cb', $alert);
         }
 
         $data = [
-            'title_meta' => view('anggota/partials/title-meta', ['title' => 'Dashboard']),
-            'page_title' => view('anggota/partials/page-title', ['title' => 'Dashboard', 'li_1' => 'EKoperasi', 'li_2' => 'Dashboard']),
+            'title' => 'Dashboard',
             'notification_list' => $this->notification->index()['notification_list'],
             'notification_badges' => $this->notification->index()['notification_badges'],
             'duser' => $this->account,
@@ -59,7 +59,7 @@ class Dashboard extends BaseController
             'total_saldo_wajib' => $total_saldo_wajib,
             'total_saldo_manasuka' => $total_saldo_manasuka
         ];
-        
+
         return view('anggota/dashboard', $data);
     }
 }

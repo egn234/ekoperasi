@@ -1,4 +1,4 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/member') ?>
 
 <?= $this->section('styles') ?>
 <style type="text/css">
@@ -16,7 +16,7 @@
 
 <?= $this->section('content') ?>
 
-<div class="space-y-8 pb-20">
+<div class="space-y-8 pb-20 animate-fade-in-up">
 
   <!-- Header Section -->
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -120,32 +120,32 @@
     <div class="space-y-6">
 
       <!-- Summary Card -->
-      <div class="bg-indigo-gradient rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-200/50 relative overflow-hidden">
+      <div class="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-200/50 relative overflow-hidden">
         <div class="relative z-10">
-          <p class="text-indigo-100 text-xs font-black uppercase tracking-widest mb-1">Total Saldo Simpanan</p>
-          <h2 class="text-3xl font-black tracking-tight mb-8">Rp <?= number_format(($total_saldo_manasuka + $total_saldo_pokok + $total_saldo_wajib), 0, ',', '.') ?></h2>
+          <p class="text-white font-bold opacity-80 text-xs uppercase tracking-widest mb-1">Total Saldo Simpanan</p>
+          <h2 class="text-3xl font-black tracking-tight text-white mb-8">Rp <?= number_format(($total_saldo_manasuka + $total_saldo_pokok + $total_saldo_wajib), 0, ',', '.') ?></h2>
 
           <div class="space-y-4">
             <div class="flex justify-between items-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
               <div class="flex items-center gap-3">
-                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="wallet" class="w-4 h-4"></i></div>
-                <span class="text-xs font-bold uppercase tracking-wider">Pokok</span>
+                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="wallet" class="w-4 h-4 text-white"></i></div>
+                <span class="text-xs font-bold uppercase tracking-wider text-white">Pokok</span>
               </div>
-              <span class="font-bold">Rp <?= number_format($total_saldo_pokok, 0, ',', '.') ?></span>
+              <span class="font-bold text-white">Rp <?= number_format($total_saldo_pokok, 0, ',', '.') ?></span>
             </div>
             <div class="flex justify-between items-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
               <div class="flex items-center gap-3">
-                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="piggy-bank" class="w-4 h-4"></i></div>
-                <span class="text-xs font-bold uppercase tracking-wider">Wajib</span>
+                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="piggy-bank" class="w-4 h-4 text-white"></i></div>
+                <span class="text-xs font-bold uppercase tracking-wider text-white">Wajib</span>
               </div>
-              <span class="font-bold">Rp <?= number_format($total_saldo_wajib, 0, ',', '.') ?></span>
+              <span class="font-bold text-white">Rp <?= number_format($total_saldo_wajib, 0, ',', '.') ?></span>
             </div>
             <div class="flex justify-between items-center p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
               <div class="flex items-center gap-3">
-                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="hand-coins" class="w-4 h-4"></i></div>
-                <span class="text-xs font-bold uppercase tracking-wider">Manasuka</span>
+                <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="hand-coins" class="w-4 h-4 text-white"></i></div>
+                <span class="text-xs font-bold uppercase tracking-wider text-white">Manasuka</span>
               </div>
-              <span class="font-bold">Rp <?= number_format($total_saldo_manasuka, 0, ',', '.') ?></span>
+              <span class="font-bold text-white">Rp <?= number_format($total_saldo_manasuka, 0, ',', '.') ?></span>
             </div>
           </div>
         </div>
@@ -307,7 +307,7 @@
 
 <?= $this->section('scripts') ?>
 <!-- Native Modal Logic (Required) -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
+<!-- Native Modal Logic (Already in Layout) -->
 
 <script>
   // Logic for handling modals

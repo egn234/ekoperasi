@@ -1,11 +1,11 @@
-<?= $this->extend('layout/main') ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('styles') ?>
 <!-- ApexCharts -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+<!-- <link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 <style>
   /* Custom DataTable Styling to Match Tailwind */
   div.dataTables_wrapper div.dataTables_filter input {
@@ -42,8 +42,9 @@
 <div class="space-y-8">
 
   <!-- Welcome Section -->
-  <div class="bg-indigo-gradient rounded-[2rem] p-8 md:p-10 relative overflow-hidden shadow-xl shadow-indigo-200/50 text-white">
+  <div class="bg-theme-gradient rounded-[2rem] p-8 md:p-10 relative overflow-hidden shadow-xl shadow-indigo-200/50 text-white">
     <!-- Background Decor -->
+
     <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
       <i data-lucide="calculator" class="w-64 h-64"></i>
     </div>

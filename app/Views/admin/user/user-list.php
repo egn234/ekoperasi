@@ -1,48 +1,4 @@
-<?= $this->extend('layout/main') ?>
-
-<?= $this->section('styles') ?>
-<!-- DataTables CSS -->
-<link href="<?= base_url() ?>/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<style>
-    div.dataTables_wrapper div.dataTables_filter input {
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-    }
-
-    div.dataTables_wrapper div.dataTables_length select {
-        border-radius: 0.5rem;
-        padding: 0.25rem 2rem 0.25rem 0.5rem;
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-    }
-
-    table.dataTable thead th {
-        border-bottom: 2px solid #e2e8f0 !important;
-        color: #475569;
-        font-weight: 900;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        letter-spacing: 0.05em;
-        padding: 1rem !important;
-    }
-
-    table.dataTable tbody td {
-        padding: 1rem !important;
-        vertical-align: middle;
-        border-bottom: 1px solid #f1f5f9;
-        color: #1e293b;
-        font-size: 0.875rem;
-    }
-
-    table.dataTable tr:hover td {
-        background-color: #f8fafc;
-    }
-
-    /* Tailwind-like Pagination Overrides (Moved to theme.css) */
-</style>
-<?= $this->endSection() ?>
+<?= $this->extend('layout/admin') ?>
 
 <?= $this->section('content') ?>
 
@@ -77,7 +33,7 @@
 
     <!-- Table Card -->
     <div class="bg-white rounded-[2.5rem] p-8 shadow-soft border border-slate-50">
-        <div class="mb-6">
+        <div class="mb-2">
             <h3 class="text-xl font-black text-slate-900 tracking-tight">Daftar Pengguna</h3>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Semua Role</p>
         </div>
@@ -101,14 +57,8 @@
 
 </div>
 
-<!-- Native Modal Container -->
-<div id="dynamic-modal-overlay" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-<div id="dynamic-modal-content" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 hidden w-full max-w-lg bg-white rounded-[2rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-    <div id="modal-container"></div>
-    <button onclick="closeNativeModal()" class="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
-        <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-    </button>
-</div>
+<!-- Modals managed by modal-native.js -->
+
 
 <!-- Hidden Static Modal Templates -->
 <template id="tmpl-import">
@@ -168,27 +118,17 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="<?= base_url() ?>/assets/libs/jquery/jquery.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Native Modal Logic -->
-<script src="<?= base_url('js/modal-native.js') ?>"></script>
-
 <script>
     function openImportModal() {
-        $('#dynamic-modal-overlay, #dynamic-modal-content').removeClass('hidden');
-        $('#modal-container').html(document.getElementById('tmpl-import').innerHTML);
-        if (window.lucide) window.lucide.createIcons();
+        ModalHelper.openContent(document.getElementById('tmpl-import').innerHTML);
     }
 
     function openCleanModal() {
-        $('#dynamic-modal-overlay, #dynamic-modal-content').removeClass('hidden');
-        $('#modal-container').html(document.getElementById('tmpl-clean').innerHTML);
-        if (window.lucide) window.lucide.createIcons();
+        ModalHelper.openContent(document.getElementById('tmpl-clean').innerHTML);
     }
 
     function closeNativeModal() {
-        $('#dynamic-modal-overlay, #dynamic-modal-content').addClass('hidden');
+        ModalHelper.close();
     }
 
     function openSwitchModal(id) {
@@ -210,9 +150,14 @@
                 type: "POST"
             },
             autoWidth: false,
-            scrollX: true,
             serverSide: true,
+            // Unified DOM Layout: Length/Filter (Row 1), Table (Row 2), Info/Pagination (Row 3)
+            dom: '<"flex justify-between items-center gap-4 mb-4"lf><"rounded-xl border border-slate-100"t><"flex justify-between items-center gap-4 mt-4"ip>',
             language: {
+                search: "",
+                searchPlaceholder: "Cari User...",
+                lengthMenu: "_MENU_",
+                info: "_START_ - _END_ dari _TOTAL_",
                 paginate: {
                     first: '<<',
                     last: '>>',
@@ -222,32 +167,39 @@
             },
             drawCallback: function() {
                 if (window.lucide) window.lucide.createIcons();
-
                 // Extra styling for search input to match
-                $('.dataTables_filter input').addClass('focus:ring-2 focus:ring-blue-500 focus:outline-none');
+                $('.dataTables_filter input').addClass('px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500');
             },
             columnDefs: [{
                 orderable: false,
-                targets: "_all",
-                defaultContent: "-"
+                targets: [0, 5],
+                searchable: false
             }],
             columns: [{
                     title: "No",
-                    width: "5%",
+                    width: "50px",
+                    className: "text-center",
                     render: function(data, type, row, meta) {
-                        return `<span class="font-bold text-slate-500">${meta.row + 1}</span>`;
+                        return `<span class="font-bold text-slate-400 text-xs">${meta.row + 1}</span>`;
                     }
                 },
                 {
                     title: "User",
                     render: function(data, type, row) {
-                        return `<div class="flex items-center gap-3">
-                                  <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
-                                    ${row.username.substring(0,2)}
+                        let profilePic = row.profil_pic ? `<?= base_url() ?>/uploads/user/${row.username}/profil_pic/${row.profil_pic}` : `<?= base_url('assets/images/users/avatar-1.jpg') ?>`;
+                        return `<div class="flex items-center gap-4">
+                                  <div class="relative group">
+                                    <div class="absolute -inset-0.5 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full opacity-20 group-hover:opacity-40 transition-opacity blur"></div>
+                                    <div class="relative w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                      <img src="${profilePic}" 
+                                           alt="${row.username}" 
+                                           class="w-full h-full object-cover"
+                                           onerror="this.src='<?= base_url('assets/images/users/avatar-1.jpg') ?>'">
+                                    </div>
                                   </div>
-                                  <div>
-                                    <p class="font-bold text-slate-900 text-sm">${row.nama_lengkap}</p>
-                                    <p class="text-xs text-slate-400">${row.username}</p>
+                                  <div class="flex flex-col">
+                                    <p class="font-bold text-slate-900 text-sm leading-tight">${row.nama_lengkap}</p>
+                                    <p class="text-[11px] font-medium text-slate-400">@${row.username}</p>
                                   </div>
                                 </div>`;
                     }
@@ -255,9 +207,15 @@
                 {
                     title: "Kontak",
                     render: function(data, type, row) {
-                        return `<div>
-                                  <p class="text-xs text-slate-700 break-words">${row.email}</p>
-                                  <p class="text-[10px] text-slate-400">${row.nomor_telepon}</p>
+                        return `<div class="flex flex-col gap-0.5">
+                                  <div class="flex items-center gap-1.5 text-slate-600">
+                                    <i data-lucide="mail" class="w-3 h-3"></i>
+                                    <p class="text-xs font-medium truncate max-w-[150px]">${row.email || '-'}</p>
+                                  </div>
+                                  <div class="flex items-center gap-1.5 text-slate-400">
+                                    <i data-lucide="phone" class="w-3 h-3 text-slate-300"></i>
+                                    <p class="text-[10px] font-bold tracking-tight">${row.nomor_telepon || '-'}</p>
+                                  </div>
                                 </div>`;
                     }
                 },
@@ -265,15 +223,19 @@
                     title: "Instansi",
                     data: "instansi",
                     render: function(d) {
-                        return `<span class="text-xs font-medium text-slate-600">${d}</span>`;
+                        return `<div class="flex items-center gap-2">
+                                  <div class="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
+                                  <span class="text-xs font-bold text-slate-600 tracking-tight">${d || '-'}</span>
+                                </div>`;
                     }
                 },
                 {
                     title: "Status",
+                    className: "text-center",
                     render: function(data, type, row) {
                         return row.flag == "1" ?
-                            `<span class='px-2 py-1 bg-emerald-50 text-emerald-600 rounded text-[10px] font-black uppercase tracking-wider'>Aktif</span>` :
-                            `<span class='px-2 py-1 bg-red-50 text-red-600 rounded text-[10px] font-black uppercase tracking-wider'>Nonaktif</span>`;
+                            `<span class='inline-flex items-center px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-emerald-100/50'><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>Aktif</span>` :
+                            `<span class='inline-flex items-center px-2.5 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-red-100/50'><span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></span>Nonaktif</span>`;
                     }
                 },
                 {
@@ -281,21 +243,24 @@
                     className: "text-right",
                     render: function(data, type, row) {
                         let selfId = "<?= $duser->iduser ?>";
-                        let isSelf = (row.iduser === selfId);
+                        let isSelf = (String(row.iduser) === String(selfId));
                         let detailUrl = isSelf ? "<?= url_to('admin_profile') ?>" : "<?= base_url() ?>admin/user/" + row.iduser;
 
-                        let btns = `<div class="flex justify-end gap-2">`;
+                        let btns = `<div class="flex justify-end gap-1.5">`;
 
                         // Detail Button
-                        btns += `<a href="${detailUrl}" class="p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" title="Detail"><i data-lucide="search" class="w-4 h-4"></i></a>`;
+                        btns += `<a href="${detailUrl}" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm" title="Detail"><i data-lucide="eye" class="w-4 h-4"></i></a>`;
 
                         // Switch Status / Delete
                         if (!isSelf) {
-                            if (row.flag === "0") {
-                                btns += `<button onclick="openSwitchModal('${row.iduser}')" class="p-2 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors" title="Aktifkan"><i data-lucide="power" class="w-4 h-4"></i></button>`;
-                                btns += `<button onclick="openDeleteModal('${row.iduser}')" class="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                            if (row.flag == "0") {
+                                // Aktifkan
+                                btns += `<button onclick="openSwitchModal('${row.iduser}')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center border border-emerald-100 shadow-sm" title="Aktifkan"><i data-lucide="check-circle" class="w-4 h-4"></i></button>`;
+                                // Delete
+                                btns += `<button onclick="openDeleteModal('${row.iduser}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center border border-red-100 shadow-sm" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                             } else {
-                                btns += `<button onclick="openSwitchModal('${row.iduser}')" class="p-2 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors" title="Nonaktifkan"><i data-lucide="power-off" class="w-4 h-4"></i></button>`;
+                                // Nonaktifkan
+                                btns += `<button onclick="openSwitchModal('${row.iduser}')" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all flex items-center justify-center border border-amber-100 shadow-sm" title="Nonaktifkan"><i data-lucide="power-off" class="w-4 h-4"></i></button>`;
                             }
                         }
 
@@ -303,10 +268,7 @@
                         return btns;
                     }
                 }
-            ],
-            drawCallback: function() {
-                if (window.lucide) window.lucide.createIcons();
-            }
+            ]
         });
     });
 </script>
